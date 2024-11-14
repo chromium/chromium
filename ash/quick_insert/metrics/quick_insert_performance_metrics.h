@@ -52,7 +52,7 @@ class ASH_EXPORT QuickInsertPerformanceMetrics {
   // Insert UI is destroyed.
   void StopRecording();
 
-  // Marks a focus event on the picker search field.
+  // Marks a focus event on the Quick Insert search field.
   void MarkInputFocus();
 
   // Marks that the search field contents changed.

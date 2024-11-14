@@ -84,7 +84,7 @@ views::View* QuickInsertMainContainerView::GetBottomItem() {
 
 views::View* QuickInsertMainContainerView::GetItemAbove(views::View* item) {
   if (search_field_view_->Contains(item)) {
-    views::View* prev_item = GetNextPickerPseudoFocusableView(
+    views::View* prev_item = GetNextQuickInsertPseudoFocusableView(
         item, QuickInsertPseudoFocusDirection::kBackward,
         /*should_loop=*/false);
     return Contains(prev_item) ? prev_item : nullptr;
@@ -96,7 +96,7 @@ views::View* QuickInsertMainContainerView::GetItemAbove(views::View* item) {
 
 views::View* QuickInsertMainContainerView::GetItemBelow(views::View* item) {
   if (search_field_view_->Contains(item)) {
-    views::View* next_item = GetNextPickerPseudoFocusableView(
+    views::View* next_item = GetNextQuickInsertPseudoFocusableView(
         item, QuickInsertPseudoFocusDirection::kForward, /*should_loop=*/false);
     return Contains(next_item) ? next_item : nullptr;
   }

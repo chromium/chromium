@@ -82,7 +82,7 @@ void QuickInsertItemView::PaintButtonContents(gfx::Canvas* canvas) {
 
   if (focus_indicator_style_ == FocusIndicatorStyle::kFocusBar &&
       item_state_ == ItemState::kPseudoFocused) {
-    PaintPickerFocusIndicator(
+    PaintQuickInsertFocusIndicator(
         canvas, gfx::Point(0, kQuickInsertItemFocusIndicatorMargins.top()),
         height() - kQuickInsertItemFocusIndicatorMargins.height(),
         GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing));

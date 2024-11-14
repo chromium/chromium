@@ -300,7 +300,7 @@ TEST_F(QuickInsertSearchResultsViewTest, GetsTopItem) {
                                         QuickInsertTextResult(u"Result B")}},
                                       /*has_more_results=*/false));
 
-  EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(view.GetTopItem()));
+  EXPECT_TRUE(DoQuickInsertPseudoFocusedActionOnView(view.GetTopItem()));
 }
 
 TEST_F(QuickInsertSearchResultsViewTest, GetsBottomItem) {
@@ -322,7 +322,7 @@ TEST_F(QuickInsertSearchResultsViewTest, GetsBottomItem) {
                                         QuickInsertTextResult(u"Result B")}},
                                       /*has_more_results=*/false));
 
-  EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(view.GetBottomItem()));
+  EXPECT_TRUE(DoQuickInsertPseudoFocusedActionOnView(view.GetBottomItem()));
 }
 
 TEST_F(QuickInsertSearchResultsViewTest, GetsItemAbove) {
@@ -343,7 +343,7 @@ TEST_F(QuickInsertSearchResultsViewTest, GetsItemAbove) {
               SelectSearchResult(VariantWith<QuickInsertCategoryResult>(
                   QuickInsertCategoryResult(QuickInsertCategory::kLinks))));
 
-  EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(
+  EXPECT_TRUE(DoQuickInsertPseudoFocusedActionOnView(
       view.GetItemAbove(view.GetBottomItem())));
 }
 
@@ -365,8 +365,8 @@ TEST_F(QuickInsertSearchResultsViewTest, GetsItemBelow) {
               SelectSearchResult(VariantWith<QuickInsertCategoryResult>(
                   QuickInsertCategoryResult(QuickInsertCategory::kClipboard))));
 
-  EXPECT_TRUE(
-      DoPickerPseudoFocusedActionOnView(view.GetItemBelow(view.GetTopItem())));
+  EXPECT_TRUE(DoQuickInsertPseudoFocusedActionOnView(
+      view.GetItemBelow(view.GetTopItem())));
 }
 
 TEST_F(QuickInsertSearchResultsViewTest,

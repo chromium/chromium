@@ -68,7 +68,7 @@ class ASH_EXPORT QuickInsertSessionMetrics {
   // Updates the search query to latest and accumulates total edits.
   void UpdateSearchQuery(std::u16string_view search_query);
 
-  // Records CrOS event metrics when a picker session starts.
+  // Records CrOS event metrics when a Quick Insert session starts.
   void OnStartSession(ui::TextInputClient* client);
 
   // Records if caps lock toggle is displayed in the zero state view.
@@ -77,7 +77,7 @@ class ASH_EXPORT QuickInsertSessionMetrics {
   SessionOutcome GetOutcomeForTesting() { return outcome_; }
 
  private:
-  // Records CrOS event metrics when a picker session finishes.
+  // Records CrOS event metrics when a Quick Insert session finishes.
   void OnFinishSession();
 
   // Updates caps lock related prefs.

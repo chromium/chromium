@@ -19,7 +19,7 @@ constexpr gfx::Point kDefaultCursorPoint(42, 42);
 TEST(QuickInsertPositioningTest,
      UsesCaretBoundsWhenCaretBoundsIsWithinWindowBounds) {
   gfx::Rect caret_bounds(100, 200, 5, 5);
-  const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
+  const gfx::Rect anchor_bounds = GetQuickInsertAnchorBounds(
       /*caret_bounds=*/caret_bounds, kDefaultCursorPoint,
       /*focused_window_bounds=*/gfx::Rect(0, 0, 500, 500));
 
@@ -29,7 +29,7 @@ TEST(QuickInsertPositioningTest,
 
 TEST(QuickInsertPositioningTest,
      UsesCursorPointWhenCaretBoundsIsOutsideWindowBounds) {
-  const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
+  const gfx::Rect anchor_bounds = GetQuickInsertAnchorBounds(
       /*caret_bounds=*/gfx::Rect(600, 200, 5, 5), kDefaultCursorPoint,
       /*focused_window_bounds=*/gfx::Rect(0, 0, 500, 500));
 
@@ -39,7 +39,7 @@ TEST(QuickInsertPositioningTest,
 }
 
 TEST(QuickInsertPositioningTest, UsesCursorPointWhenCaretBoundsIsEmpty) {
-  const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
+  const gfx::Rect anchor_bounds = GetQuickInsertAnchorBounds(
       /*caret_bounds=*/gfx::Rect(), kDefaultCursorPoint,
       /*focused_window_bounds=*/gfx::Rect(0, 0, 500, 500));
 

@@ -19,11 +19,11 @@ enum class QuickInsertPseudoFocusDirection {
   kBackward,
 };
 
-void ASH_EXPORT ApplyPickerPseudoFocusToView(views::View* view);
+void ASH_EXPORT ApplyQuickInsertPseudoFocusToView(views::View* view);
 
-void ASH_EXPORT RemovePickerPseudoFocusFromView(views::View* view);
+void ASH_EXPORT RemoveQuickInsertPseudoFocusFromView(views::View* view);
 
-bool ASH_EXPORT DoPickerPseudoFocusedActionOnView(views::View* view);
+bool ASH_EXPORT DoQuickInsertPseudoFocusedActionOnView(views::View* view);
 
 // Gets the next pseudo focusable view in `direction`. The order of pseudo focus
 // traversal is similar to usual view focus traversal, except the textfield is
@@ -32,9 +32,9 @@ bool ASH_EXPORT DoPickerPseudoFocusedActionOnView(views::View* view);
 // returns to the start/end). If `should_loop` is false, then nullptr is instead
 // returned at the start/end.
 views::View* ASH_EXPORT
-GetNextPickerPseudoFocusableView(views::View* view,
-                                 QuickInsertPseudoFocusDirection direction,
-                                 bool should_loop);
+GetNextQuickInsertPseudoFocusableView(views::View* view,
+                                      QuickInsertPseudoFocusDirection direction,
+                                      bool should_loop);
 
 }  // namespace ash
 

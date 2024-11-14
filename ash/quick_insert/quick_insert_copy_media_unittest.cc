@@ -69,7 +69,7 @@ TEST_F(QuickInsertCopyMediaTest, CopiesLinks) {
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"https://foo.com/");
   // We include the title as the `title` attribute for maximum compatibility.
-  // See `ShouldUseLinkTitle` in picker_insert_media.cc for more details.
+  // See `ShouldUseLinkTitle` in quick_insert_insert_media.cc for more details.
   EXPECT_EQ(ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"<a title=\"Foo\" href=\"https://foo.com/\">https://foo.com/</a>");
 }
@@ -116,7 +116,7 @@ TEST_P(QuickInsertCopyMediaToastTest, ShowsToastAfterCopyingLink) {
   CopyMediaToClipboard(GetParam());
 
   EXPECT_TRUE(
-      ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
+      ash::ToastManager::Get()->IsToastShown("quick_insert_copy_to_clipboard"));
 }
 
 }  // namespace

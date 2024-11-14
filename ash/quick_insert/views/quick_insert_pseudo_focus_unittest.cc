@@ -19,7 +19,7 @@ TEST_F(QuickInsertPseudoFocusTest,
        ApplyPseudoFocusToListItemUpdatesItemStateAndBadge) {
   QuickInsertListItemView item_view(base::DoNothing());
 
-  ApplyPickerPseudoFocusToView(&item_view);
+  ApplyQuickInsertPseudoFocusToView(&item_view);
 
   EXPECT_EQ(item_view.GetItemState(),
             QuickInsertItemView::ItemState::kPseudoFocused);
@@ -29,9 +29,9 @@ TEST_F(QuickInsertPseudoFocusTest,
 TEST_F(QuickInsertPseudoFocusTest,
        RemovePseudoFocusFromListItemUpdatesItemStateAndBadge) {
   QuickInsertListItemView item_view(base::DoNothing());
-  ApplyPickerPseudoFocusToView(&item_view);
+  ApplyQuickInsertPseudoFocusToView(&item_view);
 
-  RemovePickerPseudoFocusFromView(&item_view);
+  RemoveQuickInsertPseudoFocusFromView(&item_view);
 
   EXPECT_EQ(item_view.GetItemState(), QuickInsertItemView::ItemState::kNormal);
   EXPECT_FALSE(item_view.trailing_badge_for_testing().GetVisible());

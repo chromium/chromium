@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           .BuildClientOwnsWidget();
   auto* view =
       widget->SetContentsView(std::make_unique<ash::QuickInsertEmojiBarView>(
-          /*delegate=*/nullptr, /*picker_width=*/1000,
+          /*delegate=*/nullptr, /*quick_insert_width=*/1000,
           /*is_gifs_enabled=*/true));
   view->SetSearchResults({
       ash::QuickInsertEmojiResult::Emoji(u"😊", u"happy"),
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           .BuildClientOwnsWidget();
   auto* view =
       widget->SetContentsView(std::make_unique<ash::QuickInsertEmojiBarView>(
-          /*delegate=*/nullptr, /*picker_width=*/100,
+          /*delegate=*/nullptr, /*quick_insert_width=*/100,
           /*is_gifs_enabled=*/true));
 
   sm_.Call([view]() { view->gifs_button_for_testing()->RequestFocus(); });
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           .BuildClientOwnsWidget();
   auto* view =
       widget->SetContentsView(std::make_unique<ash::QuickInsertEmojiBarView>(
-          /*delegate=*/nullptr, /*picker_width=*/100));
+          /*delegate=*/nullptr, /*quick_insert_width=*/100));
 
   sm_.Call(
       [view]() { view->more_emojis_button_for_testing()->RequestFocus(); });
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           .BuildClientOwnsWidget();
   auto* view =
       widget->SetContentsView(std::make_unique<ash::QuickInsertEmojiBarView>(
-          /*delegate=*/nullptr, /*picker_width=*/1000));
+          /*delegate=*/nullptr, /*quick_insert_width=*/1000));
   view->SetSearchResults({ash::QuickInsertEmojiResult::Emoji(u"😊", u"happy")});
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           .BuildClientOwnsWidget();
   auto* view =
       widget->SetContentsView(std::make_unique<ash::QuickInsertEmojiBarView>(
-          /*delegate=*/nullptr, /*picker_width=*/1000));
+          /*delegate=*/nullptr, /*quick_insert_width=*/1000));
   view->SetSearchResults({ash::QuickInsertEmojiResult::Symbol(u"♬", u"music")});
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           .BuildClientOwnsWidget();
   auto* view =
       widget->SetContentsView(std::make_unique<ash::QuickInsertEmojiBarView>(
-          /*delegate=*/nullptr, /*picker_width=*/1000));
+          /*delegate=*/nullptr, /*quick_insert_width=*/1000));
   view->SetSearchResults(
       {ash::QuickInsertEmojiResult::Emoticon(u"(°□°)", u"surprise")});
 
@@ -817,7 +817,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::MockQuickInsertSearchResultsViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(
       std::make_unique<ash::QuickInsertSearchResultsView>(
-          &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
+          &mock_delegate, /*quick_insert_width=*/1000,
+          /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
   sm_.Call([view]() {
@@ -838,7 +839,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::MockQuickInsertSearchResultsViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(
       std::make_unique<ash::QuickInsertSearchResultsView>(
-          &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
+          &mock_delegate, /*quick_insert_width=*/1000,
+          /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
   sm_.Call([view]() {

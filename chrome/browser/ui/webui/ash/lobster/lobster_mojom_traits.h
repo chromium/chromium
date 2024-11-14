@@ -132,9 +132,9 @@ struct EnumTraits<lobster::mojom::WebUIMetricEvent, ash::LobsterMetricState> {
       case ash::LobsterMetricState::kRightClickTriggerImpression:
       case ash::LobsterMetricState::kRightClickTriggerFired:
       case ash::LobsterMetricState::kRightClickTriggerNeedsConsent:
-      case ash::LobsterMetricState::kPickerTriggerImpression:
-      case ash::LobsterMetricState::kPickerTriggerFired:
-      case ash::LobsterMetricState::kPickerTriggerNeedsConsent:
+      case ash::LobsterMetricState::kQuickInsertTriggerImpression:
+      case ash::LobsterMetricState::kQuickInsertTriggerFired:
+      case ash::LobsterMetricState::kQuickInsertTriggerNeedsConsent:
       case ash::LobsterMetricState::kConsentScreenImpression:
       case ash::LobsterMetricState::kConsentAccepted:
       case ash::LobsterMetricState::kConsentRejected:

@@ -7,7 +7,7 @@
 
 namespace ash {
 
-enum class LobsterEntryPoint { kPicker, kRightClickMenu };
+enum class LobsterEntryPoint { kQuickInsert, kRightClickMenu };
 
 }  // namespace ash
 

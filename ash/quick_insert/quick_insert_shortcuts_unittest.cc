@@ -33,7 +33,7 @@ TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithSearchKey) {
   Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
       keyboard, std::move(keyboard_info));
 
-  EXPECT_EQ(GetPickerShortcutForCapsLock(),
+  EXPECT_EQ(GetQuickInsertShortcutForCapsLock(),
             QuickInsertCapsLockResult::Shortcut::kAltSearch);
 }
 
@@ -49,7 +49,7 @@ TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
   Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
       keyboard, std::move(keyboard_info));
 
-  EXPECT_EQ(GetPickerShortcutForCapsLock(),
+  EXPECT_EQ(GetQuickInsertShortcutForCapsLock(),
             QuickInsertCapsLockResult::Shortcut::kAltLauncher);
 }
 
@@ -67,7 +67,7 @@ TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithFnKey) {
   Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
       keyboard, std::move(keyboard_info));
 
-  EXPECT_EQ(GetPickerShortcutForCapsLock(),
+  EXPECT_EQ(GetQuickInsertShortcutForCapsLock(),
             QuickInsertCapsLockResult::Shortcut::kFnRightAlt);
 }
 

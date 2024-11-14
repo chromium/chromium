@@ -117,11 +117,11 @@ TEST_F(QuickInsertWidgetTest, ClickingOutsideClosesQuickInsertWidget) {
 }
 
 TEST_F(QuickInsertWidgetTest, LosingFocusClosesQuickInsertWidget) {
-  // Create something other than the picker to focus.
+  // Create something other than Quick Insert to focus.
   auto window = CreateTestWindow();
   window->Show();
 
-  // Create the fake picker and make sure it has focus.
+  // Create the fake Quick Insert and make sure it has focus.
   FakeQuickInsertViewDelegate delegate;
   auto quick_insert_widget =
       QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -129,7 +129,7 @@ TEST_F(QuickInsertWidgetTest, LosingFocusClosesQuickInsertWidget) {
   EXPECT_THAT(quick_insert_widget->GetFocusManager()->GetFocusedView(),
               testing::NotNull());
 
-  // Focus the other Widget and expect the picker to have closed.
+  // Focus the other Widget and expect Quick Insert to have closed.
   window->Focus();
   EXPECT_TRUE(window->HasFocus());
 

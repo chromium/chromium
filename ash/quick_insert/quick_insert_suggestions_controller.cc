@@ -55,8 +55,8 @@ void QuickInsertSuggestionsController::GetSuggestions(
 
   if (model.GetMode() == QuickInsertModeType::kUnfocused ||
       model.GetMode() == QuickInsertModeType::kNoSelection) {
-    callback.Run({QuickInsertCapsLockResult(!model.is_caps_lock_enabled(),
-                                            GetPickerShortcutForCapsLock())});
+    callback.Run({QuickInsertCapsLockResult(
+        !model.is_caps_lock_enabled(), GetQuickInsertShortcutForCapsLock())});
   }
 
   if (base::Contains(model.GetAvailableCategories(),

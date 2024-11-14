@@ -33,7 +33,7 @@ namespace ash {
 namespace {
 
 constexpr char kQuickInsertCopyToClipboardToastId[] =
-    "picker_copy_to_clipboard";
+    "quick_insert_copy_to_clipboard";
 
 struct HtmlAttr {
  private:

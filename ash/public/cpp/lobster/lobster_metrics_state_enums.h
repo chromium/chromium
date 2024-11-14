@@ -20,13 +20,14 @@ enum class LobsterMetricState {
   // recorded when the right click menu trigger is fired but the user hasn’t
   // given their consent to use the feature.
   kRightClickTriggerNeedsConsent = 4,
-  // recorded when the Picker trigger is shown to the user.
-  kPickerTriggerImpression = 5,
-  // recorded when the Picker trigger is fired by the user.
-  kPickerTriggerFired = 6,
-  // recorded when the Picker trigger is fired but the user hasn’t given their
+  // recorded when the Quick Insert trigger is shown to the user.
+  kQuickInsertTriggerImpression = 5,
+  // recorded when the Quick Insert trigger is fired by the user.
+  kQuickInsertTriggerFired = 6,
+  // recorded when the Quick Insert trigger is fired but the user hasn’t given
+  // their
   // consent to use the feature.
-  kPickerTriggerNeedsConsent = 7,
+  kQuickInsertTriggerNeedsConsent = 7,
   // recorded when the consent screen is shown after the user has fired one of
   // the triggers.
   kConsentScreenImpression = 8,

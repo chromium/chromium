@@ -590,7 +590,7 @@ TEST_F(QuickInsertControllerTest,
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
       uR"html(<img src="http://foo.com/" referrerpolicy="no-referrer" alt="a gif" width="60" height="40"/>)html");
   EXPECT_TRUE(
-      ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
+      ash::ToastManager::Get()->IsToastShown("quick_insert_copy_to_clipboard"));
 }
 
 TEST_F(QuickInsertControllerTest,

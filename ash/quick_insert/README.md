@@ -11,5 +11,5 @@ leaving the input field.
 * `model/`: The data model to be rendered.
 * `views/`: The UI related code.
 * `metrics/`: Code for recording metrics.
-* `QuickInsertController`: Controls the visibility of the Picker.
+* `QuickInsertController`: Controls the visibility of the Quick Insert window.
 * `QuickInsertClient`: Used by `QuickInsertController` to talk to the browser.

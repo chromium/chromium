@@ -36,7 +36,7 @@ gfx::Insets GetScrollViewContentsBorderInsets(
   }
 }
 
-gfx::Insets GetPickerScrollBarInsets(QuickInsertLayoutType layout_type) {
+gfx::Insets GetQuickInsertScrollBarInsets(QuickInsertLayoutType layout_type) {
   switch (layout_type) {
     case QuickInsertLayoutType::kMainResultsBelowSearchField:
       return gfx::Insets::TLBR(1, 0, 12, 0);
@@ -76,7 +76,7 @@ QuickInsertContentsView::QuickInsertContentsView(
   auto* scroll_view = AddChildView(std::make_unique<QuickInsertScrollView>());
   auto vertical_scroll_bar = std::make_unique<RoundedScrollBar>(
       views::ScrollBar::Orientation::kVertical);
-  vertical_scroll_bar->SetInsets(GetPickerScrollBarInsets(layout_type));
+  vertical_scroll_bar->SetInsets(GetQuickInsertScrollBarInsets(layout_type));
   vertical_scroll_bar->SetAlwaysShowThumb(true);
   scroll_view->SetVerticalScrollBar(std::move(vertical_scroll_bar));
 

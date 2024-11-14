@@ -133,7 +133,7 @@ void QuickInsertSearchFieldView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
   if (should_show_focus_indicator_) {
-    PaintPickerFocusIndicator(
+    PaintQuickInsertFocusIndicator(
         canvas, gfx::Point(0, kTextfieldFocusIndicatorMargins.top()),
         height() - kTextfieldFocusIndicatorMargins.height(),
         GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing));
@@ -236,7 +236,7 @@ views::View* QuickInsertSearchFieldView::GetViewLeftOf(views::View* view) {
   if (!Contains(view)) {
     return nullptr;
   }
-  views::View* left_view = GetNextPickerPseudoFocusableView(
+  views::View* left_view = GetNextQuickInsertPseudoFocusableView(
       view, QuickInsertPseudoFocusDirection::kBackward, /*should_loop=*/false);
   return Contains(left_view) ? left_view : nullptr;
 }
@@ -245,7 +245,7 @@ views::View* QuickInsertSearchFieldView::GetViewRightOf(views::View* view) {
   if (!Contains(view)) {
     return nullptr;
   }
-  views::View* right_view = GetNextPickerPseudoFocusableView(
+  views::View* right_view = GetNextQuickInsertPseudoFocusableView(
       view, QuickInsertPseudoFocusDirection::kForward, /*should_loop=*/false);
   return Contains(right_view) ? right_view : nullptr;
 }

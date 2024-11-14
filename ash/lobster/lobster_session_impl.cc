@@ -56,8 +56,8 @@ LobsterSessionImpl::LobsterSessionImpl(
       candidate_store_(candidate_store),
       entry_point_(entry_point) {
   switch (entry_point_) {
-    case LobsterEntryPoint::kPicker:
-      RecordLobsterState(LobsterMetricState::kPickerTriggerFired);
+    case LobsterEntryPoint::kQuickInsert:
+      RecordLobsterState(LobsterMetricState::kQuickInsertTriggerFired);
       break;
     case LobsterEntryPoint::kRightClickMenu:
       RecordLobsterState(LobsterMetricState::kRightClickTriggerFired);

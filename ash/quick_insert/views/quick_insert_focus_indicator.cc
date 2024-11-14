@@ -33,10 +33,10 @@ constexpr SkScalar kQuickInsertFocusIndicatorRadii[8] = {
 
 }  // namespace
 
-void PaintPickerFocusIndicator(gfx::Canvas* canvas,
-                               const gfx::Point& origin,
-                               int height,
-                               SkColor color) {
+void PaintQuickInsertFocusIndicator(gfx::Canvas* canvas,
+                                    const gfx::Point& origin,
+                                    int height,
+                                    SkColor color) {
   SkPath path;
   const gfx::Rect focus_indicator_bounds(
       origin, gfx::Size(kQuickInsertFocusIndicatorWidth, height));

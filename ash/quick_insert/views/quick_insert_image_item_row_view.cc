@@ -137,13 +137,13 @@ views::View* QuickInsertImageItemRowView::GetItemBelow(views::View* item) {
 }
 
 views::View* QuickInsertImageItemRowView::GetItemLeftOf(views::View* item) {
-  views::View* item_left_of = GetNextPickerPseudoFocusableView(
+  views::View* item_left_of = GetNextQuickInsertPseudoFocusableView(
       item, QuickInsertPseudoFocusDirection::kBackward, /*should_loop=*/false);
   return Contains(item_left_of) ? item_left_of : nullptr;
 }
 
 views::View* QuickInsertImageItemRowView::GetItemRightOf(views::View* item) {
-  views::View* item_left_of = GetNextPickerPseudoFocusableView(
+  views::View* item_left_of = GetNextQuickInsertPseudoFocusableView(
       item, QuickInsertPseudoFocusDirection::kForward, /*should_loop=*/false);
   return Contains(item_left_of) ? item_left_of : nullptr;
 }

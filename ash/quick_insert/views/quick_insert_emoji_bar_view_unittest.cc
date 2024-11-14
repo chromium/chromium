@@ -289,7 +289,7 @@ TEST_F(QuickInsertEmojiBarViewTest, GetsTopItem) {
               SelectSearchResult(VariantWith<QuickInsertEmojiResult>(
                   QuickInsertEmojiResult::Emoji(u"😊"))));
 
-  EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(emoji_bar->GetTopItem()));
+  EXPECT_TRUE(DoQuickInsertPseudoFocusedActionOnView(emoji_bar->GetTopItem()));
 }
 
 TEST_F(QuickInsertEmojiBarViewTest, GetsItemLeftOf) {

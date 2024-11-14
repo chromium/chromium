@@ -20,7 +20,7 @@
 
 namespace ash {
 
-void ApplyPickerPseudoFocusToView(views::View* view) {
+void ApplyQuickInsertPseudoFocusToView(views::View* view) {
   if (view == nullptr) {
     return;
   }
@@ -53,7 +53,7 @@ void ApplyPickerPseudoFocusToView(views::View* view) {
   }
 }
 
-void RemovePickerPseudoFocusFromView(views::View* view) {
+void RemoveQuickInsertPseudoFocusFromView(views::View* view) {
   if (view == nullptr) {
     return;
   }
@@ -86,7 +86,7 @@ void RemovePickerPseudoFocusFromView(views::View* view) {
   }
 }
 
-bool DoPickerPseudoFocusedActionOnView(views::View* view) {
+bool DoQuickInsertPseudoFocusedActionOnView(views::View* view) {
   if (view == nullptr) {
     return false;
   }
@@ -115,7 +115,7 @@ bool DoPickerPseudoFocusedActionOnView(views::View* view) {
   return key_event.handled();
 }
 
-views::View* GetNextPickerPseudoFocusableView(
+views::View* GetNextQuickInsertPseudoFocusableView(
     views::View* view,
     QuickInsertPseudoFocusDirection direction,
     bool should_loop) {

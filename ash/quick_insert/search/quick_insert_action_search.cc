@@ -67,7 +67,7 @@ std::vector<QuickInsertSearchResult> QuickInsertActionSearch(
                       ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
                       : IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL))) {
     matches.push_back(QuickInsertCapsLockResult(
-        caps_lock_state_to_search, GetPickerShortcutForCapsLock()));
+        caps_lock_state_to_search, GetQuickInsertShortcutForCapsLock()));
   }
 
   if (search_case_transforms) {

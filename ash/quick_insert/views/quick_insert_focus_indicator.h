@@ -16,10 +16,10 @@ namespace ash {
 
 // Paints a focus indicator onto `canvas`. The painted indicator looks like a
 // vertical bar with half-rounded edges.
-void PaintPickerFocusIndicator(gfx::Canvas* canvas,
-                               const gfx::Point& origin,
-                               int height,
-                               SkColor color);
+void PaintQuickInsertFocusIndicator(gfx::Canvas* canvas,
+                                    const gfx::Point& origin,
+                                    int height,
+                                    SkColor color);
 
 }  // namespace ash
 

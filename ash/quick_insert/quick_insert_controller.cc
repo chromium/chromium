@@ -644,7 +644,7 @@ void QuickInsertController::ShowWidget(base::TimeTicks trigger_event_timestamp,
           },
           weak_ptr_factory_.GetWeakPtr()));
 
-  const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
+  const gfx::Rect anchor_bounds = GetQuickInsertAnchorBounds(
       GetCaretBounds(), GetCursorPoint(), GetFocusedWindowBounds());
   if (trigger_source == WidgetTriggerSource::kFeatureTour &&
       session_->model.GetMode() == QuickInsertModeType::kUnfocused) {

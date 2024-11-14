@@ -10,7 +10,8 @@
 
 namespace ash {
 
-ASH_EXPORT QuickInsertCapsLockResult::Shortcut GetPickerShortcutForCapsLock();
+ASH_EXPORT QuickInsertCapsLockResult::Shortcut
+GetQuickInsertShortcutForCapsLock();
 
 }  // namespace ash
 

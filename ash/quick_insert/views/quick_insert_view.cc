@@ -86,7 +86,7 @@
 namespace ash {
 namespace {
 
-constexpr int kVerticalPaddingBetweenPickerContainers = 8;
+constexpr int kVerticalPaddingBetweenQuickInsertContainers = 8;
 
 // Padding to separate the Quick Insert window from the screen edge.
 constexpr gfx::Insets kPaddingFromScreenEdge(16);
@@ -291,7 +291,7 @@ QuickInsertView::QuickInsertView(QuickInsertViewDelegate* delegate,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::LayoutOrientation::kVertical,
       /*inside_border_insets=*/gfx::Insets(),
-      /*between_child_spacing=*/kVerticalPaddingBetweenPickerContainers));
+      /*between_child_spacing=*/kVerticalPaddingBetweenQuickInsertContainers));
 
   AddMainContainerView(layout_type);
   if (base::Contains(delegate_->GetAvailableCategories(),
@@ -484,7 +484,7 @@ bool QuickInsertView::DoPseudoFocusedAction() {
 
   return GetPseudoFocusedView() == nullptr
              ? false
-             : DoPickerPseudoFocusedActionOnView(GetPseudoFocusedView());
+             : DoQuickInsertPseudoFocusedActionOnView(GetPseudoFocusedView());
 }
 
 bool QuickInsertView::MovePseudoFocusUp() {
@@ -570,7 +570,7 @@ bool QuickInsertView::AdvancePseudoFocus(
   if (GetPseudoFocusedView() == nullptr) {
     return false;
   }
-  SetPseudoFocusedView(GetNextPickerPseudoFocusableView(
+  SetPseudoFocusedView(GetNextQuickInsertPseudoFocusableView(
       GetPseudoFocusedView(), direction, /*should_loop=*/true));
   return true;
 }
@@ -890,7 +890,7 @@ void QuickInsertView::SetPseudoFocusedView(views::View* view) {
     }
   }
 
-  RemovePickerPseudoFocusFromView(pseudo_focused_view_tracker_.view());
+  RemoveQuickInsertPseudoFocusFromView(pseudo_focused_view_tracker_.view());
 
   pseudo_focused_view_tracker_.SetView(view);
   // base::Unretained() is safe here because this class owns
@@ -900,7 +900,7 @@ void QuickInsertView::SetPseudoFocusedView(views::View* view) {
 
   search_field_view_->SetTextfieldActiveDescendant(view);
   view->ScrollViewToVisible();
-  ApplyPickerPseudoFocusToView(view);
+  ApplyQuickInsertPseudoFocusToView(view);
 }
 
 views::View* QuickInsertView::GetPseudoFocusedView() {

@@ -164,8 +164,8 @@ std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
 
 std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
     std::vector<std::unique_ptr<ChromeSearchResult>> results) {
-  std::vector<ash::QuickInsertSearchResult> picker_results;
-  picker_results.reserve(results.size());
+  std::vector<ash::QuickInsertSearchResult> quick_insert_results;
+  quick_insert_results.reserve(results.size());
 
   for (const std::unique_ptr<ChromeSearchResult>& result : results) {
     CHECK(result);
@@ -186,22 +186,22 @@ std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
 
         if (std::optional<GURL> result_url = result->url();
             result_url.has_value()) {
-          picker_results.push_back(ash::QuickInsertBrowsingHistoryResult(
+          quick_insert_results.push_back(ash::QuickInsertBrowsingHistoryResult(
               *result_url, result->title(), result->icon().icon,
               result->best_match()));
         } else {
-          picker_results.push_back(ash::QuickInsertTextResult(
+          quick_insert_results.push_back(ash::QuickInsertTextResult(
               result->title(), ash::QuickInsertTextResult::Source::kOmnibox));
         }
         break;
       }
       case ash::AppListSearchResultType::kFileSearch: {
-        picker_results.push_back(ash::QuickInsertLocalFileResult(
+        quick_insert_results.push_back(ash::QuickInsertLocalFileResult(
             result->title(), result->filePath(), result->best_match()));
         break;
       }
       case ash::AppListSearchResultType::kDriveSearch:
-        picker_results.push_back(ash::QuickInsertDriveFileResult(
+        quick_insert_results.push_back(ash::QuickInsertDriveFileResult(
             result->DriveId(), result->title(), *result->url(),
             result->filePath(), result->best_match()));
         break;
@@ -212,7 +212,7 @@ std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
     }
   }
 
-  return picker_results;
+  return quick_insert_results;
 }
 
 ash::input_method::EditorMediator* GetEditorMediator(Profile* profile) {
@@ -404,7 +404,7 @@ QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
   }
 
   lobster_trigger_ = lobster_controller->CreateTrigger(
-      ash::LobsterEntryPoint::kPicker, support_image_insertion);
+      ash::LobsterEntryPoint::kQuickInsert, support_image_insertion);
 
   if (!lobster_trigger_) {
     return base::NullCallback();

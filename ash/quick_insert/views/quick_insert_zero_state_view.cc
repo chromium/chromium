@@ -156,7 +156,7 @@ views::View* QuickInsertZeroStateView::GetItemAbove(views::View* item) {
     // navigate between items.
     return section_list_view_->GetItemAbove(item);
   }
-  views::View* prev_item = GetNextPickerPseudoFocusableView(
+  views::View* prev_item = GetNextQuickInsertPseudoFocusableView(
       item, QuickInsertPseudoFocusDirection::kBackward, /*should_loop=*/false);
   return Contains(prev_item) ? prev_item : nullptr;
 }
@@ -170,7 +170,7 @@ views::View* QuickInsertZeroStateView::GetItemBelow(views::View* item) {
     // navigate between items.
     return section_list_view_->GetItemBelow(item);
   }
-  views::View* next_item = GetNextPickerPseudoFocusableView(
+  views::View* next_item = GetNextQuickInsertPseudoFocusableView(
       item, QuickInsertPseudoFocusDirection::kForward, /*should_loop=*/false);
   return Contains(next_item) ? next_item : nullptr;
 }

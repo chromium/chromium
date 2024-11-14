@@ -76,7 +76,8 @@ TEST_F(QuickInsertSubmenuViewTest, TriggersItemCallbackOnPseudoFocusAction) {
       select_item_future.GetRepeatingCallback()));
   QuickInsertSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 
-  EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(submenu_view.GetTopItem()));
+  EXPECT_TRUE(
+      DoQuickInsertPseudoFocusedActionOnView(submenu_view.GetTopItem()));
 
   EXPECT_TRUE(select_item_future.Wait());
 }
