@@ -217,6 +217,18 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-webgl-astro",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-webgl-nelson",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-webgl-sherlock",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.IOS_BRANCHES,
     builder = "ios-rel-ready",
 )

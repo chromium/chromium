@@ -198,6 +198,9 @@ consoles.console_view(
     ("fuchsia-smoke-sherlock-roller", "hardware|smoke", "roll"),
     ("fuchsia-perf-nsn", "hardware|perf", "nsn"),
     ("fuchsia-perf-shk", "hardware|perf", "sher"),
+    ("fuchsia-webgl-astro", "hardware|webgl", "ast"),
+    ("fuchsia-webgl-nelson", "hardware|webgl", "nsn"),
+    ("fuchsia-webgl-sherlock", "hardware|webgl", "sher"),
     ("fuchsia-x64", "p/chrome|official", "x64"),
     ("fuchsia-x64-nest-sd", "p/chrome|official", "nest-x64"),
 )]
