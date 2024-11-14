@@ -182,14 +182,6 @@ bool IsAccessibilityFaceGazeEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityFaceGaze);
 }
 
-BASE_FEATURE(kAccessibilityFaceGazeGravityWells,
-             "AccessibilityFaceGazeGravityWells",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityFaceGazeGravityWellsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityFaceGazeGravityWells);
-}
-
 BASE_FEATURE(kAccessibilityReducedAnimationsInKiosk,
              "AccessibilityReducedAnimationsInKiosk",
              base::FEATURE_ENABLED_BY_DEFAULT);

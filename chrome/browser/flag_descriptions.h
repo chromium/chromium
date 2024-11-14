@@ -776,9 +776,6 @@ extern const char kAccessibilityReducedAnimationsInKioskDescription[];
 extern const char kAccessibilityFaceGazeName[];
 extern const char kAccessibilityFaceGazeDescription[];
 
-extern const char kAccessibilityFaceGazeGravityWellsName[];
-extern const char kAccessibilityFaceGazeGravityWellsDescription[];
-
 extern const char kAccessibilityMagnifierFollowsChromeVoxName[];
 extern const char kAccessibilityMagnifierFollowsChromeVoxDescription[];
 

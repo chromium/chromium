@@ -281,7 +281,6 @@ chrome.accessibilityPrivate.AccessibilityFeature = {
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
   FACE_GAZE: 'faceGaze',
   GOOGLE_TTS_HIGH_QUALITY_VOICES: 'googleTtsHighQualityVoices',
-  FACE_GAZE_GRAVITY_WELLS: 'faceGazeGravityWells',
 };
 
 /**
@@ -617,8 +616,7 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
  *     should occur if the key event should be held. Otherwise, the key event
  *     should not repeat.
  */
-chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(
-    keyEvent, useRewriters, isRepeat) {};
+chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters, isRepeat) {};
 
 /**
  * Enables or disables mouse events in accessibility extensions

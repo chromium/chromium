@@ -8040,11 +8040,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityFaceGazeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityFaceGaze)},
 
-    {"enable-accessibility-facegaze-gravity-wells",
-     flag_descriptions::kAccessibilityFaceGazeGravityWellsName,
-     flag_descriptions::kAccessibilityFaceGazeGravityWellsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityFaceGazeGravityWells)},
-
     {"enable-accessibility-magnifier-follows-chromevox",
      flag_descriptions::kAccessibilityMagnifierFollowsChromeVoxName,
      flag_descriptions::kAccessibilityMagnifierFollowsChromeVoxDescription,

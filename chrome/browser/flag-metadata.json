@@ -2344,11 +2344,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-accessibility-facegaze-gravity-wells",
-    "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-accessibility-filter-keys",
     "owners": [ "anastasi@google.com", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 140

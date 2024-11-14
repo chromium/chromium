@@ -17665,7 +17665,6 @@ from previous Chrome versions.
   <int value="-1052115254" label="TextfieldFocusOnTapUp:disabled"/>
   <int value="-1051602723" label="IPH_LauncherSearchHelpUi:enabled"/>
   <int value="-1051509976" label="ServiceWorkerOnUI:disabled"/>
-  <int value="-1050568269" label="AccessibilityFaceGazeGravityWells:disabled"/>
   <int value="-1050121997"
       label="EnableServiceWorkersForChromeUntrusted:enabled"/>
   <int value="-1050006327" label="FirmwareUpdaterApp:disabled"/>
@@ -18260,7 +18259,6 @@ from previous Chrome versions.
   <int value="-808486493" label="NewWallpaperPicker:disabled"/>
   <int value="-807864284" label="prefer-dcheck"/>
   <int value="-807352944" label="IppFirstSetupForUsbPrinters:disabled"/>
-  <int value="-806761320" label="AccessibilityFaceGazeGravityWells:enabled"/>
   <int value="-806549905"
       label="TabbedAppOverflowMenuThreeButtonActionbar:disabled"/>
   <int value="-806501339" label="AutofillEnableManuallFallbackIPH:disabled"/>

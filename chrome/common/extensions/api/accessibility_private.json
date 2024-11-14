@@ -255,7 +255,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": ["dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices", "faceGazeGravityWells"],
+        "enum": ["dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices"],
         "description": "Subset of accessibility features."
       },
       {

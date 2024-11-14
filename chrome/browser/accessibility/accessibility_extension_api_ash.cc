@@ -498,9 +498,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
     case accessibility_private::AccessibilityFeature::kFaceGaze:
       enabled = ::features::IsAccessibilityFaceGazeEnabled();
       break;
-    case accessibility_private::AccessibilityFeature::kFaceGazeGravityWells:
-      enabled = ::features::IsAccessibilityFaceGazeGravityWellsEnabled();
-      break;
     case accessibility_private::AccessibilityFeature::kNone:
       return RespondNow(Error("Unrecognized feature"));
   }
