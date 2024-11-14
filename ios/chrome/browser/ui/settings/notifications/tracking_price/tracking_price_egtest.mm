@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "components/commerce/core/commerce_feature_list.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_earl_grey_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -36,8 +37,9 @@ using chrome_test_util::SettingsTrackingPriceTableView;
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.
-// TODO(crbug.com/378039633): Reenable the test.
-- (void)DISABLED_testTrackingPriceSwipeDown_FromUpdatedSettingsView {
+- (void)testTrackingPriceSwipeDown_FromUpdatedSettingsView {
+  [NotificationsEarlGreyAppInterface setUpMockShoppingService];
+
   [self openTrackingPriceSettingsFromUpdatedSettingsView];
 
   // Check that Tracking Price TableView is presented.
