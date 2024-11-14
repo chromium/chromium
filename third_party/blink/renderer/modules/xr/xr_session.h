@@ -305,6 +305,8 @@ class XRSession final : public EventTarget,
 
   const HeapVector<Member<XRViewData>>& views();
 
+  XRViewData* ViewDataForEye(device::mojom::blink::XREye eye);
+
   void AddTransientInputSource(XRInputSource* input_source);
   void RemoveTransientInputSource(XRInputSource* input_source);
 

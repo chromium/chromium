@@ -173,6 +173,13 @@ XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
     return nullptr;
   }
 
+  if (!view || view->session() != session()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "View was not created with the same session as this binding.");
+    return nullptr;
+  }
+
   XRGPUProjectionLayer* gpu_layer = static_cast<XRGPUProjectionLayer*>(layer);
 
   GPUTexture* color_texture =
@@ -185,19 +192,22 @@ XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
     depth_stencil_texture = depth_stencil_swap_chain->GetCurrentTexture();
   }
 
-  gfx::Rect viewport = GetViewportForEye(layer, view->EyeValue());
+  XRViewData* viewData = view->ViewData();
+  viewData->ApplyViewportScaleForFrame();
+
+  gfx::Rect viewport = GetViewportForView(layer, viewData);
 
   return MakeGarbageCollected<XRGPUSubImage>(
       viewport, view->ViewData()->index(), color_texture,
       depth_stencil_texture);
 }
 
-gfx::Rect XRGPUBinding::GetViewportForEye(XRProjectionLayer* layer,
-                                          device::mojom::blink::XREye eye) {
+gfx::Rect XRGPUBinding::GetViewportForView(XRProjectionLayer* layer,
+                                           XRViewData* view) {
   CHECK(OwnsLayer(layer));
 
-  // TODO(crbug.com/5818595): Allow for configurable viewports.
-  return gfx::Rect(0, 0, layer->textureWidth(), layer->textureHeight());
+  return gfx::Rect(0, 0, layer->textureWidth() * view->CurrentViewportScale(),
+                   layer->textureHeight() * view->CurrentViewportScale());
 }
 
 V8GPUTextureFormat XRGPUBinding::getPreferredColorFormat() {

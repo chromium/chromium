@@ -148,6 +148,9 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   }
   double RequestedViewportScale() const { return requested_viewport_scale_; }
 
+  // Returns true if the viewport scale actually changed.
+  bool ApplyViewportScaleForFrame();
+
   void Trace(Visitor*) const;
 
  private:

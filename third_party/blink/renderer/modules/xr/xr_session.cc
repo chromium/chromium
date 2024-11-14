@@ -2417,6 +2417,16 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
   return views_;
 }
 
+XRViewData* XRSession::ViewDataForEye(device::mojom::blink::XREye eye) {
+  switch (eye) {
+    case device::mojom::blink::XREye::kLeft:
+    case device::mojom::blink::XREye::kNone:
+      return views_[0].Get();
+    case device::mojom::blink::XREye::kRight:
+      return views_[1].Get();
+  }
+}
+
 bool XRSession::HasPendingActivity() const {
   return (!callback_collection_->IsEmpty() || !vfc_execution_queue_.empty()) &&
          !ended_;

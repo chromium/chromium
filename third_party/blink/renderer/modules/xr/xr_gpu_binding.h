@@ -25,6 +25,7 @@ class GPUDevice;
 class V8GPUTextureFormat;
 class XRSession;
 class XRView;
+class XRViewData;
 class XRProjectionLayer;
 class XRGPUProjectionLayerInit;
 class XRGPUSubImage;
@@ -51,8 +52,7 @@ class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
 
   GPUDevice* device() const { return device_.Get(); }
 
-  gfx::Rect GetViewportForEye(XRProjectionLayer* layer,
-                              device::mojom::blink::XREye eye);
+  gfx::Rect GetViewportForView(XRProjectionLayer* layer, XRViewData* view);
 
   void Trace(Visitor*) const override;
 

@@ -53,6 +53,16 @@ class XRFrameProviderRequestCallback : public FrameCallback {
   Member<XRFrameProvider> frame_provider_;
 };
 
+gfx::RectF NormalizeViewport(gfx::Rect viewport,
+                             uint32_t width,
+                             uint32_t height) {
+  return gfx::RectF(
+      static_cast<float>(viewport.x()) / width,
+      static_cast<float>(height - (viewport.y() + viewport.height())) / height,
+      static_cast<float>(viewport.width()) / width,
+      static_cast<float>(viewport.height()) / height);
+}
+
 }  // namespace
 
 XRFrameProvider::XRFrameProvider(XRSystem* xr)
@@ -803,33 +813,35 @@ void XRFrameProvider::UpdateWebGPULayerViewports(XRGPUProjectionLayer* layer) {
 
   XRGPUBinding* webgpu_binding = static_cast<XRGPUBinding*>(layer->binding());
 
-  gfx::Rect left = webgpu_binding->GetViewportForEye(
-      layer, device::mojom::blink::XREye::kLeft);
-  gfx::Rect right = webgpu_binding->GetViewportForEye(
-      layer, device::mojom::blink::XREye::kRight);
-
   // TODO(crbug.com/359418629): Adjust viewport calculations once we start using
   // texture array-capable mailboxes.
   float width = layer->textureWidth() * layer->textureArrayLength();
   float height = layer->textureHeight();
-  right.set_x(right.x() + layer->textureWidth());
 
-  // We may only have one eye view, i.e. in smartphone immersive AR mode.
-  // Use all-zero bounds for unused views.
-  gfx::RectF left_coords = gfx::RectF(
-      static_cast<float>(left.x()) / width,
-      static_cast<float>(height - (left.y() + left.height())) / height,
-      static_cast<float>(left.width()) / width,
-      static_cast<float>(left.height()) / height);
-  gfx::RectF right_coords =
-      layer->textureArrayLength() > 1
-          ? gfx::RectF(
-                (static_cast<float>(right.x()) / width),
-                static_cast<float>(height - (right.y() + right.height())) /
-                    height,
-                (static_cast<float>(right.width()) / width),
-                static_cast<float>(right.height()) / height)
-          : gfx::RectF();
+  gfx::RectF left_coords;
+  gfx::RectF right_coords;
+  if (immersive_session_->StereoscopicViews()) {
+    XRViewData* left_view =
+        immersive_session_->ViewDataForEye(device::mojom::blink::XREye::kLeft);
+    XRViewData* right_view =
+        immersive_session_->ViewDataForEye(device::mojom::blink::XREye::kRight);
+
+    gfx::Rect left = webgpu_binding->GetViewportForView(layer, left_view);
+    gfx::Rect right = webgpu_binding->GetViewportForView(layer, right_view);
+    right.set_x(right.x() + layer->textureWidth());
+
+    left_coords = NormalizeViewport(left, width, height);
+    right_coords = NormalizeViewport(right, width, height);
+  } else {
+    XRViewData* mono_view =
+        immersive_session_->ViewDataForEye(device::mojom::blink::XREye::kNone);
+    gfx::Rect viewport = webgpu_binding->GetViewportForView(layer, mono_view);
+
+    left_coords = NormalizeViewport(viewport, width, height);
+
+    // Non-stereo modes (i.e. smartphone immersive AR mode)
+    // use the default all-zero bounds for right view.
+  }
 
   immersive_presentation_provider_->UpdateLayerBounds(
       frame_id_, left_coords, right_coords, gfx::Size(width, height));

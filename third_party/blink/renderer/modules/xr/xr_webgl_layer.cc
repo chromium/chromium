@@ -210,22 +210,7 @@ XRViewport* XRWebGLLayer::getViewport(XRView* view) {
   if (!view || view->session() != session())
     return nullptr;
 
-  // Dynamic viewport scaling, see steps 6 and 7 in
-  // https://immersive-web.github.io/webxr/#dom-xrwebgllayer-getviewport
-  XRViewData* view_data = view->ViewData();
-  if (view_data->ViewportModifiable() &&
-      view_data->CurrentViewportScale() !=
-          view_data->RequestedViewportScale()) {
-    DVLOG(2) << __func__
-             << ": apply ViewportScale=" << view_data->RequestedViewportScale();
-    view_data->SetCurrentViewportScale(view_data->RequestedViewportScale());
-    viewports_dirty_ = true;
-  }
-  TRACE_COUNTER1("xr", "XR viewport scale (%)",
-                 view_data->CurrentViewportScale() * 100);
-  view_data->SetViewportModifiable(false);
-
-  if (viewports_dirty_) {
+  if (view->ViewData()->ApplyViewportScaleForFrame()) {
     UpdateViewports();
   }
 
@@ -278,11 +263,17 @@ void XRWebGLLayer::UpdateViewports() {
       // still sent to the XR process, but if there are more than two views,
       // the terms "left" and "right" are not accurate. The entire bounds of
       // all viewports should be sent instead.
-      double left_scale = session()->views()[0]->CurrentViewportScale();
+      double left_scale =
+          session()
+              ->ViewDataForEye(device::mojom::blink::XREye::kLeft)
+              ->CurrentViewportScale();
       left_viewport_ = MakeGarbageCollected<XRViewport>(
           0, 0, rounded(framebuffer_width * 0.5 * left_scale),
           rounded(framebuffer_height * left_scale));
-      double right_scale = session()->views()[1]->CurrentViewportScale();
+      double right_scale =
+          session()
+              ->ViewDataForEye(device::mojom::blink::XREye::kRight)
+              ->CurrentViewportScale();
       right_viewport_ = MakeGarbageCollected<XRViewport>(
           framebuffer_width * 0.5, 0,
           rounded(framebuffer_width * 0.5 * right_scale),
@@ -292,7 +283,10 @@ void XRWebGLLayer::UpdateViewports() {
       // needed for the UpdateLayerBounds mojo call which currently expects
       // exactly two views. This should be revisited as part of a refactor to
       // handle a more general list of viewports, cf. https://crbug.com/928433.
-      double mono_scale = session()->views()[0]->CurrentViewportScale();
+      double mono_scale =
+          session()
+              ->ViewDataForEye(device::mojom::blink::XREye::kNone)
+              ->CurrentViewportScale();
       left_viewport_ = MakeGarbageCollected<XRViewport>(
           0, 0, rounded(framebuffer_width * mono_scale),
           rounded(framebuffer_height * mono_scale));
