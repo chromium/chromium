@@ -319,7 +319,7 @@ void MLOperator::Connect(HeapVector<Member<MLOperand>> inputs,
     input->AddDependentOperator(this);
   }
 
-  inputs_ = static_cast<HeapVector<Member<const MLOperand>>>(std::move(inputs));
+  inputs_.assign(inputs);
   outputs_ = std::move(outputs);
 }
 
