@@ -691,6 +691,94 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   // fixed.
 }
 
+// Tests that removing an extension while it's action is showing a popup removes
+// the action from the toolbar.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       RemoveExtensionShowingPopup) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  constexpr char kExtensionMenuItemActionButton[] =
+      "extension_menu_item_action_button";
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
+
+  RunTestSequence(
+      InstrumentTab(kTab), OpenExtensionsMenu(),
+
+      // Trigger the extension's action by clicking on its menu entry.
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<ExtensionsMenuButton>(
+          kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
+      PressButton(kExtensionMenuItemActionButton),
+
+      // Verify extension's action is popped out.
+      WaitForShow(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
+      CheckResult(
+          [&]() { return extensions_container()->GetPoppedOutActionId(); },
+          extension->id()),
+
+      // Disable the extension.
+      Do([&]() { DisableExtension(extension->id()); }),
+
+      // Verify extension's action is not popped out.
+      WaitForHide(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
+      CheckResult(
+          [&]() { return extensions_container()->GetPoppedOutActionId(); },
+          std::nullopt));
+}
+
+// Tests that removing multiple extensions while one of the extension's action
+// is showing a popup removes such action from the toolbar.
+// Test for crbug.com/1099456.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       RemoveMultipleExtensionsWhileShowingPopup) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  constexpr char kExtensionMenuItemActionButton[] =
+      "extension_menu_item_action_button";
+
+  const extensions::Extension* extension_A =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
+  const extensions::Extension* extension_B =
+      LoadExtension(test_data_dir_.AppendASCII("uitest/window_open"));
+
+  RunTestSequence(
+      InstrumentTab(kTab), OpenExtensionsMenu(),
+
+      // Trigger the extension A action by clicking on its menu entry. Entries
+      // are in alphabetical order, therefore the first
+      // kExtensionMenuItemViewElementId match should be extension A.
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension_A](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension_A->id();
+                }),
+      NameDescendantViewByType<ExtensionsMenuButton>(
+          kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
+      PressButton(kExtensionMenuItemActionButton),
+
+      // Verify extension A action is popped out.
+      WaitForShow(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
+      CheckResult(
+          [&]() { return extensions_container()->GetPoppedOutActionId(); },
+          extension_A->id()),
+
+      // Disable both extensions.
+      Do([&]() {
+        DisableExtension(extension_A->id());
+        DisableExtension(extension_B->id());
+      }),
+
+      // Verify extension A action is not popped out.
+      WaitForHide(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
+      CheckResult(
+          [&]() { return extensions_container()->GetPoppedOutActionId(); },
+          std::nullopt));
+}
+
 // Test that an extension's context menu shows the correct label when the
 // extension is pinned.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
