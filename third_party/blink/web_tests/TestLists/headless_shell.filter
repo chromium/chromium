@@ -50,6 +50,7 @@ external/wpt/css/fetching/*
 external/wpt/css/fill-stroke/*
 external/wpt/css/geometry/*
 external/wpt/css/reference/*
+external/wpt/custom-elements/*
 external/wpt/delegated-ink/*
 external/wpt/deprecation-reporting/*
 external/wpt/device-memory/*
@@ -146,6 +147,8 @@ external/wpt/xhr/*
 
 virtual/attribution-reporting-aggregatable-debug/*
 virtual/cookie-deprecation-label/*
+virtual/css-custom-state-only-deprecated-syntax/*
+virtual/css-custom-state-only-new-syntax/*
 virtual/disable-raster-inducing-scroll/*
 virtual/document-picture-in-picture-user-activation/*
 virtual/float16array-enabled/external/wpt/xhr/*
@@ -158,6 +161,7 @@ virtual/media-gpu-accelerated/*
 virtual/oopr-canvas2d/external/wpt/mediacapture-record/*
 virtual/prefetch*
 virtual/produce-compile-hints/external/wpt/loading/*
+virtual/scoped-custom-element-registry-disabled/*
 virtual/single-renderer-process/external/wpt/*
 virtual/split-http-cache/external/wpt/signed-exchange/*
 virtual/third-party-storage-partitioning/external/wpt/secure-contexts/*
