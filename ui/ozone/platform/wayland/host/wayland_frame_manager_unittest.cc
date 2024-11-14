@@ -60,8 +60,7 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
                                     kAugmentedSurfaceNotSupportedVersion,
-                                    /*supports_single_pixel_buffer=*/true,
-                                    /*server_version=*/{});
+                                    /*supports_single_pixel_buffer=*/true);
     buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
                                               kBufferId);
     base::RunLoop().RunUntilIdle();
@@ -89,8 +88,7 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
                                     kAugmentedSurfaceNotSupportedVersion,
-                                    /*supports_single_pixel_buffer=*/true,
-                                    /*server_version=*/{});
+                                    /*supports_single_pixel_buffer=*/true);
     buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
                                               kBufferId);
     base::RunLoop().RunUntilIdle();
@@ -213,8 +211,7 @@ TEST_F(WaylandFrameManagerTest,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true,
-                                  /*server_version=*/{});
+                                  /*supports_single_pixel_buffer=*/true);
   buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
                                             kBufferId);
   base::RunLoop().RunUntilIdle();
@@ -347,8 +344,7 @@ TEST_F(WaylandFrameManagerTest,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true,
-                                  /*server_version=*/{});
+                                  /*supports_single_pixel_buffer=*/true);
   buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
                                             kBufferId);
   base::RunLoop().RunUntilIdle();

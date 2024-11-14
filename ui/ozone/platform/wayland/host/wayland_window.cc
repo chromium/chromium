@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
-#include <aura-shell-client-protocol.h>
 #include <stdint.h>
 #include <wayland-cursor.h>
 
@@ -61,7 +60,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/platform_window/common/platform_window_defaults.h"

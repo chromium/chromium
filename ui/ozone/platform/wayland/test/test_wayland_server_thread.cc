@@ -118,12 +118,6 @@ bool TestWaylandServerThread::Start() {
     }
   }
 
-  if (config_.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
-    if (!zaura_shell_.Initialize(display_.get())) {
-      return false;
-    }
-  }
-
   if (!output_.Initialize(display_.get()))
     return false;
 

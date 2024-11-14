@@ -70,20 +70,9 @@ TEST_P(WaylandSurfaceTest, SurfaceReenterOutput) {
   EXPECT_THAT(wayland_surface->entered_outputs(), ElementsAre(output_id));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandSurfaceTest,
                          ::testing::Values(wl::ServerConfig{}));
-#else
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithAuraShell,
-    WaylandSurfaceTest,
-    ::testing::Values(
-        wl::ServerConfig{
-            .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled},
-        wl::ServerConfig{
-            .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
-#endif
 
 }  // namespace
 
@@ -107,8 +96,7 @@ class WaylandSurfaceExplicitSyncTest : public WaylandTestSimple {
                                     /*supports_viewporter=*/true,
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true, 0,
-                                    /*supports_single_pixel_buffer=*/true,
-                                    /*server_version=*/{});
+                                    /*supports_single_pixel_buffer=*/true);
   }
 
   void CreateDmabufBasedBuffer(uint32_t buffer_id,

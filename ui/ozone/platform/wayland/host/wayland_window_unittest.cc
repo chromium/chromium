@@ -452,8 +452,7 @@ class WaylandWindowTest : public WaylandTest {
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
                                     kAugmentedSurfaceNotSupportedVersion,
-                                    /*supports_single_pixel_buffer=*/true,
-                                    /*server_version=*/{});
+                                    /*supports_single_pixel_buffer=*/true);
 
     const uint32_t buffer_id = ++buffer_id_gen_;
     auto length = buffer_size.width() * buffer_size.height() * 4;
@@ -3585,8 +3584,7 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true,
-                                  /*server_version=*/{});
+                                  /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id1 = 1;
@@ -4254,8 +4252,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true,
-                                  /*server_version=*/{});
+                                  /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;
@@ -5307,7 +5304,6 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_ForceDeviceScaleFactor) {
   EXPECT_EQ(window_->applied_state(), previous_state);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));
@@ -5318,30 +5314,8 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          PerSurfaceScaleWaylandWindowTest,
                          Values(wl::ServerConfig{
                              .supports_viewporter_surface_scaling = true}));
-#else
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithAuraShell,
-    WaylandWindowTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithAuraShell,
-    MultiDisplayWaylandWindowTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandSubsurfaceTest,
                          Values(wl::ServerConfig{}));
-
-#else
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithAuraShell,
-    WaylandSubsurfaceTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
-#endif
 
 }  // namespace ui

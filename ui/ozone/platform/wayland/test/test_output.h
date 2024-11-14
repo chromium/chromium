@@ -75,8 +75,6 @@ class TestOutput : public GlobalObject {
   void OnBind() override;
 
  private:
-  bool aura_shell_enabled_ = false;
-
   // Disable sending metrics to clients implicitly (i.e. when the output is
   // bound or when output extensions are created). If this is set `Flush()` must
   // be explicitly called to propagate pending metrics.

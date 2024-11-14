@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 
-#include <aura-shell-client-protocol.h>
-
 #include <string>
 
 #include "base/nix/xdg_util.h"
@@ -38,7 +36,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
 #include "ui/ozone/platform/wayland/host/xdg_activation.h"
 #include "ui/platform_window/common/platform_window_defaults.h"

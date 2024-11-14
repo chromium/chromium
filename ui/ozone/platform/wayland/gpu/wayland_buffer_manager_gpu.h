@@ -65,8 +65,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       bool supports_acquire_fence,
       bool supports_overlays,
       uint32_t supported_surface_augmentor_version,
-      bool supports_single_pixel_buffer,
-      const base::Version& server_version) override;
+      bool supports_single_pixel_buffer) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the

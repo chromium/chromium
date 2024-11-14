@@ -132,8 +132,7 @@ TEST_P(WaylandZcrColorManagerTest, DISABLED_CreateColorManagementSurface) {
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true,
-                                  /*server_version=*/{});
+                                  /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;
@@ -183,8 +182,7 @@ TEST_P(WaylandZcrColorManagerTest, DISABLED_DoNotSetInvaliColorSpace) {
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true,
-                                  /*server_version=*/{});
+                                  /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;

@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
-#include <aura-shell-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shape-v1-client-protocol.h>
@@ -108,14 +107,6 @@ void delete_touch(wl_touch* touch) {
     wl_touch_release(touch);
   } else {
     wl_touch_destroy(touch);
-  }
-}
-
-void delete_zaura_shell(zaura_shell* shell) {
-  if (wl::get_version_of_object(shell) >= ZAURA_SHELL_RELEASE_SINCE_VERSION) {
-    zaura_shell_release(shell);
-  } else {
-    zaura_shell_destroy(shell);
   }
 }
 
@@ -224,7 +215,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_drag_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_shell, delete_zaura_shell)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_cursor_shapes_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_output_v1)

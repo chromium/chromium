@@ -10,7 +10,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {

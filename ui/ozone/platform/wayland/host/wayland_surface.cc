@@ -45,7 +45,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_syncobj_timeline.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"

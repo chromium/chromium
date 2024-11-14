@@ -282,10 +282,6 @@ void WaylandTest::TearDown() {
   WaylandTestBase::TearDown();
 }
 
-bool WaylandTest::IsAuraShellEnabled() {
-  return GetParam().enable_aura_shell == wl::EnableAuraShellProtocol::kEnabled;
-}
-
 WaylandTestSimple::WaylandTestSimple()
     : WaylandTestSimple(wl::ServerConfig{}) {}
 
@@ -302,18 +298,5 @@ void WaylandTestSimple::TearDown() {
   WaylandTestBase::TearDown();
 }
 
-WaylandTestSimpleWithAuraShell::WaylandTestSimpleWithAuraShell()
-    : WaylandTestBase(
-          {.enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}) {}
-
-WaylandTestSimpleWithAuraShell::~WaylandTestSimpleWithAuraShell() = default;
-
-void WaylandTestSimpleWithAuraShell::SetUp() {
-  WaylandTestBase::SetUp();
-}
-
-void WaylandTestSimpleWithAuraShell ::TearDown() {
-  WaylandTestBase::TearDown();
-}
 
 }  // namespace ui

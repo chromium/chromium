@@ -37,7 +37,6 @@
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
 #include "ui/ozone/platform/wayland/test/test_wp_linux_drm_syncobj.h"
 #include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
-#include "ui/ozone/platform/wayland/test/test_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_stylus.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
@@ -59,7 +58,6 @@ struct DisplayDeleter {
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class ShouldUseLinuxDrmSyncobjProtocol { kNone, kUse };
-enum class EnableAuraShellProtocol { kEnabled, kDisabled };
 // Text input protocol type.
 enum class ZWPTextInputWrapperType { kV1, kV3 };
 
@@ -75,8 +73,6 @@ struct ServerConfig {
       ShouldUseExplicitSynchronizationProtocol::kUse;
   ShouldUseLinuxDrmSyncobjProtocol use_linux_drm_syncobj =
       ShouldUseLinuxDrmSyncobjProtocol::kNone;
-  EnableAuraShellProtocol enable_aura_shell =
-      EnableAuraShellProtocol::kDisabled;
   bool supports_viewporter_surface_scaling = false;
 };
 
@@ -148,7 +144,6 @@ class TestWaylandServerThread : public base::Thread,
   TestDataDeviceManager* data_device_manager() { return &data_device_manager_; }
   TestSeat* seat() { return &seat_; }
   MockXdgShell* xdg_shell() { return &xdg_shell_; }
-  TestZAuraShell* zaura_shell() { return &zaura_shell_; }
   TestOutput* output() { return &output_; }
   TestZcrTextInputExtensionV1* text_input_extension_v1() {
     return &zcr_text_input_extension_v1_;
@@ -244,7 +239,6 @@ class TestWaylandServerThread : public base::Thread,
   TestSeat seat_;
   TestZXdgOutputManager zxdg_output_manager_;
   MockXdgShell xdg_shell_;
-  TestZAuraShell zaura_shell_;
   ::testing::NiceMock<MockZcrColorManagerV1> zcr_color_manager_v1_;
   TestZcrStylus zcr_stylus_;
   TestZcrTextInputExtensionV1 zcr_text_input_extension_v1_;

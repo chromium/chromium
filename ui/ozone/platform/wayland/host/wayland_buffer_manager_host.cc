@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
-#include "base/version.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/dmabuf_uapi.h"
@@ -36,7 +35,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
 
@@ -120,10 +118,6 @@ void WaylandBufferManagerHost::OnCommitOverlayError(
     const std::string& message) {
   error_message_ = message;
   TerminateGpuProcess();
-}
-
-base::Version WaylandBufferManagerHost::GetServerVersion() const {
-  return connection_->GetServerVersion();
 }
 
 wl::BufferFormatsWithModifiersMap

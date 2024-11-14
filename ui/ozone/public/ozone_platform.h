@@ -199,10 +199,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // wayland protocol when no quad is out of window.
     bool supports_clip_rect = false;
 
-    // Wayland only: determine whether toplevel surfaces can be activated and
-    // deactivated.
-    bool supports_activation = false;
-
     // Wayland only: determines whether non axis-aligned 2d transforms can be
     // delegated via the wayland protocol.
     bool supports_affine_transform = false;

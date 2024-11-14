@@ -56,7 +56,6 @@ class WaylandCursorBufferListener;
 class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
-class WaylandZAuraShell;
 class WaylandZcrColorManager;
 class WaylandZcrCursorShapes;
 class WaylandZcrTouchpadHaptics;
@@ -83,7 +82,7 @@ class OverlayPrioritizer;
 //
 // See also tools/metrics/histograms/README.md#enum-histograms
 enum class UMALinuxWaylandShell {
-  kZauraShell = 0,
+  // kZauraShell = 0, // Removed.
   kGtkShell1 = 1,
   kOrgKdePlasmaShell = 2,
   kXdgWmBase = 3,
@@ -113,10 +112,6 @@ class WaylandConnection {
   // Sets a callback that that shutdowns the browser in case of unrecoverable
   // error. Called by WaylandEventWatcher.
   void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
-
-  // Returns the dotted number version of the Wayland server. For Lacros, this
-  // is the Ash Chrome version.
-  base::Version GetServerVersion() const;
 
   wl_compositor* compositor() const { return compositor_.get(); }
   // The server version of the compositor interface (might be higher than the
@@ -208,8 +203,6 @@ class WaylandConnection {
   WaylandBufferManagerHost* buffer_manager_host() const {
     return buffer_manager_host_.get();
   }
-
-  WaylandZAuraShell* zaura_shell() const { return zaura_shell_.get(); }
 
   WaylandZcrColorManager* zcr_color_manager() const {
     return zcr_color_manager_.get();
@@ -381,7 +374,6 @@ class WaylandConnection {
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
   friend class WaylandSeat;
-  friend class WaylandZAuraShell;
   friend class WaylandZcrTouchpadHaptics;
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
@@ -410,10 +402,6 @@ class WaylandConnection {
 
   // Returns true if the required wl_globals are announced by the server.
   bool WlGlobalsReady() const;
-
-  // Based on the bound globals, returns true if required information are
-  // announced by the server. E.g. server version from zaura-shell.
-  bool WlObjectsReady() const;
 
   // Updates InputDevice structures in Chrome. Currently, Wayland doesn't
   // support such, so the devices are derived from the connected interfaces.
@@ -510,7 +498,6 @@ class WaylandConnection {
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
   std::unique_ptr<WaylandOutputManager> output_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
-  std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
   std::unique_ptr<WaylandCursorShape> cursor_shape_;
   std::unique_ptr<WaylandZcrCursorShapes> zcr_cursor_shapes_;

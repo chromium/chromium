@@ -210,15 +210,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   // Tells if the current drag motion events should be processed.
   //
-  // The processing of drag motion events should be suspended when:
-  //
-  // 1/ Buggy compositors send wl_pointer::motion events, for example, while
-  // a DND session is still in progress, which leads to issues in window
-  // dragging sessions.
-  //
-  // 2/ `Screen coordinates` feature is enabled, given that in this mode
-  // the surface location during a window drag operation is updated
-  // via `zaura_shell::origin_change` request.
+  // The processing of drag motion events should be suspended for buggy
+  // compositors send wl_pointer::motion events, for example, while a DND
+  // session is still in progress, which leads to issues in window dragging
+  // sessions.
   //
   // This flag is used to make window drag controller resistant to such
   // scenarios.

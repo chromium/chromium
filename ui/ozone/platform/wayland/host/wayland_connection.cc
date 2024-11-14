@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
-#include <aura-shell-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
@@ -57,7 +56,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
@@ -180,8 +178,6 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &WaylandSeat::Instantiate);
   RegisterGlobalObjectFactory(WaylandShm::kInterfaceName,
                               &WaylandShm::Instantiate);
-  RegisterGlobalObjectFactory(WaylandZAuraShell::kInterfaceName,
-                              &WaylandZAuraShell::Instantiate);
   RegisterGlobalObjectFactory(WaylandCursorShape::kInterfaceName,
                               &WaylandCursorShape::Instantiate);
   RegisterGlobalObjectFactory(WaylandZcrCursorShapes::kInterfaceName,
@@ -262,13 +258,6 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
     RoundTripQueue();
   }
 
-  // Some wl_globals emits important information when bound.
-  // E.g. server version.
-  // Synchronously wait for it as well.
-  while (!WlObjectsReady()) {
-    RoundTripQueue();
-  }
-
   buffer_manager_host_ = std::make_unique<WaylandBufferManagerHost>(this);
 
   if (!compositor_) {
@@ -302,12 +291,6 @@ void WaylandConnection::RoundTripQueue() {
 
 void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
   event_source()->SetShutdownCb(std::move(shutdown_cb));
-}
-
-base::Version WaylandConnection::GetServerVersion() const {
-  return zaura_shell()
-             ? zaura_shell()->server_version().value_or(base::Version{})
-             : base::Version{};
 }
 
 void WaylandConnection::SetPlatformCursor(wl_cursor* cursor_data,
@@ -364,20 +347,6 @@ bool WaylandConnection::WlGlobalsReady() const {
   // Output manager must be able to instantiate a valid WaylandScreen when
   // requested by the upper layers.
   ready &= output_manager_ && output_manager_->IsOutputReady();
-
-  return ready;
-}
-
-bool WaylandConnection::WlObjectsReady() const {
-  DCHECK(WlGlobalsReady());
-
-  bool ready = true;
-
-  // Lacros requires server version synchronously for gpu init.
-  if (zaura_shell_ && zaura_shell_get_version(zaura_shell_->wl_object()) >=
-                          ZAURA_SHELL_COMPOSITOR_VERSION_SINCE_VERSION) {
-    ready &= zaura_shell_->server_version().has_value();
-  }
 
   return ready;
 }

@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 
-#include <aura-shell-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 

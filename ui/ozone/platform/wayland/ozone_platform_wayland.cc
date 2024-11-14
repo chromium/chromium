@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/ozone_platform_wayland.h"
 
-#include <aura-shell-client-protocol.h>
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -54,7 +52,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/wayland_utils.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -419,10 +416,6 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.needs_background_image =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();
-      properties.supports_activation =
-          connection_->zaura_shell() &&
-          zaura_shell_get_version(connection_->zaura_shell()->wl_object()) >=
-              ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION;
       properties.supports_subwindows_as_accelerated_widgets =
           connection_->ShouldUseOverlayDelegation()
               ? connection_->surface_augmenter() &&

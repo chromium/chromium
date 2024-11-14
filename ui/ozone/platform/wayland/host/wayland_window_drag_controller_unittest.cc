@@ -1865,18 +1865,9 @@ TEST_P(WaylandWindowDragControllerTest, OutgoingSessionWithoutDndFinished) {
   EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Lacros requires aura shell.
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{}));
-#else
-// Linux shouldn't use aura shell.
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithAuraShell,
-    WaylandWindowDragControllerTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
-#endif
 
 }  // namespace ui

@@ -1534,7 +1534,6 @@ TEST_P(PerSurfaceScaleWaylandDataDragControllerTest,
   SendDndLeave();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandDataDragControllerTest,
                          Values(wl::ServerConfig{}));
@@ -1542,14 +1541,5 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          PerSurfaceScaleWaylandDataDragControllerTest,
                          Values(wl::ServerConfig{
                              .supports_viewporter_surface_scaling = true}));
-#else
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithAuraShell,
-    WaylandDataDragControllerTest,
-    Values(wl::ServerConfig{.enable_aura_shell =
-                                wl::EnableAuraShellProtocol::kEnabled},
-           wl::ServerConfig{
-               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
-#endif
 
 }  // namespace ui
