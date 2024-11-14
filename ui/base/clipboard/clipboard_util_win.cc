@@ -244,6 +244,10 @@ WriteAllFileContentsToTempFiles(
   for (size_t i = 0; i < display_names.size(); i++) {
     base::FilePath temp_path = WriteFileContentsToTempFile(
         display_names[i], memory_backed_contents[i]);
+    // Ignore file if write failed.
+    if (temp_path.empty()) {
+      continue;
+    }
 
     filepaths_and_names.push_back({temp_path, display_names[i]});
   }
