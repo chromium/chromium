@@ -38,6 +38,24 @@ const web_package::SignedWebBundleId kWebBundleId1 =
 #endif  // BUILDFLAG(IS_CHROMEOS)
 namespace web_app {
 
+namespace {
+bool CheckAppSizesNotNull(WebAppProvider& provider,
+                          const webapps::AppId& app_id) {
+  // We need to wait for the quota manager to receive storage data from the
+  // renderer process. As updates to quota manager usage occurs on a different
+  // sequence to this process, it requires multiple events. Due to all of this,
+  // we are resorting to polling for non-zero values.
+  while (true) {
+    base::test::TestFuture<std::optional<ComputedAppSize>> app_size;
+    provider.scheduler().ComputeAppSize(app_id, app_size.GetCallback());
+    if (app_size.Get().value().app_size_in_bytes > 0u &&
+        app_size.Get().value().data_size_in_bytes > 0u) {
+      return true;
+    }
+  }
+}
+}  // namespace
+
 class ComputeAppSizeCommandForWebAppBrowserTest : public WebAppBrowserTestBase {
 };
 
@@ -59,18 +77,7 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForWebAppBrowserTest,
       EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), script)
           .ExtractBool());
 
-  // We need to wait for the quota manager to receive storage data from the
-  // renderer process. As updates to quota manager usage occurs on a different
-  // sequence to this procress, it requires multiple events. Due to all of this,
-  // we are resorting to polling for non-zero values.
-  while (true) {
-    base::test::TestFuture<std::optional<ComputedAppSize>> app_size;
-    provider().scheduler().ComputeAppSize(app_id, app_size.GetCallback());
-    if (app_size.Get().value().app_size_in_bytes != 0u &&
-        app_size.Get().value().data_size_in_bytes != 0u) {
-      break;
-    }
-  }
+  ASSERT_TRUE(CheckAppSizesNotNull(provider(), app_id));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -120,17 +127,7 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
   EXPECT_TRUE(EvalJs(browser->tab_strip_model()->GetActiveWebContents(), script)
                   .ExtractBool());
 
-  // We need to wait for the quota manager to receive storage data from the
-  // renderer process. As updates to quota manager usage occurs on a different
-  // sequence to this procress, it requires multiple events. Due to all of this,
-  // we are resorting to polling for non-zero values.
-  while (true) {
-    base::test::TestFuture<std::optional<ComputedAppSize>> app_size;
-    provider().scheduler().ComputeAppSize(app_id, app_size.GetCallback());
-    if (app_size.Get().value().data_size_in_bytes != 0u) {
-      break;
-    }
-  }
+  ASSERT_TRUE(CheckAppSizesNotNull(provider(), app_id));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

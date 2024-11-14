@@ -29,8 +29,8 @@ struct GetIsolatedWebAppSizeJobResult {
 
 class GetIsolatedWebAppSizeJob {
  public:
-  using ResultCallback =
-      base::OnceCallback<void(std::optional<GetIsolatedWebAppSizeJobResult>)>;
+  using ResultCallback = base::OnceCallback<void(
+      std::optional<GetIsolatedWebAppSizeJobResult> result)>;
 
   GetIsolatedWebAppSizeJob(Profile* profile,
                            const webapps::AppId& app_id,
@@ -42,7 +42,9 @@ class GetIsolatedWebAppSizeJob {
 
  private:
   void StoragePartitionSizeFetched(int64_t size);
-  void MaybeCompleteCommand();
+  void MaybeComputeBundleSize();
+  void OnBundleSizeComputed(std::optional<int64_t> bundle_size);
+  void CompleteJobWithError();
 
   const webapps::AppId app_id_;
   url::Origin iwa_origin_;
