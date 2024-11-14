@@ -271,7 +271,7 @@ ProfileIOS* ProfileManagerIOSImpl::GetProfileWithName(std::string_view name) {
   return nullptr;
 }
 
-std::vector<ProfileIOS*> ProfileManagerIOSImpl::GetLoadedProfiles() {
+std::vector<ProfileIOS*> ProfileManagerIOSImpl::GetLoadedProfiles() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ProfileIOS*> loaded_profiles;
   for (const auto& [name, profile_info] : profiles_map_) {
@@ -283,12 +283,31 @@ std::vector<ProfileIOS*> ProfileManagerIOSImpl::GetLoadedProfiles() {
   return loaded_profiles;
 }
 
+bool ProfileManagerIOSImpl::HasProfileWithName(std::string_view name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return profile_attributes_storage_.HasProfileWithName(name);
+}
+
+bool ProfileManagerIOSImpl::CanCreateProfileWithName(
+    std::string_view name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Cannot create a profile with the same name as a legacy profile.
+  if (local_state_->GetDict(prefs::kLegacyProfileMap).Find(name)) {
+    return false;
+  }
+
+  // TODO(crbug.com/335630301): check whether there is a Profile with that name
+  // whose deletion is pending, and return false if this is the case (to avoid
+  // recovering its state).
+  return true;
+}
+
 bool ProfileManagerIOSImpl::LoadProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!ProfileWithNameExists(name)) {
+  if (!HasProfileWithName(name)) {
     // Must not create the ProfileIOS if it does not already exist, so fail.
     if (!initialized_callback.is_null()) {
       std::move(initialized_callback).Run(nullptr);
@@ -312,7 +331,7 @@ bool ProfileManagerIOSImpl::CreateProfileAsync(
 
 ProfileIOS* ProfileManagerIOSImpl::LoadProfile(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!ProfileWithNameExists(name)) {
+  if (!HasProfileWithName(name)) {
     // Must not create the ProfileIOS if it does not already exist, so fail.
     return nullptr;
   }
@@ -387,7 +406,7 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
       // deleted.
       const std::string& name = profile->GetProfileName();
       profile_attributes_storage_.RemoveProfile(name);
-      DCHECK(!ProfileWithNameExists(name));
+      DCHECK(!HasProfileWithName(name));
     }
 
     profile = nullptr;
@@ -408,24 +427,6 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   }
 }
 
-bool ProfileManagerIOSImpl::ProfileWithNameExists(std::string_view name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return profile_attributes_storage_.HasProfileWithName(name);
-}
-
-bool ProfileManagerIOSImpl::CanCreateProfileWithName(std::string_view name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Cannot create a profile with the same name as a legacy profile.
-  if (local_state_->GetDict(prefs::kLegacyProfileMap).Find(name)) {
-    return false;
-  }
-
-  // TODO(crbug.com/335630301): check whether there is a Profile with that name
-  // whose deletion is pending, and return false if this is the case (to avoid
-  // recovering its state).
-  return true;
-}
-
 bool ProfileManagerIOSImpl::CreateProfileWithMode(
     std::string_view name,
     CreationMode creation_mode,
@@ -433,7 +434,7 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool inserted = false;
-  bool existing = ProfileWithNameExists(name);
+  bool existing = HasProfileWithName(name);
 
   auto iter = profiles_map_.find(name);
   if (iter == profiles_map_.end()) {
@@ -446,7 +447,7 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
 
     if (!existing) {
       profile_attributes_storage_.AddProfile(name);
-      DCHECK(ProfileWithNameExists(name));
+      DCHECK(HasProfileWithName(name));
     }
 
     std::tie(iter, inserted) = profiles_map_.insert(std::make_pair(

@@ -132,12 +132,20 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
     return nullptr;
   }
 
-  std::vector<ProfileIOS*> GetLoadedProfiles() override {
+  std::vector<ProfileIOS*> GetLoadedProfiles() const override {
     std::vector<ProfileIOS*> profiles;
     for (const auto& [name, profile] : profiles_map_) {
       profiles.push_back(profile.get());
     }
     return profiles;
+  }
+
+  bool HasProfileWithName(std::string_view name) const override {
+    return profiles_map_.find(name) != profiles_map_.end();
+  }
+
+  bool CanCreateProfileWithName(std::string_view name) const override {
+    return true;
   }
 
   bool LoadProfileAsync(std::string_view name,

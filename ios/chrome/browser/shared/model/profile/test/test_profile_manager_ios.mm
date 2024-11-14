@@ -65,12 +65,21 @@ ProfileIOS* TestProfileManagerIOS::GetProfileWithName(std::string_view name) {
   return iterator != profiles_map_.end() ? iterator->second.get() : nullptr;
 }
 
-std::vector<ProfileIOS*> TestProfileManagerIOS::GetLoadedProfiles() {
+std::vector<ProfileIOS*> TestProfileManagerIOS::GetLoadedProfiles() const {
   std::vector<ProfileIOS*> loaded_profiles;
   for (auto& [name, profile] : profiles_map_) {
     loaded_profiles.push_back(profile.get());
   }
   return loaded_profiles;
+}
+
+bool TestProfileManagerIOS::HasProfileWithName(std::string_view name) const {
+  return profiles_map_.find(name) != profiles_map_.end();
+}
+
+bool TestProfileManagerIOS::CanCreateProfileWithName(
+    std::string_view name) const {
+  return true;
 }
 
 bool TestProfileManagerIOS::LoadProfileAsync(

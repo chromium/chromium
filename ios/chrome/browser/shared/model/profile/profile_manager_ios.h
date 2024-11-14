@@ -39,7 +39,13 @@ class ProfileManagerIOS {
   virtual ProfileIOS* GetProfileWithName(std::string_view name) = 0;
 
   // Returns the list of loaded Profiles. The order is arbitrary.
-  virtual std::vector<ProfileIOS*> GetLoadedProfiles() = 0;
+  virtual std::vector<ProfileIOS*> GetLoadedProfiles() const = 0;
+
+  // Returns whether a profile with `name` exists (it may not be loaded yet).
+  virtual bool HasProfileWithName(std::string_view name) const = 0;
+
+  // Returns whether a profile with `name` can be created.
+  virtual bool CanCreateProfileWithName(std::string_view name) const = 0;
 
   // Asynchronously loads a Profile known by `name` if it exists. The
   // `created_callback` will be called with the Profile when it has been created
