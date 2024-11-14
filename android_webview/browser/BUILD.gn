@@ -10,7 +10,6 @@ java_cpp_enum("browser_enums") {
   sources = [
     "aw_apk_type.h",
     "aw_backforward_cache_not_restored_reason.h",
-    "aw_enterprise_helper.h",
     "aw_renderer_priority.h",
     "aw_settings.h",
     "lifecycle/webview_app_state_observer.h",
@@ -79,8 +78,6 @@ source_set("browser") {
     "aw_download_manager_delegate.h",
     "aw_enterprise_authentication_app_link_manager.cc",
     "aw_enterprise_authentication_app_link_manager.h",
-    "aw_enterprise_helper.cc",
-    "aw_enterprise_helper.h",
     "aw_feature_entries.cc",
     "aw_feature_entries.h",
     "aw_feature_list_creator.cc",

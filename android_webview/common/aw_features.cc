@@ -198,11 +198,6 @@ BASE_FEATURE(kWebViewEnableCrash,
              "WebViewEnableCrash",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the built-in DNS resolver (Async DNS) on WebView.
-BASE_FEATURE(kWebViewAsyncDns,
-             "WebViewAsyncDns",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Preloads expensive classes during WebView startup.
 BASE_FEATURE(kWebViewPreloadClasses,
              "WebViewPreloadClasses",
