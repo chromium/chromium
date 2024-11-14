@@ -986,6 +986,12 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
       "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
       "Eager",
       false, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served.Eager",
+      base::Milliseconds(0), 1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed.Eager",
+      0);
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Eager", 0);
   histogram_tester.ExpectTotalCount(
@@ -1000,6 +1006,13 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
       "Moderate",
       false, 0);
   histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served.Moderate",
+      base::Milliseconds(10), 1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed."
+      "Moderate",
+      0);
+  histogram_tester.ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Moderate",
       base::Milliseconds(10), 1);
   histogram_tester.ExpectTotalCount(
@@ -1013,6 +1026,14 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
       "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
       "Conservative",
       false, 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served."
+      "Conservative",
+      0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed."
+      "Conservative",
+      base::Milliseconds(20), 1);
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Conservative",
       0);

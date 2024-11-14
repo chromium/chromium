@@ -234,7 +234,7 @@ void RecordPrefetchMatchingBlockedNavigationWithPrefetchHistogram(
 
 void RecordBlockUntilHeadDurationHistogram(
     const PrefetchType& prefetch_type,
-    const base::TimeDelta& block_until_head_duration,
+    const base::TimeDelta& blocked_duration,
     bool served) {
   CHECK(!UseNewWaitLoop());
 
@@ -245,27 +245,36 @@ void RecordBlockUntilHeadDurationHistogram(
             served ? "Served" : "NotServed",
             GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
                 .c_str()),
-        block_until_head_duration);
+        blocked_duration);
   } else {
     // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
     // embedder triggers.
   }
 }
 
-void RecordBlockUntilHeadDuration2Histogram(
+void MaybeRecordBlockUntilHeadDuration2Histogram(
     const PrefetchType& prefetch_type,
-    const base::TimeDelta block_until_head_duration,
+    const std::optional<base::TimeDelta>& blocked_duration,
     bool served) {
   CHECK(UseNewWaitLoop());
 
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     base::UmaHistogramTimes(
         base::StringPrintf(
-            "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.%s.%s",
+            "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.%s.%s",
             served ? "Served" : "NotServed",
             GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
                 .c_str()),
-        block_until_head_duration);
+        blocked_duration.value_or(base::Seconds(0)));
+    if (blocked_duration.has_value()) {
+      base::UmaHistogramTimes(
+          base::StringPrintf(
+              "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.%s.%s",
+              served ? "Served" : "NotServed",
+              GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
+                  .c_str()),
+          blocked_duration.value());
+    }
   } else {
     // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
     // embedder triggers.
@@ -2084,10 +2093,8 @@ void PrefetchContainer::OnUnregisterCandidate(
   RecordPrefetchMatchingBlockedNavigationWithPrefetchHistogram(
       prefetch_type_, blocked_duration.has_value());
 
-  if (blocked_duration.has_value()) {
-    RecordBlockUntilHeadDuration2Histogram(prefetch_type_,
-                                           blocked_duration.value(), is_served);
-  }
+  MaybeRecordBlockUntilHeadDuration2Histogram(prefetch_type_, blocked_duration,
+                                              is_served);
 
   // See the comment in `PrefetchContainer::OnReturnPrefetchToServe()`.
   if (auto attempt = preloading_attempt()) {

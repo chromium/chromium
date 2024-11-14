@@ -4515,6 +4515,16 @@ TEST_P(
   if (UseNewWaitLoop()) {
     histogram_tester.ExpectUniqueTimeSample(
         base::StringPrintf(
+            "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served.%s",
+            histogram_suffix.c_str()),
+        base::Milliseconds(kHeaderLatency), 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StringPrintf("PrefetchProxy.AfterClick."
+                           "BlockUntilHeadDuration2NoBias.NotServed.%s",
+                           histogram_suffix.c_str()),
+        base::Milliseconds(kHeaderLatency), 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StringPrintf(
             "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.%s",
             histogram_suffix.c_str()),
         base::Milliseconds(kHeaderLatency), 1);
