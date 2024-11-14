@@ -230,22 +230,9 @@ void HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
       // In case of double click or triple click, selection will be there,
       // so do not focus the control element.
       if (!is_label_text_selected) {
-        auto* select = DynamicTo<HTMLSelectElement>(element);
-        if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && select &&
-            select->IsAppearanceBaseButton() && select->SlottedButton()) {
-          // TODO(crbug.com/1511354): This is a workaround due to
-          // GetFocusableArea/GetFocusDelegate not supporting slotted elements.
-          // Once it is fixed, this can be removed.
-          // https://github.com/whatwg/html/issues/9245#issuecomment-2098998865
-          select->SlottedButton()->Focus(
-              FocusParams(SelectionBehaviorOnFocus::kRestore,
-                          mojom::blink::FocusType::kMouse, nullptr,
-                          FocusOptions::Create()));
-        } else {
-          element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                                     mojom::blink::FocusType::kMouse, nullptr,
-                                     FocusOptions::Create()));
-        }
+        element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                                   mojom::blink::FocusType::kMouse, nullptr,
+                                   FocusOptions::Create()));
       }
     }
 

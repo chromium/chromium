@@ -486,7 +486,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRightPage:
     case kPseudoRoot:
     case kPseudoScope:
-    case kPseudoSelectHasChildButton:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoSlotted:
@@ -545,8 +544,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
     {"-internal-popover-in-top-layer", CSSSelector::kPseudoPopoverInTopLayer},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
-    {"-internal-select-has-child-button",
-     CSSSelector::kPseudoSelectHasChildButton},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
     {"-internal-shadow-host-has-non-auto-appearance",
@@ -785,8 +782,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoSelectHasChildButton ||
-       match->type == CSSSelector::kPseudoPicker) &&
+  if (match->type == CSSSelector::kPseudoPicker &&
       !RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -924,7 +920,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoHostHasNonAutoAppearance:
     case kPseudoIsHtml:
     case kPseudoListBox:
-    case kPseudoSelectHasChildButton:
     case kPseudoMultiSelectFocus:
     case kPseudoSpatialNavigationFocus:
     case kPseudoVideoPersistent:
@@ -1486,7 +1481,6 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoHasDatalist:
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
-    case CSSSelector::kPseudoSelectHasChildButton:
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
       // TODO(https://crbug.com/1346456): Many pseudos should probably be
       // added to this list.  The default: case below should also be removed
@@ -1807,7 +1801,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHostContext:
     case kPseudoHostHasNonAutoAppearance:
     case kPseudoScope:
-    case kPseudoSelectHasChildButton:
       return false;
 
     case kPseudoUnparsed:

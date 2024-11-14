@@ -54,6 +54,9 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   AtomicString command() const;
   CommandEventType GetCommandEventType() const;
 
+  FocusableState IsFocusableState(
+      UpdateBehavior update_behavior) const override;
+
  private:
   // The type attribute of HTMLButtonElement is an enumerated attribute:
   // https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type

@@ -150,13 +150,9 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
       // whether the popover is opened or closed.
       select->GetShadowRoot()->SetNeedsAssignmentRecalc();
 
-      // Focus the select's invoker button when the popover is hidden.
+      // Focus the select when the popover is hidden.
       if (focus_behavior == HidePopoverFocusBehavior::kFocusPreviousElement) {
-        Element* element_to_focus = select->SlottedButton();
-        if (!element_to_focus) {
-          element_to_focus = select;
-        }
-        element_to_focus->Focus(FocusParams(FocusTrigger::kScript));
+        select->Focus(FocusParams(FocusTrigger::kScript));
       }
 
       if (AXObjectCache* cache =
@@ -309,10 +305,12 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
   // don't want to do anything about those events, so the following code will
   // return early in the case that the events are targeting nodes in the picker.
   if (IsAppearanceBasePicker() && event.HasEventPath()) {
-    bool target_is_button = false;
-    if (auto* button = SlottedButton()) {
-      // In this case, we should see SlottedButton in the event path. If it
-      // isn't there, then the target must have been in the picker.
+    bool target_is_button =
+        event.target() == select_ || event.target() == &InnerElement();
+    auto* button = SlottedButton();
+    if (!target_is_button && button) {
+      // If the author provided a button, then also check to see if the event
+      // target is something inside the author provided button.
       for (unsigned i = 0; i < event.GetEventPath().size(); i++) {
         Node& node = event.GetEventPath()[i].GetNode();
         if (node == select_) {
@@ -322,12 +320,6 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
           break;
         }
       }
-    } else {
-      // In this case the in-page part of the select should not have any child
-      // elements which could be the event target, so if the target isn't the
-      // select itself then the target must have been in the picker.
-      target_is_button =
-          event.target() == select_ || event.target() == &InnerElement();
     }
     if (!target_is_button) {
       return false;
@@ -924,11 +916,6 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
       // appearance:auto mode. We also call SetNeedsReattachLayoutTree every
       // time that the size and multiple attributes are changed.
       select_->SetNeedsReattachLayoutTree();
-
-      // In appearance:base-select mode, we want the child button to get focus
-      // instead of the <select> itself.
-      select_->GetShadowRoot()->SetDelegatesFocus(is_appearance_base_select &&
-                                                  SlottedButton());
     }
     if (is_appearance_base_select) {
       UseCounter::Count(select_->GetDocument(),

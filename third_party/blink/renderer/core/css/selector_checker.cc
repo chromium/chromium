@@ -2180,15 +2180,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoListBox:
       DCHECK(is_ua_rule_);
       return MatchesListBoxPseudoClass(element);
-    case CSSSelector::kPseudoSelectHasChildButton:
-      DCHECK(is_ua_rule_);
-      if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-        return false;
-      }
-      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
-        return select->SlottedButton();
-      }
-      return false;
     case CSSSelector::kPseudoMultiSelectFocus:
       DCHECK(is_ua_rule_);
       return MatchesMultiSelectFocusPseudoClass(element);

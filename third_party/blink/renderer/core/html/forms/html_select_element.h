@@ -273,7 +273,6 @@ class CORE_EXPORT HTMLSelectElement final
   void setSelectedContentElement(HTMLSelectedContentElement*);
 
   void DefaultEventHandler(Event&) override;
-  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
   void UpdateAllSelectedcontents();
 

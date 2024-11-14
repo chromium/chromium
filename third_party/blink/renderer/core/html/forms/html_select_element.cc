@@ -942,20 +942,13 @@ void HTMLSelectElement::OptionSelectionStateChanged(HTMLOptionElement* option,
 
 void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElementWithState::ChildrenChanged(change);
-  bool invalidate_button = false;
   if (change.type ==
       ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
     for (Node& node : NodeTraversal::ChildrenOf(*this)) {
       ElementInserted(node);
-      if (IsA<HTMLButtonElement>(node)) {
-        invalidate_button = true;
-      }
     }
   } else if (change.type == ChildrenChangeType::kElementInserted) {
     ElementInserted(*change.sibling_changed);
-    if (IsA<HTMLButtonElement>(change.sibling_changed)) {
-      invalidate_button = true;
-    }
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
       OptionRemoved(*option);
@@ -964,8 +957,6 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
       for (auto& child_option :
            Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
         OptionRemoved(child_option);
-    } else if (IsA<HTMLButtonElement>(change.sibling_changed)) {
-      invalidate_button = true;
     }
   } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
     for (Node* node : change.removed_nodes) {
@@ -975,17 +966,8 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
         for (auto& child_option :
              Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
           OptionRemoved(child_option);
-      } else if (IsA<HTMLButtonElement>(node)) {
-        invalidate_button = true;
       }
     }
-  }
-
-  if (invalidate_button &&
-      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    GetShadowRoot()->SetDelegatesFocus(IsAppearanceBaseButton() &&
-                                       SlottedButton());
-    PseudoStateChanged(CSSSelector::kPseudoSelectHasChildButton);
   }
 }
 
@@ -1872,17 +1854,6 @@ void HTMLSelectElement::SelectedContentElementRemoved(
     HTMLSelectedContentElement* selectedcontent) {
   descendant_selectedcontents_.erase(selectedcontent);
   selectedcontent->CloneContentsFromOptionElement(nullptr);
-}
-
-FocusableState HTMLSelectElement::SupportsFocus(
-    UpdateBehavior update_behavior) const {
-  if (IsAppearanceBaseButton() && SlottedButton()) {
-    // In appearance:base-select mode, the child button gets focus instead of
-    // the select via delegatesfocus. We must return false here in order to make
-    // the delegatesfocus focusing code find the child button.
-    return FocusableState::kNotFocusable;
-  }
-  return HTMLFormControlElementWithState::SupportsFocus(update_behavior);
 }
 
 HTMLSelectElement::SelectAutofillPreviewElement*

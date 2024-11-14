@@ -403,4 +403,15 @@ HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
   return nullptr;
 }
 
+FocusableState HTMLButtonElement::IsFocusableState(
+    UpdateBehavior update_behavior) const {
+  if (OwnerSelect()) {
+    // The first child button of a select, which replaces the in-page rendering
+    // of the select's button, should not be focusable because the parent select
+    // is already focusable and handles all interaction.
+    return FocusableState::kNotFocusable;
+  }
+  return HTMLFormControlElement::IsFocusableState(update_behavior);
+}
+
 }  // namespace blink
