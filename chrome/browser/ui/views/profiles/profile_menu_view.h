@@ -124,7 +124,18 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void BuildAutofillButtons();
   void BuildSyncInfo();
 
-  void BuildAvailableProfiles();
+  // Gets the profiles to be displayed in the "Other profiles" section. Does not
+  // include the current profile.
+  // When `switches::IsImprovedSigninUIOnDesktopEnabled()` returns true, the
+  // guest profile is never shown in this section. It is shown in the profile
+  // management section instead.
+  void GetProfilesForOtherProfilesSection(
+      std::vector<ProfileAttributesEntry*>& available_profiles,
+      bool& show_guest_in_other_profiles_section) const;
+  void BuildOtherProfilesSection(
+      const std::vector<ProfileAttributesEntry*>& available_profiles,
+      bool show_guest_in_other_profiles_section);
+
   void BuildProfileManagementFeatureButtons();
 
   std::u16string menu_title_;

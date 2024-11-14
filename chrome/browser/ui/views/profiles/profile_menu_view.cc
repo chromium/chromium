@@ -26,6 +26,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -200,11 +201,22 @@ void ProfileMenuView::BuildMenu() {
   }
 
   if (!(profile->IsGuestSession())) {
-    SetProfileManagementHeading(l10n_util::GetStringUTF16(
-        switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-            ? IDS_PROFILE_MENU_PROFILES_LIST_TITLE
-            : IDS_PROFILES_LIST_PROFILES_TITLE));
-    BuildAvailableProfiles();
+    std::vector<ProfileAttributesEntry*> available_profiles;
+    bool show_guest_in_other_profiles_section = false;
+    GetProfilesForOtherProfilesSection(available_profiles,
+                                       show_guest_in_other_profiles_section);
+
+    if (!available_profiles.empty() || show_guest_in_other_profiles_section ||
+        !switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      SetProfileManagementHeading(l10n_util::GetStringUTF16(
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? IDS_PROFILE_MENU_PROFILES_LIST_TITLE
+              : IDS_PROFILES_LIST_PROFILES_TITLE));
+    }
+    BuildOtherProfilesSection(available_profiles,
+                              show_guest_in_other_profiles_section);
+    base::UmaHistogramBoolean("ProfileChooser.HasProfilesShown",
+                              !available_profiles.empty());
 
     // Users should not be able to manage profiles from WebApps.
     if (!web_app::AppBrowserController::IsWebApp(browser())) {
@@ -1117,15 +1129,18 @@ void ProfileMenuView::BuildFeatureButtons() {
   MaybeBuildSignoutButton();
 }
 
-void ProfileMenuView::BuildAvailableProfiles() {
+void ProfileMenuView::GetProfilesForOtherProfilesSection(
+    std::vector<ProfileAttributesEntry*>& available_profiles,
+    bool& show_guest_in_other_profiles_section) const {
 #if BUILDFLAG(IS_MAC)
   const bool is_regular_web_app =
       web_app::AppBrowserController::IsWebApp(browser()) &&
       (browser()->app_controller()->app_id() != ash::kPasswordManagerAppId);
-  std::set<base::FilePath> available_profiles;
+  std::set<base::FilePath> available_profile_paths;
   if (is_regular_web_app) {
-    available_profiles = AppShimRegistry::Get()->GetInstalledProfilesForApp(
-        browser()->app_controller()->app_id());
+    available_profile_paths =
+        AppShimRegistry::Get()->GetInstalledProfilesForApp(
+            browser()->app_controller()->app_id());
   }
 #endif
 
@@ -1143,11 +1158,25 @@ void ProfileMenuView::BuildAvailableProfiles() {
 
 #if BUILDFLAG(IS_MAC)
     if (is_regular_web_app &&
-        !available_profiles.contains(profile_entry->GetPath())) {
+        !available_profile_paths.contains(profile_entry->GetPath())) {
       continue;
     }
 #endif
 
+    available_profiles.push_back(profile_entry);
+  }
+
+  show_guest_in_other_profiles_section =
+      !browser()->profile()->IsGuestSession() &&
+      profiles::IsGuestModeEnabled(*browser()->profile()) &&
+      !web_app::AppBrowserController::IsWebApp(browser()) &&
+      !switches::IsImprovedSigninUIOnDesktopEnabled();
+}
+
+void ProfileMenuView::BuildOtherProfilesSection(
+    const std::vector<ProfileAttributesEntry*>& available_profiles,
+    bool show_guest_in_other_profiles_section) {
+  for (ProfileAttributesEntry* profile_entry : available_profiles) {
     AddAvailableProfile(
         ui::ImageModel::FromImage(profile_entry->GetAvatarIcon(
             profiles::kMenuAvatarIconSize, /*use_high_res_file=*/true,
@@ -1159,12 +1188,8 @@ void ProfileMenuView::BuildAvailableProfiles() {
         base::BindRepeating(&ProfileMenuView::OnOtherProfileSelected,
                             base::Unretained(this), profile_entry->GetPath()));
   }
-  UMA_HISTOGRAM_BOOLEAN("ProfileChooser.HasProfilesShown",
-                        profile_entries.size() > 1);
 
-  if (!browser()->profile()->IsGuestSession() &&
-      profiles::IsGuestModeEnabled(*browser()->profile()) &&
-      !web_app::AppBrowserController::IsWebApp(browser())) {
+  if (show_guest_in_other_profiles_section) {
     AddAvailableProfile(
         profiles::GetGuestAvatar(),
         l10n_util::GetStringUTF16(
@@ -1186,6 +1211,16 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
           kAccountAddChromeRefreshIcon,
           l10n_util::GetStringUTF16(IDS_PROFILE_MENU_ADD_NEW_PROFILE),
           base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
+                              base::Unretained(this)));
+    }
+
+    if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
+        profiles::IsGuestModeEnabled(*browser()->profile()) &&
+        !web_app::AppBrowserController::IsWebApp(browser())) {
+      AddProfileManagementFeatureButton(
+          kAccountBoxIcon,
+          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_OPEN_GUEST_PROFILE),
+          base::BindRepeating(&ProfileMenuView::OnGuestProfileButtonClicked,
                               base::Unretained(this)));
     }
 

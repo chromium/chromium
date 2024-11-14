@@ -13,6 +13,7 @@ aggregate_vector_icons("chrome_vector_icons") {
   sources = [
     # go/keep-sorted start
     "account_add_chrome_refresh.icon",
+    "account_box.icon",
     "account_child_circle.icon",
     "account_circle.icon",
     "account_circle_chrome_refresh.icon",
