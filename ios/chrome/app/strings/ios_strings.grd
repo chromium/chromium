@@ -4970,7 +4970,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Can't verify your identity. Password not copied.
       </message>
       <message name="IDS_IOS_SETTINGS_PRIVACY_TITLE" desc="Title for the Privacy and Security preferences.">
-        Privacy and Security
+        Privacy and security
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_ISSUES_FOUND_TIME" desc="Footer for the safety check section telling the user when issues were found.">
         Issues found <ph name="TIME">$1<ex>10 minutes ago</ex></ph>.

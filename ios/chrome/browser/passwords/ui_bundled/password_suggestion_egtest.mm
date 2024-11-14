@@ -241,7 +241,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   // Re-enable proactive password generation bottom sheet by using the
   // suggested password from the keyboard accessory.
   id<GREYMatcher> suggest_password_chip =
-      grey_accessibilityLabel(@"Suggest Strong Password");
+      grey_accessibilityLabel(@"Suggest strong password");
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:suggest_password_chip];
 
@@ -343,7 +343,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
   [ChromeEarlGrey waitForKeyboardToAppear];
   id<GREYMatcher> suggest_password_chip =
-      grey_accessibilityLabel(@"Suggest Strong Password");
+      grey_accessibilityLabel(@"Suggest strong password");
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:suggest_password_chip];
 }
 

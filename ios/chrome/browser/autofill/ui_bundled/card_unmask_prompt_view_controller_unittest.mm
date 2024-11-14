@@ -407,7 +407,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
   // Add controller to view hierarchy to verify Expiration Date field is
   // focused.
   PresentController();
-  CheckFirstResponderHasAccessibilityIdentifier(@"Expiration Date_textField");
+  CheckFirstResponderHasAccessibilityIdentifier(@"Expiration date_textField");
 }
 
 // Validates the model is properly setup for displaying the expiration card link

@@ -816,7 +816,7 @@
   <if expr="is_ios">
     <then>
       <message name="IDS_PAGE_INFO_HISTORY" desc="Title of the Last Visited row in Page Info on iOS. The button opens history page for the site.">
-        Last Visited
+        Last visited
       </message>
       <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited today.">
         Today

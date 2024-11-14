@@ -1636,7 +1636,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
       @[(@"var evt = document.createEvent('Events');"
          "password_.focus();"),
         @";"],
-      @[@"user0 ••••••••", @"abc ••••••••", @"Suggest Strong Password"],
+      @[@"user0 ••••••••", @"abc ••••••••", @"Suggest strong password"],
       @"[]=, onkeyup=false, onchange=false"
     },
   };

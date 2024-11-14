@@ -529,7 +529,7 @@
       </message>
 
       <message name="IDS_OPTIONS_ADVANCED_SECTION_TITLE_SAFETY_CHECK">
-        Safety Check
+        Safety check
       </message>
 
       <message name="IDS_PATCH_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for patching file operations.">

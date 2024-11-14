@@ -80,7 +80,7 @@ UITextView* FirstParagraph() {
   firstParagraphTextView.showsHorizontalScrollIndicator = NO;
 
   NSString* firstLine =
-      [l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_INTRO_IOS)
+      [l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE)
           stringByAppendingString:kEmptyLine];
 
   NSMutableAttributedString* firstParagraphAttributedString =

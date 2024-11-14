@@ -43,7 +43,7 @@
 
   <if expr="is_ios">
     <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE_IOS" desc="This string is the heading of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. We want users to read this screen and understand that they can use any search engine with Chrome and what the impact of their choice might be.">
-        Learn More
+        Learn more
     </message>
   </if>
 
@@ -56,11 +56,6 @@
     <if expr="not use_titlecase">
       <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE" desc="This string is the heading of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. This string is before the “Based on a law in your region...” string. We want users to read this screen and understand that they can use any search engine with Chrome and what the impact of their choice might be.">
         Your search engine in Chrome
-      </message>
-    </if>
-    <if expr="is_ios">
-      <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_INTRO_IOS" desc="This string is the beginning of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. We want users to read this screen and understand that they can use any search engine with Chrome and what the impact of their choice might be.">
-        Your Search Engine in Chrome
       </message>
     </if>
     <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_FIRST_PARAGRAPH" desc="This is the first paragraph of the body text of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. This screen provides the following details: 1. the list includes search engines that are popular in the user’s region and the order includes randomization (not in order of recommendation); 2. features may be unavailable if the chosen default search engine doesn’t support them; 3. the user can change their mind at any time. This card appears when the user taps or clicks “Learn more” on the search engine choice screen. The headline for this card is “Your search engine in Chrome”.">
@@ -82,11 +77,6 @@
     <if expr="not use_titlecase">
       <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE" desc="This string is the heading of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chromium. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. This string is before the “Based on a law in your region...” string. We want users to read this screen and understand that they can use any search engine with Chromium and what the impact of their choice might be.">
         Your search engine in Chromium
-      </message>
-    </if>
-    <if expr="is_ios">
-      <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_INTRO_IOS" desc="This string is the beginning of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chromium. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. We want users to read this screen and understand that they can use any search engine with Chromium and what the impact of their choice might be.">
-        Your Search Engine in Chromium
       </message>
     </if>
     <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_FIRST_PARAGRAPH" desc="This is the first paragraph of the body text of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. This screen provides the following details: 1. the list includes search engines that are popular in the user’s region and the order includes randomization (not in order of recommendation); 2. features may be unavailable if the chosen default search engine doesn’t support them; 3. the user can change their mind at any time. This card appears when the user taps or clicks “Learn more” on the search engine choice screen. The headline for this card is “Your search engine in Chromium”.">

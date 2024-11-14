@@ -429,10 +429,10 @@
       Didn't receive your code? <ph name="BEGIN_LINK">BEGIN_LINK</ph>Get new code<ph name="END_LINK">END_LINK</ph>
   </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRATION_DATE_FIELD_TITLE" desc="The name of the field for the expiration date of the credit card in the card unmasking dialog.">
-      Expiration Date
+      Expiration date
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_ALERT_TITLE" desc="Text to be displayed as the title of the error alert in the card unmasking dialog.">
-      Something Went Wrong
+      Something went wrong
     </message>
   </if>
   <if expr="is_ios">
@@ -559,7 +559,7 @@
   </if>
   <if expr="is_ios">
     <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL" desc="Label for a toggle that allows users to turn on mandatory authentication when managing credit cards. Title-Cased.">
-      Always Verify When Using Autofill
+      Always verify when using autofill
     </message>
     <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to turn on mandatory authentication when managing credit cards. This sublabel explains when the toggle is turned off Autofill will still request authentication occasionally.">
       When turned off, you may be asked occasionally to verify for security purposes
