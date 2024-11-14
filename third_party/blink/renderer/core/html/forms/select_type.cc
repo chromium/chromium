@@ -654,6 +654,7 @@ bool MenuListSelectType::IsAppearanceBaseButton() const {
     return false;
   }
   // TODO(crbug.com/364348901): Update style and layout here.
+  DCHECK(select_);
   if (auto* style = select_->GetComputedStyle()) {
     return style->EffectiveAppearance() == ControlPart::kBaseSelectPart;
   }
@@ -670,6 +671,7 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
   // TODO(crbug.com/364348901): Consider using EnsureComputedStyle() here to get
   // more reliable results, though it has the risk of causing more style
   // computation, sometimes at bad times.
+  DCHECK(popover_);
   if (auto* style = popover_->GetComputedStyle()) {
     return style->EffectiveAppearance() == ControlPart::kBaseSelectPart;
   }

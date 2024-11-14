@@ -503,6 +503,7 @@ void HTMLSelectElement::ParseAttribute(
     if (size_ != old_size) {
       ChangeRendering();
       UpdateUserAgentShadowTree(*UserAgentShadowRoot());
+      UpdateMutationObserver();
       ResetToDefaultSelection();
       select_type_->UpdateTextStyleAndContent();
       select_type_->SaveListboxActiveSelection();
@@ -1253,6 +1254,7 @@ void HTMLSelectElement::ParseMultipleAttribute(const AtomicString& value) {
   SetNeedsValidityCheck();
   ChangeRendering();
   UpdateUserAgentShadowTree(*UserAgentShadowRoot());
+  UpdateMutationObserver();
   // Restore selectedIndex after changing the multiple flag to preserve
   // selection as single-line and multi-line has different defaults.
   if (old_multiple != is_multiple_) {
@@ -1707,7 +1709,6 @@ void HTMLSelectElement::ChangeRendering() {
   SetForceReattachLayoutTree();
   SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
                                              style_change_reason::kControl));
-  UpdateMutationObserver();
 }
 
 const ComputedStyle* HTMLSelectElement::OptionStyle() const {
