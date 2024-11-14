@@ -82,7 +82,6 @@ public class WebViewChromiumAwInit {
     // TODO(gsennton): store aw-objects instead of adapters here
     // Initialization guarded by mLock.
     private AwBrowserContext mDefaultBrowserContext;
-    private AwTracingController mTracingController;
     private SharedStatics mSharedStatics;
     private GeolocationPermissionsAdapter mDefaultGeolocationPermissions;
     private CookieManagerAdapter mDefaultCookieManager;
@@ -290,7 +289,7 @@ public class WebViewChromiumAwInit {
                 mDefaultWebStorage =
                         new WebStorageAdapter(
                                 mFactory, defaultBrowserContext.getQuotaManagerBridge());
-                mAwTracingController = getTracingController();
+                mAwTracingController = new AwTracingController();
                 mDefaultServiceWorkerController =
                         defaultBrowserContext.getServiceWorkerController();
                 mAwProxyController = new AwProxyController();
@@ -490,13 +489,6 @@ public class WebViewChromiumAwInit {
                         new AwNetworkChangeNotifierRegistrationPolicy(), forceUpdateNetworkState);
             }
         }
-    }
-
-    public AwTracingController getTracingController() {
-        if (mTracingController == null) {
-            mTracingController = new AwTracingController();
-        }
-        return mTracingController;
     }
 
     // Only on UI thread.
