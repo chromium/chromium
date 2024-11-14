@@ -55,7 +55,7 @@ mojo::ScopedDataPipeProducerHandle NetToMojoPendingBuffer::Complete(
 
 NetToMojoIOBuffer::NetToMojoIOBuffer(
     scoped_refptr<NetToMojoPendingBuffer> pending_buffer,
-    int offset)
+    size_t offset)
     : net::WrappedIOBuffer(base::make_span(*pending_buffer).subspan(offset)),
       pending_buffer_(std::move(pending_buffer)) {}
 

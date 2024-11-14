@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoIOBuffer
   // will be offset by that many bytes.
   explicit NetToMojoIOBuffer(
       scoped_refptr<NetToMojoPendingBuffer> pending_buffer,
-      int offset = 0);
+      size_t offset = 0);
 
   NetToMojoIOBuffer(const NetToMojoIOBuffer&) = delete;
   NetToMojoIOBuffer& operator=(const NetToMojoIOBuffer&) = delete;
