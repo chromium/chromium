@@ -15,9 +15,15 @@ class ScopedNotificationAuthSwizzler {
  public:
   // Swizzles the auth status to return `initial_status`. If the app requests
   // authorization, the status will change to "authorized" if `grant` is YES or
-  // to "denied" if `grant` is NO.
-  ScopedNotificationAuthSwizzler(UNAuthorizationStatus initial_status,
-                                 BOOL grant);
+  // to "denied" if `grant` is NO. Also swizzles the lockscreen setting to
+  // `initial_lockscreen_setting` and alert setting to `initial_alert_setting`.
+  ScopedNotificationAuthSwizzler(
+      UNAuthorizationStatus initial_status,
+      BOOL grant,
+      UNNotificationSetting initial_lockscreen_setting =
+          UNNotificationSettingDisabled,
+      UNNotificationSetting initial_alert_setting =
+          UNNotificationSettingDisabled);
 
   // Swizzles an initial value of "Not Determined", and allows / disallows
   // granting authorization when requested.
@@ -28,6 +34,10 @@ class ScopedNotificationAuthSwizzler {
  protected:
   UNAuthorizationStatus status_;
   std::unique_ptr<EarlGreyScopedBlockSwizzler> status_swizzler_;
+  UNNotificationSetting lockscreen_setting_;
+  std::unique_ptr<EarlGreyScopedBlockSwizzler> lockscreen_status_swizzler_;
+  UNNotificationSetting alert_setting_;
+  std::unique_ptr<EarlGreyScopedBlockSwizzler> alert_status_swizzler_;
   std::unique_ptr<EarlGreyScopedBlockSwizzler> request_swizzler_;
 };
 
