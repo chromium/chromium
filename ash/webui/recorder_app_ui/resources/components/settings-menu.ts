@@ -177,9 +177,9 @@ export class SettingsMenu extends ReactiveLitElement {
 
   override updated(): void {
     if (this.summaryDownloadRequested.value &&
-      !this.downloadPerfCollected.value &&
-      this.platformHandler.summaryModelLoader.state.value.kind === 'installed'
-    ) {
+        !this.downloadPerfCollected.value &&
+        this.platformHandler.summaryModelLoader.state.value.kind ===
+          'installed') {
       // TODO: b/367263595 - Collect perf in PlatformHandler instead.
       this.platformHandler.perfLogger.finish('summaryModelDownload');
       this.downloadPerfCollected.value = true;
@@ -248,10 +248,13 @@ export class SettingsMenu extends ReactiveLitElement {
     if (!this.summaryEnabled) {
       return summaryToggle;
     }
-    const downloadedStatus =
-      html`<spoken-message slot="status" role="status" aria-live="polite">
-        ${i18n.summaryDownloadFinishedStatusMessage}
-      </spoken-message>`;
+    const downloadedStatus = html`<spoken-message
+      slot="status"
+      role="status"
+      aria-live="polite"
+    >
+      ${i18n.summaryDownloadFinishedStatusMessage}
+    </spoken-message>`;
 
     switch (state.kind) {
       case 'unavailable':
@@ -449,8 +452,8 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderTranscriptionDescriptionAndAction() {
-    const sodaState =
-      this.platformHandler.getSodaState(LanguageCode.EN_US).value;
+    const defaultLang = LanguageCode.EN_US;
+    const sodaState = this.platformHandler.getSodaState(defaultLang).value;
     const downloadButton = html`
       <cra-button
         slot="action"
@@ -584,10 +587,8 @@ export class SettingsMenu extends ReactiveLitElement {
   private renderSettingsBody(): RenderResult {
     if (this.transcriptionLanguageExpanded.value) {
       return html`
-        <language-picker
-          @close=${this.onSubpageCloseClick}
-        ></language-picker>
-        `;
+        <language-picker @close=${this.onSubpageCloseClick}></language-picker>
+      `;
     }
     return html`
       <div id="body">

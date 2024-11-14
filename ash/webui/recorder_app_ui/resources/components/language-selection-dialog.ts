@@ -11,9 +11,7 @@ import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {
-  setTranscriptionLanguage,
-} from '../core/state/transcription.js';
+import {setTranscriptionLanguage} from '../core/state/transcription.js';
 import {assertExists} from '../core/utils/assert.js';
 
 import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
@@ -104,14 +102,14 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
           </language-dropdown>
         </div>
         <div slot="actions">
-            <cra-button
-              .label=${i18n.onboardingDialogLanguageSelectionCancelButton}
-              @click=${this.cancelSelection}
-            ></cra-button>
-            <cra-button
-              label=${i18n.onboardingDialogLanguageSelectionDownloadButton}
-              @click=${this.downloadLanguage}
-            ></cra-button>
+          <cra-button
+            .label=${i18n.onboardingDialogLanguageSelectionCancelButton}
+            @click=${this.cancelSelection}
+          ></cra-button>
+          <cra-button
+            label=${i18n.onboardingDialogLanguageSelectionDownloadButton}
+            @click=${this.downloadLanguage}
+          ></cra-button>
         </div>
       </cra-feature-tour-dialog>
       <speaker-label-consent-dialog ${ref(this.speakerLabelConsentDialog)}>

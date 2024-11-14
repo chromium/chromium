@@ -1,15 +1,14 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import 'chrome://resources/mwc/@material/web/progress/circular-progress.js';
+import './cra/cra-button.js';
 import './cra/cra-icon.js';
+import './cra/cra-icon-button.js';
 import './settings-row.js';
 
-import {
-  css,
-  html,
-  map,
-  nothing,
-} from 'chrome://resources/mwc/lit/index.js';
+import {css, html, map, nothing} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
@@ -53,6 +52,7 @@ export class LanguagePicker extends ReactiveLitElement {
       & > #back {
         --cros-icon-button-color-override: var(--cros-sys-primary);
         --cros-icon-button-icon-size: 20px;
+
         margin: 0;
       }
     }
@@ -82,7 +82,9 @@ export class LanguagePicker extends ReactiveLitElement {
       }
     }
 
-    // TODO: b/377885042 - Move the circular progress to a separate component.
+    /*
+     * TODO: b/377885042 - Move the circular progress to a separate component.
+     */
     settings-row cra-button md-circular-progress {
       --md-circular-progress-active-indicator-color: var(--cros-sys-disabled);
 
@@ -111,21 +113,18 @@ export class LanguagePicker extends ReactiveLitElement {
   }
 
   private renderLanguageRow(
-    language: LangPackInfo,
+    {displayName, languageCode}: LangPackInfo,
     selectedLanguage: LanguageCode|null,
   ): RenderResult {
-    const sodaState =
-      this.platformHandler.getSodaState(language.languageCode).value;
+    const sodaState = this.platformHandler.getSodaState(languageCode).value;
     if (sodaState.kind === 'unavailable') {
       return nothing;
     }
 
-    const name = html`
-      <span slot="label">${language.displayName}</span>
-    `;
+    const name = html`<span slot="label">${displayName}</span>`;
 
     function onSelectAndDownload() {
-      setTranscriptionLanguage(language.languageCode);
+      setTranscriptionLanguage(languageCode);
     }
 
     const downloadButton = html`
@@ -138,23 +137,18 @@ export class LanguagePicker extends ReactiveLitElement {
     `;
     switch (sodaState.kind) {
       case 'notInstalled': {
-        return html`
-        <settings-row>
-          ${name}
-          ${downloadButton}
-        </settings-row>
-        `;
+        return html`<settings-row>${name} ${downloadButton}</settings-row>`;
       }
       // Shows the download button for users to try again.
       case 'error': {
         return html`
-        <settings-row>
-          ${name}
-          <span slot="description" class="error">
-            ${i18n.languagePickerLanguageErrorDescription}
-          </span>
-          ${downloadButton}
-        </settings-row>
+          <settings-row>
+            ${name}
+            <span slot="description" class="error">
+              ${i18n.languagePickerLanguageErrorDescription}
+            </span>
+            ${downloadButton}
+          </settings-row>
         `;
       }
       case 'installing': {
@@ -179,25 +173,22 @@ export class LanguagePicker extends ReactiveLitElement {
         `;
       }
       case 'installed': {
-        if (language.languageCode === selectedLanguage) {
+        if (languageCode === selectedLanguage) {
           return html`
-          <settings-row>
-            ${name}
-            <cra-icon slot="action" name="checked"></cra-icon>
-          </settings-row>
+            <settings-row>
+              ${name}
+              <cra-icon slot="action" name="checked"></cra-icon>
+            </settings-row>
           `;
         } else {
           // Set and install the language to avoid inconsistent SODA state.
           // TODO: b/375306309 - Separate set and install steps when the state
           // become consistent after implementing `OnSodaUninstalled`.
           return html`
-          <settings-row>
-            ${name}
-            <span slot="action"
-              @click=${onSelectAndDownload}
-            >
-            </span>
-          </settings-row>
+            <settings-row>
+              ${name}
+              <span slot="action" @click=${onSelectAndDownload}></span>
+            </settings-row>
           `;
         }
       }
@@ -263,15 +254,11 @@ export class LanguagePicker extends ReactiveLitElement {
       <div id="content">
         <div class="section">
           <h4 class="title">${i18n.languagePickerSelectedLanguageHeader}</h4>
-          <div class="body">
-          ${this.renderSelectedLanguage()}
-          </div>
+          <div class="body">${this.renderSelectedLanguage()}</div>
         </div>
         <div class="section">
           <h4 class="title">${i18n.languagePickerAvailableLanguagesHeader}</h4>
-          <div class="body">
-          ${this.renderAvailableLanguages()}
-          </div>
+          <div class="body">${this.renderAvailableLanguages()}</div>
         </div>
       </div>
     `;

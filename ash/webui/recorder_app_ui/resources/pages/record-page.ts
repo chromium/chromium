@@ -381,8 +381,9 @@ export class RecordPage extends ReactiveLitElement {
   );
 
   // Speaker label state per-recording.
-  private readonly speakerLabelEnabled =
-    signal(this.globalSpeakerLabelEnabled.value);
+  private readonly speakerLabelEnabled = signal(
+    this.globalSpeakerLabelEnabled.value,
+  );
 
   private readonly transcriptionAvailable = computed(
     () => this.platformHandler.isSodaAvailable(),
@@ -805,7 +806,7 @@ export class RecordPage extends ReactiveLitElement {
               <cra-button
                 .label=${i18n.recordTranscriptionEntryPointDisableButton}
                 button-style="secondary"
-                @click=${disableTranscription(/* firstTime= */ true)}
+                @click=${() => disableTranscription(/* firstTime= */ true)}
               ></cra-button>
               <cra-button
                 .label=${i18n.recordTranscriptionEntryPointEnableButton}
@@ -831,7 +832,7 @@ export class RecordPage extends ReactiveLitElement {
         <circle cx="6" cy="6" r="6" fill="currentColor" />
       </svg>
       <time-duration
-        digits=1
+        digits="1"
         .duration=${recordingDuration}
       ></time-duration>`;
   }
@@ -900,7 +901,7 @@ export class RecordPage extends ReactiveLitElement {
     // Only show the toggle when speaker label is enabled before recording and
     // the transcription is turned on.
     if (this.transcriptionEnabled.value === false ||
-      this.globalSpeakerLabelEnabled.value === false) {
+        this.globalSpeakerLabelEnabled.value === false) {
       return nothing;
     }
 

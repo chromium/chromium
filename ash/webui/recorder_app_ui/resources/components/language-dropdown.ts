@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
 import './cra/cra-dropdown.js';
 
 import {
@@ -62,18 +63,16 @@ export class LanguageDropdown extends ReactiveLitElement {
     // correct a11y behavior.
     // TODO(hsuanling): Add leading icon after UI spec is done.
     return html`
-    <cra-dropdown
-      @change=${this.onChanged}
-    >
-      <cros-dropdown-option
-        headline=${i18n.languageDropdownHintOption}
-        selected
-        disabled
-      >
-      </cros-dropdown-option>
-      ${this.renderDropdownOptions()}
-    </cra-dropdown>
-  `;
+      <cra-dropdown @change=${this.onChanged}>
+        <cros-dropdown-option
+          headline=${i18n.languageDropdownHintOption}
+          selected
+          disabled
+        >
+        </cros-dropdown-option>
+        ${this.renderDropdownOptions()}
+      </cra-dropdown>
+    `;
   }
 }
 

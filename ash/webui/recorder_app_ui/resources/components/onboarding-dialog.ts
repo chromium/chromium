@@ -21,10 +21,7 @@ import {i18n, NoArgStringName} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {LanguageCode} from '../core/soda/language_info.js';
-import {
-  settings,
-  SpeakerLabelEnableState,
-} from '../core/state/settings.js';
+import {settings, SpeakerLabelEnableState} from '../core/state/settings.js';
 import {
   disableTranscription,
   enableTranscription,
