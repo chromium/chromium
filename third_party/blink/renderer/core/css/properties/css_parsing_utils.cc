@@ -4988,7 +4988,10 @@ CSSValue* ConsumeGapDecorationPropertyValue(
   switch (property_type) {
     case CSSGapDecorationPropertyType::kColor:
       return ConsumeColor(stream, context);
-      // TODO(crbug.com/357648037): Add kStyle and kWidth when implemented.
+    case CSSGapDecorationPropertyType::kWidth:
+      return ConsumeLineWidth(stream, context,
+                              css_parsing_utils::UnitlessQuirk::kForbid);
+      // TODO(crbug.com/357648037): Add kStyle when implemented.
   }
 }
 

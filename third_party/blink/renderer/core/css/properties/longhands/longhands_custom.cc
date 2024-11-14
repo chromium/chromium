@@ -2305,8 +2305,8 @@ const CSSValue* ColumnRuleWidth::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeLineWidth(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid);
+  return css_parsing_utils::ConsumeGapDecorationPropertyList(
+      stream, context, CSSGapDecorationPropertyType::kWidth);
 }
 
 const CSSValue* ColumnRuleWidth::CSSValueFromComputedStyleInternal(

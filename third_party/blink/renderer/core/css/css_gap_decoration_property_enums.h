@@ -9,7 +9,8 @@ namespace blink {
 
 enum class CSSGapDecorationPropertyType {
   kColor,
-  // TODO(crbug.com/357648037): Add kStyle and kWidth when implemented.
+  kWidth,
+  // TODO(crbug.com/357648037): Add kStyle when implemented.
 };
 
 }  // namespace blink
