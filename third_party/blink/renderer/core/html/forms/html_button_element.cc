@@ -246,7 +246,7 @@ CommandEventType HTMLButtonElement::GetCommandEventType() const {
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
     if (!IsDisabledFormControl()) {
-      if (Form() && type_ == kSubmit && !OwnerSelect()) {
+      if (Form() && type_ == kSubmit) {
         Form()->PrepareForSubmission(&event, this);
         event.SetDefaultHandled();
         return;
@@ -294,11 +294,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     }
   }
 
-  // The OwnerSelect check is here in order to make sure that pressing the
-  // spacebar opens customizable <select>s.
-  // MenuListSelectType::DefaultEventHandler likes to see all more detailed
-  // events than the simulated click that HandleKeyboardActivation does.
-  if (!OwnerSelect() && HandleKeyboardActivation(event)) {
+  if (HandleKeyboardActivation(event)) {
     return;
   }
 
@@ -403,15 +399,11 @@ HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
   return nullptr;
 }
 
-FocusableState HTMLButtonElement::IsFocusableState(
-    UpdateBehavior update_behavior) const {
+bool HTMLButtonElement::IsInertRoot() const {
   if (OwnerSelect()) {
-    // The first child button of a select, which replaces the in-page rendering
-    // of the select's button, should not be focusable because the parent select
-    // is already focusable and handles all interaction.
-    return FocusableState::kNotFocusable;
+    return true;
   }
-  return HTMLFormControlElement::IsFocusableState(update_behavior);
+  return HTMLFormControlElement::IsInertRoot();
 }
 
 }  // namespace blink

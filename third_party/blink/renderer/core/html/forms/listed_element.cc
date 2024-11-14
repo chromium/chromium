@@ -672,16 +672,6 @@ void ListedElement::UpdateAncestorDisabledState() const {
       }
     }
   }
-  if (ancestor_disabled_state_ == AncestorDisabledState::kEnabled &&
-      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-      if (auto* select = button->OwnerSelect()) {
-        if (select->is_element_disabled_) {
-          ancestor_disabled_state_ = AncestorDisabledState::kDisabled;
-        }
-      }
-    }
-  }
 }
 
 void ListedElement::AncestorDisabledStateWasChanged() {
