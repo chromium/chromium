@@ -47,12 +47,12 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
-import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -88,6 +88,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     private OnItemClickedCallback mOnItemClickedCallback;
     private int mTabId;
     private MockTabModel mTabModel;
+    @Mock private TabRemover mTabRemover;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private View mMenuView;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
@@ -121,6 +122,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mWeakReferenceActivity.get()).thenReturn(mActivity);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModel.isIncognito()).thenReturn(false);
+        mTabModel.setTabRemoverForTesting(mTabRemover);
         when(mProfile.isOffTheRecord()).thenReturn(true);
         mTabId = 1;
         mOnItemClickedCallback =
@@ -131,8 +133,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mModalDialogManager,
                         mTabCreator,
                         mDataSharingTabManager,
-                        mCallback,
-                        /* isTabGroupSyncEnabled= */ true);
+                        mCallback);
         mTabGroupContextMenuCoordinator =
                 TabGroupContextMenuCoordinator.createContextMenuCoordinator(
                         mTabModel,
@@ -316,13 +317,15 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify tab group closed.
         mOnItemClickedCallback.onClick(R.id.close_tab_group, mTabId, /* collaborationId= */ null);
-        verify(mTabGroupModelFilter)
+        verify(mTabRemover)
                 .closeTabs(
                         argThat(
                                 params ->
                                         params.tabs.get(0) == tabsInGroup.get(0)
                                                 && params.allowUndo
-                                                && params.hideTabGroups));
+                                                && params.hideTabGroups),
+                        eq(true),
+                        any());
     }
 
     @Test
@@ -333,18 +336,15 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify tab group deleted.
         mOnItemClickedCallback.onClick(R.id.delete_tab_group, mTabId, /* collaborationId= */ null);
-        verify(mActionConfirmationManager)
-                .processDeleteGroupAttempt(mActionConfirmationResultCaptor.capture());
-        mActionConfirmationResultCaptor
-                .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
-        verify(mTabGroupModelFilter)
+        verify(mTabRemover)
                 .closeTabs(
                         argThat(
                                 params ->
                                         params.tabs.get(0) == tabsInGroup.get(0)
-                                                && !params.allowUndo
-                                                && !params.hideTabGroups));
+                                                && params.allowUndo
+                                                && !params.hideTabGroups),
+                        eq(true),
+                        any());
     }
 
     @Test

@@ -120,8 +120,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         modalDialogManager,
                         tabCreator,
                         dataSharingTabManager,
-                        onGroupSharedCallback,
-                        tabGroupSyncService != null),
+                        onGroupSharedCallback),
                 tabModelSupplier,
                 tabGroupSyncService,
                 collaborationService);
@@ -185,8 +184,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             ModalDialogManager modalDialogManager,
             TabCreator tabCreator,
             DataSharingTabManager dataSharingTabManager,
-            Callback<Boolean> onGroupSharedCallback,
-            boolean isTabGroupSyncEnabled) {
+            Callback<Boolean> onGroupSharedCallback) {
         return (menuId, tabId, collaborationId) -> {
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
                 TabUiUtils.ungroupTabGroup(tabGroupModelFilter, tabId);
@@ -194,19 +192,15 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             } else if (menuId == org.chromium.chrome.R.id.close_tab_group) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
-                        actionConfirmationManager,
                         tabId,
                         /* hideTabGroups= */ true,
-                        isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
                 recordUserAction("CloseGroup");
             } else if (menuId == org.chromium.chrome.R.id.delete_tab_group) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
-                        actionConfirmationManager,
                         tabId,
                         /* hideTabGroups= */ false,
-                        isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
                 recordUserAction("DeleteGroup");
             } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {

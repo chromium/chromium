@@ -2706,9 +2706,6 @@ class TabListMediator implements TabListNotificationHandler {
 
     @VisibleForTesting
     void onMenuItemClicked(@IdRes int menuId, int tabId, @Nullable String collaborationId) {
-        boolean isSyncEnabled =
-                !mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded()
-                        && TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile);
         if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
             boolean hideTabGroups = menuId == R.id.close_tab_group;
             if (hideTabGroups) {
@@ -2719,10 +2716,8 @@ class TabListMediator implements TabListNotificationHandler {
             setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
             TabUiUtils.closeTabGroup(
                     mCurrentTabGroupModelFilterSupplier.get(),
-                    mActionConfirmationManager,
                     tabId,
                     hideTabGroups,
-                    isSyncEnabled,
                     getMaybeUnsetShrinkCloseAnimationCallback(tabId));
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");

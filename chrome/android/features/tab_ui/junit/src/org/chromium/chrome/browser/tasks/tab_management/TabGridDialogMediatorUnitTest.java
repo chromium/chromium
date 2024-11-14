@@ -28,7 +28,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -93,6 +92,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -161,6 +161,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private TabGridDialogMediator.AnimationSourceViewProvider mAnimationSourceViewProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
+    @Mock private TabRemover mTabRemover;
     @Mock private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
     @Mock private TabGroupTitleEditor mTabGroupTitleEditor;
     @Mock private EditText mTitleTextView;
@@ -232,6 +233,7 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
         doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(mTab2);
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
@@ -1331,7 +1333,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void testDialogToolbarMenu_SelectionModeV2() {
+    public void testDialogToolbarMenu_SelectionMode() {
         // Mock that currently the title text is focused and the keyboard is showing. The current
         // tab is tab1 which is in a group of {tab1, tab2}.
         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
@@ -1378,14 +1380,19 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
-        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
         mMediator.onToolbarMenuItemClick(
                 R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
-        verify(mTabGroupModelFilter)
-                .closeTabs(TabClosureParams.closeTabs(tabGroup).hideTabGroups(true).build());
+        verify(mTabRemover)
+                .closeTabs(
+                        eq(
+                                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB1_ID)
+                                        .allowUndo(true)
+                                        .hideTabGroups(true)
+                                        .build()),
+                        /* allowDialog= */ eq(true),
+                        any());
 
-        verifyNoInteractions(mActionConfirmationManager);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Close"));
     }
 
@@ -1394,18 +1401,19 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
-        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
         mMediator.onToolbarMenuItemClick(
                 R.id.delete_tab_group, TAB1_ID, /* collaborationId= */ null);
-        verify(mTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabGroup).build());
+        verify(mTabRemover)
+                .closeTabs(
+                        eq(
+                                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB1_ID)
+                                        .allowUndo(true)
+                                        .hideTabGroups(false)
+                                        .build()),
+                        /* allowDialog= */ eq(true),
+                        any());
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Delete"));
-
-        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
-        mMediator.onToolbarMenuItemClick(
-                R.id.delete_tab_group, TAB1_ID, /* collaborationId= */ null);
-        verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
-        assertEquals(2, mActionTester.getActionCount("TabGridDialogMenu.Delete"));
     }
 
     @Test

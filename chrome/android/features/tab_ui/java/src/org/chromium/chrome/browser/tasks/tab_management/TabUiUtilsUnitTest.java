@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +39,9 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
@@ -66,6 +70,7 @@ public class TabUiUtilsUnitTest {
 
     @Mock private TabModel mTabModel;
     @Mock private TabGroupModelFilter mFilter;
+    @Mock private TabRemover mTabRemover;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tab mTab;
@@ -77,6 +82,7 @@ public class TabUiUtilsUnitTest {
     @Mock private Callback<Boolean> mDidCloseTabsCallback;
     @Mock private Callback<Boolean> mContentSensitivitySetter;
 
+    @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
     @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCaptor;
 
     private List<Tab> mTabsToClose;
@@ -84,6 +90,7 @@ public class TabUiUtilsUnitTest {
     @Before
     public void setUp() {
         mTabsToClose = List.of(mTab);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mFilter.getTabModel()).thenReturn(mTabModel);
         when(mFilter.isIncognitoBranded()).thenReturn(false);
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
@@ -101,119 +108,64 @@ public class TabUiUtilsUnitTest {
     }
 
     @Test
-    public void testCloseTabGroup_Incognito() {
+    public void testCloseTabGroup_NoHide() {
         boolean hideTabGroups = false;
-        when(mFilter.isIncognitoBranded()).thenReturn(true);
 
-        TabUiUtils.closeTabGroup(
-                mFilter,
-                mActionConfirmationManager,
-                TAB_ID,
-                hideTabGroups,
-                /* isSyncEnabled= */ true,
-                mDidCloseTabsCallback);
+        TabUiUtils.closeTabGroup(mFilter, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
 
-        verify(mFilter)
+        verify(mTabRemover)
                 .closeTabs(
-                        TabClosureParams.closeTabs(mTabsToClose)
-                                .hideTabGroups(hideTabGroups)
-                                .build());
+                        eq(
+                                TabClosureParams.forCloseTabGroup(mFilter, ROOT_ID)
+                                        .hideTabGroups(hideTabGroups)
+                                        .allowUndo(true)
+                                        .build()),
+                        eq(true),
+                        mTabModelActionListenerCaptor.capture());
+
+        // These are the known valid combinations only:
+        TabModelActionListener listener = mTabModelActionListenerCaptor.getValue();
+
+        listener.onConfirmationDialogResult(
+                DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mDidCloseTabsCallback).onResult(true);
+
+        listener.onConfirmationDialogResult(
+                DialogType.SYNC, ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mDidCloseTabsCallback, times(2)).onResult(true);
+
+        listener.onConfirmationDialogResult(
+                DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mDidCloseTabsCallback, times(3)).onResult(true);
+
+        listener.onConfirmationDialogResult(
+                DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+        verify(mDidCloseTabsCallback).onResult(false);
+
+        listener.onConfirmationDialogResult(
+                DialogType.COLLABORATION, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+        verify(mDidCloseTabsCallback, times(4)).onResult(true);
+
+        listener.onConfirmationDialogResult(
+                DialogType.COLLABORATION, ActionConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mDidCloseTabsCallback, times(5)).onResult(true);
     }
 
     @Test
     public void testCloseTabGroup_Hide() {
         boolean hideTabGroups = true;
 
-        TabUiUtils.closeTabGroup(
-                mFilter,
-                mActionConfirmationManager,
-                TAB_ID,
-                hideTabGroups,
-                /* isSyncEnabled= */ true,
-                mDidCloseTabsCallback);
+        TabUiUtils.closeTabGroup(mFilter, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
 
-        verify(mFilter)
-                .closeTabs(TabClosureParams.closeTabs(mTabsToClose).hideTabGroups(true).build());
-        verify(mDidCloseTabsCallback).onResult(true);
-    }
-
-    @Test
-    public void testCloseTabGroup_Delete_Positive() {
-        boolean hideTabGroups = false;
-        doCallback(
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
-                .when(mActionConfirmationManager)
-                .processDeleteGroupAttempt(any());
-
-        TabUiUtils.closeTabGroup(
-                mFilter,
-                mActionConfirmationManager,
-                TAB_ID,
-                hideTabGroups,
-                /* isSyncEnabled= */ true,
-                mDidCloseTabsCallback);
-
-        verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
-        verify(mFilter)
+        verify(mTabRemover)
                 .closeTabs(
-                        TabClosureParams.closeTabs(mTabsToClose)
-                                .allowUndo(false)
-                                .hideTabGroups(hideTabGroups)
-                                .build());
-        verify(mDidCloseTabsCallback).onResult(true);
-    }
-
-    @Test
-    public void testCloseTabGroup_Delete_Positive_Immediate() {
-        boolean hideTabGroups = false;
-        doCallback(
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.IMMEDIATE_CONTINUE))
-                .when(mActionConfirmationManager)
-                .processDeleteGroupAttempt(any());
-
-        TabUiUtils.closeTabGroup(
-                mFilter,
-                mActionConfirmationManager,
-                TAB_ID,
-                hideTabGroups,
-                /* isSyncEnabled= */ true,
-                mDidCloseTabsCallback);
-
-        verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
-        verify(mFilter)
-                .closeTabs(
-                        TabClosureParams.closeTabs(mTabsToClose)
-                                .hideTabGroups(hideTabGroups)
-                                .build());
-        verify(mDidCloseTabsCallback).onResult(true);
-    }
-
-    @Test
-    public void testCloseTabGroup_Delete_Negative() {
-        boolean hideTabGroups = false;
-        doCallback(
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_NEGATIVE))
-                .when(mActionConfirmationManager)
-                .processDeleteGroupAttempt(any());
-
-        TabUiUtils.closeTabGroup(
-                mFilter,
-                mActionConfirmationManager,
-                TAB_ID,
-                hideTabGroups,
-                /* isSyncEnabled= */ true,
-                mDidCloseTabsCallback);
-
-        verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
-        verify(mFilter, never()).closeTabs(any());
-        verify(mDidCloseTabsCallback).onResult(false);
+                        eq(
+                                TabClosureParams.forCloseTabGroup(mFilter, ROOT_ID)
+                                        .hideTabGroups(hideTabGroups)
+                                        .allowUndo(true)
+                                        .build()),
+                        eq(true),
+                        mTabModelActionListenerCaptor.capture());
     }
 
     @Test

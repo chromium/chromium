@@ -138,6 +138,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -306,6 +307,8 @@ public class TabListMediatorUnitTest {
     @Mock TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Mock TabUngrouper mTabUngrouper;
     @Mock TabUngrouper mIncognitoTabUngrouper;
+    @Mock TabRemover mTabRemover;
+    @Mock TabRemover mIncognitoTabRemover;
     @Mock TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     @Mock TabListMediator.GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     @Mock TabFavicon mFavicon;
@@ -416,6 +419,8 @@ public class TabListMediatorUnitTest {
 
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mIncognitoTabGroupModelFilter.getTabUngrouper()).thenReturn(mIncognitoTabUngrouper);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        when(mIncognitoTabModel.getTabRemover()).thenReturn(mIncognitoTabRemover);
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mIncognitoTabModel).when(mIncognitoTabGroupModelFilter).getTabModel();
         mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
@@ -4292,8 +4297,15 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
-        verify(mTabGroupModelFilter)
-                .closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(true).build());
+        verify(mTabRemover)
+                .closeTabs(
+                        eq(
+                                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB1_ID)
+                                        .allowUndo(true)
+                                        .hideTabGroups(true)
+                                        .build()),
+                        /* allowDialog= */ eq(true),
+                        any());
     }
 
     @Test
@@ -4321,7 +4333,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testOnMenuItemClickedCallback_DeleteGroupInTabSwitcher_IncognitoNoShow() {
+    public void testOnMenuItemClickedCallback_DeleteGroupInTabSwitcher_Incognito() {
         mCurrentTabGroupModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
         when(mIncognitoTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
@@ -4341,7 +4353,16 @@ public class TabListMediatorUnitTest {
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.delete_tab_group, TAB1_ID, /* collaborationId= */ null);
-        verify(mIncognitoTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabs).build());
+        verify(mIncognitoTabRemover)
+                .closeTabs(
+                        eq(
+                                TabClosureParams.forCloseTabGroup(
+                                                mIncognitoTabGroupModelFilter, TAB1_ID)
+                                        .allowUndo(true)
+                                        .hideTabGroups(false)
+                                        .build()),
+                        /* allowDialog= */ eq(true),
+                        any());
     }
 
     @Test
@@ -4381,8 +4402,15 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
-        verify(mTabGroupModelFilter)
-                .closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(true).build());
+        verify(mTabRemover)
+                .closeTabs(
+                        eq(
+                                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB1_ID)
+                                        .allowUndo(true)
+                                        .hideTabGroups(true)
+                                        .build()),
+                        /* allowDialog= */ eq(true),
+                        any());
     }
 
     @Test

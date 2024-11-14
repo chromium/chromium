@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -32,7 +31,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -58,54 +58,43 @@ public class TabUiUtils {
      * Closes a tab group and maybe shows a confirmation dialog.
      *
      * @param filter The {@link TabGroupModelFilter} to act on.
-     * @param actionConfirmationManager The {@link ActionConfirmationManager} to use to confirm
-     *     actions.
      * @param tabId The ID of one of the tabs in the tab group.
      * @param hideTabGroups Whether to hide or delete the tab group.
-     * @param isSyncEnabled Whether the Tab Group Sync flag is enabled.
      * @param didCloseCallback Run after the close confirmation to indicate if a close happened.
      */
     public static void closeTabGroup(
             TabGroupModelFilter filter,
-            ActionConfirmationManager actionConfirmationManager,
             int tabId,
             boolean hideTabGroups,
-            boolean isSyncEnabled,
             @Nullable Callback<Boolean> didCloseCallback) {
         TabModel tabModel = filter.getTabModel();
         int rootId = tabModel.getTabById(tabId).getRootId();
-        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
-        boolean isIncognito = filter.isIncognitoBranded();
+        TabClosureParams closureParams =
+                TabClosureParams.forCloseTabGroup(filter, rootId)
+                        .hideTabGroups(hideTabGroups)
+                        .allowUndo(true)
+                        .build();
 
-        if (hideTabGroups || isIncognito || !isSyncEnabled || actionConfirmationManager == null) {
-            filter.closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(hideTabGroups).build());
-            Callback.runNullSafe(didCloseCallback, true);
-        } else {
-            List<Integer> tabIds = TabUtils.getTabIds(tabs);
-
-            // Present a confirmation dialog to the user before closing the tab group.
-            Callback<Integer> onResult =
-                    (@ActionConfirmationResult Integer result) -> {
-                        if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                            boolean allowUndo =
-                                    result == ActionConfirmationResult.IMMEDIATE_CONTINUE;
-                            List<Tab> tabsToClose =
-                                    TabModelUtils.getTabsById(
-                                            tabIds,
-                                            filter.getTabModel(),
-                                            /* allowClosing= */ false);
-                            filter.closeTabs(
-                                    TabClosureParams.closeTabs(tabsToClose)
-                                            .allowUndo(allowUndo)
-                                            .hideTabGroups(hideTabGroups)
-                                            .build());
-                            Callback.runNullSafe(didCloseCallback, true);
-                        } else {
-                            Callback.runNullSafe(didCloseCallback, false);
-                        }
-                    };
-            actionConfirmationManager.processDeleteGroupAttempt(onResult);
-        }
+        TabModelActionListener listener =
+                new TabModelActionListener() {
+                    @Override
+                    public void onConfirmationDialogResult(
+                            @DialogType int dialogType, @ActionConfirmationResult int result) {
+                        // Cases:
+                        // - DialogType.NONE: will always close tabs as no interrupt happened.
+                        // - DialogType.COLLABORATION: will always perform the action. The dialog is used
+                        //   to confirm if the group should remain.
+                        // - DialogType.SYNC: a dialog interrupts the flow. If the action was positive the
+                        //   tabs will be closed.
+                        // The goal is to differentiate whether tabs were closed which can be inferred from
+                        // the combination of `dialogType` and `result`. 
+                        boolean didCloseTabs =
+                                dialogType != DialogType.SYNC
+                                        || result != ActionConfirmationResult.CONFIRMATION_NEGATIVE;
+                        Callback.runNullSafe(didCloseCallback, didCloseTabs);
+                    }
+                };
+        tabModel.getTabRemover().closeTabs(closureParams, /* allowDialog= */ true, listener);
     }
 
     /**
