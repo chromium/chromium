@@ -1301,8 +1301,9 @@ class LensOverlayController::UnderlyingWebContentsObserver
     }
 
     // If the overlay is open, check if we should close it.
-    bool is_reload =
-        navigation_handle->GetReloadType() != content::ReloadType::NONE;
+    bool is_user_reload =
+        navigation_handle->GetReloadType() != content::ReloadType::NONE &&
+        !navigation_handle->IsRendererInitiated();
     // We don't need to close if:
     //   1) The navigation is not for the main page.
     //   2) The navigation hasn't been committed yet.
@@ -1312,7 +1313,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
         !navigation_handle->HasCommitted() ||
         (navigation_handle->GetPreviousPrimaryMainFrameURL() ==
              navigation_handle->GetURL() &&
-         !is_reload)) {
+         !is_user_reload)) {
       return;
     }
     if (lens_overlay_controller_->state() == State::kLivePageAndResults) {
