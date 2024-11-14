@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -284,6 +285,19 @@ public class CardUnmaskPrompt
                     mDidFocusOnYear = true;
                     validate();
                 });
+
+        // Focus the correct initial view once the window is focused.
+        mMainView
+                .getViewTreeObserver()
+                .addOnWindowFocusChangeListener(
+                        new ViewTreeObserver.OnWindowFocusChangeListener() {
+                            @Override
+                            public void onWindowFocusChanged(boolean hasFocus) {
+                                if (hasFocus) {
+                                    setInitialFocus();
+                                }
+                            }
+                        });
     }
 
     /** Avoids disk reads for timezone when getting the default instance of Calendar. */
@@ -320,7 +334,6 @@ public class CardUnmaskPrompt
         // the dialog.
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
         mCardUnmaskInput.addTextChangedListener(this);
-        mCardUnmaskInput.post(() -> setInitialFocus());
     }
 
     public void update(String title, String instructions, boolean shouldRequestExpirationDate) {
