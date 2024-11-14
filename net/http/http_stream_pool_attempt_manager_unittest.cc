@@ -5184,7 +5184,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH2OnlyCancelQuicAttempt) {
               Optional(IsError(ERR_ABORTED)));
 }
 
-TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3Only) {
+TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3OnlyOk) {
   resolver()
       ->AddFakeRequest()
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
@@ -5198,6 +5198,23 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3Only) {
   delegate.CreateAndStartJob(pool());
   EXPECT_THAT(delegate.GetResult(), IsOk());
   EXPECT_EQ(delegate.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3OnlyFail) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  MockQuicData quic_data(quic_version());
+  quic_data.AddRead(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  TestJobDelegate delegate;
+  delegate.set_expected_protocol(NextProto::kProtoQUIC);
+  delegate.set_quic_version(quic_version());
+  delegate.CreateAndStartJob(pool());
+  EXPECT_THAT(delegate.GetResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3OnlyCancelTcpBasedAttempt) {

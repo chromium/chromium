@@ -587,7 +587,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
 
   if (rv != OK &&
       (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllAttemptsFailed ||
-       group_->force_quic())) {
+       group_->force_quic() || !CanUseTcpBasedProtocols())) {
     error_to_notify_ = rv;
     NotifyFailure();
     return;
