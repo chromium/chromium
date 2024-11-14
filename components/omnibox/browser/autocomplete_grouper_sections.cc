@@ -191,15 +191,18 @@ AndroidHubZPSSection::AndroidHubZPSSection(
 
 AndroidHubNonZPSSection::AndroidHubNonZPSSection(
     omnibox::GroupConfigMap& group_configs)
-    : Section(25,
-              // Reserve most of the spots for open tabs.
-              {{20, omnibox::GROUP_MOBILE_OPEN_TABS},
-               {5, omnibox::GROUP_MOBILE_BOOKMARKS},
-               {5, omnibox::GROUP_MOBILE_HISTORY},
-               // Fallback to search suggestions at the bottom of the reuslts.
-               {5, omnibox::GROUP_SEARCH}},
-              group_configs,
-              omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
+    : Section(
+          35,
+          // Reserve most of the spots for open tabs.
+          {{20, omnibox::GROUP_MOBILE_OPEN_TABS},
+           {5, omnibox::GROUP_MOBILE_BOOKMARKS},
+           // LINT.IfChange(HubHistorySectionSlots)
+           {5, omnibox::GROUP_MOBILE_HISTORY},
+           // LINT.ThenChange(//components/omnibox/browser/history_quick_provider.cc:HubHistoryMaxMatches)
+           // Fallback to search suggestions at the bottom of the reuslts.
+           {5, omnibox::GROUP_SEARCH}},
+          group_configs,
+          omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
 
 AndroidNTPZpsSection::AndroidNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
