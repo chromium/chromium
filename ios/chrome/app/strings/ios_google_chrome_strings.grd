@@ -594,7 +594,7 @@ Things to consider:
         Chrome will offer to save your password.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_TITLE" desc="The title of the Save Password tip for the Magic Stack.">
-        Save Your Passwords on Chrome
+        Save Your Passwords in Chrome
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_TITLE" desc="The title of the Safe Browsing tip for the Magic Stack.">
         Get Chrome's Strongest Security
