@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <memory>
 #include <utility>
 
@@ -109,7 +111,7 @@ struct FeaturesTestParam {
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string project_number,
+CreateInvalidationServiceForSenderId(int64_t project_number,
                                      std::string /*log_prefix*/) {
   if (invalidation::IsInvalidationListenerSupported(project_number)) {
     return std::make_unique<invalidation::FakeInvalidationListener>(
@@ -373,8 +375,8 @@ class CloudPolicyTest : public PlatformBrowserTest,
         invalidation::ProfileInvalidationProviderFactory::GetInstance()
             ->GetForProfile(profile())
             ->GetInvalidationServiceOrListener(
-                std::string(GetPolicyInvalidationProjectNumber(
-                    PolicyInvalidationScope::kUser))));
+                GetPolicyInvalidationProjectNumber(
+                    PolicyInvalidationScope::kUser)));
   }
 
   void SetServerPolicy(const em::CloudPolicySettings& settings,

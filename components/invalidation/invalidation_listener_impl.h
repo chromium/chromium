@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INVALIDATION_INVALIDATION_LISTENER_IMPL_H_
 #define COMPONENTS_INVALIDATION_INVALIDATION_LISTENER_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -43,7 +45,7 @@ class InvalidationListenerImpl : public InvalidationListener,
 
   InvalidationListenerImpl(gcm::GCMDriver* gcm_driver,
                            instance_id::InstanceIDDriver* instance_id_driver,
-                           std::string project_number,
+                           int64_t project_number,
                            std::string log_prefix);
   ~InvalidationListenerImpl() override;
 
@@ -56,7 +58,7 @@ class InvalidationListenerImpl : public InvalidationListener,
   void Shutdown() override;
   void SetRegistrationUploadStatus(
       RegistrationTokenUploadStatus status) override;
-  const std::string& project_number() const override;
+  int64_t project_number() const override;
 
   // `GCMAppHandler`:
   void ShutdownHandler() override;
@@ -94,7 +96,7 @@ class InvalidationListenerImpl : public InvalidationListener,
   // Registration data.
   raw_ptr<gcm::GCMDriver> gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
-  const std::string project_number_;
+  const int64_t project_number_;
   const std::string gcm_app_id_;
   const std::string log_prefix_;
 

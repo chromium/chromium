@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INVALIDATION_PROFILE_INVALIDATION_PROVIDER_H_
 #define COMPONENTS_INVALIDATION_PROFILE_INVALIDATION_PROVIDER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -30,7 +32,7 @@ class ProfileInvalidationProvider : public KeyedService {
   using InvalidationServiceOrListenerFactory =
       base::RepeatingCallback<std::variant<
           std::unique_ptr<InvalidationService>,
-          std::unique_ptr<InvalidationListener>>(std::string /*project_id*/,
+          std::unique_ptr<InvalidationListener>>(int64_t /*project_number*/,
                                                  std::string /*log_prefix*/)>;
 
   ProfileInvalidationProvider(
@@ -44,9 +46,9 @@ class ProfileInvalidationProvider : public KeyedService {
   ~ProfileInvalidationProvider() override;
 
   // Returns the `InvalidationService` or `InvalidationListener` specific to
-  // `project_id`.
+  // `project_number`.
   std::variant<InvalidationService*, InvalidationListener*>
-  GetInvalidationServiceOrListener(const std::string& project_id);
+  GetInvalidationServiceOrListener(int64_t project_number);
 
   IdentityProvider* GetIdentityProvider();
 
@@ -62,7 +64,7 @@ class ProfileInvalidationProvider : public KeyedService {
 
   InvalidationServiceOrListenerFactory
       invalidation_service_or_listener_factory_;
-  std::map<std::string,
+  std::map<int64_t,
            std::variant<std::unique_ptr<InvalidationService>,
                         std::unique_ptr<InvalidationListener>>>
       sender_id_to_invalidation_service_or_listener_;

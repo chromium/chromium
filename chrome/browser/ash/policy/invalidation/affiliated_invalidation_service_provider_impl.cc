@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider_impl.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -136,11 +138,11 @@ std::string AffiliatedInvalidationServiceProviderImpl::
 }
 
 AffiliatedInvalidationServiceProviderImpl::
-    AffiliatedInvalidationServiceProviderImpl(std::string project_number)
+    AffiliatedInvalidationServiceProviderImpl(int64_t project_number)
     : current_invalidation_service_(nullptr),
       consumer_count_(0),
       is_shut_down_(false),
-      project_number_(std::move(project_number)) {
+      project_number_(project_number) {
   // The AffiliatedInvalidationServiceProviderImpl should be created before any
   // user Profiles.
   DCHECK(g_browser_process->profile_manager()->GetLoadedProfiles().empty());

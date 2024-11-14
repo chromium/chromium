@@ -4,7 +4,7 @@
 
 #include "chrome/browser/policy/policy_util.h"
 
-#include <string_view>
+#include <stdint.h>
 
 #include "base/feature_list.h"
 #include "base/values.h"
@@ -34,7 +34,7 @@ namespace {
 
 // GCP number to be used for policy invalidations. Policy update is not
 // considered critical to receive invalidation.
-constexpr std::string_view kPolicyInvalidationProjectNumber =
+constexpr int64_t kPolicyInvalidationProjectNumber =
     invalidation::kNonCriticalInvalidationsProjectNumber;
 
 bool IsDirectInvalidationEnabledForScope(PolicyInvalidationScope scope) {
@@ -89,8 +89,7 @@ bool IsOriginInAllowlist(const GURL& url,
   return false;
 }
 
-std::string_view GetPolicyInvalidationProjectNumber(
-    PolicyInvalidationScope scope) {
+int64_t GetPolicyInvalidationProjectNumber(PolicyInvalidationScope scope) {
   if (IsDirectInvalidationEnabledForScope(scope)) {
     return kPolicyInvalidationProjectNumber;
   }

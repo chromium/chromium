@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INVALIDATION_INVALIDATION_FACTORY_H_
 #define COMPONENTS_INVALIDATION_INVALIDATION_FACTORY_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <string_view>
@@ -32,7 +34,7 @@ namespace invalidation {
 
 class IdentityProvider;
 
-bool IsInvalidationListenerSupported(std::string_view project_number);
+bool IsInvalidationListenerSupported(int64_t project_number);
 
 std::variant<std::unique_ptr<InvalidationService>,
              std::unique_ptr<InvalidationListener>>
@@ -42,7 +44,7 @@ CreateInvalidationServiceOrListener(
     instance_id::InstanceIDDriver* instance_id_driver,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
-    std::string project_number,
+    int64_t project_number,
     std::string log_prefix);
 
 // Converts a variant of unique pointers to a corresponding variant of raw

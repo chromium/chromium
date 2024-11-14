@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider_impl.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -48,11 +50,11 @@ namespace {
 const char kAffiliatedUserID1[] = "test_1@example.com";
 const char kAffiliatedUserID2[] = "test_2@example.com";
 const char kUnaffiliatedUserID[] = "test@other_domain.test";
-const char kFakeProjectNumber[] = "fake_project_number";
+const int64_t kFakeProjectNumber = 1234567890;
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string, std::string) {
+CreateInvalidationServiceForProjectNumber(int64_t, std::string) {
   std::unique_ptr<invalidation::FakeInvalidationService> invalidation_service(
       new invalidation::FakeInvalidationService);
   invalidation_service->SetInvalidatorState(
@@ -63,7 +65,7 @@ CreateInvalidationServiceForSenderId(std::string, std::string) {
 std::unique_ptr<KeyedService> BuildProfileInvalidationProvider(
     content::BrowserContext* context) {
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
-      nullptr, base::BindRepeating(&CreateInvalidationServiceForSenderId));
+      nullptr, base::BindRepeating(&CreateInvalidationServiceForProjectNumber));
 }
 
 void SendInvalidatorStateChangeNotification(

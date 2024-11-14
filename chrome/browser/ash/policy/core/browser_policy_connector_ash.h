@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_ASH_H_
 #define CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_ASH_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -263,7 +265,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
   std::unique_ptr<CrdAdminSessionController> crd_admin_session_controller_;
   std::unique_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
-  std::map<std::string,
+  std::map<int64_t,
            std::variant<std::unique_ptr<AffiliatedInvalidationServiceProvider>,
                         std::unique_ptr<invalidation::InvalidationListener>>>
       invalidation_service_provider_or_listener_per_project_;

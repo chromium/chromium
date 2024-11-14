@@ -4,6 +4,8 @@
 
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <utility>
 
@@ -47,7 +49,7 @@ std::variant<std::unique_ptr<InvalidationService>,
              std::unique_ptr<InvalidationListener>>
 CreateInvalidationServiceOrListenerImpl(Profile* profile,
                                         IdentityProvider* identity_provider,
-                                        std::string project_number,
+                                        int64_t project_number,
                                         std::string log_prefix) {
   return CreateInvalidationServiceOrListener(
       identity_provider,
@@ -56,7 +58,7 @@ CreateInvalidationServiceOrListenerImpl(Profile* profile,
           ->driver(),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      profile->GetPrefs(), std::move(project_number), std::move(log_prefix));
+      profile->GetPrefs(), project_number, std::move(log_prefix));
 }
 
 }  // namespace

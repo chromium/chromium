@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 
-#include <string_view>
+#include <stdint.h>
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -28,7 +28,7 @@ namespace {
 
 // GCP number to be used for remote commands invalidations. Remote commands are
 // considered critical to receive invalidation.
-constexpr std::string_view kRemoteCommandsInvalidationsProjectNumber =
+constexpr int64_t kRemoteCommandsInvalidationsProjectNumber =
     invalidation::kCriticalInvalidationsProjectNumber;
 
 bool IsDirectInvalidationEnabledForScope(PolicyInvalidationScope scope) {
@@ -49,7 +49,7 @@ bool IsDirectInvalidationEnabledForScope(PolicyInvalidationScope scope) {
 
 }  // namespace
 
-std::string_view GetRemoteCommandsInvalidationProjectNumber(
+int64_t GetRemoteCommandsInvalidationProjectNumber(
     PolicyInvalidationScope scope) {
   if (IsDirectInvalidationEnabledForScope(scope)) {
     return kRemoteCommandsInvalidationsProjectNumber;

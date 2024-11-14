@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 
+#include <stdint.h>
+
 #include <set>
 #include <string>
 #include <utility>
@@ -84,13 +86,13 @@ constexpr char kInvalidationListenerLogPrefix[] =
     "ChromeBrowserCloudManagementControllerDesktop";
 
 // Returns a set of all project numbers that will be used by the browser.
-std::set<std::string> GetAllInvalidationProjectNumbers() {
+std::set<int64_t> GetAllInvalidationProjectNumbers() {
   // Cannot be a static constant because project number is decided by feature,
   // which is not available during static initialization.
-  return {std::string(policy::GetPolicyInvalidationProjectNumber(
-              PolicyInvalidationScope::kCBCM)),
-          std::string(policy::GetRemoteCommandsInvalidationProjectNumber(
-              PolicyInvalidationScope::kCBCM))};
+  return {policy::GetPolicyInvalidationProjectNumber(
+              PolicyInvalidationScope::kCBCM),
+          policy::GetRemoteCommandsInvalidationProjectNumber(
+              PolicyInvalidationScope::kCBCM)};
 }
 }  // namespace
 
@@ -322,8 +324,8 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
                    ->machine_level_user_cloud_policy_manager()
                    ->core();
 
-  const std::string policy_project_number(
-      GetPolicyInvalidationProjectNumber(PolicyInvalidationScope::kCBCM));
+  const auto policy_project_number =
+      GetPolicyInvalidationProjectNumber(PolicyInvalidationScope::kCBCM);
   CHECK(base::Contains(invalidation_service_or_listener_per_project_,
                        policy_project_number))
       << "Missing invalidation for project: " << policy_project_number;
@@ -339,7 +341,7 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
       std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
       PolicyInvalidationScope::kCBCM);
 
-  const std::string remote_commands_project_number(
+  const auto remote_commands_project_number(
       GetRemoteCommandsInvalidationProjectNumber(
           PolicyInvalidationScope::kCBCM));
   CHECK(base::Contains(invalidation_service_or_listener_per_project_,

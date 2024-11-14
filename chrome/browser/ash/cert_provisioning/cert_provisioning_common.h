@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_COMMON_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_COMMON_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
@@ -309,7 +310,7 @@ std::string MakeInvalidationListenerType(
 bool ShouldOnlyUseInvalidations();
 
 // Returns GCP number for cert provisioning invalidations of given `scope`.
-std::string_view GetCertProvisioningInvalidationProjectNumber(CertScope scope);
+int64_t GetCertProvisioningInvalidationProjectNumber(CertScope scope);
 
 }  // namespace cert_provisioning
 }  // namespace ash

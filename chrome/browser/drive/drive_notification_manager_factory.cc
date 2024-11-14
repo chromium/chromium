@@ -4,6 +4,8 @@
 
 #include "chrome/browser/drive/drive_notification_manager_factory.h"
 
+#include <stdint.h>
+
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_notification_manager.h"
@@ -14,7 +16,7 @@
 namespace drive {
 namespace {
 
-constexpr char kDriveFcmSenderId[] = "947318989803";
+constexpr int64_t kDriveFcmSenderId = 947318989803;
 
 invalidation::InvalidationService* GetInvalidationService(Profile* profile) {
   auto* profile_invalidation_factory =

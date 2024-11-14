@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 
+#include <stdint.h>
+
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "components/invalidation/invalidation_listener.h"
@@ -27,7 +29,6 @@ namespace {
 
 const char kFakeRegistrationToken[] = "fake_registration_token";
 const char kFakeDMToken[] = "fake_dm_token";
-const char kFakeProjectNumberStr[] = "1234567890";
 const int64_t kFakeProjectNumber = 1234567890;
 const int kExpectedProtocolVersion = 1;
 const base::Time kFakeTokenEndOfLife = base::Time::Now();
@@ -48,10 +49,7 @@ class MockInvalidationListener : public invalidation::InvalidationListener {
               (override));
   MOCK_METHOD(void, Shutdown, (), (override));
 
-  const std::string& project_number() const override { return project_number_; }
-
- private:
-  const std::string project_number_ = kFakeProjectNumberStr;
+  int64_t project_number() const override { return kFakeProjectNumber; }
 };
 }  // namespace
 

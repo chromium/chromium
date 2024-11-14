@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_POLICY_UTIL_H_
 #define CHROME_BROWSER_POLICY_POLICY_UTIL_H_
 
-#include <string_view>
+#include <stdint.h>
 
 #include "base/feature_list.h"
 
@@ -32,8 +32,7 @@ bool IsOriginInAllowlist(const GURL& url,
                          const char* always_allow_pref_name = nullptr);
 
 // Returns GCP number for policy invalidations of given `scope`.
-std::string_view GetPolicyInvalidationProjectNumber(
-    PolicyInvalidationScope scope);
+int64_t GetPolicyInvalidationProjectNumber(PolicyInvalidationScope scope);
 
 }  // namespace policy
 

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/policy/cloud/user_fm_registration_token_uploader.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <set>
-#include <string>
 #include <variant>
 
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
@@ -26,18 +27,16 @@
 namespace {
 
 // Returns a set of all project numbers that will be used by user.
-std::set<std::string> GetAllInvalidationProjectNumbers() {
+std::set<int64_t> GetAllInvalidationProjectNumbers() {
   // Cannot be a static constant because project number is decided by feature,
   // which is not available during static initialization.
-  return {
-      std::string(policy::GetPolicyInvalidationProjectNumber(
-          policy::PolicyInvalidationScope::kUser)),
-      std::string(policy::GetRemoteCommandsInvalidationProjectNumber(
-          policy::PolicyInvalidationScope::kUser)),
+  return {policy::GetPolicyInvalidationProjectNumber(
+              policy::PolicyInvalidationScope::kUser),
+          policy::GetRemoteCommandsInvalidationProjectNumber(
+              policy::PolicyInvalidationScope::kUser),
 #if BUILDFLAG(IS_CHROMEOS)
-      std::string(
           ash::cert_provisioning::GetCertProvisioningInvalidationProjectNumber(
-              ash::cert_provisioning::CertScope::kUser))
+              ash::cert_provisioning::CertScope::kUser)
 #endif
   };
 }

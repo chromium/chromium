@@ -4,6 +4,8 @@
 
 #include "components/invalidation/invalidation_factory.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -26,12 +28,12 @@
 namespace invalidation {
 
 namespace {
-constexpr auto kInvalidationProjects = base::MakeFixedFlatSet<std::string_view>(
-    {kCriticalInvalidationsProjectNumber,
-     kNonCriticalInvalidationsProjectNumber});
+constexpr auto kInvalidationProjects =
+    base::MakeFixedFlatSet<int64_t>({kCriticalInvalidationsProjectNumber,
+                                     kNonCriticalInvalidationsProjectNumber});
 }
 
-bool IsInvalidationListenerSupported(std::string_view project_number) {
+bool IsInvalidationListenerSupported(int64_t project_number) {
   return kInvalidationProjects.contains(project_number);
 }
 
@@ -43,12 +45,11 @@ CreateInvalidationServiceOrListener(
     instance_id::InstanceIDDriver* instance_id_driver,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
-    std::string project_number,
+    int64_t project_number,
     std::string log_prefix) {
   if (IsInvalidationListenerSupported(project_number)) {
     return InvalidationListener::Create(gcm_driver, instance_id_driver,
-                                        std::move(project_number),
-                                        std::move(log_prefix));
+                                        project_number, std::move(log_prefix));
   }
 
   auto service = std::make_unique<invalidation::FCMInvalidationService>(
@@ -59,7 +60,7 @@ CreateInvalidationServiceOrListener(
       base::BindRepeating(
           &invalidation::PerUserTopicSubscriptionManager::Create,
           base::RetainedRef(url_loader_factory)),
-      instance_id_driver, pref_service, std::move(project_number));
+      instance_id_driver, pref_service, base::NumberToString(project_number));
   service->Init();
   return service;
 }

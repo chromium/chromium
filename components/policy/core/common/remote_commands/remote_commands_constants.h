@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_CONSTANTS_H_
 #define COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_CONSTANTS_H_
 
-#include <string_view>
+#include <stdint.h>
 
 #include "base/feature_list.h"
 #include "components/policy/policy_export.h"
@@ -22,8 +22,8 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(
     kCbcmRemoteCommandsInvalidationWithDirectMessagesEnabled);
 
 // Returns GCP number for remote commands invalidations of given `scope`.
-POLICY_EXPORT std::string_view GetRemoteCommandsInvalidationProjectNumber(
-    PolicyInvalidationScope scope);
+POLICY_EXPORT int64_t
+GetRemoteCommandsInvalidationProjectNumber(PolicyInvalidationScope scope);
 
 }  // namespace policy
 

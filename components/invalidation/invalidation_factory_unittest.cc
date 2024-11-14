@@ -4,6 +4,8 @@
 
 #include "components/invalidation/invalidation_factory.h"
 
+#include <stdint.h>
+
 #include <variant>
 
 #include "base/test/task_environment.h"
@@ -25,8 +27,8 @@
 namespace invalidation {
 namespace {
 
-constexpr char kDriveFcmSenderId[] = "947318989803";
-constexpr char kFakeProjectId[] = "fake_project_id";
+constexpr int64_t kDriveFcmProjectNumber = 947318989803;
+constexpr int64_t kFakeProjectNumber = 1234567890;
 
 constexpr char kLogPrefix[] = "test log";
 
@@ -113,7 +115,7 @@ TEST_F(InvalidationFactoryWithDirectMessagesDisabledTest,
   auto service_or_listener = CreateInvalidationServiceOrListener(
       &identity_provider_, &fake_gcm_driver_, &mock_instance_id_driver_,
       test_url_loader_factory_.GetSafeWeakWrapper(), &pref_service_,
-      kFakeProjectId, kLogPrefix);
+      kFakeProjectNumber, kLogPrefix);
 
   ASSERT_TRUE(std::holds_alternative<std::unique_ptr<InvalidationService>>(
       service_or_listener));
@@ -126,7 +128,7 @@ TEST_F(InvalidationFactoryWithDirectMessagesDisabledTest,
   auto service_or_listener = CreateInvalidationServiceOrListener(
       &identity_provider_, &fake_gcm_driver_, &mock_instance_id_driver_,
       test_url_loader_factory_.GetSafeWeakWrapper(), &pref_service_,
-      kDriveFcmSenderId, kLogPrefix);
+      kDriveFcmProjectNumber, kLogPrefix);
 
   ASSERT_TRUE(std::holds_alternative<std::unique_ptr<InvalidationService>>(
       service_or_listener));
@@ -136,7 +138,7 @@ TEST_F(InvalidationFactoryWithDirectMessagesDisabledTest,
 
 class InvalidationFactoryWithDirectMessagesEnabledTest
     : public InvalidationFactoryTestBase,
-      public testing::WithParamInterface<std::string> {
+      public testing::WithParamInterface<int64_t> {
  protected:
   const auto& GetProjectNumber() const { return GetParam(); }
 };

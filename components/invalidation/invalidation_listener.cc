@@ -4,6 +4,8 @@
 
 #include "components/invalidation/invalidation_listener.h"
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -23,7 +25,7 @@ base::Time DirectInvalidation::issue_timestamp() const {
 std::unique_ptr<InvalidationListener> InvalidationListener::Create(
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
-    std::string project_number,
+    int64_t project_number,
     std::string log_prefix) {
   return std::make_unique<InvalidationListenerImpl>(
       gcm_driver, instance_id_driver, std::move(project_number),

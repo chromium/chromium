@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_CONSTANTS_H_
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_CONSTANTS_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "components/policy/policy_export.h"
@@ -228,7 +230,7 @@ enum class MarketSegment {
 
 // Sender ID of FCM (Firebase Cloud Messaging)
 // Policy Invalidation sender coming from the Firebase console.
-inline constexpr char kPolicyFCMInvalidationSenderID[] = "1013309121859";
+inline constexpr int64_t kPolicyFCMInvalidationSenderID = 1013309121859;
 
 // Kiosk SKU name. This is the constant of the enrollment license type that
 // exists on the server side.

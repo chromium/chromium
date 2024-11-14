@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_CONTROLLER_DESKTOP_H_
 #define CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_CONTROLLER_DESKTOP_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <variant>
 #include <vector>
@@ -89,7 +91,7 @@ class ChromeBrowserCloudManagementControllerDesktop
   scoped_refptr<network::SharedURLLoaderFactory> gaia_url_loader_factory_;
   std::unique_ptr<DeviceIdentityProvider> identity_provider_;
   std::unique_ptr<instance_id::InstanceIDDriver> device_instance_id_driver_;
-  std::map<std::string,
+  std::map<int64_t,
            std::variant<std::unique_ptr<invalidation::InvalidationService>,
                         std::unique_ptr<invalidation::InvalidationListener>>>
       invalidation_service_or_listener_per_project_;

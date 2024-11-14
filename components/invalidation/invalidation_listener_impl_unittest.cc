@@ -4,6 +4,8 @@
 
 #include "components/invalidation/invalidation_listener_impl.h"
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/strings/strcat.h"
@@ -27,8 +29,10 @@ namespace invalidation {
 
 namespace {
 
-constexpr char kFakeProjectNumber[] = "fake_project_number";
-constexpr char kFakeProjectNumber2[] = "fake_project_number2";
+constexpr int64_t kFakeProjectNumber = 1234567890;
+constexpr char kFakeProjectNumberStr[] = "1234567890";
+constexpr int64_t kFakeProjectNumber2 = 9876543210;
+constexpr char kFakeProjectNumber2Str[] = "9876543210";
 constexpr char kTestLogPrefix[] = "test";
 constexpr char kFakeRegistrationToken[] = "fake_registration_token";
 constexpr char kMessagePayload[] = "payload";
@@ -140,10 +144,10 @@ class InvalidationListenerImplTest : public testing::Test {
 
   void SetUp() override {
     ON_CALL(mock_instance_id__driver_,
-            GetInstanceID(GetGcmAppId(kFakeProjectNumber)))
+            GetInstanceID(GetGcmAppId(kFakeProjectNumberStr)))
         .WillByDefault(Return(&mock_instance_id_));
     ON_CALL(mock_instance_id__driver_,
-            GetInstanceID(GetGcmAppId(kFakeProjectNumber2)))
+            GetInstanceID(GetGcmAppId(kFakeProjectNumber2Str)))
         .WillByDefault(Return(&mock_instance_id_));
   }
   void TearDown() override {}
@@ -152,7 +156,7 @@ class InvalidationListenerImplTest : public testing::Test {
   void SetRegistrationTokenFetchState(
       const std::string& registration_token,
       instance_id::InstanceID::Result result,
-      std::string project_number = kFakeProjectNumber) {
+      std::string project_number = kFakeProjectNumberStr) {
     ON_CALL(mock_instance_id_,
             GetToken(/*authorized_entity=*/project_number,
                      /*scope=*/instance_id::kGCMScope,
@@ -193,10 +197,10 @@ TEST_F(InvalidationListenerImplTest,
        SuccessfullyStartsTwoListenersForDifferentProjects) {
   SetRegistrationTokenFetchState(kFakeRegistrationToken,
                                  instance_id::InstanceID::SUCCESS,
-                                 kFakeProjectNumber);
+                                 kFakeProjectNumberStr);
   SetRegistrationTokenFetchState(kFakeRegistrationToken,
                                  instance_id::InstanceID::SERVER_ERROR,
-                                 kFakeProjectNumber2);
+                                 kFakeProjectNumber2Str);
   InvalidationListenerImpl listener(&fake_gcm_driver_,
                                     &mock_instance_id__driver_,
                                     kFakeProjectNumber, kTestLogPrefix);
@@ -313,7 +317,7 @@ TEST_F(InvalidationListenerImplTest,
   message_for_fake_observer.data["payload"] = kMessagePayload;
   message_for_fake_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(GetGcmAppId(kFakeProjectNumber),
+  listener.OnMessage(GetGcmAppId(kFakeProjectNumberStr),
                      message_for_fake_observer);
   // Setting up another message not intended for `observer`, to check that
   // `InvalidationListener` correctly redirects cached messages.
@@ -322,7 +326,7 @@ TEST_F(InvalidationListenerImplTest,
   message_not_for_fake_observer.data["payload"] = kMessagePayload;
   message_not_for_fake_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(GetGcmAppId(kFakeProjectNumber),
+  listener.OnMessage(GetGcmAppId(kFakeProjectNumberStr),
                      message_not_for_fake_observer);
 
   listener.AddObserver(&observer);
@@ -348,7 +352,7 @@ TEST_F(InvalidationListenerImplTest,
   message_for_fake_observer.data["payload"] = kMessagePayload;
   message_for_fake_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(GetGcmAppId(kFakeProjectNumber),
+  listener.OnMessage(GetGcmAppId(kFakeProjectNumberStr),
                      message_for_fake_observer);
   // Setting up another message not intended for `observer`, to check that
   // `InvalidationListener` correctly redirects incoming messages.
@@ -357,7 +361,7 @@ TEST_F(InvalidationListenerImplTest,
   message_for_another_observer.data["payload"] = kMessagePayload;
   message_for_another_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(GetGcmAppId(kFakeProjectNumber),
+  listener.OnMessage(GetGcmAppId(kFakeProjectNumberStr),
                      message_for_another_observer);
 
   EXPECT_EQ(
@@ -378,7 +382,7 @@ TEST_F(InvalidationListenerImplTest, ListenerProperlyCleansUpCachedMessages) {
   message_for_fake_observer.data["payload"] = kMessagePayload;
   message_for_fake_observer.data["issue_timestamp_ms"] =
       base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
-  listener.OnMessage(GetGcmAppId(kFakeProjectNumber),
+  listener.OnMessage(GetGcmAppId(kFakeProjectNumberStr),
                      message_for_fake_observer);
   listener.AddObserver(&observer);
   EXPECT_EQ(
@@ -406,7 +410,7 @@ TEST_F(InvalidationListenerImplTest, ShutsdownCorrectly) {
 
   listener.Shutdown();
 
-  EXPECT_EQ(fake_gcm_driver_.GetAppHandler(kFakeProjectNumber), nullptr);
+  EXPECT_EQ(fake_gcm_driver_.GetAppHandler(kFakeProjectNumberStr), nullptr);
 }
 
 }  // namespace invalidation

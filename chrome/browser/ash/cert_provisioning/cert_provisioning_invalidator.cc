@@ -286,8 +286,8 @@ void CertProvisioningUserInvalidator::Register(
   invalidation_handler_ =
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
           CertScope::kUser,
-          invalidation_provider->GetInvalidationServiceOrListener(std::string(
-              GetCertProvisioningInvalidationProjectNumber(CertScope::kUser))),
+          invalidation_provider->GetInvalidationServiceOrListener(
+              GetCertProvisioningInvalidationProjectNumber(CertScope::kUser)),
           topic, listener_type, std::move(on_invalidation_event_callback));
 
   if (!invalidation_handler_) {

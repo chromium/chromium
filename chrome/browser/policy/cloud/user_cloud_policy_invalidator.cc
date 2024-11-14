@@ -69,9 +69,8 @@ void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
     return;
   }
 
-  Initialize(
-      invalidation_provider->GetInvalidationServiceOrListener(std::string(
-          GetPolicyInvalidationProjectNumber(PolicyInvalidationScope::kUser))));
+  Initialize(invalidation_provider->GetInvalidationServiceOrListener(
+      GetPolicyInvalidationProjectNumber(PolicyInvalidationScope::kUser)));
 }
 
 }  // namespace policy

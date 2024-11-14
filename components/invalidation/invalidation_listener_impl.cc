@@ -4,6 +4,8 @@
 
 #include "components/invalidation/invalidation_listener_impl.h"
 
+#include <stdint.h>
+
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -89,13 +91,15 @@ void Upsert(std::map<Topic, DirectInvalidation>& map,
 InvalidationListenerImpl::InvalidationListenerImpl(
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
-    std::string project_number,
+    int64_t project_number,
     std::string log_prefix)
     : gcm_driver_(gcm_driver),
       instance_id_driver_(instance_id_driver),
-      project_number_(std::move(project_number)),
-      gcm_app_id_(base::StrCat({kFmAppId, "-", project_number_})),
-      log_prefix_(base::StrCat({log_prefix, "-", project_number_})),
+      project_number_(project_number),
+      gcm_app_id_(
+          base::StrCat({kFmAppId, "-", base::NumberToString(project_number_)})),
+      log_prefix_(base::StrCat(
+          {log_prefix, "-", base::NumberToString(project_number_)})),
       registration_retry_backoff_(&kRegistrationRetryBackoffPolicy) {
   LOG(WARNING) << log_prefix_
                << " Created for project_number: " << project_number_;
@@ -170,7 +174,7 @@ void InvalidationListenerImpl::SetRegistrationUploadStatus(
   UpdateObserversExpectations();
 }
 
-const std::string& InvalidationListenerImpl::project_number() const {
+int64_t InvalidationListenerImpl::project_number() const {
   return project_number_;
 }
 
@@ -235,7 +239,7 @@ void InvalidationListenerImpl::OnSendAcknowledged(
 void InvalidationListenerImpl::FetchRegistrationToken() {
   instance_id_driver_->GetInstanceID(gcm_app_id_)
       ->GetToken(
-          project_number_, instance_id::kGCMScope,
+          base::NumberToString(project_number_), instance_id::kGCMScope,
           /*time_to_live=*/kRegistrationTokenTimeToLive,
           /*flags=*/{instance_id::InstanceID::Flags::kIsLazy},
           base::BindOnce(&InvalidationListenerImpl::OnRegistrationTokenReceived,

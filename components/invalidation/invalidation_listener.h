@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INVALIDATION_INVALIDATION_LISTENER_H_
 #define COMPONENTS_INVALIDATION_INVALIDATION_LISTENER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 
@@ -120,7 +122,7 @@ class InvalidationListener {
   static std::unique_ptr<InvalidationListener> Create(
       gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
-      std::string project_number,
+      int64_t project_number,
       std::string log_prefix);
 
   // The following functions are to be used by the `RegistrationTokenHandler`
@@ -133,7 +135,7 @@ class InvalidationListener {
 
   // Returns proeject number of Google Cloud Project this listener is registered
   // with.
-  virtual const std::string& project_number() const = 0;
+  virtual int64_t project_number() const = 0;
 };
 
 }  // namespace invalidation

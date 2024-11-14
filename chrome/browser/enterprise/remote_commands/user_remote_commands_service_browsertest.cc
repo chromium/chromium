@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "base/command_line.h"
@@ -69,11 +71,11 @@ struct FeaturesTestParam {
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string project_number,
-                                     std::string /*log_prefix*/) {
+CreateInvalidationServiceForProjectNumber(int64_t project_number,
+                                          std::string /*log_prefix*/) {
   if (invalidation::IsInvalidationListenerSupported(project_number)) {
     return std::make_unique<invalidation::FakeInvalidationListener>(
-        std::move(project_number));
+        project_number);
   }
 
   return std::make_unique<invalidation::FakeInvalidationService>();
@@ -85,7 +87,7 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)),
-      base::BindRepeating(&CreateInvalidationServiceForSenderId));
+      base::BindRepeating(&CreateInvalidationServiceForProjectNumber));
 }
 
 }  // namespace
@@ -220,15 +222,15 @@ class UserRemoteCommandsServiceTest
 #endif
   }
 
-  invalidation::FakeInvalidationService* GetInvalidationServiceForSenderId(
-      std::string sender_id) {
+  invalidation::FakeInvalidationService* GetInvalidationServiceForProjectNumber(
+      int64_t project_number) {
     auto* profile_invalidation_provider_factory =
         static_cast<invalidation::ProfileInvalidationProvider*>(
             invalidation::ProfileInvalidationProviderFactory::GetInstance()
                 ->GetForProfile(profile()));
     auto invalidation_service_or_listener =
         profile_invalidation_provider_factory->GetInvalidationServiceOrListener(
-            std::move(sender_id));
+            project_number);
     CHECK(std::holds_alternative<invalidation::InvalidationService*>(
         invalidation_service_or_listener));
     return static_cast<invalidation::FakeInvalidationService*>(
