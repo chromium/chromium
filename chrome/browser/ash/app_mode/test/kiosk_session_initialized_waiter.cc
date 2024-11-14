@@ -17,16 +17,16 @@ KioskSessionInitializedWaiter::KioskSessionInitializedWaiter() {
 
 KioskSessionInitializedWaiter::~KioskSessionInitializedWaiter() = default;
 
-void KioskSessionInitializedWaiter::Wait() {
+bool KioskSessionInitializedWaiter::Wait() {
   if (KioskController::Get().GetKioskSystemSession() != nullptr) {
     // Kiosk session already initialized, nothing to wait for.
-    return;
+    return true;
   }
-  run_loop_.Run();
+  return initialized_future_.Wait();
 }
 
 void KioskSessionInitializedWaiter::OnKioskSessionInitialized() {
-  run_loop_.Quit();
+  initialized_future_.SetValue();
 }
 
 }  // namespace ash

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_SESSION_INITIALIZED_WAITER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_SESSION_INITIALIZED_WAITER_H_
 
-#include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 
@@ -21,16 +21,21 @@ class KioskSessionInitializedWaiter : public KioskAppManagerObserver {
   KioskSessionInitializedWaiter& operator=(
       const KioskSessionInitializedWaiter&) = delete;
 
-  void Wait();
+  // Waits until the session initializes. Returns `true` if the session
+  // initialized before the timeout, false otherwise.
+  //
+  // TODO(crbug.com/379042338): Annotate with `nodiscard`.
+  bool Wait();
 
  private:
   // KioskAppManagerObserver:
   void OnKioskSessionInitialized() override;
 
+  base::test::TestFuture<void> initialized_future_;
+
   base::ScopedMultiSourceObservation<KioskAppManagerBase,
                                      KioskAppManagerObserver>
       scoped_observations_{this};
-  base::RunLoop run_loop_;
 };
 
 }  // namespace ash
