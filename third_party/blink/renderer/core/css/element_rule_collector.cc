@@ -533,6 +533,8 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       continue;
     }
 
+    context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
+
     // We cannot use easy selector matching for VTT elements.
     // It is also not prepared to deal with the featurelessness
     // of the host (see comment in SelectorChecker::CheckOne()).
@@ -540,7 +542,9 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     // as we need to match them against an array of ancestors.
     bool can_use_easy_selector_matching =
         !context.pseudo_element && context.vtt_originating_element == nullptr &&
-        !(context.scope && context.scope->OwnerShadowHost() == context.element);
+        !(context.scope &&
+          context.scope->OwnerShadowHost() == context.element) &&
+        !context.style_scope;
 
     SelectorChecker::MatchResult result;
     if (can_use_easy_selector_matching &&
@@ -552,8 +556,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         continue;
       }
 #if DCHECK_IS_ON()
-      context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
-      DCHECK(!context.style_scope);
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
                                         suppress_visited_, result.proximity));
 #endif
@@ -563,8 +565,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
       bool easy_match = EasySelectorChecker::Match(&selector, context.element);
 #if DCHECK_IS_ON()
-      context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
-      DCHECK(!context.style_scope);
       DCHECK_EQ(easy_match, SlowMatchWithNoResultFlags(
                                 checker, context, selector, rule_data,
                                 suppress_visited_, result.proximity))
@@ -579,7 +579,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       context.match_visited =
           !suppress_visited_ &&
           rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
-      context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
       bool match = checker.Match(context, result);
       result_.AddFlags(result.flags);
       if (!match) {

@@ -923,7 +923,8 @@ bool RuleSet::MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
 
 void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
                                 const MediaQueryEvaluator& medium,
-                                CascadeLayer* cascade_layer) {
+                                CascadeLayer* cascade_layer,
+                                const StyleScope* style_scope) {
   TRACE_EVENT0("blink", "RuleSet::addRulesFromSheet");
   DCHECK(sheet);
 
@@ -949,13 +950,14 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
           GetOrAddSubLayer(cascade_layer, import_rule->GetLayerName());
     }
     if (import_rule->GetStyleSheet()) {
-      AddRulesFromSheet(import_rule->GetStyleSheet(), medium, import_layer);
+      AddRulesFromSheet(import_rule->GetStyleSheet(), medium, import_layer,
+                        import_rule->GetScope());
     }
   }
 
   AddChildRules(/*parent_rule=*/nullptr, sheet->ChildRules(), medium,
                 kRuleHasNoSpecialState, nullptr /* container_query */,
-                cascade_layer, nullptr, /*within_mixin=*/false);
+                cascade_layer, style_scope, /*within_mixin=*/false);
 }
 
 // If there's a reference to the parent selector (implicit or explicit)

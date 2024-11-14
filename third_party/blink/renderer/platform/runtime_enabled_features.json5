@@ -1225,6 +1225,12 @@
       status: "stable",
     },
     {
+      // The "@import scope(...)" syntax.
+      // https://github.com/w3c/csswg-drafts/issues/7348
+      name: "CSSScopeImport",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
       name: "CSSScrollSnapChangeEvent",
       status: "stable",

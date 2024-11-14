@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1147,6 +1148,22 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
   }
   stream.ConsumeWhitespace();
 
+  const StyleScope* style_scope = nullptr;
+  if (RuntimeEnabledFeatures::CSSScopeImportEnabled() &&
+      stream.Peek().FunctionId() == CSSValueID::kScope) {
+    {
+      CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      style_scope = StyleScope::Parse(stream, context_, CSSNestingType::kNone,
+                                      /*parent_rule_for_nesting=*/nullptr,
+                                      /*is_within_scope=*/false, style_sheet_);
+      if (!guard.Release()) {
+        style_scope = nullptr;
+      }
+    }
+  }
+  stream.ConsumeWhitespace();
+
   // Parse the rest of the prelude as a media query.
   // TODO(sesse): When the media query parser becomes streaming,
   // we can just parse media queries here instead.
@@ -1172,7 +1189,8 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
   }
 
   return MakeGarbageCollected<StyleRuleImport>(
-      uri, std::move(layer), supported == CSSSupportsParser::Result::kSupported,
+      uri, std::move(layer), style_scope,
+      supported == CSSSupportsParser::Result::kSupported,
       supports_string.ToString(), media_query_set,
       context_->IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse);
 }

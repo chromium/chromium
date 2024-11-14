@@ -380,7 +380,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   void AddRulesFromSheet(StyleSheetContents*,
                          const MediaQueryEvaluator&,
-                         CascadeLayer* = nullptr);
+                         CascadeLayer* = nullptr,
+                         const StyleScope* = nullptr);
 
   // “within_mixin” means that we are currently adding this rule
   // as part of @apply in a mixin, and all rules we add must be

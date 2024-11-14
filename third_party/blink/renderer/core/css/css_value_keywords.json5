@@ -1728,6 +1728,8 @@
 
     // supports in import rule: @import supports()
     "supports",
+    // @import scope()
+    "scope",
 
     // color-contrast()
     "color-contrast",

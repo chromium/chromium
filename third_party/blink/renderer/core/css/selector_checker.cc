@@ -305,7 +305,12 @@ namespace {
 
 bool NeedsScopeActivation(
     const SelectorChecker::SelectorCheckingContext& context) {
-  return context.style_scope && context.selector->IsScopeContaining();
+  // If we reach the end of the selector without handling context.style_scope,
+  // it means that we didn't find any selectors with the IsScopeContaining
+  // flag set, but we still need to ensure that we're in scope.
+  // This can happen for stylesheets imported using "@import scope(...)".
+  return context.style_scope && (context.selector->IsScopeContaining() ||
+                                 context.selector->IsLastInComplexSelector());
 }
 
 }  // namespace
