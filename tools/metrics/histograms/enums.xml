@@ -33982,6 +33982,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="229" label="MoveBeforeAPI"/>
   <int value="230" label="ScrollDrivenAnimations"/>
   <int value="231" label="WebAnimations"/>
+  <int value="232" label="CrossDocumentViewTransition"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

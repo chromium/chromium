@@ -560,6 +560,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kV8Element_GetAnimations_Method,
            WebDXFeature::kWebAnimations},
           {WebFeature::kV8Animation_Constructor, WebDXFeature::kWebAnimations},
+          {WebFeature::kCSSAtRuleViewTransition,
+           WebDXFeature::kCrossDocumentViewTransition},
       }};
 
   return *kMap;
