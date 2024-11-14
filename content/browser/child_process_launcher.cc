@@ -287,6 +287,10 @@ bool RenderProcessPriority::is_background() const {
         boost_for_pending_views) {
       return false;
     }
+    // TODO(351953350): Migrate this logic to the performance manager.
+    if (boost_for_loading) {
+      return false;
+    }
     return *priority_override == base::Process::Priority::kBestEffort;
   }
 #endif
@@ -301,6 +305,10 @@ base::Process::Priority RenderProcessPriority::GetProcessPriority() const {
     // system if it has a positive impact.
     if (base::FeatureList::IsEnabled(features::kPriorityOverridePendingViews) &&
         boost_for_pending_views) {
+      return base::Process::Priority::kUserBlocking;
+    }
+    // TODO(351953350): Migrate this logic to the performance manager.
+    if (boost_for_loading) {
       return base::Process::Priority::kUserBlocking;
     }
     return *priority_override;
