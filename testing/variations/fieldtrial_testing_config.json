@@ -24025,24 +24025,6 @@
             ]
         }
     ],
-    "UnoDesktopM0Full": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExplicitBrowserSigninUIOnDesktop",
-                        "SyncEnableContactInfoDataTypeInTransportMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnoPwa": [
         {
             "platforms": [
