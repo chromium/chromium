@@ -679,7 +679,11 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
       return SkColorSpace::MakeSRGBLinear();
   }
 
-  skcms_TransferFunction transfer_fn = SkNamedTransferFnExt::kSRGB;
+  // This is almost equal to SkNamedTransferFunction::kSRGB, but has some slight
+  // rounding differences that some tests depend on. These tests should be
+  // updated.
+  skcms_TransferFunction transfer_fn = {2.4f, 0.947867345704f, 0.052132654296f,
+                                        0.077399380805f, 0.040449937172f};
   switch (transfer_) {
     case TransferID::SRGB:
       break;
