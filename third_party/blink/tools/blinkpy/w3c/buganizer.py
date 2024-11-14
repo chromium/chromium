@@ -131,11 +131,12 @@ class BuganizerClient:
     def __init__(self, service=None, web: Optional[Web] = None):
         self._web = web or Web()
         self._service = service
+        self.http = None
         if self._service is not None:
             return
 
-        http = ServiceAccountHttp(BUGANIZER_SCOPES)
-        http.timeout = 30
+        self.http = ServiceAccountHttp(BUGANIZER_SCOPES)
+        self.http.timeout = 30
         http_exception = None
         for attempt in range(MAX_DISCOVERY_RETRIES):
             try:
@@ -143,7 +144,7 @@ class BuganizerClient:
                     'issuetracker',
                     'v1',
                     discoveryServiceUrl=_DISCOVERY_URI,
-                    http=http)
+                    http=self.http)
                 break
             except http_client.HTTPException as e:
                 logging.error('Attempt #%d: %s', attempt + 1, e)
@@ -296,7 +297,7 @@ class BuganizerClient:
             The response if there was one, or else None.
         """
         response = request.execute(num_retries=MAX_REQUEST_RETRIES,
-                                   http=ServiceAccountHttp(BUGANIZER_SCOPES))
+                                   http=self.http)
         return response
 
     def NewIssue(self,
