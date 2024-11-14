@@ -638,11 +638,11 @@ namespace {
                                 const char* buf_start,
                                 const char* prefix_end,
                                 const char* buf_end) {
-  // This simulates a CHECK(false) at file:line instead of here. This is used
+  // This simulates a NOTREACHED() at file:line instead of here. This is used
   // instead of base::ImmediateCrash() to give better error messages locally
   // (printed stack for one).
   LogMessageFatal(file, line, LOGGING_FATAL).stream()
-      << "Check failed: false. " << prefix_end;
+      << "NOTREACHED hit. " << prefix_end;
 }
 
 }  // namespace

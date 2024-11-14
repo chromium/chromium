@@ -33,7 +33,7 @@ namespace debug {
 //   int last_error = err_;
 //   base::debug::Alias(&last_error);
 //   DEBUG_ALIAS_FOR_CSTR(name_copy, p->name, 16);
-//   CHECK(false);
+//   NOTREACHED();
 //
 // Case #2: Prevent a tail call into a function. This is useful to make sure the
 // function containing the call to base::debug::Alias() will be present in the

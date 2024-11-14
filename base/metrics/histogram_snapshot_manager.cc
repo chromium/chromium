@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/notreached.h"
 
 namespace base {
 
@@ -86,14 +87,14 @@ void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
     uint32_t ranges_checksum = ranges->checksum();
     uint32_t ranges_calc_checksum = ranges->CalculateChecksum();
     int32_t flags = histogram->flags();
-    // The checksum should have caught this, so crash separately if it didn't.
-    CHECK_NE(0U, HistogramBase::RANGE_CHECKSUM_ERROR & corruption);
-    CHECK(false);  // Crash for the bucket order corruption.
     // Ensure that compiler keeps around pointers to |histogram| and its
     // internal |bucket_ranges_| for any minidumps.
     base::debug::Alias(&ranges_checksum);
     base::debug::Alias(&ranges_calc_checksum);
     base::debug::Alias(&flags);
+    // The checksum should have caught this, so crash separately if it didn't.
+    CHECK_NE(0U, HistogramBase::RANGE_CHECKSUM_ERROR & corruption);
+    NOTREACHED();  // Crash for the bucket order corruption.
   }
   // Checksum corruption might not have caused order corruption.
   CHECK_EQ(0U, HistogramBase::RANGE_CHECKSUM_ERROR & corruption);

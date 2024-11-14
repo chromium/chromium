@@ -21,6 +21,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/task_features.h"
@@ -286,7 +287,7 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
 }
 
 void MessagePumpAndroid::Run(Delegate* delegate) {
-  CHECK(false) << "Unexpected call to Run()";
+  NOTREACHED() << "Unexpected call to Run()";
 }
 
 void MessagePumpAndroid::Attach(Delegate* delegate) {

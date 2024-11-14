@@ -34,7 +34,7 @@ namespace {
 // therefore considered sufficient to track all locks held by a thread. A
 // dynamic-size array (e.g. owned by a `ThreadLocalOwnedPointer`) would require
 // handling reentrancy issues with allocator shims that use `base::Lock`.
-constexpr int kHeldLocksCapacity = 10;
+constexpr size_t kHeldLocksCapacity = 10;
 thread_local std::array<uintptr_t, kHeldLocksCapacity>
     g_tracked_locks_held_by_thread;
 
@@ -96,12 +96,10 @@ void Lock::AddToLocksHeldOnCurrentThread() {
   CHECK(!in_tracked_locks_held_by_current_thread_);
 
   // Check if capacity is exceeded.
-  if (g_num_tracked_locks_held_by_thread >= kHeldLocksCapacity) {
-    CHECK(false)
-        << "This thread holds more than " << kHeldLocksCapacity
-        << " tracked locks simultaneously. Reach out to //base OWNERS to "
-           "determine whether `kHeldLocksCapacity` should be increased.";
-  }
+  CHECK_LT(g_num_tracked_locks_held_by_thread, kHeldLocksCapacity)
+      << "This thread holds more than " << kHeldLocksCapacity
+      << " tracked locks simultaneously. Reach out to //base OWNERS to "
+         "determine whether `kHeldLocksCapacity` should be increased.";
 
   // Add to the list of held locks.
   g_tracked_locks_held_by_thread[g_num_tracked_locks_held_by_thread] =

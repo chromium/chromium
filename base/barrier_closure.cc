@@ -9,6 +9,7 @@
 #include "base/atomic_ref_count.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace base {
@@ -38,7 +39,7 @@ void BarrierInfo::Run() {
 }
 
 void ShouldNeverRun() {
-  CHECK(false);
+  NOTREACHED();
 }
 
 }  // namespace

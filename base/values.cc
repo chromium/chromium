@@ -170,7 +170,7 @@ Value::Value(Type type) {
       return;
   }
 
-  CHECK(false);
+  NOTREACHED();
 }
 
 Value::Value(bool value) : data_(value) {}
@@ -293,11 +293,8 @@ double Value::GetDouble() const {
   if (is_double()) {
     return absl::get<DoubleStorage>(data_);
   }
-  if (is_int()) {
-    return GetInt();
-  }
-  CHECK(false);
-  return 0.0;
+  CHECK(is_int());
+  return GetInt();
 }
 
 const std::string& Value::GetString() const {

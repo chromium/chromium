@@ -74,7 +74,7 @@ inline constexpr bool kEnableAsmCode = true;
 inline constexpr bool kEnableAsmCode = false;
 #endif
 
-// Forces a crash, like a CHECK(false). Used for numeric boundary errors.
+// Forces a crash, like a NOTREACHED(). Used for numeric boundary errors.
 // Also used in a constexpr template to trigger a compilation failure on
 // an error condition.
 struct CheckOnFailure {

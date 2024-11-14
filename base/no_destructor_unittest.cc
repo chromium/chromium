@@ -13,6 +13,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -27,12 +28,12 @@ static_assert(!std::is_trivially_destructible_v<std::string>);
 static_assert(
     std::is_trivially_destructible_v<base::NoDestructor<std::string>>);
 
-struct CheckOnDestroy {
-  ~CheckOnDestroy() { CHECK(false); }
+struct NotreachedOnDestroy {
+  ~NotreachedOnDestroy() { NOTREACHED(); }
 };
 
 TEST(NoDestructorTest, SkipsDestructors) {
-  NoDestructor<CheckOnDestroy> destructor_should_not_run;
+  NoDestructor<NotreachedOnDestroy> destructor_should_not_run;
 }
 
 struct UncopyableUnmovable {

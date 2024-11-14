@@ -16,6 +16,7 @@
 
 #include "base/debug/alias.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -369,7 +370,7 @@ NOINLINE DWORD GetNumGdiHandles() {
   if (num_gdi_handles == 0) {
     DWORD get_gui_resources_error = GetLastError();
     base::debug::Alias(&get_gui_resources_error);
-    CHECK(false);
+    NOTREACHED();
   }
   return num_gdi_handles;
 }
@@ -426,7 +427,7 @@ void CollectChildGDIUsageAndDie(DWORD parent_pid) {
   } while (Process32Next(snapshot, &proc_entry));
 
   CloseHandle(snapshot);
-  CHECK(false);
+  NOTREACHED();
 }
 
 }  // namespace

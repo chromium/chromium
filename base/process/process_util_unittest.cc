@@ -21,6 +21,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
@@ -396,8 +397,7 @@ TEST_F(ProcessUtilTest, CloneTmp) {
 }
 
 MULTIPROCESS_TEST_MAIN(NeverCalled) {
-  CHECK(false) << "Process should not have been launched.";
-  return 99;
+  NOTREACHED() << "Process should not have been launched.";
 }
 
 TEST_F(ProcessUtilTest, TransferInvalidHandleFails) {

@@ -1171,7 +1171,7 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
 #else
   // Trace processor isn't enabled so we can't convert the resulting trace into
   // JSON.
-  CHECK(false) << "JSON tracing isn't supported";
+  NOTREACHED() << "JSON tracing isn't supported";
 #endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 }
 

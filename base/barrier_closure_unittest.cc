@@ -26,7 +26,7 @@ TEST(BarrierClosureTest, ChecksIfCalledForZeroClosures) {
       base::BarrierClosure(0, base::DoNothing());
   EXPECT_FALSE(barrier_closure.is_null());
 
-  EXPECT_CHECK_DEATH(barrier_closure.Run());
+  EXPECT_NOTREACHED_DEATH(barrier_closure.Run());
 }
 
 TEST(BarrierClosureTest, RunAfterNumClosures) {

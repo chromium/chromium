@@ -40,6 +40,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -48,7 +49,6 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
@@ -1414,7 +1414,7 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
     status_line.append("(UNKNOWN)");
   } else {
     // Fail very loudly so it's not ignored.
-    CHECK(false) << "Unhandled test result status: " << result.status;
+    NOTREACHED() << "Unhandled test result status: " << result.status;
   }
   fprintf(stdout, "%s\n", status_line.c_str());
   fflush(stdout);
