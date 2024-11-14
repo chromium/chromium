@@ -581,17 +581,23 @@ void MenuListSelectType::ManuallyAssignSlots() {
   VectorOf<Node> option_nodes;
   HTMLButtonElement* first_button = nullptr;
   VectorOf<Node> all_children_except_first_button;
+  bool after_first_element = false;
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
     if (!child.IsSlotable()) {
       continue;
     }
-    if (IsA<HTMLButtonElement>(child) && !first_button) {
-      first_button = &To<HTMLButtonElement>(child);
-    } else {
-      all_children_except_first_button.push_back(child);
-      if (CanAssignToSelectSlot(child)) {
-        option_nodes.push_back(child);
+    if (!after_first_element) {
+      if (IsA<Element>(child)) {
+        after_first_element = true;
+        first_button = DynamicTo<HTMLButtonElement>(child);
+        if (first_button) {
+          continue;
+        }
       }
+    }
+    all_children_except_first_button.push_back(child);
+    if (CanAssignToSelectSlot(child)) {
+      option_nodes.push_back(child);
     }
   }
 
@@ -627,14 +633,9 @@ HTMLButtonElement* MenuListSelectType::SlottedButton() const {
     return nullptr;
   }
   // This code may be called while slot recalc is forbidden, so instead of
-  // looking at button_slot_'s FirstAssignedNode, just return the first button.
-  for (auto* child = select_->firstChild(); child;
-       child = child->nextSibling()) {
-    if (auto* button = DynamicTo<HTMLButtonElement>(child)) {
-      return button;
-    }
-  }
-  return nullptr;
+  // looking at button_slot_'s FirstAssignedNode, just return the
+  // firstElementChild which will be the same thing.
+  return DynamicTo<HTMLButtonElement>(select_->firstElementChild());
 }
 
 HTMLElement* MenuListSelectType::PopoverForAppearanceBase() const {
