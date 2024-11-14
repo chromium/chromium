@@ -90,7 +90,11 @@ SymbolConfig GetSymbolConfigForTip(TipIdentifier tip) {
       return {base::SysNSStringToUTF8(kGlobeAmericasSymbol), true};
     case TipIdentifier::kSavePasswords:
     case TipIdentifier::kAutofillPasswords:
+#if BUILDFLAG(IS_IOS_MACCATALYST)
       return {base::SysNSStringToUTF8(kPasswordSymbol), false};
+#else
+      return {base::SysNSStringToUTF8(kMulticolorPasswordSymbol), false};
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
     case TipIdentifier::kEnhancedSafeBrowsing:
       return {base::SysNSStringToUTF8(kPrivacySymbol), false};
   }
@@ -334,14 +338,23 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 }
 
 // Returns the color palette for the symbol based on the `tip`.
+//
+// Note: If `nil` is returned, the icon will be shown in its default
+// multi-color.
 - (NSArray<UIColor*>*)symbolColorPalette:(TipIdentifier)tip {
   switch (tip) {
     case segmentation_platform::TipIdentifier::kAddressBarPosition:
-    case segmentation_platform::TipIdentifier::kSavePasswords:
-    case segmentation_platform::TipIdentifier::kAutofillPasswords:
     case segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing:
       return @[ [UIColor whiteColor] ];
+    case segmentation_platform::TipIdentifier::kSavePasswords:
+    case segmentation_platform::TipIdentifier::kAutofillPasswords:
+#if BUILDFLAG(IS_IOS_MACCATALYST)
+      return @[ [UIColor whiteColor] ];
+#else
+      return nil;
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
     default:
+      // `nil` indicates that the icon should be shown in its default color.
       return nil;
   }
 }
@@ -353,9 +366,13 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
       return [UIColor colorNamed:kPurple500Color];
     case segmentation_platform::TipIdentifier::kSavePasswords:
     case segmentation_platform::TipIdentifier::kAutofillPasswords:
+#if BUILDFLAG(IS_IOS_MACCATALYST)
       return [UIColor colorNamed:kYellow500Color];
+#else
+      return [UIColor colorNamed:kSolidWhiteColor];
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
     case segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing:
-      return [UIColor colorNamed:kBlueColor];
+      return [UIColor colorNamed:kBlue500Color];
     default:
       return [UIColor colorNamed:kBackgroundColor];
   }
