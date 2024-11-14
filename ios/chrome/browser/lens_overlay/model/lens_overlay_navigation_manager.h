@@ -87,6 +87,10 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   /// Go back to the previous lens navigation.
   void GoToPreviousLensNavigation();
 
+  /// Adds the sub navigation to the current `LensResultItem` if it's not a
+  /// reload.
+  void RegisterSubNavigation(GURL url);
+
   /// List of Lens navigation. Going back will load the previous Lens
   /// navigation or the previous sub-navigation if available.
   std::vector<std::unique_ptr<LensResultItem>> lens_navigation_items_;

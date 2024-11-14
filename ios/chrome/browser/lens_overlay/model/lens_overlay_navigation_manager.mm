@@ -107,20 +107,7 @@ void LensOverlayNavigationManager::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (navigation_context && !navigation_context->IsSameDocument()) {
-    const GURL& URL = navigation_context->GetUrl();
-
-    if (lens_navigation_items_.empty()) {
-      NOTREACHED(kLensOverlayNotFatalUntil)
-          << "Web navigation without lens result is not supported.";
-    }
-
-    // Add sub navigation if it's not a reload.
-    std::vector<GURL>& sub_navigation =
-        lens_navigation_items_.back()->sub_navigations();
-    if (sub_navigation.empty() || URL != sub_navigation.back()) {
-      sub_navigation.push_back(URL);
-      OnNavigationListUpdate();
-    }
+    RegisterSubNavigation(navigation_context->GetUrl());
   }
 }
 
@@ -129,6 +116,21 @@ void LensOverlayNavigationManager::WebStateDestroyed(web::WebState* web_state) {
 }
 
 #pragma mark - Private
+
+void LensOverlayNavigationManager::RegisterSubNavigation(GURL url) {
+  if (lens_navigation_items_.empty()) {
+    NOTREACHED(kLensOverlayNotFatalUntil)
+        << "Web navigation without lens result is not supported.";
+  }
+
+  // Add sub navigation if it's not a reload.
+  std::vector<GURL>& sub_navigations =
+      lens_navigation_items_.back()->sub_navigations();
+  if (sub_navigations.empty() || url != sub_navigations.back()) {
+    sub_navigations.push_back(url);
+    OnNavigationListUpdate();
+  }
+}
 
 void LensOverlayNavigationManager::OnNavigationListUpdate() const {
   [mutator_ onBackNavigationAvailabilityMaybeChanged:CanGoBack()];
