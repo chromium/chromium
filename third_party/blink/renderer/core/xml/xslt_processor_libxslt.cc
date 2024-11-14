@@ -198,7 +198,7 @@ static int WriteToStringBuilder(void* context, const char* buffer, int len) {
   UChar* buffer_u_char_end = buffer_u_char + len;
 
   const char* string_current = buffer;
-  WTF::unicode::ConversionResult result = WTF::unicode::ConvertUTF8ToUTF16(
+  WTF::unicode::ConversionStatus result = WTF::unicode::ConvertUTF8ToUTF16(
       &string_current, buffer + len, &buffer_u_char, buffer_u_char_end);
   if (result != WTF::unicode::kConversionOK &&
       result != WTF::unicode::kSourceExhausted) {

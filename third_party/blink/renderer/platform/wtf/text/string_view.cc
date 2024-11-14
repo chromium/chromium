@@ -87,13 +87,11 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
   char* buffer = buffer_vector.data();
 
   if (Is8Bit()) {
-    const LChar* characters = Characters8();
-
-    unicode::ConversionResult result =
-        unicode::ConvertLatin1ToUTF8(&characters, characters + length, &buffer,
-                                     buffer + buffer_vector.size());
+    unicode::ConversionResult result = unicode::ConvertLatin1ToUTF8(
+        Span8(), base::as_writable_byte_span(buffer_vector));
     // (length * 3) should be sufficient for any conversion
-    DCHECK_NE(result, unicode::kTargetExhausted);
+    DCHECK_NE(result.status, unicode::kTargetExhausted);
+    buffer += result.converted.size();
   } else {
     const UChar* characters = Characters16();
 
@@ -102,7 +100,7 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
       char* buffer_end = buffer + buffer_vector.size();
       while (characters < characters_end) {
         // Use strict conversion to detect unpaired surrogates.
-        unicode::ConversionResult result = unicode::ConvertUTF16ToUTF8(
+        unicode::ConversionStatus result = unicode::ConvertUTF16ToUTF8(
             &characters, characters_end, &buffer, buffer_end, true);
         DCHECK_NE(result, unicode::kTargetExhausted);
         // Conversion fails when there is an unpaired surrogate.  Put
@@ -120,7 +118,7 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
       }
     } else {
       bool strict = mode == kStrictUTF8Conversion;
-      unicode::ConversionResult result =
+      unicode::ConversionStatus result =
           unicode::ConvertUTF16ToUTF8(&characters, characters + length, &buffer,
                                       buffer + buffer_vector.size(), strict);
       // (length * 3) should be sufficient for any conversion

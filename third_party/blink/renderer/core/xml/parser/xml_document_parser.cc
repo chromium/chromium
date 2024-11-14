@@ -1491,7 +1491,7 @@ static base::span<const char> ConvertUTF16EntityToUTF8(
       base::as_writable_chars(base::span(g_shared_xhtml_entity_result));
   char* target = entity_buffer.data();
   const char* original_target = target;
-  WTF::unicode::ConversionResult conversion_result =
+  WTF::unicode::ConversionStatus conversion_result =
       WTF::unicode::ConvertUTF16ToUTF8(&utf16_entity,
                                        utf16_entity + entity.length, &target,
                                        target + entity_buffer.size());

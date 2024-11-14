@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UTF8_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UTF8_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
@@ -37,7 +38,14 @@ typedef enum {
   kSourceExhausted,  // partial character in source, but hit end
   kTargetExhausted,  // insuff. room in target for conversion
   kSourceIllegal     // source sequence is illegal/malformed
-} ConversionResult;
+} ConversionStatus;
+
+template <typename CharType>
+struct ConversionResult {
+  base::span<const CharType> converted;
+  size_t consumed;
+  ConversionStatus status;
+};
 
 // These conversion functions take a "strict" argument. When this flag is set to
 // true (i.e. strict), both irregular sequences and isolated surrogates will
@@ -58,18 +66,17 @@ typedef enum {
 // 0x10FFFF; in UTF-8, the 4-byte form is similarly unable to encode codepoints
 // higher than 0x10FFFF.
 
-WTF_EXPORT ConversionResult ConvertUTF8ToUTF16(const char** source_start,
+WTF_EXPORT ConversionStatus ConvertUTF8ToUTF16(const char** source_start,
                                                const char* source_end,
                                                UChar** target_start,
                                                UChar* target_end,
                                                bool strict = true);
 
-WTF_EXPORT ConversionResult ConvertLatin1ToUTF8(const LChar** source_start,
-                                                const LChar* source_end,
-                                                char** target_start,
-                                                char* target_end);
+WTF_EXPORT ConversionResult<uint8_t> ConvertLatin1ToUTF8(
+    base::span<const LChar> source,
+    base::span<uint8_t> target);
 
-WTF_EXPORT ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
+WTF_EXPORT ConversionStatus ConvertUTF16ToUTF8(const UChar** source_start,
                                                const UChar* source_end,
                                                char** target_start,
                                                char* target_end,
