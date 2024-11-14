@@ -1729,6 +1729,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/metrics:ukm_javatests",
       "//chrome/browser/autofill/android:java_resources",
       "//chrome/browser/autofill/test:test_support_java",
+      "//chrome/browser/auxiliary_search:javatests",
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/browser_controls/android:java",
       "//chrome/browser/browsing_data/android:java",

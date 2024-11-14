@@ -6,17 +6,29 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 public class AuxiliarySearchUtils {
     @VisibleForTesting static final String TAB_DONATE_FILE_NAME = "tabs_donate";
+    @VisibleForTesting static final int DEFAULT_TTL_HOURS = 168;
+
+    private static final String CONTENT_TTL_HOURS_PARAM = "content_ttl_hours";
+    public static final IntCachedFieldTrialParameter CONTENT_TTL_HOURS =
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
+                    ChromeFeatureList.ANDROID_APP_INTEGRATION_V2,
+                    CONTENT_TTL_HOURS_PARAM,
+                    DEFAULT_TTL_HOURS);
+
     private static final String ZERO_STATE_FAVICON_NUMBER_PARAM = "zero_state_favicon_number";
     public static final IntCachedFieldTrialParameter ZERO_STATE_FAVICON_NUMBER =
             ChromeFeatureList.newIntCachedFieldTrialParameter(
@@ -37,6 +49,18 @@ public class AuxiliarySearchUtils {
                     ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
                     SCHEDULE_DELAY_TIME_MS_PARAM,
                     AuxiliarySearchProvider.DEFAULT_SCHEDULE_DELAY_TIME_MS);
+
+    /** Convert a Bitmap instance to a byte array. */
+    @Nullable
+    public static byte[] bitmapToBytes(Bitmap bitmap) {
+        if (bitmap == null) return null;
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        bitmap.recycle();
+        return byteArray;
+    }
 
     @VisibleForTesting
     public static int getFaviconSize(Resources resources) {

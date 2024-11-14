@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.RequestStatus;
@@ -63,11 +62,7 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
         mZeroStateFaviconNumber = ZERO_STATE_FAVICON_NUMBER.getValue();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
 
-        try {
-            mDonor.createSessionAndInit();
-        } catch (Exception e) {
-            Log.i(TAG, "Failed to initialize a session for auxiliary search.");
-        }
+        mDonor.createSessionAndInit();
     }
 
     /**

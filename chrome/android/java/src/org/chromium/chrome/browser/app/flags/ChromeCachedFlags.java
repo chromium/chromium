@@ -94,8 +94,9 @@ public class ChromeCachedFlags {
         List<CachedFieldTrialParameter<?>> fieldTrialParamsToCache =
                 List.of(
                         AuthTabVerifier.VERIFICATION_TIMEOUT_MS,
-                        AuxiliarySearchUtils.USE_LARGE_FAVICON,
+                        AuxiliarySearchUtils.CONTENT_TTL_HOURS,
                         AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS,
+                        AuxiliarySearchUtils.USE_LARGE_FAVICON,
                         AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER,
                         ChimeFeatures.ALWAYS_REGISTER,
                         TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM,

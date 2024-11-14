@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -23,4 +24,12 @@ public interface AuxiliarySearchHooks {
             @NonNull Context context,
             @NonNull Profile profile,
             @Nullable TabModelSelector tabModelSelector);
+
+    /**
+     * Sets the schema visibility for the requestBuilder.
+     *
+     * @param requestBuilder The builder to build a schema.
+     */
+    default void setSchemaTypeVisibilityForPackage(
+            @NonNull SetDocumentClassVisibilityForPackageCallback callback) {}
 }

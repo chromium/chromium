@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.USE_LARGE_FAVICON;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +29,15 @@ import java.io.File;
 /** Unit tests for AuxiliarySearchUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AuxiliarySearchUtilsUnitTest {
+    @Test
+    public void testBitmapToString() {
+        assertNull(AuxiliarySearchUtils.bitmapToBytes(null));
+
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Config.RGB_565);
+        assertNotNull(AuxiliarySearchUtils.bitmapToBytes(bitmap));
+        assertTrue(bitmap.isRecycled());
+    }
+
     @Test
     public void testGetTabDonateFile() {
         Context context = ContextUtils.getApplicationContext();

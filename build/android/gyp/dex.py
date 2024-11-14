@@ -35,7 +35,11 @@ _IGNORE_SERVICE_ENTRIES = (
     # ServiceLoader call is used only for ProtoBuf full (non-lite).
     # BaseGeneratedExtensionRegistryLite$Loader conflicts with
     # ChromeGeneratedExtensionRegistryLite$Loader.
-    'META-INF/services/com.google.protobuf.GeneratedExtensionRegistryLoader', )
+    'META-INF/services/com.google.protobuf.GeneratedExtensionRegistryLoader',
+    # Uses ServiceLoader to find all implementing classes, so multiple are
+    # expected.
+    'META-INF/services/androidx.appsearch.app.AppSearchDocumentClassMap',
+)
 
 INTERFACE_DESUGARING_WARNINGS = (r'default or static interface methods', )
 

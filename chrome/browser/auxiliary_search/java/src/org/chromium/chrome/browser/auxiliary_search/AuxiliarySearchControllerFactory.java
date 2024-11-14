@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -31,5 +32,15 @@ public class AuxiliarySearchControllerFactory {
         }
 
         return hooks.createAuxiliarySearchController(context, profile, tabModelSelector);
+    }
+
+    public static void setSchemaTypeVisibilityForPackage(
+            @NonNull SetDocumentClassVisibilityForPackageCallback callback) {
+        AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
+        if (hooks == null || !hooks.isEnabled()) {
+            return;
+        }
+
+        hooks.setSchemaTypeVisibilityForPackage(callback);
     }
 }
