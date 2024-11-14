@@ -90,7 +90,7 @@ PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   static PrivacySandboxCountriesImpl countries_instance;
   return std::make_unique<PrivacySandboxServiceImpl>(
-      PrivacySandboxSettingsFactory::GetForProfile(profile),
+      profile, PrivacySandboxSettingsFactory::GetForProfile(profile),
       TrackingProtectionSettingsFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),

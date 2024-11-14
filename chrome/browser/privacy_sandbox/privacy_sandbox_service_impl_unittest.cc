@@ -16,6 +16,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
@@ -26,9 +27,14 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/fake_profile_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -50,6 +56,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
@@ -99,6 +106,8 @@ using PromptAction = ::PrivacySandboxService::PromptAction;
 using PromptSuppressedReason = ::PrivacySandboxService::PromptSuppressedReason;
 using PromptType = ::PrivacySandboxService::PromptType;
 using SurfaceType = ::PrivacySandboxService::SurfaceType;
+using PrimaryAccountUserGroups =
+    ::PrivacySandboxService::PrimaryAccountUserGroups;
 
 using enum privacy_sandbox_test_util::StateKey;
 using enum privacy_sandbox_test_util::InputKey;
@@ -118,6 +127,8 @@ using privacy_sandbox_test_util::TestOutput;
 using privacy_sandbox_test_util::TestState;
 
 const char kFirstPartySetsStateHistogram[] = "Settings.FirstPartySets.State";
+const char kDefaultProfileUsername[] = "user@gmail.com";
+const char kTestEmail[] = "test@test.com";
 
 const base::Version kRelatedWebsiteSetsVersion("1.2.3");
 
@@ -308,6 +319,10 @@ class PrivacySandboxServiceTest : public testing::Test {
             privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
     notice_storage_ =
         std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
+    CreateDefaultProfile();
+    first_party_sets_policy_service_ =
+        std::make_unique<first_party_sets::FirstPartySetsPolicyService>(
+            profile()->GetOriginalProfile());
   }
 
   void SetUp() override {
@@ -315,13 +330,79 @@ class PrivacySandboxServiceTest : public testing::Test {
     CreateService();
 
     base::RunLoop run_loop;
-    first_party_sets_policy_service_.WaitForFirstInitCompleteForTesting(
+    first_party_sets_policy_service_->WaitForFirstInitCompleteForTesting(
         run_loop.QuitClosure());
     run_loop.Run();
-    first_party_sets_policy_service_.ResetForTesting();
+    first_party_sets_policy_service_->ResetForTesting();
   }
 
   virtual void InitializeFeaturesBeforeStart() {}
+
+  void CreateDefaultProfile() {
+    default_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(default_profile_manager_->SetUp());
+
+    default_profile_ = default_profile_manager_->CreateTestingProfile(
+        kDefaultProfileUsername, IdentityTestEnvironmentProfileAdaptor::
+                                     GetIdentityTestEnvironmentFactories());
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            default_profile_.get());
+    identity_test_env_adaptor_->identity_test_env()
+        ->EnableRemovalOfExtendedAccountInfo();
+  }
+
+  void EnableSignIn() {
+    auto account_info = identity_test_env_adaptor_->identity_test_env()
+                            ->MakePrimaryAccountAvailable(
+                                kTestEmail, signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    signin::UpdateAccountInfoForAccount(
+        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
+        account_info);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
+  }
+
+  void EnableSignInU18() {
+    auto account_info = identity_test_env_adaptor_->identity_test_env()
+                            ->MakePrimaryAccountAvailable(
+                                kTestEmail, signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_run_chrome_privacy_sandbox_trials(false);
+    signin::UpdateAccountInfoForAccount(
+        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
+        account_info);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
+  }
+
+  void EnableSignInOver18() {
+    auto account_info = identity_test_env_adaptor_->identity_test_env()
+                            ->MakePrimaryAccountAvailable(
+                                kTestEmail, signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_run_chrome_privacy_sandbox_trials(true);
+    signin::UpdateAccountInfoForAccount(
+        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
+        account_info);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
+  }
+
+// ChromeOS users cannot sign out, their account preferences can never be
+// cleared.
+#if !BUILDFLAG(IS_CHROMEOS)
+
+  void SignOut() {
+    identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
+  }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   virtual std::unique_ptr<
       privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
@@ -331,6 +412,10 @@ class PrivacySandboxServiceTest : public testing::Test {
     mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
         /*restricted=*/false);
     return mock_delegate;
+  }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
   }
 
   void CreateService() {
@@ -349,7 +434,7 @@ class PrivacySandboxServiceTest : public testing::Test {
             std::move(mock_delegate), host_content_settings_map(),
             cookie_settings(), tracking_protection_settings(), prefs());
     privacy_sandbox_service_ = std::make_unique<PrivacySandboxServiceImpl>(
-        privacy_sandbox_settings(), tracking_protection_settings(),
+        profile(), privacy_sandbox_settings(), tracking_protection_settings(),
         cookie_settings(), profile()->GetPrefs(), test_interest_group_manager(),
         GetProfileType(), browsing_data_remover(), host_content_settings_map(),
         mock_browsing_topics_service(), first_party_sets_policy_service(),
@@ -382,7 +467,7 @@ class PrivacySandboxServiceTest : public testing::Test {
         managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return default_profile_; }
   PrivacySandboxServiceImpl* privacy_sandbox_service() {
     return privacy_sandbox_service_.get();
   }
@@ -421,25 +506,30 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
   first_party_sets::FirstPartySetsPolicyService*
   first_party_sets_policy_service() {
-    return &first_party_sets_policy_service_;
+    return first_party_sets_policy_service_.get();
   }
 
   MockPrivacySandboxCountries* mock_privacy_sandbox_countries() {
     return mock_privacy_sandbox_countries_.get();
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
   content::BrowserTaskEnvironment* browser_task_environment() {
     return &browser_task_environment_;
   }
 
  protected:
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
+  std::unique_ptr<TestingProfileManager> default_profile_manager_;
+  raw_ptr<TestingProfile> default_profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 
-  TestingProfile profile_;
   base::test::ScopedFeatureList outer_feature_list_;
   base::test::ScopedFeatureList inner_feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
@@ -447,10 +537,8 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   first_party_sets::ScopedMockFirstPartySetsHandler
       mock_first_party_sets_handler_;
-  first_party_sets::FirstPartySetsPolicyService
-      first_party_sets_policy_service_ =
-          first_party_sets::FirstPartySetsPolicyService(
-              profile_.GetOriginalProfile());
+  std::unique_ptr<first_party_sets::FirstPartySetsPolicyService>
+      first_party_sets_policy_service_;
   std::unique_ptr<MockPrivacySandboxCountries> mock_privacy_sandbox_countries_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
@@ -493,6 +581,111 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
                                          std::tuple(true, false, false),
                                          std::tuple(false, true, false),
                                          std::tuple(false, false, false)));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxServiceTest, PrimaryAccountSignedOutOnStartup) {
+  // Mimics the emit call after initial sign in
+  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              base::Time());
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::AnyOf(
+          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration")));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedOut, 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(PrivacySandboxServiceTest,
+       PrimaryAccountSignedInCapabilityUnknownOnStartup) {
+  EnableSignIn();
+  // Mimics the emit call after initial sign in
+  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              testing::Not(base::Time()));
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityUnknown, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       PrimaryAccountSignedInCapabilityFalseOnStartup) {
+  EnableSignInU18();
+  // Mimics the emit call after initial sign in
+  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              testing::Not(base::Time()));
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityFalse, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       PrimaryAccountSignedInCapabilityTrueOnStartup) {
+  EnableSignInOver18();
+  // Mimics the emit call after initial sign in
+  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityTrue, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest, OnPrimaryAccountChangedSignIn) {
+  EnableSignIn();
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+
+  auto sign_in_time =
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime);
+  EXPECT_THAT(sign_in_time, testing::Not(base::Time()));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing in again should not change the metrics.
+  SignOut();
+  EnableSignIn();
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              sign_in_time);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxServiceTest, OnPrimaryAccountChangedSignOut) {
+  EnableSignIn();
+  SignOut();
+
+  EXPECT_THAT(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime),
+      testing::Not(base::Time()));
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(
+      histograms,
+      testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignOutDuration"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
@@ -614,7 +807,7 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
 }
 
 TEST_F(PrivacySandboxServiceTest, HistogramsAreEmptyOnStartup) {
-  const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
+  const std::string histograms = histogram_tester_.GetAllHistogramsRecorded();
   for (const auto& notice_name : privacy_sandbox::kPrivacySandboxNoticeNames) {
     EXPECT_THAT(
         histograms,
@@ -1048,12 +1241,12 @@ TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {
   ASSERT_DEATH(
       {
         PrivacySandboxServiceImpl(
-            privacy_sandbox_settings(),
+            profile(), privacy_sandbox_settings(),
             /*tracking_protection_settings=*/nullptr, cookie_settings(),
             profile()->GetPrefs(), test_interest_group_manager(),
             GetProfileType(), browsing_data_remover(),
-            host_content_settings_map(),
-            mock_browsing_topics_service(), first_party_sets_policy_service(),
+            host_content_settings_map(), mock_browsing_topics_service(),
+            first_party_sets_policy_service(),
             mock_privacy_sandbox_countries());
       },
       "");
@@ -1983,7 +2176,7 @@ TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
 
   // Histogram
   CreateService();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompletedWithOptIn, 1);
@@ -2011,7 +2204,7 @@ TEST_P(TopicsConsentTest, DidConsentOptOutUpdateNoticeStorage) {
 
   // Histogram
   CreateService();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompletedWithOptOut, 1);
@@ -2055,7 +2248,7 @@ TEST_P(NoticeAckTest, DidNoticeAckUpdateNoticeStorage) {
 
   // Histogram
   CreateService();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompleted, 1);
@@ -2083,7 +2276,7 @@ TEST_P(NoticeSettingsTest, DidNoticeSettingsUpdateNoticeStorage) {
 
   // Histogram
   CreateService();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompleted, 1);

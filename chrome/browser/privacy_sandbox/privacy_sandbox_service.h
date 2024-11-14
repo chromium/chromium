@@ -57,6 +57,18 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kAGACCT,
   };
 
+  // Account sign in user groups
+  // LINT.IfChange(PrimaryAccountUserGroups)
+  enum class PrimaryAccountUserGroups {
+    kNotSet = 0,
+    kSignedOut = 1,
+    kSignedInCapabilityFalse = 2,
+    kSignedInCapabilityTrue = 3,
+    kSignedInCapabilityUnknown = 4,
+    kMaxValue = kSignedInCapabilityUnknown,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxPrimaryAccountUserGroups)
+
   // An exhaustive list of actions related to showing & interacting with the
   // prompt. Includes actions which do not impact consent / notice state.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
@@ -180,6 +192,9 @@ class PrivacySandboxService : public KeyedService {
   // If set to true, this treats the testing environment as that of a branded
   // Chrome build.
   virtual void ForceChromeBuildForTests(bool force_chrome_build) = 0;
+
+  // Emits startup histograms relating to the user's sign in status.
+  virtual void EmitPrivacySandboxAccountPromptStartupMetrics() = 0;
 
   // Returns whether the Privacy Sandbox is currently restricted for the
   // profile. UI code should consult this to ensure that when restricted,

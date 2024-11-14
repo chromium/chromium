@@ -82,6 +82,36 @@ reviewer.
   <variant name="Server" summary="server-side"/>
 </variants>
 
+<!-- Each profile on a client is assigned a unique bucket, see go/profile-metrics.
+The guest profile has a profile bucket 0, regular profiles start at bucket 1.
+Incognito profiles count towards the original profile. -->
+
+<variants name="Profile">
+  <variant name="Profile_1" summary="Profile bucket 1 for a client."/>
+  <variant name="Profile_2" summary="Profile bucket 2 for a client."/>
+  <variant name="Profile_3" summary="Profile bucket 3 for a client."/>
+  <variant name="Profile_4" summary="Profile bucket 4 for a client."/>
+  <variant name="Profile_5" summary="Profile bucket 5 for a client."/>
+  <variant name="Profile_6" summary="Profile bucket 6 for a client."/>
+  <variant name="Profile_7" summary="Profile bucket 7 for a client."/>
+  <variant name="Profile_8" summary="Profile bucket 8 for a client."/>
+  <variant name="Profile_9" summary="Profile bucket 9 for a client."/>
+  <variant name="Profile_10" summary="Profile bucket 10 for a client."/>
+  <variant name="Profile_11" summary="Profile bucket 11 for a client."/>
+  <variant name="Profile_12" summary="Profile bucket 12 for a client."/>
+  <variant name="Profile_13" summary="Profile bucket 13 for a client."/>
+  <variant name="Profile_14" summary="Profile bucket 14 for a client."/>
+  <variant name="Profile_15" summary="Profile bucket 15 for a client."/>
+  <variant name="Profile_16" summary="Profile bucket 16 for a client."/>
+  <variant name="Profile_17" summary="Profile bucket 17 for a client."/>
+  <variant name="Profile_18" summary="Profile bucket 18 for a client."/>
+  <variant name="Profile_19" summary="Profile bucket 19 for a client."/>
+  <variant name="Profile_20" summary="Profile bucket 20 for a client."/>
+  <variant name="Profile_21+"
+      summary="All profiles with a bucket of 21+ will be bucketed here, 21
+               inclusive."/>
+</variants>
+
 <variants name="PSNotice">
   <variant name="MeasurementNoticeModal"
       summary="Restricted notice on Desktop."/>
@@ -1289,6 +1319,56 @@ reviewer.
     For a given client, the metric will not be recorded again so long as the set
     eligibility is available from the pref service local state.
   </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.DarkLaunch.IdentityManagerSuccess"
+    enum="Boolean" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records whether the Identity Manager is ready to be observed as part of the
+    PS notice.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.PrimaryAccountOnStartup"
+    enum="PrivacySandboxPrimaryAccountUserGroups" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records if a user has signed in to their primary account on startup at the
+    point of showing a PrivacySandbox notice. This will be tracked per
+    {Profile}.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.ProfileSignInDuration"
+    units="ms" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration it takes for the time a {Profile} is created to the
+    time it takes for a user to sign in to their profile for the first time.
+    This does not track subsequent sign-ins after the first sign in, if the user
+    starts chrome and is already signed in the duration will be tracked as 0.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.ProfileSignOutDuration"
+    units="ms" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration it takes for the time a {Profile} is signed in to the
+    time it takes for the user to sign out of their profile for the first time.
+    Subsequent sign-outs will not be tracked and restarting chrome will not
+    count as a sign out. If the user starts chrome and is already signed in, the
+    sign out duration will be tracked as 0 since we have no way of knowing the
+    exact time the user signed in.
+  </summary>
+  <token key="Profile" variants="Profile"/>
 </histogram>
 
 <histogram

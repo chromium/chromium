@@ -29563,6 +29563,18 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeStartupState) -->
 
+<!-- LINT.IfChange(PrivacySandboxPrimaryAccountUserGroups) -->
+
+<enum name="PrivacySandboxPrimaryAccountUserGroups">
+  <int value="0" label="NotSet"/>
+  <int value="1" label="SignedOut"/>
+  <int value="2" label="SignedInCapabilityFalse"/>
+  <int value="3" label="SignedInCapabilityTrue"/>
+  <int value="4" label="SignedInCapabilityUnknown"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_service.h:PrimaryAccountUserGroups) -->
+
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">
   <int value="0" label="Valid"/>
   <int value="1" label="Valid but empty; no budget data stored"/>

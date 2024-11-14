@@ -24,6 +24,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
@@ -46,9 +47,11 @@ namespace views {
 class Widget;
 }
 
-class PrivacySandboxServiceImpl : public PrivacySandboxService {
+class PrivacySandboxServiceImpl : public PrivacySandboxService,
+                                  public signin::IdentityManager::Observer {
  public:
   PrivacySandboxServiceImpl(
+      Profile* profile,
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
@@ -73,6 +76,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   bool IsPromptOpenForBrowser(Browser* browser) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
+  void EmitPrivacySandboxAccountPromptStartupMetrics() override;
   bool IsPrivacySandboxRestricted() override;
   bool IsRestrictedNoticeEnabled() override;
   void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) override;
@@ -110,6 +114,12 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       const override;
   base::Time TopicsConsentLastUpdateTime() const override;
   std::string TopicsConsentLastUpdateText() const override;
+
+  // signin::IdentityManager::Observer
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
  protected:
   friend class PrivacySandboxServiceTest;
@@ -333,6 +343,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
+  raw_ptr<Profile> profile_;
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
@@ -347,6 +358,12 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
   raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_obs_{this};
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  PrimaryAccountUserGroups primary_account_state_ =
+      PrimaryAccountUserGroups::kNotSet;
 
   PrefChangeRegistrar user_prefs_registrar_;
 

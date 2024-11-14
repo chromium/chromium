@@ -42,13 +42,13 @@ enum class PrivacySandboxAttestationsGatedAPI {
   kMaxValue = kFencedStorageRead,
 };
 
-// A service which acts as a intermediary between Privacy Sandbox APIs and the
-// preferences and content settings which define when they are allowed to be
-// accessed. Privacy Sandbox APIs, regardless of where they live (renderer,
-// browser, network etc), must consult this service to determine when
-// they are allowed to run. While a basic on/off control is provided by this
-// service, embedders are expected to achieve fine-grained control though
-// the underlying preferences and content settings separately.
+// A service which acts as a intermediary between Privacy Sandbox APIs and
+// the preferences and content settings which define when they are allowed
+// to be accessed. Privacy Sandbox APIs, regardless of where they live
+// (renderer, browser, network etc), must consult this service to determine
+// when they are allowed to run. While a basic on/off control is provided by
+// this service, embedders are expected to achieve fine-grained control
+// though the underlying preferences and content settings separately.
 class PrivacySandboxSettings : public KeyedService {
  public:
   class Observer {
@@ -65,9 +65,9 @@ class PrivacySandboxSettings : public KeyedService {
     virtual ~Delegate() = default;
 
     // Allows the delegate to restrict access to the Privacy Sandbox. When
-    // the Privacy Sandbox is restricted, all API access is disabled. This is
-    // consulted on every access check, and it is acceptable for this to change
-    // return value over the life of the service.
+    // the Privacy Sandbox is restricted, all API access is disabled. This
+    // is consulted on every access check, and it is acceptable for this to
+    // change return value over the life of the service.
     virtual bool IsPrivacySandboxRestricted() const = 0;
 
     // Allows the delegate to query in real time if Privacy Sandbox is currently

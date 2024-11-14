@@ -23,6 +23,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
+#include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -308,6 +311,12 @@ std::string_view GetNoticeName(PromptAction action, SurfaceType surface_type) {
       return empty_view;
   }
 }
+
+void CreateTimingHistogram(const std::string& name, base::TimeDelta sample) {
+  base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(1),
+                                base::Days(10), 100);
+}
+
 }  // namespace
 
 // static
@@ -343,6 +352,7 @@ void PrivacySandboxService::SetPromptDisabledForTests(bool disabled) {
 }
 
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
+    Profile* profile,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
@@ -354,7 +364,8 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     browsing_topics::BrowsingTopicsService* browsing_topics_service,
     first_party_sets::FirstPartySetsPolicyService* first_party_sets_service,
     PrivacySandboxCountries* privacy_sandbox_countries)
-    : privacy_sandbox_settings_(privacy_sandbox_settings),
+    : profile_(profile),
+      privacy_sandbox_settings_(privacy_sandbox_settings),
       tracking_protection_settings_(tracking_protection_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
@@ -365,6 +376,7 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       browsing_topics_service_(browsing_topics_service),
       first_party_sets_policy_service_(first_party_sets_service),
       privacy_sandbox_countries_(privacy_sandbox_countries) {
+  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
   // Create notice storage
   notice_storage_ =
       std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
@@ -428,9 +440,113 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 
   // Record preference state for UMA at each startup.
   LogPrivacySandboxState();
+
+  if (!identity_manager_) {
+    base::UmaHistogramBoolean(
+        "PrivacySandbox.DarkLaunch.IdentityManagerSuccess", false);
+    // If there's no identity manager, then don't try to observe it.
+    return;
+  }
+  base::UmaHistogramBoolean("PrivacySandbox.DarkLaunch.IdentityManagerSuccess",
+                            true);
+
+  identity_manager_obs_.Observe(identity_manager_.get());
+
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    primary_account_state_ = PrimaryAccountUserGroups::kSignedOut;
+  }
+  // Account capabilities are updated asynchronously, so metrics relating to
+  // those will be recorded once in `OnExtendedAccountInfoUpdated`.
 }
 
 PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
+
+void PrivacySandboxServiceImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
+  if (profile_bucket.empty()) {
+    return;
+  }
+
+  if (event_details.GetCurrentState().consent_level !=
+      signin::ConsentLevel::kSignin) {
+    return;
+  }
+
+  // We only keep track of the first sign in time.
+  if (profile_->GetPrefs()->GetTime(
+          prefs::kPrivacySandboxFakeNoticeFirstSignInTime) != base::Time()) {
+    return;
+  }
+
+  base::Time sign_in_time = base::Time::Now();
+  profile_->GetPrefs()->SetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime,
+                                sign_in_time);
+  CreateTimingHistogram(
+      base::StrCat({"PrivacySandbox.DarkLaunch.", profile_bucket,
+                    ".ProfileSignInDuration"}),
+      sign_in_time - profile_->GetCreationTime());
+}
+
+void PrivacySandboxServiceImpl::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  if (info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+  switch (info.capabilities.can_run_chrome_privacy_sandbox_trials()) {
+    case signin::Tribool::kUnknown:
+      primary_account_state_ =
+          PrimaryAccountUserGroups::kSignedInCapabilityUnknown;
+      break;
+    case signin::Tribool::kFalse:
+      primary_account_state_ =
+          PrimaryAccountUserGroups::kSignedInCapabilityFalse;
+      break;
+    case signin::Tribool::kTrue:
+      primary_account_state_ =
+          PrimaryAccountUserGroups::kSignedInCapabilityTrue;
+      break;
+  }
+}
+
+void PrivacySandboxServiceImpl::OnExtendedAccountInfoRemoved(
+    const AccountInfo& info) {
+  base::Time first_sign_in_time = profile_->GetPrefs()->GetTime(
+      prefs::kPrivacySandboxFakeNoticeFirstSignInTime);
+  std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
+  if (profile_bucket.empty()) {
+    return;
+  }
+
+  // If this pref wasn't recorded, it means the user has already signed in at
+  // the time of startup, we won't record the metric here since we have no way
+  // of knowing when the user signed in.
+  if (first_sign_in_time == base::Time()) {
+    CreateTimingHistogram(
+        base::StrCat({"PrivacySandbox.DarkLaunch.", profile_bucket,
+                      ".ProfileSignOutDuration"}),
+        base::TimeDelta());
+    return;
+  }
+
+  // We only keep track of the first sign out time.
+  if (profile_->GetPrefs()->GetTime(
+          prefs::kPrivacySandboxFakeNoticeFirstSignOutTime) != base::Time()) {
+    return;
+  }
+
+  base::Time sign_out_time = base::Time::Now();
+  profile_->GetPrefs()->SetTime(
+      prefs::kPrivacySandboxFakeNoticeFirstSignOutTime, sign_out_time);
+  CreateTimingHistogram(
+      base::StrCat({"PrivacySandbox.DarkLaunch.", profile_bucket,
+                    ".ProfileSignOutDuration"}),
+      sign_out_time - first_sign_in_time);
+
+  // Stop observing after the first sign out.
+  identity_manager_obs_.Reset();
+}
 
 PrivacySandboxService::PromptType
 // TODO(crbug.com/352575567): Use the SurfaceType passed in.
@@ -599,6 +715,32 @@ bool PrivacySandboxServiceImpl::IsPromptOpenForBrowser(Browser* browser) {
 void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
     bool force_chrome_build) {
   force_chrome_build_for_tests_ = force_chrome_build;
+}
+
+// TODO(crbug.com/376285112): Create a bridge for this and use it in clank.
+void PrivacySandboxServiceImpl::
+    EmitPrivacySandboxAccountPromptStartupMetrics() {
+  std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
+  if (profile_bucket.empty()) {
+    return;
+  }
+  // This histogram ideally should never emit PrimaryAccountUserGroups::kNotSet,
+  // however we log it just in case.
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PrivacySandbox.DarkLaunch.", profile_bucket,
+                    ".PrimaryAccountOnStartup"}),
+      primary_account_state_);
+
+  // We only want to emit 0 if the sign in time doesn't exist.
+  if (primary_account_state_ != PrimaryAccountUserGroups::kSignedOut &&
+      primary_account_state_ != PrimaryAccountUserGroups::kNotSet &&
+      pref_service_->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime) ==
+          base::Time()) {
+    CreateTimingHistogram(
+        base::StrCat({"PrivacySandbox.DarkLaunch.", profile_bucket,
+                      ".ProfileSignInDuration"}),
+        base::TimeDelta());
+  }
 }
 
 bool PrivacySandboxServiceImpl::IsPrivacySandboxRestricted() {

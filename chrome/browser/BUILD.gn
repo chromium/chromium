@@ -1232,6 +1232,8 @@ static_library("browser") {
     "privacy_sandbox/privacy_sandbox_settings_factory.h",
     "privacy_sandbox/privacy_sandbox_survey_factory.cc",
     "privacy_sandbox/privacy_sandbox_survey_factory.h",
+    "privacy_sandbox/profile_bucket_metrics.cc",
+    "privacy_sandbox/profile_bucket_metrics.h",
     "privacy_sandbox/tracking_protection_onboarding_factory.cc",
     "privacy_sandbox/tracking_protection_onboarding_factory.h",
     "privacy_sandbox/tracking_protection_settings_factory.cc",
