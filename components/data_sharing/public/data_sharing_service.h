@@ -195,6 +195,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const GroupId& group_id,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
 
+  // Returns group events since the DataSharingService was started. This is
+  // similar to events exposed to Observers, but allows to collect changes by
+  // observer that were created after DataSharingService was started.
+  virtual std::vector<GroupEvent> GetGroupEventsSinceStartup() = 0;
+
   // Check if the given URL should be intercepted.
   virtual bool ShouldInterceptNavigationForShareURL(const GURL& url) = 0;
 

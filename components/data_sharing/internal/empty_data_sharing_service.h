@@ -61,6 +61,7 @@ class EmptyDataSharingService : public DataSharingService {
   void LeaveGroup(
       const GroupId& group_id,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  std::vector<GroupEvent> GetGroupEventsSinceStartup() override;
   bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
   void HandleShareURLNavigationIntercepted(
       const GURL& url,

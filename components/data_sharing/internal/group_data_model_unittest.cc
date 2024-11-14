@@ -30,6 +30,7 @@ namespace {
 using base::test::RunClosure;
 using testing::ElementsAre;
 using testing::Eq;
+using testing::IsEmpty;
 using testing::Optional;
 
 // TODO(crbug.com/301390275): move helpers to work with CollaborationGroup
@@ -86,6 +87,12 @@ MATCHER_P(HasMemberWithGaiaId, expected_gaia_id, "") {
     }
   }
   return false;
+}
+
+MATCHER_P3(GroupEventIs, group_id, event_type, affected_member_gaia_id, "") {
+  return arg.group_id == group_id && arg.event_type == event_type &&
+         arg.affected_member_gaia_id == affected_member_gaia_id &&
+         !arg.event_time.is_null();
 }
 
 class MockModelObserver : public GroupDataModel::Observer {
@@ -235,6 +242,18 @@ class GroupDataModelTest : public testing::Test {
     collaboration_group_bridge_->ApplyIncrementalSyncChanges(
         collaboration_group_bridge_->CreateMetadataChangeList(),
         std::move(entity_changes));
+  }
+
+  void WaitForGroupDeleted(const GroupId& group_id) {
+    // Unlike additions/updates deletions might be handled synchronously, so we
+    // need to check whether the group was already deleted.
+    if (!model().GetGroup(group_id).has_value()) {
+      return;
+    }
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_, OnGroupDeleted(group_id, NotNullTime()))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void ShutdownModel() {
@@ -534,6 +553,50 @@ TEST_F(GroupDataModelTest, ShouldRecordDBInitSuccess) {
   WaitForModelLoaded();
   histogram_tester.ExpectUniqueSample("DataSharing.GroupDBInitSuccess", true,
                                       1);
+}
+
+TEST_F(GroupDataModelTest, ShouldRecordGroupEvents) {
+  WaitForModelLoaded();
+
+  const GroupId group_id = MimicGroupAddedServerSide("group1");
+  WaitForGroupAdded(group_id);
+
+  // Groups additions are not recorded.
+  EXPECT_THAT(model().GetGroupEventsSinceStartup(), IsEmpty());
+
+  // Verify that member addition is recorded.
+  const std::string member_gaia_id = "gaia_id";
+  MimicMemberAddedServerSide(group_id, member_gaia_id);
+  WaitForGroupUpdated(group_id);
+
+  EXPECT_THAT(
+      model().GetGroupEventsSinceStartup(),
+      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
+                               member_gaia_id)));
+
+  // Verify that member removal is recorded.
+  MimicMemberRemovedServerSide(group_id, member_gaia_id);
+  WaitForGroupUpdated(group_id);
+
+  EXPECT_THAT(
+      model().GetGroupEventsSinceStartup(),
+      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
+                               member_gaia_id),
+                  GroupEventIs(group_id, GroupEvent::EventType::kMemberRemoved,
+                               member_gaia_id)));
+
+  // Verify that group removal is recorded.
+  MimicGroupDeletedServerSide(group_id);
+  WaitForGroupDeleted(group_id);
+
+  EXPECT_THAT(
+      model().GetGroupEventsSinceStartup(),
+      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
+                               member_gaia_id),
+                  GroupEventIs(group_id, GroupEvent::EventType::kMemberRemoved,
+                               member_gaia_id),
+                  GroupEventIs(group_id, GroupEvent::EventType::kGroupRemoved,
+                               std::nullopt)));
 }
 
 }  // namespace

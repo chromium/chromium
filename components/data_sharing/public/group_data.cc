@@ -79,6 +79,16 @@ GroupData& GroupData::operator=(GroupData&&) = default;
 
 GroupData::~GroupData() = default;
 
+GroupEvent::GroupEvent() = default;
+
+GroupEvent::GroupEvent(const GroupEvent&) = default;
+GroupEvent& GroupEvent::operator=(const GroupEvent&) = default;
+
+GroupEvent::GroupEvent(GroupEvent&&) = default;
+GroupEvent& GroupEvent::operator=(GroupEvent&&) = default;
+
+GroupEvent::~GroupEvent() = default;
+
 TabPreview::TabPreview(const GURL& url) : url(url) {}
 TabPreview::TabPreview(const TabPreview&) = default;
 TabPreview& TabPreview::operator=(const TabPreview&) = default;

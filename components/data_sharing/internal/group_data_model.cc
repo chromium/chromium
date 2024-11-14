@@ -21,6 +21,8 @@ namespace data_sharing {
 
 namespace {
 
+const size_t kMaxRecordedGroupEvents = 1000;
+
 VersionToken ComputeVersionToken(
     const sync_pb::CollaborationGroupSpecifics& specifics) {
   return VersionToken(specifics.consistency_token());
@@ -106,6 +108,10 @@ GroupDataModel::GetPossiblyRemovedGroupMember(
   return std::nullopt;
 }
 
+std::vector<GroupEvent> GroupDataModel::GetGroupEventsSinceStartup() const {
+  return group_events_since_startup_;
+}
+
 bool GroupDataModel::IsModelLoaded() const {
   return is_group_data_store_loaded_ && is_collaboration_group_bridge_loaded_;
 }
@@ -181,10 +187,13 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
   }
 
   for (auto& group_id : deleted_group_ids) {
+    // TODO(crbug.com/377215683): pass the actual event time (at least derived
+    // from CollaborationGroupSpecifics).
+    base::Time event_time = base::Time::Now();
     for (auto& observer : observers_) {
-      // TODO(crbug.com/377215683): pass the actual event time (at least derived
-      // from CollaborationGroupSpecifics).
-      observer.OnGroupDeleted(group_id, base::Time::Now());
+      MaybeRecordGroupEvent(group_id, GroupEvent::EventType::kGroupRemoved,
+                            event_time);
+      observer.OnGroupDeleted(group_id, event_time);
     }
   }
 
@@ -309,18 +318,47 @@ void GroupDataModel::NotifyObserversAboutChangedMembers(
       new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
       std::back_inserter(removed_members_gaia_ids));
 
+  // TODO(crbug.com/377215683): pass the actual event time (at least derived
+  // from CollaborationGroupSpecifics).
+  const base::Time event_time = base::Time::Now();
   for (auto& observer : observers_) {
-    // TODO(crbug.com/377215683): pass the actual event time (at least derived
-    // from CollaborationGroupSpecifics).
     for (auto& member_gaia_id : added_members_gaia_ids) {
+      MaybeRecordGroupEvent(new_group_data.group_token.group_id,
+                            GroupEvent::EventType::kMemberAdded, event_time,
+                            member_gaia_id);
       observer.OnMemberAdded(new_group_data.group_token.group_id,
-                             member_gaia_id, base::Time::Now());
+                             member_gaia_id, event_time);
     }
     for (auto& member_gaia_id : removed_members_gaia_ids) {
+      MaybeRecordGroupEvent(new_group_data.group_token.group_id,
+                            GroupEvent::EventType::kMemberRemoved, event_time,
+                            member_gaia_id);
       observer.OnMemberRemoved(new_group_data.group_token.group_id,
-                               member_gaia_id, base::Time::Now());
+                               member_gaia_id, event_time);
     }
   }
+}
+
+void GroupDataModel::MaybeRecordGroupEvent(
+    const GroupId& group_id,
+    GroupEvent::EventType event_type,
+    base::Time event_time,
+    std::optional<std::string> affected_member_gaia_id) {
+  if (group_events_since_startup_.size() >= kMaxRecordedGroupEvents) {
+    // Prevent unbounded growth of the `group_events_since_startup_`. Normally,
+    // this should never happen.
+    return;
+  }
+  // All events except kGroupRemoved should have an affected member.
+  CHECK(event_type == GroupEvent::EventType::kGroupRemoved ||
+        affected_member_gaia_id.has_value());
+
+  GroupEvent group_event;
+  group_event.event_type = event_type;
+  group_event.group_id = group_id;
+  group_event.affected_member_gaia_id = affected_member_gaia_id;
+  group_event.event_time = event_time;
+  group_events_since_startup_.push_back(std::move(group_event));
 }
 
 GroupDataStore& GroupDataModel::GetGroupDataStoreForTesting() {

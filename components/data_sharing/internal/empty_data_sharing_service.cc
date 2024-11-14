@@ -85,6 +85,10 @@ void EmptyDataSharingService::LeaveGroup(
     const GroupId& group_id,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
+std::vector<GroupEvent> EmptyDataSharingService::GetGroupEventsSinceStartup() {
+  return {};
+}
+
 bool EmptyDataSharingService::ShouldInterceptNavigationForShareURL(
     const GURL& url) {
   return false;

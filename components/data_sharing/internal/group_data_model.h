@@ -79,6 +79,7 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
       const std::string& member_gaia_id) const;
+  std::vector<GroupEvent> GetGroupEventsSinceStartup() const;
 
   // CollaborationGroupSyncBridge::Observer implementation.
   void OnGroupsUpdated(const std::vector<GroupId>& added_group_ids,
@@ -107,6 +108,11 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
 
   void NotifyObserversAboutChangedMembers(const GroupData& old_group_data,
                                           const GroupData& new_group_data);
+  void MaybeRecordGroupEvent(
+      const GroupId& group_id,
+      GroupEvent::EventType event_type,
+      base::Time event_time,
+      std::optional<std::string> affected_member_gaia_id = std::nullopt);
 
   GroupDataStore group_data_store_;
   bool is_group_data_store_loaded_ = false;
@@ -116,6 +122,8 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   // consecutive fetches (see crrev.com/c/5965993).
   bool has_ongoing_group_fetch_ = false;
   bool has_pending_changes_ = false;
+
+  std::vector<GroupEvent> group_events_since_startup_;
 
   raw_ptr<CollaborationGroupSyncBridge> collaboration_group_sync_bridge_;
   PartialFailureSDKDelegateWrapper sdk_delegate_;

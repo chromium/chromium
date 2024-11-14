@@ -354,6 +354,13 @@ void DataSharingServiceImpl::LeaveGroup(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+std::vector<GroupEvent> DataSharingServiceImpl::GetGroupEventsSinceStartup() {
+  if (!group_data_model_) {
+    return std::vector<GroupEvent>();
+  }
+  return group_data_model_->GetGroupEventsSinceStartup();
+}
+
 void DataSharingServiceImpl::OnModelLoaded() {
   for (auto& observer : observers_) {
     observer.OnGroupDataModelLoaded();

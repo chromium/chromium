@@ -100,6 +100,30 @@ struct GroupData {
   std::vector<GroupMember> members;
 };
 
+struct GroupEvent {
+  enum class EventType {
+    kGroupRemoved,
+    kMemberRemoved,
+    kMemberAdded,
+  };
+
+  GroupEvent();
+
+  GroupEvent(const GroupEvent&);
+  GroupEvent& operator=(const GroupEvent&);
+
+  GroupEvent(GroupEvent&&);
+  GroupEvent& operator=(GroupEvent&&);
+
+  ~GroupEvent();
+
+  EventType event_type;
+  GroupId group_id;
+  // Unset for kGroupRemoved events.
+  std::optional<std::string> affected_member_gaia_id;
+  base::Time event_time;
+};
+
 // Represents a tab that is shared in a group.
 struct TabPreview {
   explicit TabPreview(const GURL& url);
