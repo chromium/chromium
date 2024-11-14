@@ -6741,6 +6741,10 @@ test("unit_tests") {
     ]
   }
 
+  if (enable_glic) {
+    sources += [ "../browser/glic/glic_enabling_unittest.cc" ]
+  }
+
   if (is_win || is_mac) {
     sources += [
       "../browser/enterprise/platform_auth/platform_auth_navigation_throttle_unittest.cc",

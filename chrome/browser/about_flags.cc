@@ -11800,6 +11800,11 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kLoginDbDeprecationAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_GLIC)
+    {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
+     kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},
+#endif // ENABLE_GLIC
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -8157,6 +8157,9 @@ const char kExplicitBrowserSigninUIOnDesktopDescription[] =
     "Enables the UNO model on Desktop. Used for the launch of the UNO model on "
     "Desktop, as well as for the later phases of the experiment.";
 
+const char kGlicName[] = "Glic";
+const char kGlicDescription[] = "Enables glic";
+
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
     "Desktop PWA Link Capturing with Scope Extensions";
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =

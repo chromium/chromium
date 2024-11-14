@@ -20006,6 +20006,7 @@ from previous Chrome versions.
   <int value="-106631643" label="TurnOffStreamingMediaCachingAlways:disabled"/>
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>
   <int value="-106128305" label="DragDropTabTearing:disabled"/>
+  <int value="-105400607" label="Glic:enabled"/>
   <int value="-104106119" label="WebViewJavaJsBridgeMojo:disabled"/>
   <int value="-103131043" label="NtpOutlookCalendarModule:disabled"/>
   <int value="-102537270" label="extension-content-verification"/>
@@ -22836,6 +22837,7 @@ from previous Chrome versions.
       label="AllowDownloadResumptionWithoutStrongValidators:enabled"/>
   <int value="1045152062" label="SecurePaymentConfirmationBrowser:enabled"/>
   <int value="1045179357" label="NtpRealboxLensSearch:disabled"/>
+  <int value="1046157767" label="Glic:disabled"/>
   <int value="1046878091" label="PasswordForceSaving:enabled"/>
   <int value="1046981538" label="OfflinePagesShowAlternateDinoPage:disabled"/>
   <int value="1047110483" label="ShelfHotseat:disabled"/>

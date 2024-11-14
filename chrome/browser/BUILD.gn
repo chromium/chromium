@@ -8443,6 +8443,13 @@ static_library("browser") {
     ]
   }
 
+  if (enable_glic) {
+    sources += [
+      "glic/glic_enabling.cc",
+      "glic/glic_enabling.h",
+    ]
+  }
+
   if (is_chromeos || is_win || is_linux || is_mac) {
     deps += [
       "//components/metrics",
