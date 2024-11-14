@@ -1,5 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] Query "push" powerful feature
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'query' on 'Permissions': Push Permission without userVisibleOnly:true isn't supported yet."
+  promise_test: Unhandled rejection with value: object "Error: Should have the permission prompt to continue but found denied"
+[FAIL] Granting permission should allow subscription
+  promise_test: Unhandled rejection with value: object "Error: Should have the permission granted to continue but found denied"
+[FAIL] Denying permission should disallow subscription
+  promise_rejects_dom: function "function() { throw e }" threw object "AbortError: Registration failed - missing applicationServerKey, and manifest empty or missing" that is not a DOMException NotAllowedError: property "code" is equal to 20, expected 0
 Harness: the test ran to completion.
-

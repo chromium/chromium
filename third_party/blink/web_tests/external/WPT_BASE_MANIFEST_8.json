@@ -72550,6 +72550,19 @@
     },
     "css-align": {
      "abspos": {
+      "align-items-static-position.html": [
+       "8f3dbb7ae41e5dae167282cfffa522e800f0bbc7",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-items-static-position-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "align-self-with-flex-grid-parent.html": [
        "ce2846373ccf6b66ee9d0be0002d21a9b2064a89",
        [
@@ -148454,7 +148467,7 @@
        ]
       ],
       "text-box-trim-end-001.html": [
-       "dbd44c814b63bc6399ab4c70ef575aa22bd2e32b",
+       "1441d558edaf4b3631262bf41b20067b24d09b57",
        [
         "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=alphabetic",
         [
@@ -149077,7 +149090,7 @@
        ]
       ],
       "text-box-trim-start-001.html": [
-       "223d8b351a158bdad6a9bb6858d6866a01d5dacf",
+       "45d7451c2f5785024e41c164400eda1b33a8f54c",
        [
         "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=auto",
         [
@@ -168909,6 +168922,19 @@
          ]
         ]
        }
+      ]
+     ],
+     "scrollbar-large-scale-in-iframe.html": [
+      "1808d1dc8a97496453dfe00dc3a0b96b8b2dc184",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbar-large-scale-in-iframe-ref.html",
+         "=="
+        ]
+       ],
+       {}
       ]
      ],
      "scrollbars-chrome-bug-001.html": [
@@ -305602,6 +305628,10 @@
       "45c8ffef923870909cb9b0e2af128081e5bce41a",
       []
      ],
+     "support-get-all.js": [
+      "6b071619e8cc13298230df29fab81dbf9d795929",
+      []
+     ],
      "support-promises.js": [
       "f64b73adc903287b58c62bac8b17475d32f753ae",
       []
@@ -318413,6 +318443,10 @@
       []
      ],
      "abspos": {
+      "align-items-static-position-ref.html": [
+       "1b36d26bbe15f14c15fd71c98347ca2bdfb5e722",
+       []
+      ],
       "align-self-with-flex-grid-parent-ref.html": [
        "c87289d450e9ec95677c17a6d72d3e34dec4d05d",
        []
@@ -339277,7 +339311,7 @@
       ],
       "parsing": {
        "text-box-computed-expected.txt": [
-        "ae11a3bb58a9174445adeac64a58b59e97a9800b",
+        "d0062963fdd73c993d890a992e7aba41c0bd3686",
         []
        ],
        "text-box-edge-computed-expected.txt": [
@@ -339289,7 +339323,7 @@
         []
        ],
        "text-box-valid-expected.txt": [
-        "ecae45beadaf804b270a3967d698c3fcd206805a",
+        "588e594cd7740a1a199d70ed4bde2c5ff486accd",
         []
        ]
       },
@@ -343034,6 +343068,10 @@
      ],
      "scrollbar-gutter-vertical-rl-002-ref.html": [
       "7dbadf995ed89bc3032c4ca1b53e1cebecd6237e",
+      []
+     ],
+     "scrollbar-large-scale-in-iframe-ref.html": [
+      "38c8d0c513bf6e3763e05ea205bcbe8d6253b0ed",
       []
      ],
      "scrollbars-chrome-bug-001-ref.html": [
@@ -399793,7 +399831,7 @@
       []
      ],
      "helpers.js": [
-      "6b418be03ed2d7c0697163b2758667172201289b",
+      "de135f779566977a6611b33d29df9b706c0836f5",
       []
      ],
      "icon.png": [
@@ -399822,7 +399860,7 @@
      ]
     },
     "tag.https-expected.txt": [
-     "9ef90ca4b91a10eef6e315903a4552f6f2c68ab6",
+     "2773977c9a70104c98c064d70d64724887226ccc",
      []
     ]
    },
@@ -401876,15 +401914,39 @@
      []
     ],
     "permission.https-expected.txt": [
-     "5c080b9e54fc3b91f58d6c12807c338ff77918c6",
+     "c244897c542d2e3c1d5d7d588d2cfbf8d9c9e9f6",
+     []
+    ],
+    "push-sw.js": [
+     "d9ab89c8da14c78f908f232651a148e8034c842d",
+     []
+    ],
+    "push-with-applicationServerKey.https.any.window-module-expected.txt": [
+     "f28eb0ebe750181fea9f5309f8d8cc1f308e359e",
+     []
+    ],
+    "push-without-applicationServerKey.https.any.window-module-expected.txt": [
+     "f28eb0ebe750181fea9f5309f8d8cc1f308e359e",
      []
     ],
     "resources": {
+     "ece.js": [
+      "f8c330e7f012679dadd1d390728c201aeb46192f",
+      []
+     ],
      "helpers.js": [
-      "8395c638f3ee0170e44b35bac866729371db70c6",
+      "c7555531f7593cea06d2a4e361a8a7d819bdf9cf",
+      []
+     ],
+     "vapid.js": [
+      "ab8984199c573dabf733464f817934c5b0ad41b9",
       []
      ]
-    }
+    },
+    "subscribe-with-faulty-applicationServerKey.https.window-expected.txt": [
+     "8b8a46adc955448c0a260a2abc137f8dcbdf4b08",
+     []
+    ]
    },
    "quirks": {
     "DIR_METADATA": [
@@ -427349,7 +427411,7 @@
      ]
     ],
     "idbobjectstore_getAll.any.js": [
-     "600d000788963a6d626db014a43a9c2ffc5e654c",
+     "ef5fee5be6a625ed235c16a10c8faab0b11ea9fb",
      [
       "IndexedDB/idbobjectstore_getAll.any.html",
       {
@@ -427359,8 +427421,86 @@
          "IndexedDB: Test IDBObjectStore.getAll"
         ],
         [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
          "script",
          "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_getAll.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBObjectStore.getAll"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_getAll.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBObjectStore.getAll"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
         ]
        ]
       }
@@ -427374,15 +427514,31 @@
          "IndexedDB: Test IDBObjectStore.getAll"
         ],
         [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
          "script",
          "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
         ]
        ]
       }
      ]
     ],
     "idbobjectstore_getAllKeys.any.js": [
-     "951c479873fa9684a3b1d648762e58be66837cd3",
+     "d51779163b62bcacc28189167bf0d0738979e6c0",
      [
       "IndexedDB/idbobjectstore_getAllKeys.any.html",
       {
@@ -427392,8 +427548,86 @@
          "IndexedDB: Test IDBObjectStore.getAllKeys"
         ],
         [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
          "script",
          "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_getAllKeys.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBObjectStore.getAllKeys"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_getAllKeys.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBObjectStore.getAllKeys"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
         ]
        ]
       }
@@ -427407,8 +427641,151 @@
          "IndexedDB: Test IDBObjectStore.getAllKeys"
         ],
         [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
          "script",
          "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idbobjectstore_getAllRecords.tentative.any.js": [
+     "9b9d0aa1ef04d3a70fee8d97f78d1abd8088c506",
+     [
+      "IndexedDB/idbobjectstore_getAllRecords.tentative.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBObjectStore.getAllRecords"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_getAllRecords.tentative.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBObjectStore.getAllRecords"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_getAllRecords.tentative.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBObjectStore.getAllRecords"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_getAllRecords.tentative.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test IDBObjectStore.getAllRecords"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "script",
+         "resources/support-get-all.js"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
         ]
        ]
       }
@@ -477679,35 +478056,35 @@
      "text-box-trim": {
       "parsing": {
        "inheritance.html": [
-        "da547af4e4ab7721fc9cc7c52ff1ee2626e528bc",
+        "65f30bb3570c7a4ad126405d4bceb1a0e709a768",
         [
          null,
          {}
         ]
        ],
        "text-box-computed.html": [
-        "406a1639f789500c1b5ef854d499cf9c50fa34bb",
+        "471a121e5cc22e2696ce623e53cb5f0203a7dd04",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-computed.html": [
-        "b5b6f0c5cf737d0bdc3fc7b1b8ced1ec2a759f62",
+        "df7775570fcc7bbcb85e67614d27170a8146bb70",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-invalid.html": [
-        "0c1e2d19a3b7cb416a9b32a4aa336564cc2e39f6",
+        "a80e03149d6b2e4bc23ae332b429bac99b1d0ce1",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-valid.html": [
-        "27917c02922a2ad171f6edf740482d04d52b7599",
+        "4aa1d3fdda06ede751903a21990cf82d80ee3848",
         [
          null,
          {}
@@ -477721,7 +478098,7 @@
         ]
        ],
        "text-box-shorthand.html": [
-        "46c05163c3b131feff6a2a76368a9955f08c62c5",
+        "8c0fe3ad83979ad31f8b86ed9e219292cbab1be4",
         [
          null,
          {}
@@ -477749,7 +478126,7 @@
         ]
        ],
        "text-box-valid.html": [
-        "67894ca71f94967e6c235df54441adfd0e4dd4f2",
+        "589eb8280c3aa439ee7bd9fa5fcf58bd012afc2f",
         [
          null,
          {}
@@ -645776,14 +646153,68 @@
      ]
     ],
     "permission.https.html": [
-     "61cb40a843a427af47c3db98944676f19f4c2d25",
+     "eb78b49b0f6628adb5b3da211a57d5a4e43c455b",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "push-with-applicationServerKey.https.any.js": [
+     "f7d9cea50f85663e95f31855e2cd3f7f18c20ce2",
+     [
+      "push-api/push-with-applicationServerKey.https.any.window-module.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window-module"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/notifications/resources/helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "push-without-applicationServerKey.https.any.js": [
+     "202aa68e569f840e287efc68b5a3cecf9790609f",
+     [
+      "push-api/push-without-applicationServerKey.https.any.window-module.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window-module"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/notifications/resources/helpers.js"
+        ]
+       ]
+      }
      ]
     ],
     "subscribe-with-faulty-applicationServerKey.https.window.js": [
-     "7d600803e4329da981f8f4be1a017a5e711e8698",
+     "e91bda1f54bbc1b59d593e0e56e839fb1e1c0155",
      [
       "push-api/subscribe-with-faulty-applicationServerKey.https.window.html",
       {
@@ -645798,7 +646229,7 @@
         ],
         [
          "script",
-         "resources/helpers.js"
+         "/notifications/resources/helpers.js"
         ]
        ]
       }
@@ -684963,7 +685394,7 @@
      ]
     ],
     "block-string-assignment-to-Element-setAttribute.html": [
-     "4cc877efb2ffdaec32fc76a47c00ac9f55f1bfcb",
+     "38dd6b90998ef7b0c230603709fd14daf038a5f6",
      [
       null,
       {}

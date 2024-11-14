@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Posting to the push endpoint should fire push event on the service worker
+  promise_test: Unhandled rejection with value: object "Error: Should have the permission granted to continue but found denied"
+[FAIL] Posting to the push endpoint with encrypted data should fire push event on the service worker
+  promise_test: Unhandled rejection with value: object "Error: Should have the permission granted to continue but found denied"
+Harness: the test ran to completion.
