@@ -155,7 +155,8 @@ export class DeclutterPageElement extends CrLitElement {
 
   protected getCloseButtonAriaLabel_(tabData: TabData): string {
     return loadTimeData.getStringF(
-        'declutterCloseTabAriaLabel', tabData.tab.title);
+        'declutterCloseTabAriaLabel', tabData.tab.title,
+        tabData.tab.lastActiveElapsedText);
   }
 
   protected getCloseButtonTooltip_(): string {

@@ -166,6 +166,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
        IDS_AUTO_TAB_GROUPS_SELECTOR_SUBHEADING},
       {"backButtonAriaLabel", IDS_TAB_ORGANIZATION_BACK_BUTTON_ARIA_LABEL},
       {"declutterSelectorSubheading", IDS_DECLUTTER_SELECTOR_SUBHEADING},
+      {"selectorAriaLabel", IDS_TAB_ORGANIZATION_SELECTOR_ARIA_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
