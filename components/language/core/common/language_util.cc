@@ -9,8 +9,10 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "components/country_codes/country_codes.h"
+#include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/locale_util.h"
 
 namespace language {
@@ -62,6 +64,9 @@ const LanguageCodePair kLanguageCodeChineseCompatiblePairs[] = {
 
 bool OverrideTranslateTriggerInIndia() {
 #if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(language::kDisableGeoLanguageModel)) {
+    return false;
+  }
   return country_codes::GetCurrentCountryCode() == "IN";
 #else
   return false;
