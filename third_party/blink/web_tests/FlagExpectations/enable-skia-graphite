@@ -43,17 +43,6 @@ crbug.com/40937352 external/wpt/css/css-color/parsing/color-valid-relative-color
 crbug.com/40937352 external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure ]
 external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html [ Crash Timeout ]
 
-# Text output contains:
-#   Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
-#
-# with what appears to be a memory address, so not rebaselined.
-printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
-virtual/gpu/fast/canvas/webgl/create-query-crash.html [ Failure Pass ]
-virtual/oopr-canvas2d/fast/canvas/webgl/create-query-crash.html [ Failure Pass ]
-virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-main.html [ Failure Pass ]
-virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html [ Failure Pass ]
-virtual/threaded/printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
-
 # ====== New tests from wpt-importer added here ======
 crbug.com/377955852 virtual/gpu-rasterization/external/wpt/css/css-images/cross-fade-premultiplied-alpha.html [ Failure ]
 crbug.com/369270133 virtual/threaded/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Failure ]
