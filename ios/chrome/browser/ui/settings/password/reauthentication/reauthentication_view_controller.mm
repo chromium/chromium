@@ -60,21 +60,16 @@
   // Restore navigation bar background color to its default value.
   // The view controller under self in the stack could have changed it.
   self.navigationController.navigationBar.backgroundColor = nil;
-
-  if (_reauthUponPresentation) {
-    [self recordAuthenticationEvent:ReauthenticationEvent::kAttempt];
-    [self triggerLocalAuthentication];
-  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-
-  // Wait until the view is in the hierarchy to present the alert, otherwise it
-  // won't be shown.
+  // Wait until the presentation is done to request authentication. This avoids
+  // race conditions that occur if we try to pop self
+  // from its navigation controller before it is fully pushed.
   if (_reauthUponPresentation) {
     _reauthUponPresentation = NO;
-    [self showSetUpPasscodeDialogIfNeeded];
+    [self requestAuthentication];
   }
 }
 

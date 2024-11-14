@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -285,8 +286,8 @@ bool IsPasscodeSettingsAvailable() {
   if (!_reauthViewController || !_baseNavigationController) {
     return;
   }
-
-  DCHECK_EQ(_baseNavigationController.topViewController, _reauthViewController);
+  CHECK_EQ(_baseNavigationController.topViewController, _reauthViewController,
+           base::NotFatalUntil::M135);
 
   [_baseNavigationController popViewControllerAnimated:NO];
   _reauthViewController.delegate = nil;
