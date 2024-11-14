@@ -11248,6 +11248,7 @@ if (!is_android && !is_chromeos_device) {
           "//components/os_crypt/async/browser:secret_portal_key_provider",
           "//components/os_crypt/async/browser:test_secret_portal",
         ]
+        defines += [ "USE_DBUS" ]
       }
     }
 

@@ -227,8 +227,6 @@ class CookieEncryptionProviderBrowserTest
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) && defined(USE_DBUS)
       case kOSCryptAsyncWithSecretPortalProvider:
-        enabled_features.push_back(
-            features::kUseOsCryptAsyncForCookieEncryption);
         enabled_features.push_back(features::kDbusSecretPortal);
         enabled_features.push_back(
             features::kSecretPortalKeyProviderUseForEncryption);
