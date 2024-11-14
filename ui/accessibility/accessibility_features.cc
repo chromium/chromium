@@ -320,22 +320,11 @@ bool IsReadAloudLanguagePackDownloadingEnabled() {
              ::features::kReadAloudLanguagePackDownloading);
 }
 
-BASE_FEATURE(kReadAnythingReadAloudAutomaticWordHighlighting,
-             "ReadAnythingReadAloudAutomaticWordHighlighting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAnythingReadAloudAutomaticWordHighlightingEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
-         base::FeatureList::IsEnabled(
-             ::features::kReadAnythingReadAloudAutomaticWordHighlighting);
-}
-
 BASE_FEATURE(kReadAnythingReadAloudPhraseHighlighting,
              "ReadAnythingReadAloudPhraseHighlighting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
-         base::FeatureList::IsEnabled(
-             ::features::kReadAnythingReadAloudAutomaticWordHighlighting) &&
          base::FeatureList::IsEnabled(
              ::features::kReadAnythingReadAloudPhraseHighlighting);
 }

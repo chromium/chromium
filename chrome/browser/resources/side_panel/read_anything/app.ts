@@ -2082,8 +2082,7 @@ export class AppElement extends AppElementBase {
       return highlight;
     }
 
-    if (!chrome.readingMode.isAutomaticWordHighlightingEnabled ||
-        this.wordBoundaryState.mode ===
+    if (this.wordBoundaryState.mode ===
             WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
         isEspeak(this.selectedVoice_)) {
       // Fall back where word highlighting is not possible. Since espeak

@@ -240,11 +240,6 @@ AX_BASE_EXPORT bool IsReadAloudAutoVoiceSwitchingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAloudLanguagePackDownloading);
 AX_BASE_EXPORT bool IsReadAloudLanguagePackDownloadingEnabled();
 
-// Enable automatic word highlighting in Read Anything Read Aloud.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kReadAnythingReadAloudAutomaticWordHighlighting);
-AX_BASE_EXPORT bool IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
-
 // Enable phrase highlighting in Read Anything Read Aloud.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();

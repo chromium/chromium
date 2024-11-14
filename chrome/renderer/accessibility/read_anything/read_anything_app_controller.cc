@@ -858,9 +858,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsAutoVoiceSwitchingEnabled)
       .SetProperty("isLanguagePackDownloadingEnabled",
                    &ReadAnythingAppController::IsLanguagePackDownloadingEnabled)
-      .SetProperty(
-          "isAutomaticWordHighlightingEnabled",
-          &ReadAnythingAppController::IsAutomaticWordHighlightingEnabled)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetProperty("requiresDistillation",
@@ -1284,10 +1281,6 @@ bool ReadAnythingAppController::IsAutoVoiceSwitchingEnabled() const {
 
 bool ReadAnythingAppController::IsLanguagePackDownloadingEnabled() const {
   return features::IsReadAloudLanguagePackDownloadingEnabled();
-}
-
-bool ReadAnythingAppController::IsAutomaticWordHighlightingEnabled() const {
-  return features::IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
 }
 
 bool ReadAnythingAppController::IsGoogleDocs() const {

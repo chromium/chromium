@@ -4458,7 +4458,6 @@ TEST_F(
     GetHighlightForCurrentSegmentIndex_PhrasesEnabled_NoModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
   scoped_feature_list_.InitWithFeatures(
       {features::kReadAnythingReadAloud,
-       features::kReadAnythingReadAloudAutomaticWordHighlighting,
        features::kReadAnythingReadAloudPhraseHighlighting},
       {});
 
@@ -4537,7 +4536,6 @@ TEST_F(
     GetHighlightForCurrentSegmentIndex_PhrasesEnabled_ValidModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
   scoped_feature_list_.InitWithFeatures(
       {features::kReadAnythingReadAloud,
-       features::kReadAnythingReadAloudAutomaticWordHighlighting,
        features::kReadAnythingReadAloudPhraseHighlighting},
       {});
 

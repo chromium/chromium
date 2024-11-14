@@ -223,7 +223,6 @@ class ReadAnythingAppController
   bool IsChromeOsAsh() const;
   bool IsAutoVoiceSwitchingEnabled() const;
   bool IsLanguagePackDownloadingEnabled() const;
-  bool IsAutomaticWordHighlightingEnabled() const;
   bool IsPhraseHighlightingEnabled() const;
   void OnLetterSpacingChange(int value);
   void OnLineSpacingChange(int value);
