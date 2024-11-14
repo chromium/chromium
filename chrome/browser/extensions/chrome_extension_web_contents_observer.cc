@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/metrics/field_trial.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_frame_host.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -25,7 +24,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
@@ -60,23 +58,6 @@ void ChromeExtensionWebContentsObserver::RenderFrameCreated(
   DCHECK(initialized());
   ReloadIfTerminated(render_frame_host);
   ExtensionWebContentsObserver::RenderFrameCreated(render_frame_host);
-
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
-    SetupRenderFrameHost(render_frame_host);
-  }
-}
-
-void ChromeExtensionWebContentsObserver::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  ExtensionWebContentsObserver::ReadyToCommitNavigation(navigation_handle);
-
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
-    content::RenderFrameHost* render_frame_host =
-        navigation_handle->GetRenderFrameHost();
-    SetupRenderFrameHost(render_frame_host);
-  }
 }
 
 void ChromeExtensionWebContentsObserver::InitializeRenderFrame(
@@ -111,8 +92,10 @@ void ChromeExtensionWebContentsObserver::ReloadIfTerminated(
   }
 }
 
-void ChromeExtensionWebContentsObserver::SetupRenderFrameHost(
+void ChromeExtensionWebContentsObserver::SetUpRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
+  ExtensionWebContentsObserver::SetUpRenderFrameHost(render_frame_host);
+
   // This logic should match
   // ChromeContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories.
   const Extension* extension = GetExtensionFromFrame(render_frame_host, false);

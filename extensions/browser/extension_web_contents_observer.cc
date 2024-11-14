@@ -156,7 +156,7 @@ void ExtensionWebContentsObserver::InitializeRenderFrame(
                                 frame_extension);
 }
 
-void ExtensionWebContentsObserver::SetupRenderFrameHost(
+void ExtensionWebContentsObserver::SetUpRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized_);
   InitializeRenderFrame(render_frame_host);
@@ -202,7 +202,7 @@ void ExtensionWebContentsObserver::RenderFrameCreated(
           extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
     return;
   }
-  SetupRenderFrameHost(render_frame_host);
+  SetUpRenderFrameHost(render_frame_host);
 }
 void ExtensionWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
@@ -217,7 +217,7 @@ void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (base::FeatureList::IsEnabled(
           extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
-    SetupRenderFrameHost(navigation_handle->GetRenderFrameHost());
+    SetUpRenderFrameHost(navigation_handle->GetRenderFrameHost());
   }
 
   ScriptInjectionTracker::ReadyToCommitNavigation(PassKey(), navigation_handle);
