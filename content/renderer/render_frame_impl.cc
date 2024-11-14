@@ -1228,7 +1228,8 @@ WindowOpenDisposition NavigationPolicyToDisposition(
   NOTREACHED() << "Unexpected WebNavigationPolicy";
 }
 
-bool ShouldNotifySubresourceResponseStarted(blink::RendererPreferences pref) {
+bool ShouldNotifySubresourceResponseStarted(
+    const blink::RendererPreferences& pref) {
   if (!base::FeatureList::IsEnabled(
           features::kReduceSubresourceResponseStartedIPC)) {
     return true;
