@@ -16,14 +16,12 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
 import org.chromium.components.browser_ui.accessibility.PageZoomUma;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
-import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -139,12 +137,12 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                         initialArguments.putString(
                                 SingleCategorySettings.EXTRA_CATEGORY,
                                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
-                        SettingsNavigation settingsNavigation =
-                                SettingsNavigationFactory.createSettingsNavigation();
-                        settingsNavigation.startSettings(
-                                ContextUtils.getApplicationContext(),
-                                AllSiteSettings.class,
-                                initialArguments);
+                        mDelegate
+                                .getSiteSettingsNavigation()
+                                .startSettings(
+                                        ContextUtils.getApplicationContext(),
+                                        AllSiteSettings.class,
+                                        initialArguments);
                         return true;
                     });
 

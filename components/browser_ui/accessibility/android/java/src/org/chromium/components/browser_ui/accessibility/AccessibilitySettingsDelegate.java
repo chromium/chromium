@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
@@ -42,6 +43,11 @@ public interface AccessibilitySettingsDelegate {
      * @return boolean value specifying if the Image Descriptions user setting should be shown.
      */
     boolean shouldShowImageDescriptionsSetting();
+
+    /**
+     * @return SettingsNavigation for navigating between Settings pages.
+     */
+    SettingsNavigation getSiteSettingsNavigation();
 
     /**
      * @return the InterPreferenceDelegate instance that should be used for reading and setting the
