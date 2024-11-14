@@ -27,8 +27,8 @@ feature to UseCounter, simply:
     * \[[MeasureAs="WebDXFeature::\<enum value\>"]\] in the feature's IDL definition; Or
     * \[[MeasureAs=\<WebFeature enum value\>]\] in the feature's IDL definition for WebFeature use counters; Or
     * \[[Measure]\] in the feature's IDL definition for WebFeature use counters with an appropriately named use counter; Or
-    * blink::UseCounter::CountWebDXFeature() or blink::UseCounter::Count() for blink side features; Or
-    * content::ContentBrowserClient::LogWeb[DX]FeatureForCurrentPage() for browser side features.
+    * `blink::UseCounter::CountWebDXFeature()` or `blink::UseCounter::Count()` for blink side features; Or
+    * `content::ContentBrowserClient::LogWeb[DX]FeatureForCurrentPage()` for browser side features.
 + Run [`update_use_counter_feature_enum.py`] to update the UMA mappings.
 
 Example:
@@ -98,6 +98,32 @@ You can quickly verify that your feature is added to UMA histograms and UKM by
 checking chrome://histograms/Blink.UseCounter.WebDXFeatures,
 chrome://histograms/Blink.UseCounter.Features and chrome://ukm in your local
 build.
+
+To add a test for a use counter, there are several options:
+ + For use counters recorded from the renderer,
+   [internal WPTs](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/web_tests/wpt_internal/README.md)
+   expose the `internals.isUseCounted` and `internals.clearUseCounter`
+   functions for testing use counters recorded for a given document.
+
+ + Chrome browser tests can verify that use counters were recorded by using a
+   `base::HistogramTester` to check whether the "Blink.UseCounter.Features"
+   histogram was emitted to for the bucket corresponding to the new WebFeature.
+   If the use counter is recorded from the renderer,
+   `content::FetchHistogramsFromChildProcesses()` can be used to make this
+   use counter activity visible to the browser process.
+
+ + For use counters recorded from the browser process (e.g. by calling
+   `GetContentClient()->browser()->LogWebFeatureForCurrentPage()`), a content
+   browser test can be used by creating a subclass of
+   `ContentBrowserTestContentBrowserClient` that implements
+   `LogWebFeatureForCurrentPage`, creating an instance of it in
+   `SetUpOnMainThread`, and checking whether the instance's
+   `LogWebFeatureForCurrentPage` is called. One way to implement this is to
+   have `LogWebFeatureForCurrentPage` be defined as a `MOCK_METHOD` and then
+   use `EXPECT_CALL` to ensure that the method is called as expected with
+   the new WebFeature value. Note that the
+   `ContentBrowserTestContentBrowserClient` instance should be destroyed in
+   `TearDownOnMainThread`.
 
 ## Analyze UseCounter Histogram Data
 
