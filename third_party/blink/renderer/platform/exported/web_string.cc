@@ -141,8 +141,7 @@ bool WebString::Equals(const WebString& s) const {
 }
 
 bool WebString::Equals(std::string_view characters) const {
-  return Equal(impl_.get(), characters.data(),
-               base::checked_cast<wtf_size_t>(characters.length()));
+  return Equal(impl_.get(), characters);
 }
 
 size_t WebString::Find(const WebString& s) const {

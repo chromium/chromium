@@ -142,7 +142,7 @@ static inline bool VectorEqualsString(const LCharLiteralBuffer<32>& vector,
   if (!string.length())
     return true;
 
-  return Equal(string.Impl(), vector.data(), vector.size());
+  return Equal(string.Impl(), vector);
 }
 
 #define HTML_BEGIN_STATE(stateName) BEGIN_STATE(HTMLTokenizer, stateName)

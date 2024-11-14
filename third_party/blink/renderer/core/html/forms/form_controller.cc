@@ -300,8 +300,9 @@ Vector<String> SavedFormState::GetReferencedFilePaths() const {
   Vector<String> to_return;
   for (const auto& form_control : state_for_new_controls_) {
     const ControlKey& key = form_control.key;
-    if (!Equal(key.GetType(), "file", 4))
+    if (!Equal(key.GetType(), base::span_from_cstring("file"))) {
       continue;
+    }
     const Deque<FormControlState>& queue = form_control.value;
     for (const FormControlState& form_control_state : queue) {
       to_return.AppendVector(

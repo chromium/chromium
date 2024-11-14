@@ -55,7 +55,7 @@ class UCharBuffer {
         hash_(ComputeHashAndMaskTop8Bits(chars, len, encoding)),
         encoding_(encoding) {}
 
-  const UChar* characters() const { return characters_; }
+  base::span<const UChar> characters() const { return {characters_, length_}; }
   unsigned length() const { return length_; }
   unsigned hash() const { return hash_; }
   AtomicStringUCharEncoding encoding() const { return encoding_; }
@@ -83,7 +83,7 @@ struct UCharBufferTranslator {
   static unsigned GetHash(const UCharBuffer& buf) { return buf.hash(); }
 
   static bool Equal(StringImpl* const& str, const UCharBuffer& buf) {
-    return WTF::Equal(str, buf.characters(), buf.length());
+    return WTF::Equal(str, buf.characters());
   }
 
   static void Store(StringImpl*& location,
@@ -361,8 +361,7 @@ struct LCharBufferTranslator {
   static unsigned GetHash(const LCharBuffer& buf) { return buf.hash(); }
 
   static bool Equal(StringImpl* const& str, const LCharBuffer& buf) {
-    auto chars = buf.characters();
-    return WTF::Equal(str, chars.data(), chars.size());
+    return WTF::Equal(str, buf.characters());
   }
 
   static void Store(StringImpl*& location,

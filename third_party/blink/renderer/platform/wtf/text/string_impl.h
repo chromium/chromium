@@ -660,10 +660,10 @@ WTF_EXPORT bool Equal(const StringImpl*, const LChar*);
 inline bool Equal(const StringImpl* a, const char* b) {
   return Equal(a, reinterpret_cast<const LChar*>(b));
 }
-WTF_EXPORT bool Equal(const StringImpl*, const LChar*, wtf_size_t);
-WTF_EXPORT bool Equal(const StringImpl*, const UChar*, wtf_size_t);
-inline bool Equal(const StringImpl* a, const char* b, wtf_size_t length) {
-  return Equal(a, reinterpret_cast<const LChar*>(b), length);
+WTF_EXPORT bool Equal(const StringImpl*, base::span<const LChar>);
+WTF_EXPORT bool Equal(const StringImpl*, base::span<const UChar>);
+inline bool Equal(const StringImpl* a, base::span<const char> b) {
+  return Equal(a, base::as_bytes(b));
 }
 inline bool Equal(const LChar* a, StringImpl* b) {
   return Equal(b, a);

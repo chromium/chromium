@@ -1714,27 +1714,27 @@ bool Equal(const StringImpl* a, const StringImpl* b) {
 }
 
 template <typename CharType>
-inline bool EqualInternal(const StringImpl* a,
-                          const CharType* b,
-                          wtf_size_t length) {
+inline bool EqualInternal(const StringImpl* a, base::span<const CharType> b) {
   if (!a)
-    return !b;
-  if (!b)
+    return !b.data();
+  if (!b.data()) {
     return false;
+  }
 
-  if (a->length() != length)
+  if (a->length() != b.size()) {
     return false;
+  }
   if (a->Is8Bit())
-    return Equal(a->Characters8(), b, length);
-  return Equal(a->Characters16(), b, length);
+    return Equal(a->Characters8(), b.data(), b.size());
+  return Equal(a->Characters16(), b.data(), b.size());
 }
 
-bool Equal(const StringImpl* a, const LChar* b, wtf_size_t length) {
-  return EqualInternal(a, b, length);
+bool Equal(const StringImpl* a, base::span<const LChar> b) {
+  return EqualInternal(a, b);
 }
 
-bool Equal(const StringImpl* a, const UChar* b, wtf_size_t length) {
-  return EqualInternal(a, b, length);
+bool Equal(const StringImpl* a, base::span<const UChar> b) {
+  return EqualInternal(a, b);
 }
 
 template <typename StringType>
