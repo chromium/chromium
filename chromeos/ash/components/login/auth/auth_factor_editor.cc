@@ -359,6 +359,25 @@ void AuthFactorEditor::RemovePinFactor(std::unique_ptr<UserContext> context,
   client_->RemoveAuthFactor(req, std::move(remove_auth_factor_callback));
 }
 
+void AuthFactorEditor::RemovePasswordFactor(
+    std::unique_ptr<UserContext> context,
+    const cryptohome::KeyLabel& label,
+    AuthOperationCallback callback) {
+  DCHECK(!context->GetAuthSessionId().empty());
+
+  LOGIN_LOG(EVENT) << "Removing password factor";
+  cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword, label};
+
+  user_data_auth::RemoveAuthFactorRequest req;
+  req.set_auth_session_id(context->GetAuthSessionId());
+  req.set_auth_factor_label(ref.label().value());
+
+  auto remove_auth_factor_callback = base::BindOnce(
+      &AuthFactorEditor::OnRemoveAuthFactor, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback));
+  client_->RemoveAuthFactor(req, std::move(remove_auth_factor_callback));
+}
+
 void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
                                          AuthOperationCallback callback) {
   DCHECK(!context->GetAuthSessionId().empty());

@@ -157,4 +157,9 @@ interface PasswordFactorEditor {
   // Returns a value describing the complexity of the provided password value.
   CheckLocalPasswordComplexity(string password) =>
       (PasswordComplexity complexity);
+
+  // Remove the password factor for the user if the user has modern pin
+  // configured. While it is client's responsibility to not call,
+  // this IPC will also have additional check.
+  RemovePassword(string auth_token) => (ConfigureResult result);
 };
