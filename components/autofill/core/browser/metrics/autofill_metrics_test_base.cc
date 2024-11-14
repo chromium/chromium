@@ -233,20 +233,27 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingFailed(
 void AutofillMetricsBaseTest::RecreateCreditCards(
     bool include_local_credit_card,
     bool include_masked_server_credit_card,
-    bool masked_card_is_enrolled_for_virtual_card) {
+    bool masked_card_is_enrolled_for_virtual_card,
+    bool include_cvc_in_cards) {
   personal_data().test_payments_data_manager().ClearCreditCards();
-  CreateCreditCards(include_local_credit_card,
-                    include_masked_server_credit_card,
-                    masked_card_is_enrolled_for_virtual_card);
+  CreateCreditCards(
+      include_local_credit_card, include_masked_server_credit_card,
+      masked_card_is_enrolled_for_virtual_card, include_cvc_in_cards);
 }
 
 void AutofillMetricsBaseTest::CreateCreditCards(
     bool include_local_credit_card,
     bool include_masked_server_credit_card,
-    bool masked_card_is_enrolled_for_virtual_card) {
+    bool masked_card_is_enrolled_for_virtual_card,
+    bool include_cvc_in_cards) {
   if (include_local_credit_card) {
     CreditCard local_credit_card = test::GetCreditCard();
     local_credit_card.set_guid("10000000-0000-0000-0000-000000000001");
+    if (include_cvc_in_cards) {
+#if !BUILDFLAG(IS_IOS)
+      local_credit_card.set_cvc(u"123");
+#endif
+    }
     personal_data().payments_data_manager().AddCreditCard(local_credit_card);
   }
   if (include_masked_server_credit_card) {
@@ -259,6 +266,11 @@ void AutofillMetricsBaseTest::CreateCreditCards(
     if (masked_card_is_enrolled_for_virtual_card) {
       masked_server_credit_card.set_virtual_card_enrollment_state(
           CreditCard::VirtualCardEnrollmentState::kEnrolled);
+    }
+    if (include_cvc_in_cards) {
+#if !BUILDFLAG(IS_IOS)
+      masked_server_credit_card.set_cvc(u"123");
+#endif
     }
     personal_data().test_payments_data_manager().AddServerCreditCard(
         masked_server_credit_card);

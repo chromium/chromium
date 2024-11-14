@@ -681,13 +681,14 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 #if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(payments_network_interface().client_behavior_signals_in_request(),
+              UnorderedElementsAre(
+                  ClientBehaviorConstants::kShowAccountEmailInLegalMessage,
+                  ClientBehaviorConstants::kOfferingToSaveCvc));
+#else
   EXPECT_THAT(
       payments_network_interface().client_behavior_signals_in_request(),
-      ElementsAre(ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
-#else
-  EXPECT_TRUE(payments_network_interface()
-                  .client_behavior_signals_in_request()
-                  .empty());
+      UnorderedElementsAre(ClientBehaviorConstants::kOfferingToSaveCvc));
 #endif
 
   // Verify that even though the full address profile was saved, only the
@@ -3479,7 +3480,7 @@ TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
   CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
-                          "1");
+                          "1", /*cvc=*/u"123");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
 
@@ -4616,12 +4617,13 @@ TEST_F(CreditCardSaveManagerTest,
   histogram_tester.ExpectTotalCount("Autofill.UploadAcceptedCardOrigin", 0);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Android is skipped because the show email client behavior signal is always
 // sent.
-TEST_F(
-    CreditCardSaveManagerTest,
-    UploadCreditCard_DoNotAddAnyClientBehaviorSignalsToRequestIfExperimentsOff) {
+// CVC storage isn't launched on iOS, so this test is skipped.
+
+TEST_F(CreditCardSaveManagerTest,
+       UploadCreditCard_VerifyCvcStorageIsPresentInClientBehaviorSignals) {
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -4649,11 +4651,11 @@ TEST_F(
   FormSubmitted(credit_card_form);
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
-  EXPECT_TRUE(payments_network_interface()
-                  .client_behavior_signals_in_request()
-                  .empty());
+  EXPECT_THAT(
+      payments_network_interface().client_behavior_signals_in_request(),
+      UnorderedElementsAre(ClientBehaviorConstants::kOfferingToSaveCvc));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_ShouldAddBillableServiceNumberInRequest) {

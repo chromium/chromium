@@ -5445,7 +5445,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
 
   SeeForm(form_);
 
-  credit_card().set_cvc(u"");
+  credit_card().clear_cvc();
 
   // Fakes an Autofill with the following behavior:
   // - before security and assuming a complete profile: kFullFill;

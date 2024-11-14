@@ -67,18 +67,22 @@ class AutofillMetricsBaseTest {
   void RecreateProfile();
 
   // Removes all existing credit cards and then invokes CreateCreditCards to
-  // create the cards.
+  // create the cards. `include_cvc_in_cards` will set a CVC value on each card
+  // created for non-iOS platforms.
   // TODO(crbug.com/40770602): Migrate this to a params builder pattern or
   // something.
   void RecreateCreditCards(bool include_local_credit_card,
                            bool include_masked_server_credit_card,
-                           bool masked_card_is_enrolled_for_virtual_card);
+                           bool masked_card_is_enrolled_for_virtual_card,
+                           bool include_cvc_in_cards = true);
 
   // Creates a local, masked server, and/or virtual credit card, according to
-  // the parameters.
+  // the parameters. `include_cvc_in_cards` will set a CVC value on each card
+  // created for non-iOS platforms.
   void CreateCreditCards(bool include_local_credit_card,
                          bool include_masked_server_credit_card,
-                         bool masked_card_is_enrolled_for_virtual_card);
+                         bool masked_card_is_enrolled_for_virtual_card,
+                         bool include_cvc_in_cards = true);
 
   // Creates a local card and then a duplicate server card with the same
   // credentials/info.

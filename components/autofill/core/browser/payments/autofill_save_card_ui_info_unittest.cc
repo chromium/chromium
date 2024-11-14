@@ -108,9 +108,13 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
   EXPECT_EQ(ui_info.logo_icon_id, IDR_INFOBAR_AUTOFILL_CC);
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL));
-  EXPECT_EQ(ui_info.description_text, u"");
-  EXPECT_EQ(ui_info.confirm_text,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+  EXPECT_EQ(ui_info.description_text,
+#if BUILDFLAG(IS_IOS)
+            u"");
+#else
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL));
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

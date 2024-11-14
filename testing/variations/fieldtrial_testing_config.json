@@ -1649,27 +1649,6 @@
             ]
         }
     ],
-    "AutofillEnableCvcStorage": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCvcStorageAndFilling",
-                        "AutofillEnableCvcStorageAndFillingEnhancement",
-                        "SyncAutofillWalletCredentialData"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableDisablingSuggestionsOnJSFocus": [
         {
             "platforms": [
