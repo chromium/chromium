@@ -53,6 +53,12 @@ BASE_FEATURE(kWebAuthnAndroidCredMan,
 BASE_FEATURE(kWebAuthnAndroidUsePasskeyCache,
              "WebAuthenticationAndroidUsePasskeyCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This is a deprecation flag for "Phone as a security key" privacy settings
+// fragment. Disabled in M133, remove in or after M136.
+BASE_FEATURE(kWebAuthnEnablePaaskFragment,
+             "WebAuthenticationEnablePaaskFragment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enabled in M118. Remove in or after M121.

@@ -20,4 +20,6 @@ public abstract class DeviceFeatureList {
             "WebAuthenticationAndroidUsePasskeyCache";
     public static final String BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND =
             "BatteryStatusManagerBroadcastReceiverInBackground";
+    public static final String WEBAUTHN_ENABLE_PAASK_SETTING =
+            "WebAuthenticationEnablePaaskFragment";
 }
