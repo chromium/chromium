@@ -17678,6 +17678,7 @@
                     "name": "preload-on-warmup-delay",
                     "params": {
                         "delay-preload": "true",
+                        "exclude-origins": "chrome://bookmarks-side-panel.top-chrome",
                         "preload-mode": "preload-on-warmup",
                         "smart-preload": "true"
                     },
