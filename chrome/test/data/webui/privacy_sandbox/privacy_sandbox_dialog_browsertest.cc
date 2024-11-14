@@ -67,13 +67,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Combined) {
   RunTestSuite("Combined");
 }
 
-// TODO(crbug.com/378958535): Flaky on Windows & ChromeOS.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NoticeEEA DISABLED_NoticeEEA
-#else
-#define MAYBE_NoticeEEA NoticeEEA
-#endif
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, MAYBE_NoticeEEA) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeEEA) {
   RunTestSuite("NoticeEEA");
 }
 
@@ -96,4 +90,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest,
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, CombinedAdsApiUxEnhancement) {
   RunTestSuite("CombinedAdsApiUxEnhancement");
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeEEAAdsApiUxEnhancement) {
+  RunTestSuite("NoticeEEAAdsApiUxEnhancement");
 }
