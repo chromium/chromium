@@ -7,7 +7,6 @@ import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsReviewPanelElement} from 'chrome://extensions/extensions.js';
 import {PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -21,7 +20,6 @@ suite('ExtensionsReviewPanel', function() {
   setup(function() {
     pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
-    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('extensions-review-panel');
     const extensionItems = [

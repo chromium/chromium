@@ -184,8 +184,7 @@ export class ExtensionsReviewPanelElement extends
   }
 
   protected shouldShowExtensionsSafetyHub_(): boolean {
-    return loadTimeData.getBoolean('safetyHubShowReviewPanel') &&
-        (this.shouldShowUnsafeExtensions_ || this.shouldShowCompletionInfo_);
+    return this.shouldShowUnsafeExtensions_ || this.shouldShowCompletionInfo_;
   }
 
   protected shouldShowSafetyHubRemoveAllButton_(): boolean {

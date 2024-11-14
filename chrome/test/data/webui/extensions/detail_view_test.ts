@@ -729,7 +729,6 @@ suite('ExtensionDetailViewTest', function() {
     // before enabling the feature.
     assertFalse(isVisible(
         item.shadowRoot!.querySelector('#safetyCheckWarningContainer')));
-    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': true});
     await updateItemData({
       safetyCheckText: {'detailString': 'Test Message'},
       blocklistText: 'This item is blocklisted',

@@ -159,25 +159,13 @@ suite('ExtensionItemListTest', function() {
     loadTimeData.getString('browserManagedByOrg');
   });
 
-  test('SafetyCheckPanel_Disabled', async () => {
-    // Panel is hidden if safetyCheckShowReviewPanel and
-    // safetyHubShowReviewPanel are disabled.
-    loadTimeData.overrideValues(
-        {safetyCheckShowReviewPanel: false, safetyHubShowReviewPanel: false});
-    setupElement();
-    boundTestVisible('extensions-review-panel', false);
-  });
-
   test('SafetyCheckPanel_EnabledSafetyCheck', async () => {
-    // Panel is hidden if safetyCheckShowReviewPanel is enabled, there are no
-    // unsafe extensions and panel wasn't previously shown.
-    loadTimeData.overrideValues(
-        {safetyCheckShowReviewPanel: true, safetyHubShowReviewPanel: true});
+    // Panel is hidden if there are no unsafe extensions and panel wasn't
+    // previously shown.
     setupElement();
     boundTestVisible('extensions-review-panel', false);
 
-    // Panel is visible if safetyCheckShowReviewPanel is enabled, and there are
-    // unsafe extensions.
+    // Panel is visible if there are unsafe extensions.
     itemList.extensions = [
       ...itemList.extensions.slice(),
       createExtensionInfo({
@@ -195,15 +183,12 @@ suite('ExtensionItemListTest', function() {
   });
 
   test('SafetyCheckPanel_EnabledSafetyHub', async () => {
-    // Panel is hidden if safetyHubShowReviewPanel is enabled, there are no
-    // unsafe extensions and panel wasn't previously shown.
-    loadTimeData.overrideValues(
-        {safetyCheckShowReviewPanel: false, safetyHubShowReviewPanel: true});
+    // Panel is hidden if there are no unsafe extensions and panel
+    // wasn't previously shown.
     setupElement();
     boundTestVisible('extensions-review-panel', false);
 
-    // Panel is visible if safetyHubShowReviewPanel is enabled, and there are
-    // unsafe extensions.
+    // Panel is visible if there are unsafe extensions.
     itemList.extensions = [
       ...itemList.extensions,
       createExtensionInfo({
@@ -406,10 +391,11 @@ suite('ExtensionItemListTest', function() {
   });
 
   test('ManifestV2DeprecationPanel_TitleVisibility', async () => {
-    // Enable feature for both panels (mv2 panel is enabled for stage 1). Their
-    // visibility will be determined whether they have extensions to show.
-    loadTimeData.overrideValues(
-        {MV2ExperimentStage: 1, safetyHubShowReviewPanel: true});
+    // Enable feature for mv2 panel (mv2 panel is enabled for stage 1). Its
+    // visibility will be determined by whether it has extensions to show.
+    loadTimeData.overrideValues({
+      MV2ExperimentStage: 1,
+    });
     setupElement();
 
     // Both panels should be hidden since they don't have extensions to show.

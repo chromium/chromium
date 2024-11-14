@@ -475,9 +475,6 @@ export class ExtensionsDetailViewElement extends
   }
 
   private computeShowSafetyCheck_(): boolean {
-    if (!loadTimeData.getBoolean('safetyCheckShowReviewPanel')) {
-      return false;
-    }
     const ExtensionType = chrome.developerPrivate.ExtensionType;
     // Check to make sure this is an extension and not a Chrome app.
     if (!(this.data.type === ExtensionType.EXTENSION ||

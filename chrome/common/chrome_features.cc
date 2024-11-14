@@ -990,10 +990,6 @@ BASE_FEATURE(kRemoveSupervisedUsersOnStartup,
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Enables extensions module in Safety Check.
-BASE_FEATURE(kSafetyCheckExtensions,
-             "SafetyCheckExtensions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSafetyHubExtensionsUwSTrigger,
              "SafetyHubExtensionsUwSTrigger",
              base::FEATURE_ENABLED_BY_DEFAULT);

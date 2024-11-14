@@ -79,14 +79,6 @@ export class SettingsSafetyCheckPageElement extends
         },
       },
 
-      /** Boolean to show/hide extensions entry point. */
-      safetyCheckExtensionsReviewEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('safetyCheckExtensionsReviewEnabled');
-        },
-      },
-
       /* List of notification permission sites. */
       notificationPermissionSites_: Array,
     };
@@ -95,7 +87,6 @@ export class SettingsSafetyCheckPageElement extends
   private parentStatus_: SafetyCheckParentStatus;
   private parentDisplayString_: string;
   private safetyCheckUnusedSitePermissionsEnabled_: boolean;
-  private safetyCheckExtensionsReviewEnabled_: boolean;
   private safetyCheckNumberOfExtensionsThatNeedReview_: number;
   private notificationPermissionSites_: NotificationPermission[] = [];
   private unusedSitePermissions_: UnusedSitePermissions[] = [];
@@ -253,8 +244,7 @@ export class SettingsSafetyCheckPageElement extends
   }
 
   private shouldShowSafetyCheckExtensionsReview_(): boolean {
-    if (this.safetyCheckExtensionsReviewEnabled_ &&
-        this.safetyCheckNumberOfExtensionsThatNeedReview_ !== 0) {
+    if (this.safetyCheckNumberOfExtensionsThatNeedReview_ !== 0) {
       this.metricsBrowserProxy_.recordAction(
           'Settings.SafetyCheck.ShownExtensionsReviewRow');
       return true;

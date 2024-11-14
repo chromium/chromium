@@ -384,10 +384,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, LoadTimeData) {
   RunTestCase("LoadTimeData");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, SafetyCheckPanel_Disabled) {
-  RunTestCase("SafetyCheckPanel_Disabled");
-}
-
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
                        SafetyCheckPanel_EnabledSafetyCheck) {
   RunTestCase("SafetyCheckPanel_EnabledSafetyCheck");

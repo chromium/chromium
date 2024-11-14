@@ -10173,10 +10173,6 @@ const FeatureEntry kFeatureEntries[] = {
          safe_browsing::kExtensionTelemetryForEnterprise,
          kExtensionTelemetryEnterpriseReportingIntervalSecondsVariations,
          "EnterpriseReportingIntervalSeconds")},
-
-    {"safety-check-extensions", flag_descriptions::kSafetyCheckExtensionsName,
-     flag_descriptions::kSafetyCheckExtensionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSafetyCheckExtensions)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
     {"autofill-enable-cvc-storage-and-filling",

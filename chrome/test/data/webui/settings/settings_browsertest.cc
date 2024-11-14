@@ -1227,7 +1227,6 @@ class SettingsSafetyCheckPermissionsTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {
             content_settings::features::kSafetyCheckUnusedSitePermissions,
-            features::kSafetyCheckExtensions,
         },
         {});
   }

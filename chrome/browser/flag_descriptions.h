@@ -1058,9 +1058,6 @@ extern const char kCWSInfoFastCheckDescription[];
 extern const char kExtensionTelemetryForEnterpriseName[];
 extern const char kExtensionTelemetryForEnterpriseDescription[];
 
-extern const char kSafetyCheckExtensionsName[];
-extern const char kSafetyCheckExtensionsDescription[];
-
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kExtensionWebFileHandlersName[];
 extern const char kExtensionWebFileHandlersDescription[];

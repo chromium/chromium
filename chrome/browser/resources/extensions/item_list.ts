@@ -254,12 +254,6 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * Returns whether the review deprecation panel should be visible.
    */
   private computeShowSafetyCheckReviewPanel_(): boolean {
-    // Panel is hidden if neither safety feature is on.
-    if (!loadTimeData.getBoolean('safetyCheckShowReviewPanel') &&
-        !loadTimeData.getBoolean('safetyHubShowReviewPanel')) {
-      return false;
-    }
-
     // If there are any unsafe extensions, they will be shown in the panel.
     // Store this, so we can show the completion info in the panel when there
     // are no unsafe extensions left after the user finished reviewing the

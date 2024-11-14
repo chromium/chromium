@@ -455,10 +455,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
 
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
 
-  source->AddBoolean(
-      "safetyCheckExtensionsReviewEnabled",
-      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
-
   source->AddBoolean(kEnableEnhancedSiteControls,
                      base::FeatureList::IsEnabled(
                          extensions_features::kExtensionsMenuAccessControl));
@@ -469,9 +465,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "enableUserPermittedSites",
       base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
-  source->AddBoolean(
-      "safetyCheckShowReviewPanel",
-      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
   source->AddBoolean("safetyHubShowReviewPanel",
                      base::FeatureList::IsEnabled(features::kSafetyHub));
 

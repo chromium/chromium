@@ -1875,12 +1875,6 @@ const char kExtensionTelemetryForEnterpriseDescription[] =
     "When enabled, the extension telemetry service collects signals and "
     "generates reports to send for enterprise.";
 
-const char kSafetyCheckExtensionsName[] = "Extensions Module in Safety Check";
-const char kSafetyCheckExtensionsDescription[] =
-    "When enabled, adds the Extensions Module to Safety Check on "
-    "desktop. The module will be shown if there are potentially unsafe "
-    "extensions to review.";
-
 const char kExtensionsToolbarZeroStateName[] = "Extensions Toolbar Zero State";
 const char kExtensionsToolbarZeroStateDescription[] =
     "When enabled, show an IPH to prompt users with zero extensions installed "
