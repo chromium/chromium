@@ -130,7 +130,7 @@ struct CRDTP_EXPORT ProtocolTypeTraits<Binary> {
 
 template <>
 struct detail::MaybeTypedef<Binary> {
-  typedef ValueMaybe<Binary> type;
+  typedef std::optional<Binary> type;
 };
 
 }  // namespace crdtp

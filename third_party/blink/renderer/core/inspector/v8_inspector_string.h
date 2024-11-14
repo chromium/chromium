@@ -134,12 +134,12 @@ struct ProtocolTypeTraits<blink::protocol::Binary> {
 namespace detail {
 template <>
 struct MaybeTypedef<WTF::String> {
-  typedef ValueMaybe<WTF::String> type;
+  using type = std::optional<WTF::String>;
 };
 
 template <>
 struct MaybeTypedef<blink::protocol::Binary> {
-  typedef ValueMaybe<blink::protocol::Binary> type;
+  using type = std::optional<blink::protocol::Binary>;
 };
 
 }  // namespace detail
