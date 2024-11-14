@@ -51,12 +51,13 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionInitializing() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                     this);
 
-  enter_presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-      Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-      kEnterOverviewPresentationHistogram, "",
-      GetOverviewPresentationTimeBucketParams(),
-      /*emit_trace_event=*/true);
-  enter_presentation_time_recorder_->RequestNext();
+  auto enter_presentation_time_recorder =
+      CreatePresentationTimeHistogramRecorder(
+          Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
+          GetOverviewEnterPresentationTimeMetricName(start_action_), "",
+          GetOverviewPresentationTimeBucketParams(),
+          /*emit_trace_event=*/true);
+  enter_presentation_time_recorder->RequestNext();
 
   base::UmaHistogramCounts100("Ash.Overview.DeskCount",
                               DesksController::Get()->desks().size());
@@ -90,17 +91,6 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
           GetOverviewPresentationTimeBucketParams(),
           /*emit_trace_event=*/true);
   exit_presentation_time_recorder->RequestNext();
-
-  CHECK(enter_presentation_time_recorder_);
-  const std::optional<base::TimeDelta> enter_presentation_time =
-      enter_presentation_time_recorder_->GetAverageLatency();
-  // `enter_presentation_time` can be null if the overview session ends before
-  // the first overview frame is presented. This should be rare and is ok to
-  // ignore.
-  if (enter_presentation_time) {
-    RecordOverviewEnterPresentationTimeWithReason(start_action_,
-                                                  *enter_presentation_time);
-  }
 
   CHECK(!overview_start_time_.is_null());
   base::UmaHistogramMediumTimes("Ash.Overview.TimeInOverview",

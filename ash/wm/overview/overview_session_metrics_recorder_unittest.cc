@@ -64,8 +64,6 @@ TEST_F(OverviewSessionMetricsRecorderTest,
                                        kNumOverviewSessionsToTest);
   histogram_tester_.ExpectUniqueSample("Ash.Overview.DeskCount", 1,
                                        kNumOverviewSessionsToTest);
-  histogram_tester_.ExpectTotalCount(kEnterOverviewPresentationHistogram,
-                                     kNumOverviewSessionsToTest);
   histogram_tester_.ExpectTotalCount(kExitOverviewPresentationHistogram,
                                      kNumOverviewSessionsToTest);
 }

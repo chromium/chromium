@@ -70,8 +70,6 @@ enum class OverviewEndAction {
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 
-inline constexpr char kEnterOverviewPresentationHistogram[] =
-    "Ash.Overview.Enter.PresentationTime2";
 inline constexpr char kExitOverviewPresentationHistogram[] =
     "Ash.Overview.Exit.PresentationTime2";
 inline constexpr char kOverviewDelayedDeskBarPresentationHistogram[] =
@@ -80,16 +78,14 @@ inline constexpr char kOverviewDelayedDeskBarPresentationHistogram[] =
 const ui::PresentationTimeRecorder::BucketParams&
 GetOverviewPresentationTimeBucketParams();
 
-// Records metric with format:
+// Returns metric name with format:
 // "Ash.Overview.Enter.PresentationTime.{OverviewStartReason}"
 //
-// where {OverviewStartReason} is derived from the `start_action`. This is the
-// exact same measurement as `kEnterOverviewPresentationHistogram`, but
-// segmented by different use cases that have different profiles and performance
-// characteristics.
-ASH_EXPORT void RecordOverviewEnterPresentationTimeWithReason(
-    OverviewStartAction start_action,
-    base::TimeDelta presentation_time);
+// This segments the overview presentation time into separate categories/use
+// cases that have different profiles and characteristics and hence, should be
+// analyzed independently.
+ASH_EXPORT const char* GetOverviewEnterPresentationTimeMetricName(
+    OverviewStartAction start_action);
 
 }  // namespace ash
 

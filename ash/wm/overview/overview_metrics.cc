@@ -34,19 +34,16 @@ GetOverviewPresentationTimeBucketParams() {
   return kParams;
 }
 
-void RecordOverviewEnterPresentationTimeWithReason(
-    OverviewStartAction start_action,
-    base::TimeDelta presentation_time) {
-  const char* suffix = nullptr;
+const char* GetOverviewEnterPresentationTimeMetricName(
+    OverviewStartAction start_action) {
+#define METRIC_PREFIX "Ash.Overview.Enter.PresentationTime2."
   switch (start_action) {
     case OverviewStartAction::kDevTools:
     case OverviewStartAction::kTests:
     case OverviewStartAction::kBentoBar_DEPRECATED:
-      suffix = "Other";
-      break;
+      return METRIC_PREFIX "Other";
     case OverviewStartAction::kPine:
-      suffix = "InformedRestore";
-      break;
+      return METRIC_PREFIX "InformedRestore";
     case OverviewStartAction::kSplitView:
     case OverviewStartAction::kAccelerator:
     case OverviewStartAction::kDragWindowFromShelf:
@@ -58,16 +55,11 @@ void RecordOverviewEnterPresentationTimeWithReason(
     case OverviewStartAction::kOverviewDeskSwitch:
     case OverviewStartAction::kDeskButton:
     case OverviewStartAction::kFasterSplitScreenSetup:
-      suffix = display::Screen::GetScreen()->InTabletMode()
-                   ? "UserInitiatedTablet"
-                   : "UserInitiatedClamshell";
-      break;
+      return display::Screen::GetScreen()->InTabletMode()
+                 ? METRIC_PREFIX "UserInitiatedTablet"
+                 : METRIC_PREFIX "UserInitiatedClamshell";
   }
-  base::UmaHistogramCustomTimes(
-      base::StrCat({kEnterOverviewPresentationHistogram, ".", suffix}),
-      presentation_time, GetOverviewPresentationTimeBucketParams().min_latency,
-      GetOverviewPresentationTimeBucketParams().max_latency,
-      GetOverviewPresentationTimeBucketParams().num_buckets);
+#undef METRIC_PREFIX
 }
 
 }  // namespace ash

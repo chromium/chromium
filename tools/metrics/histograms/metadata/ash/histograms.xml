@@ -6880,31 +6880,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Overview.Enter.PresentationTime2" units="ms"
-    expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
-  <owner>zxdan@chromium.org</owner>
-  <owner>esum@google.com</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Records the presentation time, which is the time in milliseconds it takes
-    from when the overview enter event was received and successfully processed
-    to when the next frame is shown to the user.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Overview.Enter.PresentationTime2.{OverviewStartReason}"
     units="ms" expires_after="2025-07-15">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>esum@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the overview enter event was received and successfully processed
-    to when the next frame is shown to the user.
-
-    This is the exact same measurement as Ash.Overview.Enter.PresentationTime,
-    but segmented by different reasons overview mode was started, which have
-    different profile and performance characteristics.
+    to when the next frame is shown to the user. This is segmented by different
+    broad reasons overview mode was started. Each reason has a different profile
+    and performance characteristics and hence, should be analyzed separately.
   </summary>
   <token key="OverviewStartReason" variants="OverviewStartReason"/>
 </histogram>
