@@ -81,8 +81,7 @@ std::vector<std::unique_ptr<RepeatingTimeIntervalTaskExecutor>>
 BuildIntervalExecutorsFromConfig(
     RepeatingTimeIntervalTaskExecutor::Factory* task_executor_factory,
     const base::Value::List& policy_config,
-    const base::RepeatingCallback<void(base::TimeDelta)>& on_start_callback,
-    const base::RepeatingClosure& on_end_callback) {
+    const base::RepeatingCallback<void(base::TimeDelta)>& on_start_callback) {
   std::vector<std::unique_ptr<WeeklyTimeInterval>> intervals =
       GetPolicyConfigAsWeeklyTimeIntervals(policy_config);
 
@@ -91,8 +90,8 @@ BuildIntervalExecutorsFromConfig(
       intervals, std::back_inserter(executors),
       [&](const std::unique_ptr<WeeklyTimeInterval>& interval) {
         CHECK(interval != nullptr);
-        return task_executor_factory->Create(
-            std::move(*interval), on_start_callback, on_end_callback);
+        return task_executor_factory->Create(std::move(*interval),
+                                             on_start_callback);
       });
   return executors;
 }
@@ -191,9 +190,6 @@ void DeviceWeeklyScheduledSuspendController::
       task_executor_factory_.get(), policy_config,
       base::BindRepeating(
           &DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart,
-          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(
-          &DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalEnd,
           weak_factory_.GetWeakPtr()));
 
   for (const auto& executor : interval_executors_) {
@@ -219,10 +215,6 @@ void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart(
   // issues, and is otherwise imperceptible if it causes an early full resume.
   constexpr auto tolerance = base::Seconds(2);
   resume_after_ = clock_->Now() + duration - tolerance;
-}
-
-void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalEnd() {
-  // TODO(b/330836068): Remove interval end callback.
 }
 
 }  // namespace ash

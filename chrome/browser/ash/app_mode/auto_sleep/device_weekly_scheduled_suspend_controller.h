@@ -59,10 +59,6 @@ class DeviceWeeklyScheduledSuspendController
   // Called when a suspend interval starts with the remaining interval duration.
   void OnTaskExecutorIntervalStart(base::TimeDelta interval_duration);
 
-  // Called when a suspend interval ends.
-  // TODO(b/330836068): Remove interval end callback.
-  void OnTaskExecutorIntervalEnd();
-
   // Monitors `kDeviceWeeklyScheduledSuspend` preference update.
   PrefChangeRegistrar pref_change_registrar_;
 
