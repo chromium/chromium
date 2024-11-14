@@ -224,6 +224,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
       return associated_loader;
     });
     ON_CALL(*this, GetIsolate).WillByDefault(Return(GetBlinkIsolate()));
+    ON_CALL(*this, DeviceScaleFactor).WillByDefault(Return(1.0f));
     ON_CALL(*this, GetEmbedderOriginString)
         .WillByDefault(
             Return("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/"));
@@ -2640,6 +2641,36 @@ TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
   cursor =
       TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
+}
+
+TEST_F(PdfViewWebPluginInkTest, GetZoom) {
+  // Demonstrate that default zoom is identity.
+  EXPECT_EQ(1.0f, plugin_->ink_module_client_for_testing()->GetZoom());
+
+  // Verify that changing the plugin zoom shows effect.
+  EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 2,
+    "layoutOptions": {
+      "direction": 0,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 0,
+    "yOffset": 0,
+    "pinchPhase": 0,
+  })"));
+  EXPECT_EQ(2.0f, plugin_->ink_module_client_for_testing()->GetZoom());
+
+  // Verify that changing the platform device scale shows effect.
+  ON_CALL(*client_ptr_, DeviceScaleFactor).WillByDefault(Return(1.25f));
+  EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.5f));
+  constexpr gfx::Rect kWindowRect(12, 24, 36, 48);
+  plugin_->UpdateGeometry(kWindowRect, kWindowRect, kWindowRect,
+                          /*is_visible=*/true);
+  EXPECT_EQ(2.5f, plugin_->ink_module_client_for_testing()->GetZoom());
 }
 
 TEST_F(PdfViewWebPluginInkTest, UpdateThumbnail) {
