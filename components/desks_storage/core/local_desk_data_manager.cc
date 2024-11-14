@@ -56,7 +56,8 @@ constexpr size_t kMaxCoralDeskCount = 6u;
 
 // Set of valid desk types.
 constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
-    {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall});
+    {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall,
+     ash::DeskTemplateType::kCoral});
 
 // Reads a file at `fully_qualified_path` into a
 // `ash::DeskTemplate` or as `SavedDeskParseError` code. This function returns a
@@ -398,7 +399,8 @@ void LocalDeskDataManager::DeleteAllEntries(DeleteEntryCallback callback) {
 // TODO(crbug.com/1320805): Remove this function once both desk models support
 // desk type counts.
 size_t LocalDeskDataManager::GetEntryCount() const {
-  return GetSaveAndRecallDeskEntryCount() + GetDeskTemplateEntryCount();
+  return GetSaveAndRecallDeskEntryCount() + GetDeskTemplateEntryCount() +
+         GetCoralEntryCount();
 }
 
 size_t LocalDeskDataManager::GetSaveAndRecallDeskEntryCount() const {
@@ -410,12 +412,20 @@ size_t LocalDeskDataManager::GetDeskTemplateEntryCount() const {
          policy_entries_.size();
 }
 
+size_t LocalDeskDataManager::GetCoralEntryCount() const {
+  return saved_desks_list_.at(ash::DeskTemplateType::kCoral).size();
+}
+
 size_t LocalDeskDataManager::GetMaxSaveAndRecallDeskEntryCount() const {
   return kMaxSaveAndRecallDeskCount;
 }
 
 size_t LocalDeskDataManager::GetMaxDeskTemplateEntryCount() const {
   return kMaxDeskTemplateCount + policy_entries_.size();
+}
+
+size_t LocalDeskDataManager::GetMaxCoralEntryCount() const {
+  return kMaxCoralDeskCount;
 }
 
 std::set<base::Uuid> LocalDeskDataManager::GetAllEntryUuids() const {

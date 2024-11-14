@@ -127,6 +127,10 @@ size_t DeskModelWrapper::GetDeskTemplateEntryCount() const {
          policy_entries_.size();
 }
 
+size_t DeskModelWrapper::GetCoralEntryCount() const {
+  return 0u;
+}
+
 size_t DeskModelWrapper::GetMaxSaveAndRecallDeskEntryCount() const {
   return save_and_recall_desks_model_->GetMaxSaveAndRecallDeskEntryCount();
 }
@@ -134,6 +138,10 @@ size_t DeskModelWrapper::GetMaxSaveAndRecallDeskEntryCount() const {
 size_t DeskModelWrapper::GetMaxDeskTemplateEntryCount() const {
   return GetDeskTemplateModel()->GetMaxDeskTemplateEntryCount() +
          policy_entries_.size();
+}
+
+size_t DeskModelWrapper::GetMaxCoralEntryCount() const {
+  return 0u;
 }
 
 std::set<base::Uuid> DeskModelWrapper::GetAllEntryUuids() const {

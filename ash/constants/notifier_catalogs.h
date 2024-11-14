@@ -325,7 +325,8 @@ enum class ToastCatalogName {
   kOnTaskUrlBlocked = 55,
   kCopyImageToClipboardAction = 56,
   kCaptureModeTextCopied = 57,
-  kMaxValue = kCaptureModeTextCopied
+  kCoralSavedGroupLimitMax = 58,
+  kMaxValue = kCoralSavedGroupLimitMax
 };
 
 }  // namespace ash

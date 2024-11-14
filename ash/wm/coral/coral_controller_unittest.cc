@@ -13,29 +13,48 @@
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/wm/coral/coral_test_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/templates/saved_desk_test_helper.h"
+#include "ash/wm/desks/templates/saved_desk_test_util.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
+#include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
 
 class CoralControllerTest : public AshTestBase {
  public:
+  CoralControllerTest() {
+    feature_list_.InitWithFeatures(
+        {features::kCoralFeature, features::kCoralSavedDeskFeature}, {});
+  }
+
   void ClickFirstCoralButton() {
     DeskSwitchAnimationWaiter waiter;
     BirchChipButton* coral_button = GetFirstCoralButton();
     CHECK(coral_button);
     LeftClickOn(coral_button);
     waiter.Wait();
+  }
+
+  void AddCoralEntry(const std::string& name) {
+    AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
+                      base::Uuid::GenerateRandomV4(), name, base::Time::Now(),
+                      DeskTemplateType::kCoral);
   }
 
   void SetUp() override {
@@ -66,7 +85,7 @@ class CoralControllerTest : public AshTestBase {
  private:
   std::unique_ptr<TestBirchClient> birch_client_;
 
-  base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that clicking the in session coral button opens and activates a new
@@ -197,6 +216,36 @@ TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
   EXPECT_TRUE(base::Contains(desks[1]->windows(), window2.get()));
   EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
                                                                 window2.get()));
+}
+
+TEST_F(CoralControllerTest, MaxCoralSavedGroupLimit) {
+  ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
+
+  // Add enough entries to hit the max.
+  for (int i = 0; i < 6; ++i) {
+    AddCoralEntry(base::NumberToString(i));
+  }
+
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Right click on the coral button to bring up the context menu and the save
+  // as group option.
+  RightClickOn(GetFirstCoralButton());
+  BirchBarMenuModelAdapter* model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+  views::MenuItemView* save_as_group_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
+  ASSERT_EQ(save_as_group_item->GetCommand(),
+            base::to_underlying(
+                BirchChipContextMenuModel::CommandId::kCoralSaveForLater));
+
+  // Left click on the menu item and test that the toast shows up since we
+  // cannot create more coral saved groups.
+  LeftClickOn(save_as_group_item);
+  EXPECT_TRUE(Shell::Get()->toast_manager()->IsToastShown(
+      "coral_max_saved_groups_toast"));
 }
 
 }  // namespace ash

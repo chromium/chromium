@@ -2365,6 +2365,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="55" label="OnTask URL blocked"/>
   <int value="56" label="Copy Image To Clipboard Action"/>
   <int value="57" label="Capture Mode Text Copied"/>
+  <int value="58" label="Coral Saved Groups Limit Max"/>
 </enum>
 
 <enum name="TogglePickerAction">
