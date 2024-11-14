@@ -86,10 +86,6 @@ enum class PostCrashAction {
 // The initialization stage the app is currently at.
 @property(nonatomic, readonly) AppInitStage initStage;
 
-// This flag is set when the first scene has initialized its UI and never
-// resets.
-@property(nonatomic, readonly) BOOL firstSceneHasInitializedUI;
-
 // YES if the views being presented should only support the portrait
 // orientation.
 @property(nonatomic, readonly) BOOL portraitOnly;
