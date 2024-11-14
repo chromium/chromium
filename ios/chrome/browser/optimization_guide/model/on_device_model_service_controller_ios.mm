@@ -14,14 +14,8 @@ namespace optimization_guide {
 
 namespace {
 
-// Creates the on-device model service.
-void CreateModelService(
-    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
-        receiver) {
-  // TODO(crbug.com/370768381): Save the pointer of OnDeviceModelService. Otherwise, it will
-  // disconnect the service immediately.
-  on_device_model::OnDeviceModelService::Create(std::move(receiver));
-}
+// The instance of OnDeviceModelServiceControllerIOS.
+OnDeviceModelServiceControllerIOS* g_instance = nullptr;
 
 // Launches the on-device model service.
 void LaunchService(
@@ -32,7 +26,8 @@ void LaunchService(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   background_task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&CreateModelService, std::move(pending_receiver)));
+      base::BindOnce(&OnDeviceModelServiceControllerIOS::CreateModelService,
+                     g_instance->GetWeakPtr(), std::move(pending_receiver)));
 }
 
 }  // namespace
@@ -44,8 +39,25 @@ OnDeviceModelServiceControllerIOS::OnDeviceModelServiceControllerIOS(
           std::make_unique<OnDeviceModelAccessController>(
               *GetApplicationContext()->GetLocalState()),
           std::move(on_device_component_state_manager),
-          base::BindRepeating(&LaunchService)) {}
+          base::BindRepeating(&LaunchService)) {
+  CHECK_EQ(nullptr, g_instance);
+  g_instance = this;
+}
 
-OnDeviceModelServiceControllerIOS::~OnDeviceModelServiceControllerIOS() {}
+OnDeviceModelServiceControllerIOS::~OnDeviceModelServiceControllerIOS() {
+  g_instance = nullptr;
+}
+
+void OnDeviceModelServiceControllerIOS::CreateModelService(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+        receiver) {
+  CHECK(g_instance);
+  service_ = on_device_model::OnDeviceModelService::Create(std::move(receiver));
+}
+
+base::WeakPtr<OnDeviceModelServiceControllerIOS>
+OnDeviceModelServiceControllerIOS::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 
 }  // namespace optimization_guide
