@@ -73,6 +73,10 @@ export class FaceGaze {
     }
     this.initialized_ = true;
 
+    this.maybeShowConfirmationDialog_();
+  }
+
+  private maybeShowConfirmationDialog_(): void {
     chrome.settingsPrivate.getPref(
         FaceGaze.PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, pref => {
           if (pref.value === undefined || pref.value === null) {
