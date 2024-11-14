@@ -6874,12 +6874,6 @@ const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[] =
     "Enables opening the Help App's What's New page immediately instead of "
     "showing a notification to open the help app.";
 
-const char kDiacriticsUseReplaceSurroundingTextName[] =
-    "Use ReplaceSurroundingText API for longpress diacritics.";
-const char kDiacriticsUseReplaceSurroundingTextDescription[] =
-    "When longpress diacritics is enabled, use the ReplaceSurroundingText API "
-    "for better app compatibility.";
-
 const char kHoldingSpaceSuggestionsName[] = "Enable holding space suggestions";
 const char kHoldingSpaceSuggestionsDescription[] =
     "Enables pinned file suggestions in holding space to help the user "

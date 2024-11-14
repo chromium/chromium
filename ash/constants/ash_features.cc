@@ -571,12 +571,6 @@ BASE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpressDefaultOn,
              "DiacriticsOnPhysicalKeyboardLongpressDefaultOn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, diacritics on longpress will use |ReplaceSurroundingText| API,
-// which is atomic and compatible with more apps.
-BASE_FEATURE(kDiacriticsUseReplaceSurroundingText,
-             "DiacriticsUseReplaceSurroundingText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disables hardware requirement checks for Bruschetta installer, allowing for
 // more easy development against changes of said requirements.
 BASE_FEATURE(kDisableBruschettaInstallChecks,

@@ -3974,9 +3974,6 @@ extern const char kHelpAppOnboardingRevampDescription[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationName[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[];
 
-extern const char kDiacriticsUseReplaceSurroundingTextName[];
-extern const char kDiacriticsUseReplaceSurroundingTextDescription[];
-
 extern const char kHoldingSpaceSuggestionsName[];
 extern const char kHoldingSpaceSuggestionsDescription[];
 
