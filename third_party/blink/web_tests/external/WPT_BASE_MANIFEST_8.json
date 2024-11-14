@@ -318716,6 +318716,10 @@
       "6ac93ee7a49bb2d31902ed9afdc0f4f4bd432f09",
       []
      ],
+     "anchor-parse-valid-expected.txt": [
+      "5f741b46bb7c2ea65709b61212b0931a9574c7f8",
+      []
+     ],
      "anchor-position-multicol-003-expected.txt": [
       "7f03f52a900220153e28834fdbb2cca9f2d99da5",
       []
@@ -365405,7 +365409,7 @@
       []
      ],
      "testdriver-extension-tutorial.md": [
-      "185a27f1a46af840f19395cab885451088130cb6",
+      "ca867c392da70e810ac84964c9f6690a13a219e2",
       []
      ],
      "testdriver.md": [
@@ -404508,12 +404512,12 @@
      []
     ],
     "sethtml-tree-construction.dat": [
-     "31c0cde233e4744f01d23942fd73f00cbe1730fd",
+     "c5c30f613134d29030a7dbd8b03ac0f181b630bb",
      []
     ],
     "support": {
      "html5lib-testcase-support.js": [
-      "2829fd7b79de26ec393a1376cd984c4e68a57f61",
+      "fbfe81a1780080dce4c5b8fa78ae08ed5f826a96",
       []
      ]
     }
@@ -500950,7 +500954,7 @@
        ]
       ],
       "filter-computed.html": [
-       "3525a8c7c8a3b121e61bd2906af10cac0803c3ce",
+       "7ebf7dbc169cef72f63dca73419fad2830138207",
        [
         null,
         {}
@@ -500964,7 +500968,7 @@
        ]
       ],
       "filter-parsing-valid.html": [
-       "7867c9edae7350e069d8d6d4660b2a5b5c4ef1e2",
+       "7990fb1fa61a51479be322067d3a8a27064a1709",
        [
         null,
         {}
@@ -645028,7 +645032,7 @@
      ]
     ],
     "pointerevent_touch-action-modified_touch.html": [
-     "9f0abd683709fb64d04c9afa32ce3bb129a46bc6",
+     "cff00a85d6fc2814e44861afe806d9ad5933ec26",
      [
       null,
       {
@@ -660133,6 +660137,13 @@
       }
      ]
     ],
+    "sanitizer-basic-filtering.tentative.html": [
+     "8a3aa4f757b2eff692818fe3767a14c0afc0e0ac",
+     [
+      null,
+      {}
+     ]
+    ],
     "sanitizer-config.tentative.html": [
      "bad18483fc4af686c988176add0c0a6eef668db1",
      [
@@ -660176,7 +660187,7 @@
      ]
     ],
     "sethtml-tree-construction.tentative.html": [
-     "dcb414cf5e566e7bb9f43f2c726330413d6d7b82",
+     "bae406ef703346adaf31790f84c030b25acc2cae",
      [
       null,
       {}
@@ -743062,6 +743073,13 @@
    "webrtc-extensions": {
     "RTCOAuthCredential.html": [
      "63e92c6d087d3f3395651b9fd8ea583736bf7030",
+     [
+      null,
+      {}
+     ]
+    ],
+    "RTCRtpCorruptionDetection-headerExtensionControl.html": [
+     "19adec1199e16cdd0b853b9a577f006a7d34dee5",
      [
       null,
       {}
