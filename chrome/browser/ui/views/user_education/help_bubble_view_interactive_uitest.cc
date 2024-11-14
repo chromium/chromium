@@ -367,14 +367,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, MAYBE_AnnotateMenu) {
       // Show the application menu and attach a bubble to a menu item.
       PressButton(kToolbarAppMenuButtonElementId),
 
-      // There may be some shuffling and setting up on some platforms (looking
-      // at you, Lacros) so make sure the menu is fully loaded before trying to
-      // show the help bubble.
-      //
-      // TODO(crbug.com/377723892): Confirm whether this is still needed, and
-      // remove it if it was lacros-specific.
-      WaitForShow(AppMenuModel::kDownloadsMenuItem),
-
       // Show the help bubble attached to the menu.
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params)),
 
@@ -421,14 +413,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
       // Show the application menu and attach a bubble to two different menu
       // items.
       PressButton(kToolbarAppMenuButtonElementId),
-
-      // There may be some shuffling and setting up on some platforms (looking
-      // at you, Lacros) so make sure the menu is fully loaded before trying to
-      // show the help bubble.
-      //
-      // TODO(crbug.com/377723892): Confirm whether this is still needed, and
-      // remove it if it was lacros-specific.
-      WaitForShow(AppMenuModel::kDownloadsMenuItem),
 
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params1)),
       ShowHelpBubble(AppMenuModel::kMoreToolsMenuItem, std::move(params2)),
