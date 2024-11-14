@@ -13,10 +13,6 @@
   background: var(--cr-hover-background-color);
 }
 
-:host-context(.focus-outline-visible):host(:focus) cr-url-list-item {
-  background-color: var(--cr-active-background-color);
-}
-
 cr-url-list-item[size=compact] {
   --cr-url-list-item-padding: 6px 14px;
 }
