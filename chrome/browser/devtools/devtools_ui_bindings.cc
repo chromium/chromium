@@ -715,11 +715,7 @@ bool IsAnyAidaPoweredFeatureEnabled() {
          base::FeatureList::IsEnabled(
              ::features::kDevToolsAiAssistancePerformanceAgent) ||
          base::FeatureList::IsEnabled(
-             ::features::kDevToolsExplainThisResourceDogfood) ||
-         base::FeatureList::IsEnabled(
-             ::features::kDevToolsAiAssistancePerformanceAgentDogfood) ||
-         base::FeatureList::IsEnabled(
-             ::features::kDevToolsAiAssistanceFileAgentDogfood);
+             ::features::kDevToolsAiAssistancePerformanceAgentDogfood);
 }
 }  // namespace
 
@@ -1623,22 +1619,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
             features::kDevToolsAiAssistanceNetworkAgentUserTier.Get()));
     response_dict.Set("devToolsAiAssistanceNetworkAgent",
                       std::move(network_agent_dict));
-  } else {
-    base::Value::Dict explain_this_resource_dogfood_dict;
-    explain_this_resource_dogfood_dict.Set(
-        "enabled", base::FeatureList::IsEnabled(
-                       ::features::kDevToolsExplainThisResourceDogfood));
-    explain_this_resource_dogfood_dict.Set(
-        "modelId", features::kDevToolsExplainThisResourceDogfoodModelId.Get());
-    explain_this_resource_dogfood_dict.Set(
-        "temperature",
-        features::kDevToolsExplainThisResourceDogfoodTemperature.Get());
-    explain_this_resource_dogfood_dict.Set(
-        "userTier",
-        features::kDevToolsExplainThisResourceDogfoodUserTier.GetName(
-            features::kDevToolsExplainThisResourceDogfoodUserTier.Get()));
-    response_dict.Set("devToolsAiAssistanceNetworkAgent",
-                      std::move(explain_this_resource_dogfood_dict));
   }
 
   if (base::FeatureList::IsEnabled(
@@ -1698,23 +1678,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
             features::kDevToolsAiAssistanceFileAgentUserTier.Get()));
     response_dict.Set("devToolsAiAssistanceFileAgent",
                       std::move(ai_assistance_file_agent_dict));
-  } else {
-    base::Value::Dict ai_assistance_file_agent_dogfood_dict;
-    ai_assistance_file_agent_dogfood_dict.Set(
-        "enabled", base::FeatureList::IsEnabled(
-                       ::features::kDevToolsAiAssistanceFileAgentDogfood));
-    ai_assistance_file_agent_dogfood_dict.Set(
-        "modelId",
-        features::kDevToolsAiAssistanceFileAgentDogfoodModelId.Get());
-    ai_assistance_file_agent_dogfood_dict.Set(
-        "temperature",
-        features::kDevToolsAiAssistanceFileAgentDogfoodTemperature.Get());
-    ai_assistance_file_agent_dogfood_dict.Set(
-        "userTier",
-        features::kDevToolsAiAssistanceFileAgentDogfoodUserTier.GetName(
-            features::kDevToolsAiAssistanceFileAgentDogfoodUserTier.Get()));
-    response_dict.Set("devToolsAiAssistanceFileAgent",
-                      std::move(ai_assistance_file_agent_dogfood_dict));
   }
 
   base::Value::Dict ve_logging_dict;
