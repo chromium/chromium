@@ -27,6 +27,7 @@ ci/android-desktop-x64-compile-rel
 ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel
+ci/android-pie-x86-rel
 ci/android-webview-10-x86-rel-tests
 ci/android-webview-13-x64-hostside-rel
 ci/android-x86-rel

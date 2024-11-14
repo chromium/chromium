@@ -3389,9 +3389,7 @@ ci.builder(
     ),
     cores = 16,
     ssd = True,
-    # TODO(crbug.com/372926209): Add it back to gardening once the builder is
-    # stable.
-    gardener_rotations = args.ignore_default(None),
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x86",
         short_name = "P",
