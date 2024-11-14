@@ -513,6 +513,27 @@ posting form data. To mitigate abuse of these capabiliies, such as beaconing
 upon document open, we require interaction with the document (a "user gesture")
 before allowing their use.
 
+<a name="TOC-Are-non_committed-URLs-entered-by-the-user-considered-URL-spoofs-"></a>
+### Are non-committed URLs entered by the user considered URL spoofs?
+
+No. When a user enters a URL into the address bar (whether by typing,
+copy/pasting, drag and drop, or otherwise), Chrome intentionally displays
+it instead of the last committed URL of the currently active page, until
+both the navigation begins and the new page commits. During this time, the
+currently active page can change its appearance to mimic the new URL while
+its own URL is not shown. However, the active page does not have control
+over which URL the user entered into the address bar, limiting the
+effectiveness of a spoof attempt. The new
+[lock-replacement icon](https://blog.chromium.org/2023/05/an-update-on-lock-icon.html)
+is also not present in this state, and in many cases (i.e., once the new
+navigation has started), the loading indicators are present.
+
+The confusion between the non-committed URL and the active page's
+appearance is a consequence of the address bar needing to serve two roles:
+showing both where you are and where you are going.
+
+See also https://crbug.com/378932942 for context.
+
 <a name="TOC-What-about-URL-spoofs-using-Internationalized-Domain-Names-IDN-"></a>
 ### What about URL spoofs using Internationalized Domain Names (IDN)?
 
