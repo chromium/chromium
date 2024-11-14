@@ -26,6 +26,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -43,6 +45,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/ipc/ipc_support.h"
+#include "chrome/updater/ping_configurator.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/registration_data.h"
@@ -126,6 +129,31 @@ void ExpectNoUpdateSequence(
                                              R"(  ])"
                                              R"(}})",
                                              app_id.c_str()));
+}
+
+void ExpectPingRequest(
+    ScopedServer* test_server,
+    const std::string& app_id,
+    const update_client::UpdateClient::PingParams& ping_params,
+    const base::Version& version = base::Version(kUpdaterVersion)) {
+  test_server->ExpectOnce(
+      {request::GetUpdaterUserAgentMatcher(version),
+       request::GetContentMatcher({base::StringPrintf(
+           R"(.*"appid":"%s".*"errorcode":%d,"eventresult":%d,"eventtype":%d,)"
+           R"("extracode1":%d,.*)",
+           app_id.c_str(), ping_params.error_code, ping_params.result,
+           ping_params.event_type, ping_params.extra_code1)})},
+      base::StringPrintf(")]}'\n"
+                         R"({"response":{)"
+                         R"(  "protocol":"3.1",)"
+                         R"(  "app":[)"
+                         R"(    {)"
+                         R"(      "appid":"%s",)"
+                         R"(      "status":"ok")"
+                         R"(    })"
+                         R"(  ])"
+                         R"(}})",
+                         app_id.c_str()));
 }
 
 base::FilePath GetInstallerPath(const std::string& installer) {
@@ -1286,6 +1314,47 @@ TEST_F(IntegrationTest, UpdateApp) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, SendPing) {
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP();
+  }
+
+  ScopedServer test_server(test_commands_);
+  const std::string kAppId("test");
+  const update_client::UpdateClient::PingParams ping_params{
+      .event_type = update_client::protocol_request::kEventInstall,
+      .result = 0,
+      .error_code = 111,
+      .extra_code1 = 222,
+  };
+  ASSERT_NO_FATAL_FAILURE(ExpectPingRequest(&test_server, kAppId, ping_params));
+
+  base::WaitableEvent ping_complete_event;
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives()})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::WaitableEvent& ping_complete_event,
+                 const std::string& app_id,
+                 const update_client::UpdateClient::PingParams& ping_params) {
+                update_client::CrxComponent ping_data;
+                ping_data.app_id = app_id;
+                ping_data.requires_network_encryption = false;
+                update_client::UpdateClientFactory(CreatePingConfigurator())
+                    ->SendPing(ping_data, ping_params,
+                               base::BindOnce(
+                                   [](base::WaitableEvent& ping_complete_event,
+                                      update_client::Error error) {
+                                     ping_complete_event.Signal();
+                                   },
+                                   std::ref(ping_complete_event)));
+              },
+              std::ref(ping_complete_event), kAppId, ping_params));
+
+  EXPECT_TRUE(ping_complete_event.TimedWait(TestTimeouts::action_timeout()));
 }
 
 #if BUILDFLAG(IS_WIN)
