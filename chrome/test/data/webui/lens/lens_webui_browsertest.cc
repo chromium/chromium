@@ -115,7 +115,7 @@ class LensOverlayTest : public LensWebUIBrowserTest {
       return browser()
           ->tab_strip_model()
           ->GetActiveTab()
-          ->contents()
+          ->GetContents()
           ->CompletedFirstVisuallyNonEmptyPaint();
     }));
   }

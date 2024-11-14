@@ -92,7 +92,8 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
     if (i == 0)
       item.add_types |= AddTabTypes::ADD_ACTIVE;
 
-    content::WebContents* const raw_web_contents = item.tab.get()->contents();
+    content::WebContents* const raw_web_contents =
+        item.tab.get()->GetContents();
     new_model->InsertDetachedTabAt(static_cast<int>(i), std::move(item.tab),
                                    item.add_types);
     // Make sure the loading state is updated correctly, otherwise the throbber

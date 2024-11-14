@@ -74,7 +74,7 @@ size_t TabContentsDataImpl::TotalTabCount() const {
 
 size_t TabContentsDataImpl::IndexOfFirstNonPinnedTab() const {
   for (size_t i = 0; i < contents_data_.size(); ++i) {
-    if (!contents_data_[i].get()->pinned()) {
+    if (!contents_data_[i].get()->IsPinned()) {
       return i;
     }
   }
@@ -182,14 +182,14 @@ void TabContentsDataImpl::ValidateData(const TabGroupModel* group_model) {
   }
 
   // Check for pinned validity.
-  bool unpinned_found = contents_data_[0].get()->pinned() ? false : true;
+  bool unpinned_found = contents_data_[0].get()->IsPinned() ? false : true;
   for (size_t i = 1; i < contents_data_.size(); i++) {
     if (!unpinned_found) {
-      if (!contents_data_[i].get()->pinned()) {
+      if (!contents_data_[i].get()->IsPinned()) {
         unpinned_found = true;
       }
     } else {
-      DCHECK(!contents_data_[i].get()->pinned());
+      DCHECK(!contents_data_[i].get()->IsPinned());
     }
   }
 

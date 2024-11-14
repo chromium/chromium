@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
     return browser()
         ->tab_strip_model()
         ->GetActiveTab()
-        ->contents()
+        ->GetContents()
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
 

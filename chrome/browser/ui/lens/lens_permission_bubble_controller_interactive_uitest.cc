@@ -45,7 +45,7 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
   auto RequestPermission() {
     return Do(base::BindLambdaForTesting([&]() {
       controller_->RequestPermission(
-          browser()->tab_strip_model()->GetActiveTab()->contents(),
+          browser()->tab_strip_model()->GetActiveTab()->GetContents(),
           base::BindRepeating(
               &LensPermissionBubbleInteractiveUiTest::RequestPermissionCallback,
               base::Unretained(this)));

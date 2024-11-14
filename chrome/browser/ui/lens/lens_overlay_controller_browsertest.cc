@@ -55,7 +55,7 @@
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -588,7 +588,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     return browser()
         ->tab_strip_model()
         ->GetActiveTab()
-        ->tab_features()
+        ->GetTabFeatures()
         ->lens_overlay_controller();
   }
 
@@ -664,7 +664,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
       return browser()
           ->tab_strip_model()
           ->GetActiveTab()
-          ->contents()
+          ->GetContents()
           ->CompletedFirstVisuallyNonEmptyPaint();
     }));
   }
@@ -3912,7 +3912,7 @@ class LensOverlayControllerBrowserPDFTest
     return browser()
         ->tab_strip_model()
         ->GetActiveTab()
-        ->tab_features()
+        ->GetTabFeatures()
         ->lens_overlay_controller();
   }
 

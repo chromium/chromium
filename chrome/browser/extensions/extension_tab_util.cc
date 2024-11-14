@@ -517,10 +517,10 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     tab_object.fav_icon_url = visible_entry->GetFavicon().url.spec();
   }
   if (tab_strip) {
-    tabs::TabModel* opener = tab_strip->GetOpenerOfTabAt(tab_index);
+    tabs::TabInterface* opener = tab_strip->GetOpenerOfTabAt(tab_index);
     if (opener) {
-      CHECK(opener->contents());
-      tab_object.opener_tab_id = GetTabIdForExtensions(opener->contents());
+      CHECK(opener->GetContents());
+      tab_object.opener_tab_id = GetTabIdForExtensions(opener->GetContents());
     }
   }
 

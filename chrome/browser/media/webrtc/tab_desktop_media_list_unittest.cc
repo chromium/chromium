@@ -386,7 +386,7 @@ TEST_P(TabDesktopMediaListTest, RemoveTab) {
   ASSERT_TRUE(tab_strip_model);
   std::unique_ptr<tabs::TabModel> detached_tab =
       tab_strip_model->DetachTabAtForInsertion(kDefaultSourceCount - 1);
-  std::erase(manually_added_web_contents_, detached_tab.get()->contents());
+  std::erase(manually_added_web_contents_, detached_tab.get()->GetContents());
 
   EXPECT_CALL(observer_, OnSourceRemoved(0))
       .WillOnce(

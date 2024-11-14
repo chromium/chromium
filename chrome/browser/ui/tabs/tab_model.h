@@ -50,15 +50,11 @@ class TabModel final : public SupportsHandles<TabModel>,
   void OnAddedToModel(TabStripModel* owning_model);
   void OnRemovedFromModel();
 
-  content::WebContents* contents() const { return contents_.get(); }
-  // TODO(376752361): Remove this in favor of
-  // TabInterface::GetBrowserWindowInterface().
-  TabStripModel* owning_model() const { return owning_model_.get(); }
+  TabStripModel* owning_model() const { return owning_model_; }
   tabs::TabModel* opener() const { return opener_; }
   bool reset_opener_on_active_tab_change() const {
     return reset_opener_on_active_tab_change_;
   }
-  bool pinned() const { return pinned_; }
   bool blocked() const { return blocked_; }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 

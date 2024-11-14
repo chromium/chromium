@@ -223,7 +223,7 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                     return browser()
                         ->tab_strip_model()
                         ->GetActiveTab()
-                        ->contents()
+                        ->GetContents()
                         ->CompletedFirstVisuallyNonEmptyPaint();
                   }),
         WaitForState(kFirstPaintState, true),
@@ -255,7 +255,7 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                     return browser()
                         ->tab_strip_model()
                         ->GetActiveTab()
-                        ->contents()
+                        ->GetContents()
                         ->CompletedFirstVisuallyNonEmptyPaint();
                   }),
         WaitForState(kFirstPaintState, true),

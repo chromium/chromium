@@ -901,7 +901,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       tab_to_insert = std::make_unique<tabs::TabModel>(
           CreateTargetContents(*params, params->url),
           params->browser->tab_strip_model());
-      contents_to_navigate_or_insert = tab_to_insert->contents();
+      contents_to_navigate_or_insert = tab_to_insert->GetContents();
     } else {
       // ... otherwise if we're loading in the current tab, the target is the
       // same as the source.
@@ -937,7 +937,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // Save data needed for link capturing into apps that cannot otherwise be
     // inferred later in the navigation. These are only needed when the
     // navigation happens in a different tab to the link click.
-    apps::SetLinkCapturingSourceDisposition(tab_to_insert->contents(),
+    apps::SetLinkCapturingSourceDisposition(tab_to_insert->GetContents(),
                                             params->disposition);
   }
 

@@ -148,7 +148,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     auto* controller = browser()
                            ->tab_strip_model()
                            ->GetActiveTab()
-                           ->tab_features()
+                           ->GetTabFeatures()
                            ->lens_overlay_controller();
     return controller->GetOverlayWebViewForTesting()->GetWebContents();
   }
@@ -189,7 +189,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
       return browser()
           ->tab_strip_model()
           ->GetActiveTab()
-          ->contents()
+          ->GetContents()
           ->CompletedFirstVisuallyNonEmptyPaint();
     }));
   }
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
   auto* controller = browser()
                          ->tab_strip_model()
                          ->GetActiveTab()
-                         ->tab_features()
+                         ->GetTabFeatures()
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInNotSynced) {
   auto* controller = browser()
                          ->tab_strip_model()
                          ->GetActiveTab()
-                         ->tab_features()
+                         ->GetTabFeatures()
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedOut) {
   auto* controller = browser()
                          ->tab_strip_model()
                          ->GetActiveTab()
-                         ->tab_features()
+                         ->GetTabFeatures()
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
   auto* controller = browser()
                          ->tab_strip_model()
                          ->GetActiveTab()
-                         ->tab_features()
+                         ->GetTabFeatures()
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
   auto* controller = browser()
                          ->tab_strip_model()
                          ->GetActiveTab()
-                         ->tab_features()
+                         ->GetTabFeatures()
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasObject_SignedOut) {
   auto* controller = browser()
                          ->tab_strip_model()
                          ->GetActiveTab()
-                         ->tab_features()
+                         ->GetTabFeatures()
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 

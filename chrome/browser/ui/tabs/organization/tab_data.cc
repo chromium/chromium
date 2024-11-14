@@ -51,12 +51,12 @@ void TabData::RemoveObserver(TabData::Observer* observer) {
 bool TabData::IsValidForOrganizing(
     std::optional<tab_groups::TabGroupId> allowed_group_id) const {
   // if the model or the tab have been destroyed, then it's not valid.
-  if (!original_tab_strip_model_ || !tab_.Get() || !tab_.Get()->contents()) {
+  if (!original_tab_strip_model_ || !tab_.Get() || !tab_.Get()->GetContents()) {
     return false;
   }
 
   // If the web_contents is no longer the same URL, then it's not valid.
-  if (original_url_ != tab_.Get()->contents()->GetLastCommittedURL()) {
+  if (original_url_ != tab_.Get()->GetContents()->GetLastCommittedURL()) {
     return false;
   }
 
@@ -70,21 +70,22 @@ bool TabData::IsValidForOrganizing(
   // below, but IsValidForOrganizing might be called from another
   // TabStripModelObserver first - most notably from a TabData's in another
   // TabOrganization - so we cannot assume our web_contents_ is already nullptr.
-  if (tab_.Get()->owning_model() != original_tab_strip_model_) {
+  if (tab_.Get()->GetBrowserWindowInterface()->GetTabStripModel() !=
+      original_tab_strip_model_) {
     return false;
   }
 
   // Tab is not valid if it is grouped and does not belong to
   // |allowed_group_id|.
   const std::optional<tab_groups::TabGroupId> tab_group_id =
-      tab_.Get()->group();
+      tab_.Get()->GetGroup();
   if (tab_group_id.has_value() &&
       (!allowed_group_id.has_value() ||
        tab_group_id.value() != allowed_group_id.value())) {
     return false;
   }
 
-  if (tab_.Get()->pinned()) {
+  if (tab_.Get()->IsPinned()) {
     return false;
   }
 

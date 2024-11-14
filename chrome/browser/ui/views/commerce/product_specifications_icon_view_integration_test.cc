@@ -166,7 +166,7 @@ TEST_P(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
                   ->browser_window_features()
                   ->tab_strip_model()
                   ->GetActiveTab()
-                  ->contents()
+                  ->GetContents()
                   ->GetLastCommittedURL(),
               expected_comparison_table_url);
   }

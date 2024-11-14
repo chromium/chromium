@@ -149,7 +149,7 @@ void TabModel::DidInsert(base::PassKey<TabStripModel>) {
 }
 
 content::WebContents* TabModel::GetContents() const {
-  return contents();
+  return contents_;
 }
 
 base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
@@ -247,7 +247,7 @@ void TabModel::OnTabStripModelChanged(
     return;
   }
 
-  if (selection.new_contents == contents()) {
+  if (selection.new_contents == GetContents()) {
     did_enter_foreground_callback_list_.Notify(this);
     return;
   }
@@ -270,8 +270,8 @@ TabModel::ScopedTabModalUIImpl::~ScopedTabModalUIImpl() {
 
 void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("web_contents", contents());
-  dict.Add("pinned", pinned());
+  dict.Add("web_contents", GetContents());
+  dict.Add("pinned", IsPinned());
   dict.Add("blocked", blocked());
 }
 
