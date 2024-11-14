@@ -1364,12 +1364,6 @@ struct PNGSample {
 
 static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
                                         ImageDecoder* decoder) {
-  // TODO(https://crbug.com/359350061): Add high-bit support to `SkCodec`.
-  if (skia::IsRustyPngEnabled()) {
-    GTEST_SKIP() << "TODO(https://crbug.com/359350061): "
-                 << "Add high-bit support to `SkCodec`";
-  }
-
   scoped_refptr<SharedBuffer> png = png_sample.png_contents;
   ASSERT_TRUE(png.get());
   decoder->SetData(png.get(), true);
@@ -1386,6 +1380,12 @@ static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
 
   ASSERT_EQ(1u, decoder->FrameCount());
   ASSERT_EQ(kAnimationNone, decoder->RepetitionCount());
+
+  // TODO(https://crbug.com/359350061): Add high-bit support to `SkCodec`.
+  if (skia::IsRustyPngEnabled()) {
+    GTEST_SKIP() << "TODO(https://crbug.com/359350061): "
+                 << "Add high-bit support to `SkCodec`";
+  }
 
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
@@ -1601,11 +1601,7 @@ TEST_P(StaticPNGTests, ImageIsHighBitDepth) {
       ASSERT_TRUE(decoder->IsDecodedSizeAvailable());
       ASSERT_EQ(size, decoder->Size());
       ASSERT_EQ(size, decoder->DecodedSize());
-
-      // TODO(https://crbug.com/359350061): Add high-bit support to `SkCodec`.
-      if (!skia::IsRustyPngEnabled()) {
-        ASSERT_EQ(png_sample.is_high_bit_depth, decoder->ImageIsHighBitDepth());
-      }
+      ASSERT_EQ(png_sample.is_high_bit_depth, decoder->ImageIsHighBitDepth());
     }
   }
 }

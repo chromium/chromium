@@ -49,6 +49,7 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
  private:
   // ImageDecoder:
   void DecodeSize() final {}
+  bool ImageIsHighBitDepth() final;
   wtf_size_t DecodeFrameCount() final;
   void InitializeNewFrame(wtf_size_t) final;
   void Decode(wtf_size_t) final;

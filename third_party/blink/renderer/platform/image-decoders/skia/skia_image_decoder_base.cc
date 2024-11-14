@@ -204,6 +204,14 @@ wtf_size_t SkiaImageDecoderBase::ClearCacheExceptFrame(wtf_size_t index) {
   return ClearCacheExceptTwoFrames(index, index2);
 }
 
+bool SkiaImageDecoderBase::ImageIsHighBitDepth() {
+  if (codec_) {
+    return codec_->hasHighBitDepthEncodedData();
+  }
+
+  return false;
+}
+
 wtf_size_t SkiaImageDecoderBase::DecodeFrameCount() {
   if (!codec_ || segment_stream_->IsCleared()) {
     return frame_buffer_cache_.size();
