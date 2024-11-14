@@ -535,4 +535,9 @@ FaceGazeTestBase = class extends E2ETestBase {
       }, 300);
     });
   }
+
+  /** @return {string|undefined} */
+  getBubbleText() {
+    return this.mockAccessibilityPrivate.getFaceGazeBubbleText();
+  }
 };
