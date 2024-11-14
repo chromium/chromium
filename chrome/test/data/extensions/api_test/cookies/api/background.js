@@ -14,7 +14,7 @@ var TEST_URL4 = 'https://' + TEST_HOST + TEST_PATH + '/content.html';
 var TEST_URL5 = 'http://' + TEST_HOST + TEST_PATH + '/content.html';
 var TEST_OPAQUE_URL = 'file://' + TEST_DOMAIN;
 var TEST_EXPIRATION_DATE = 12345678900;
-var TEST_ODD_DOMAIN_HOST_ONLY = 'strangestuff!!.com';
+var TEST_ODD_DOMAIN_HOST_ONLY = 'strange stuff!!.com';
 var TEST_ODD_DOMAIN = '.' + TEST_ODD_DOMAIN_HOST_ONLY;
 var TEST_ODD_PATH = '/hello = world';
 var TEST_ODD_URL =
@@ -1277,21 +1277,19 @@ chrome.test.runTests([
             chrome.cookies.get({url: TEST_URL, name: 'abcd'},
                 pass(expectNullCookie));
           }));
-    chrome.cookies.set(
-        {
-          url: TEST_ODD_URL,
-          name: 'abcd',
-          domain: TEST_ODD_DOMAIN,
-          path: TEST_ODD_PATH
-        },
-        pass(function() {
-          chrome.cookies.get(
-              {url: TEST_ODD_URL, name: 'abcd'}, pass(function(cookie) {
-                expectValidCookie(cookie);
-                chrome.test.assertEq(TEST_ODD_DOMAIN, unescape(cookie.domain));
-                chrome.test.assertEq(TEST_ODD_PATH, unescape(cookie.path));
-              }));
-        }));
+    chrome.cookies.set({
+      url: TEST_ODD_URL,
+      name: 'abcd',
+      domain: TEST_ODD_DOMAIN,
+      path: TEST_ODD_PATH
+    }, pass(function () {
+      chrome.cookies.get({url: TEST_ODD_URL, name: 'abcd'},
+          pass(function(cookie) {
+            expectValidCookie(cookie);
+            chrome.test.assertEq(TEST_ODD_DOMAIN, unescape(cookie.domain));
+            chrome.test.assertEq(TEST_ODD_PATH, unescape(cookie.path));
+          }));
+    }));
   },
   function setSameSiteCookies() {
     removeTestCookies();
@@ -1420,19 +1418,19 @@ chrome.test.runTests([
             expectUndefinedCookie));
     // Expired cookies generate callback with "null" cookie
     chrome.cookies.set(TEST_BASIC_EXPIRED_COOKIE, pass(expectUndefinedCookie));
-    chrome.cookies.set({
-      url: TEST_ODD_URL,
-      name: 'abcd',
-      domain: TEST_ODD_DOMAIN,
-      path: TEST_ODD_PATH
-    }, pass(function () {
-      chrome.cookies.get({url: TEST_ODD_URL, name: 'abcd'},
-          pass(function(cookie) {
-            expectValidCookie(cookie);
-            chrome.test.assertEq(TEST_ODD_DOMAIN, unescape(cookie.domain));
-            chrome.test.assertEq(TEST_ODD_PATH, unescape(cookie.path));
-          }));
-    }));
+    // Odd (but valid!) URLs get callbacks too!
+    chrome.cookies.set(
+        {
+          url: TEST_ODD_URL,
+          name: 'abcd',
+          domain: TEST_ODD_DOMAIN,
+          path: TEST_ODD_PATH
+        },
+        pass(function(cookie) {
+          expectValidCookie(cookie);
+          chrome.test.assertEq(TEST_ODD_DOMAIN, unescape(cookie.domain));
+          chrome.test.assertEq(TEST_ODD_PATH, unescape(cookie.path));
+        }));
   },
   function removeCookie() {
     removeTestCookies();
