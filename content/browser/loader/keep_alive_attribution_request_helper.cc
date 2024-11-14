@@ -108,15 +108,24 @@ void KeepAliveAttributionRequestHelper::OnReceiveResponse(
 
   attribution_data_host_manager_->NotifyBackgroundRegistrationData(
       id_, headers, reporting_url_);
+  OnComplete();
+}
+
+void KeepAliveAttributionRequestHelper::OnError() {
+  OnComplete();
+}
+
+void KeepAliveAttributionRequestHelper::OnComplete() {
+  if (!attribution_data_host_manager_) {
+    return;
+  }
+
   attribution_data_host_manager_->NotifyBackgroundRegistrationCompleted(id_);
   attribution_data_host_manager_.reset();
 }
 
 KeepAliveAttributionRequestHelper::~KeepAliveAttributionRequestHelper() {
-  if (!attribution_data_host_manager_) {
-    return;
-  }
-  attribution_data_host_manager_->NotifyBackgroundRegistrationCompleted(id_);
+  OnComplete();
 }
 
 }  // namespace content
