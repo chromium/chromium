@@ -333,10 +333,9 @@ BrowserTabStripModelDelegate::GetBrowserWindowInterface() {
 void BrowserTabStripModelDelegate::OnGroupsDestruction(
     const std::vector<tab_groups::TabGroupId>& group_ids,
     base::OnceCallback<void()> close_callback,
-    bool is_bulk_operation) {
-  if (is_bulk_operation && tab_groups::IsTabGroupsSaveV2Enabled()) {
-    // If this is a bulk operation, close the groups rather than delete
-    // them to retain the saved group.
+    bool delete_groups) {
+  if (!delete_groups && tab_groups::IsTabGroupsSaveV2Enabled()) {
+    // Close the groups rather than delete them to retain the saved group.
     for (auto group_id : group_ids) {
       tab_groups::SavedTabGroupUtils::RemoveGroupFromTabstrip(browser_,
                                                               group_id);

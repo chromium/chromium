@@ -6,10 +6,12 @@
 
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
@@ -217,7 +219,7 @@ class SavedTabGroupInteractiveTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Used to test SavedTabGroups V2 specific features such as the save toggle.
+// Used to test SavedTabGroups V1 specific features such as the save toggle.
 class SavedTabGroupInteractiveTestV1
     : public SavedTabGroupInteractiveTestBase,
       public ::testing::WithParamInterface<bool> {
@@ -344,6 +346,49 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       }),
       // Ensure the button is no longer present.
       EnsureNotPresent(kSavedTabGroupButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       ClosingGroupWithKeyboardShortcutShowsDeletionDialog) {
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure the group was saved when created.
+      EnsurePresent(kSavedTabGroupButtonElementId), FinishTabstripAnimations(),
+
+      // Simulate closing the tab with the keyboard shortcut command, wait for
+      // the dialog to show, accept it, and wait for it to hide.
+      Do([&]() {
+        chrome::CloseTab(browser());
+        // Wait for show.
+        ASSERT_TRUE(base::test::RunUntil([&]() {
+          return browser()
+              ->tab_group_deletion_dialog_controller()
+              ->IsShowingDialog();
+        }));
+        // Simulate Ok.
+        browser()
+            ->tab_group_deletion_dialog_controller()
+            ->SimulateOkButtonForTesting();
+        // Wait for hide.
+        ASSERT_TRUE(base::test::RunUntil([&]() {
+          return !browser()
+                      ->tab_group_deletion_dialog_controller()
+                      ->IsShowingDialog();
+        }));
+      }),
+
+      // Ensure the group was deleted.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      Do([&]() { EXPECT_TRUE(service()->GetAllGroups().empty()); }));
 }
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, UnpinGroupFromButtonMenu) {

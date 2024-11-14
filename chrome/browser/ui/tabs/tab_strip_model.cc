@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -1050,13 +1051,16 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
 }
 
 void TabStripModel::CloseSelectedTabs() {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  auto get_indices = base::BindRepeating(
+      [](const ui::ListSelectionModel& selection_model) {
+        const ui::ListSelectionModel::SelectedIndices& sel =
+            selection_model.selected_indices();
+        return std::vector<int>(sel.begin(), sel.end());
+      },
+      selection_model_);
 
-  const ui::ListSelectionModel::SelectedIndices& sel =
-      selection_model_.selected_indices();
-  CloseTabs(GetWebContentsesByIndices(std::vector<int>(sel.begin(), sel.end())),
-            TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
-                TabCloseTypes::CLOSE_USER_GESTURE);
+  ExecuteCloseTabsByIndicesCommand(std::move(get_indices),
+                                   /*delete_groups=*/true);
 }
 
 void TabStripModel::SelectNextTab(TabStripUserGestureDetails detail) {
@@ -1452,7 +1456,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       ExecuteCloseTabsByIndicesCommand(
           base::BindRepeating(&TabStripModel::GetIndicesForCommand,
                               base::Unretained(this), context_index),
-          /*is_bulk_operation=*/false);
+          /*delete_groups=*/true);
       break;
     }
 
@@ -1462,7 +1466,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           base::BindRepeating(&TabStripModel::GetIndicesClosedByCommand,
                               base::Unretained(this), context_index,
                               command_id),
-          /*is_bulk_operation=*/true);
+          /*delete_groups=*/false);
       break;
     }
 
@@ -1472,7 +1476,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           base::BindRepeating(&TabStripModel::GetIndicesClosedByCommand,
                               base::Unretained(this), context_index,
                               command_id),
-          /*is_bulk_operation=*/true);
+          /*delete_groups=*/false);
       break;
     }
 
@@ -1708,10 +1712,10 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
               base::BindRepeating(&TabStripModel::count,
                                   base::Unretained(this)));
 
-      // This does not qualify as a bulk operation because no tabs
-      // remain in the tab strip this command originates from.
+      // Because no tabs will remain in the tab strip after this command ensure
+      // the groups are also deleted.
       ExecuteCloseTabsByIndicesCommand(get_indices,
-                                       /*is_bulk_operation=*/false);
+                                       /*delete_groups=*/true);
       break;
     }
 
@@ -1818,7 +1822,7 @@ void TabStripModel::MarkTabGroupsForClosing(
 
 void TabStripModel::ExecuteCloseTabsByIndicesCommand(
     base::RepeatingCallback<std::vector<int>()> get_indices_to_close,
-    bool is_bulk_operation) {
+    bool delete_groups) {
   std::vector<tab_groups::TabGroupId> groups_to_delete =
       GetGroupsDestroyedFromRemovingIndices(get_indices_to_close.Run());
   MarkTabGroupsForClosing(groups_to_delete);
@@ -1840,7 +1844,7 @@ void TabStripModel::ExecuteCloseTabsByIndicesCommand(
     // potentially prompting the user to decide what action to take.
     // ExecuteCloseTabs may or may not be called as a result.
     delegate_->OnGroupsDestruction(groups_to_delete, std::move(close_callback),
-                                   is_bulk_operation);
+                                   delete_groups);
   } else {
     std::move(close_callback).Run();
   }

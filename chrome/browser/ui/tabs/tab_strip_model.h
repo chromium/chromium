@@ -617,12 +617,12 @@ class TabStripModel : public TabGroupController {
 
   // There are multiple commands that close by indices. They all must check the
   // Group affiliation of the indices, confirm that they can delete groups, and
-  // then perform the close of the indices. A bulk operation is denoted
-  // as an operation that closes multiple tabs while leaving one or more
-  // tabs open in this window.
+  // then perform the close of the indices. When true `delete_groups` also
+  // deletes any saved groups that are closing. When false, groups will close
+  // normally but continue to be saved.
   void ExecuteCloseTabsByIndicesCommand(
       base::RepeatingCallback<std::vector<int>()> get_indices_to_close,
-      bool is_bulk_operation);
+      bool delete_groups);
 
   // Adds the tab at |context_index| to the given tab group |group|. If
   // |context_index| is selected the command applies to all selected tabs.
