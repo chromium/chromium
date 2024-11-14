@@ -1805,7 +1805,7 @@ bool PepperPluginInstanceImpl::PrepareTransferableResource(
   if (!bound_graphics_2d_platform_)
     return false;
   return bound_graphics_2d_platform_->PrepareTransferableResource(
-      bitmap_registrar, transferable_resource, release_callback);
+      transferable_resource, release_callback);
 }
 
 void PepperPluginInstanceImpl::OnDestruct() {
