@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
@@ -136,6 +137,11 @@ void LogTransactionResult(TransactionResult result,
       .SetResult(static_cast<uint8_t>(result))
       .SetTriggerSource(static_cast<uint8_t>(trigger_source))
       .Record(ukm::UkmRecorder::Get());
+}
+
+void LogUiScreenShown(UiState ui_screen) {
+  base::UmaHistogramEnumeration("FacilitatedPayments.Pix.UiScreenShown",
+                                ui_screen);
 }
 
 }  // namespace payments::facilitated

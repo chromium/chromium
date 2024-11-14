@@ -6,6 +6,7 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_METRICS_FACILITATED_PAYMENTS_METRICS_H_
 
 #include "base/types/expected.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace base {
@@ -123,6 +124,7 @@ void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration);
 
 // Log whether the request to show the FOP(form of payment) selector is
 // successful or not.
+// TODO(crbug.com/377126728): Deprecate this method.
 void LogFopSelectorShown(bool shown);
 
 // Log the overall transaction result. The transactions is considered to have
@@ -131,6 +133,9 @@ void LogTransactionResult(TransactionResult result,
                           TriggerSource trigger_source,
                           base::TimeDelta duration,
                           ukm::SourceId ukm_source_id);
+
+// Logs showing a new UI screen.
+void LogUiScreenShown(UiState ui_screen);
 
 }  // namespace payments::facilitated
 
