@@ -23,10 +23,15 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="ChannelType">
-  <variant name=".ConnectChannel" summary="connect() channel"/>
-  <variant name=".NativeChannel" summary="native messaging channel"/>
-  <variant name=".SendMessageChannel" summary="sendMessage() channel"/>
-  <variant name=".SendRequestChannel" summary="sendRequest() channel"/>
+  <variant name=""
+      summary="However, this is the overall metric for all channel types."/>
+  <variant name=".ConnectChannel" summary="Specifically connect() channel."/>
+  <variant name=".NativeChannel"
+      summary="Specifically native messaging channel."/>
+  <variant name=".SendMessageChannel"
+      summary="Specifically sendMessage() channel."/>
+  <variant name=".SendRequestChannel"
+      summary="Specifically sendRequest() channel."/>
 </variants>
 
 <variants name="DeclarativeNetRequestRegexRulesetSize">
@@ -3977,9 +3982,12 @@ This is emitted for two scenarios when a worker may be unregistered:
     It is permuted by worker status. Specifically if an extension has
     {WorkerStatus}.
 
-    It is permuted by channel type (message type). Specifically {ChannelType}.
+    It is permuted by channel type (message type). {ChannelType}
   </summary>
   <token key="WorkerStatus">
+    <variant name=""
+        summary="any background of the background types (as an overall
+                 metric)"/>
     <variant name="WithActiveWorker"
         summary="a service worker that is running"/>
     <variant name="WithIdleWorker"
