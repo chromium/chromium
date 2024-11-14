@@ -90,8 +90,6 @@ source_set("extensions") {
       "api/braille_display_private/braille_display_private_api.h",
       "api/braille_display_private/stub_braille_controller.cc",
       "api/braille_display_private/stub_braille_controller.h",
-      "api/browsing_data/browsing_data_api.cc",
-      "api/browsing_data/browsing_data_api.h",
       "api/chrome_device_permissions_prompt.h",
       "api/chrome_extensions_api_client.cc",
       "api/chrome_extensions_api_client.h",

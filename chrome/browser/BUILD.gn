@@ -7759,11 +7759,15 @@ static_library("browser") {
 
       "//chrome/browser/extensions",
 
+      # Has dependencies on signin code in //chrome/browser.
+      "//chrome/browser/extensions/api/browsing_data",
+
       # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications/extensions",
     ]
     deps += [
       "//apps",
+      "//chrome/browser/extensions/api/browsing_data",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/extensions/api",
