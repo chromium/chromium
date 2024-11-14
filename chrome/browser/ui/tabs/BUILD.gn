@@ -319,6 +319,7 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
+      "//chrome/browser/task_manager:task_manager",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:ui_features",

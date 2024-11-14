@@ -23,6 +23,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -162,6 +163,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               profile),
           ChromeTranslateClient::FromWebContents(tab.GetContents()),
           favicon::ContentFaviconDriver::FromWebContents(tab.GetContents()));
+
+  task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 }
 
 TabFeatures::TabFeatures() = default;

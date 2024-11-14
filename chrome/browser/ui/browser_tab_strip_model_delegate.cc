@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -109,9 +108,6 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
 void BrowserTabStripModelDelegate::WillAddWebContents(
     content::WebContents* contents) {
   TabHelpers::AttachTabHelpers(contents);
-
-  // Make the tab show up in the task manager.
-  task_manager::WebContentsTags::CreateForTabContents(contents);
 }
 
 int BrowserTabStripModelDelegate::GetDragActions() const {

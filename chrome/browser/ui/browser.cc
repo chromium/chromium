@@ -85,7 +85,6 @@
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
@@ -2203,9 +2202,6 @@ void Browser::WebContentsCreated(WebContents* source_contents,
   // will later be inserted into this browser using Browser::Navigate via
   // AddNewContents.
   TabHelpers::AttachTabHelpers(new_contents);
-
-  // Make the tab show up in the task manager.
-  task_manager::WebContentsTags::CreateForTabContents(new_contents);
 }
 
 void Browser::RendererUnresponsive(
