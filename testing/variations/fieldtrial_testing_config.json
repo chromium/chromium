@@ -9168,6 +9168,24 @@
             ]
         }
     ],
+    "EnablePolicyPromotionBanner": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePolicyPromotionBanner"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSessionSerializationOptimizations": [
         {
             "platforms": [
