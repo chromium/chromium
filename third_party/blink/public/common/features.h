@@ -412,8 +412,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kDiscardInputEventsToRecentlyMovedFrames);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawingBufferWithoutGpuMemoryBuffer);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDropInputEventsBeforeFirstPaint);
 
 // Enables establishing the GPU channel asnchronously when requesting a new

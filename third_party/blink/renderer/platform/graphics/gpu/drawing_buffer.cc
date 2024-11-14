@@ -2083,62 +2083,28 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-      bool disallow_gmb = base::FeatureList::IsEnabled(
-          features::kDrawingBufferWithoutGpuMemoryBuffer);
-
       // TODO(crbug.com/911176): When RGB emulation is not needed, we should use
       // the non-GMB CreateSharedImage with gpu::SHARED_IMAGE_USAGE_SCANOUT in
       // order to allocate the GMB service-side and avoid a synchronous
       // round-trip to the browser process here.
-      gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT;
       gpu::SharedImageUsageSet additional_usage_flags =
           gpu::SHARED_IMAGE_USAGE_SCANOUT;
       if (low_latency_enabled()) {
-        buffer_usage = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
-        if (disallow_gmb) {
-          additional_usage_flags |=
-              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-        } else {
-          additional_usage_flags =
-              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-        }
+        additional_usage_flags |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       }
 
       if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
               viz::SinglePlaneSharedImageFormatToBufferFormat(
                   color_buffer_format_),
               ContextProvider()->GetCapabilities())) {
-        scoped_refptr<gpu::ClientSharedImage> client_shared_image;
-        if (disallow_gmb) {
-          client_shared_image = sii->CreateSharedImage(
-              {color_buffer_format_, size, color_space_, origin,
-               back_buffer_alpha_type,
-               gpu::SharedImageUsageSet(usage | additional_usage_flags),
-               "WebGLDrawingBuffer"},
-              gpu::kNullSurfaceHandle);
-        } else {
-          client_shared_image = sii->CreateSharedImage(
-              {color_buffer_format_, size, color_space_, origin,
-               back_buffer_alpha_type,
-               gpu::SharedImageUsageSet(usage | additional_usage_flags),
-               "WebGLDrawingBuffer"},
-              gpu::kNullSurfaceHandle, buffer_usage);
-        }
+        auto client_shared_image = sii->CreateSharedImage(
+            {color_buffer_format_, size, color_space_, origin,
+             back_buffer_alpha_type,
+             gpu::SharedImageUsageSet(usage | additional_usage_flags),
+             "WebGLDrawingBuffer"},
+            gpu::kNullSurfaceHandle);
         if (client_shared_image) {
           created_mappable_si = true;
-#if BUILDFLAG(IS_MAC)
-          // Ensure that the backing IOSurface has its color space set to be the
-          // same as that of the just-created SharedImage (the former is used by
-          // CoreAnimation, while the latter is used by viz).
-          // TODO(crbug.com/924198): Explore moving to a CreateSharedImage()
-          // codepath that sets the color space of the IOSurface on the service
-          // side and eliminating the usage of MappableSI here altogether. Will
-          // require resolving issues with low-latency canvas tests that caused
-          // prior attempts to be reverted (crbug.com/1346737).
-          if (!disallow_gmb) {
-            client_shared_image->SetColorSpaceOnNativeBuffer(color_space_);
-          }
-#endif
           back_buffer_shared_image = std::move(client_shared_image);
           texture_target = back_buffer_shared_image->GetTextureTarget();
         }

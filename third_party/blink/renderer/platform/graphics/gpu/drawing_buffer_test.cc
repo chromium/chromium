@@ -38,14 +38,12 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
@@ -515,72 +513,6 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   drawing_buffer_->BeginDestruction();
   testing::Mock::VerifyAndClearExpectations(sii);
   EXPECT_EQ(0u, sii->shared_image_count());
-}
-
-TEST_F(DrawingBufferImageChromiumTest, AllocationFailure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kDrawingBufferWithoutGpuMemoryBuffer);
-
-  GLES2InterfaceForTests* gl_ = drawing_buffer_->ContextGLForTests();
-  gpu::TestSharedImageInterface* sii =
-      drawing_buffer_->SharedImageInterfaceForTests();
-
-  viz::TransferableResource resource1;
-  viz::ReleaseCallback release_callback1;
-  viz::TransferableResource resource2;
-  viz::ReleaseCallback release_callback2;
-  viz::TransferableResource resource3;
-  viz::ReleaseCallback release_callback3;
-
-  // Request a resource. A SharedImage should already be created. Everything
-  // works as expected.
-  EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUMMock(_)).Times(1);
-  EXPECT_FALSE(drawing_buffer_->MarkContentsChanged());
-  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(nullptr, &resource1,
-                                                           &release_callback1));
-  EXPECT_TRUE(resource1.is_overlay_candidate);
-  gpu::Mailbox mailbox1;
-  mailbox1.SetName(gl_->last_imported_shared_image()->name);
-  EXPECT_TRUE(sii->CheckSharedImageExists(mailbox1));
-  testing::Mock::VerifyAndClearExpectations(gl_);
-  VerifyStateWasRestored();
-
-  // Force MappableSI creation failure. Request another resource. It should
-  // still be provided, but this time with allowOverlay = false.
-  EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUMMock(_)).Times(1);
-  sii->SetFailSharedImageCreationWithBufferUsage(true);
-  EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
-  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(nullptr, &resource2,
-                                                           &release_callback2));
-  EXPECT_FALSE(resource2.is_overlay_candidate);
-  gpu::Mailbox mailbox2;
-  mailbox2.SetName(gl_->last_imported_shared_image()->name);
-  EXPECT_TRUE(sii->CheckSharedImageExists(mailbox2));
-  VerifyStateWasRestored();
-
-  // Check that if MappableSI creation starts working again, resources
-  // are correctly created with allowOverlay = true.
-  EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUMMock(_)).Times(1);
-  sii->SetFailSharedImageCreationWithBufferUsage(false);
-  EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
-  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(nullptr, &resource3,
-                                                           &release_callback3));
-  EXPECT_TRUE(resource3.is_overlay_candidate);
-  gpu::Mailbox mailbox3;
-  mailbox3.SetName(gl_->last_imported_shared_image()->name);
-  EXPECT_TRUE(sii->CheckSharedImageExists(mailbox3));
-  testing::Mock::VerifyAndClearExpectations(gl_);
-  VerifyStateWasRestored();
-
-  std::move(release_callback1).Run(gpu::SyncToken(), false /* lostResource */);
-  std::move(release_callback2).Run(gpu::SyncToken(), false /* lostResource */);
-  std::move(release_callback3).Run(gpu::SyncToken(), false /* lostResource */);
-
-  drawing_buffer_->BeginDestruction();
-  EXPECT_FALSE(sii->CheckSharedImageExists(mailbox1));
-  EXPECT_FALSE(sii->CheckSharedImageExists(mailbox2));
-  EXPECT_FALSE(sii->CheckSharedImageExists(mailbox3));
 }
 
 class DepthStencilTrackingGLES2Interface
