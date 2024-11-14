@@ -231,10 +231,8 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
   base::OnceClosure GetExternalTaskClosure(int sequence_key, int release_sync) {
     const int task_id = num_tasks_scheduled_++;
 
-    uint64_t release = 0;
     if (release_sync >= 0) {
       CreateSyncToken(sequence_key, release_sync);
-      release = release_sync + 1;
     }
 
     auto info_it = sequence_info_.find(sequence_key);
@@ -246,12 +244,13 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
     auto order_data = info_it->second.order_data;
     uint32_t order_num = order_data->GenerateUnprocessedOrderNumber();
 
-    return GetClosure([this, task_id, sequence_key, release, order_num] {
+    return GetClosure([this, task_id, sequence_key, release_sync, order_num] {
       auto info_it = sequence_info_.find(sequence_key);
       ASSERT_TRUE(info_it != sequence_info_.end());
       info_it->second.order_data->BeginProcessingOrderNumber(order_num);
-      if (release) {
-        info_it->second.release_state->ReleaseFenceSync(release);
+      if (release_sync >= 0) {
+        sync_point_manager()->EnsureFenceSyncReleased(
+            sync_tokens_[release_sync], ReleaseCause::kExplicitClientRelease);
       }
       this->tasks_executed_.push_back(task_id);
       info_it->second.order_data->FinishProcessingOrderNumber(order_num);
@@ -695,8 +694,9 @@ TEST_P(SchedulerTest, ReentrantEnableSequenceShouldNotDeadlock) {
   scheduler()->ScheduleTask(Scheduler::Task(
       sequence_id1, GetClosure([&] {
         ran1 = ++count;
-        release_state1->Wait(
-            sync_token,
+        sync_point_manager()->Wait(
+            sync_token, sequence_id1,
+            sync_point_manager()->GenerateOrderNumber(),
             base::BindOnce(&Scheduler::EnableSequence,
                            base::Unretained(scheduler()), sequence_id1));
         scheduler()->DisableSequence(sequence_id1);
