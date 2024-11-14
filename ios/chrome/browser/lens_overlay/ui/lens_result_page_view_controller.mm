@@ -251,6 +251,23 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(updateMutatorDarkMode)
+             name:UIApplicationWillEnterForegroundNotification
+           object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIApplicationWillEnterForegroundNotification
+              object:nil];
+}
+
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -470,6 +487,20 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 
 /// Updates the user interface style in the mutator.
 - (void)updateMutatorDarkMode {
+  // To ensure the app switcher displays the correct snapshot, the app briefly
+  // toggles between light and dark modes when it enters the background. This
+  // creates snapshots for both modes, so the switcher can show the appropriate
+  // one regardless of the user's current interface style.
+  //
+  // Refrain from doing 2 additional reload requests as a consequence of the
+  // brief switch by early exiting if the app is in background. If there is a
+  // a style change it will be scheduled when the app returns to foreground.
+  UIApplicationState currentState =
+      [[UIApplication sharedApplication] applicationState];
+  if (currentState == UIApplicationStateBackground) {
+    return;
+  }
+
   [self.mutator setIsDarkMode:self.traitCollection.userInterfaceStyle ==
                               UIUserInterfaceStyleDark];
 }
