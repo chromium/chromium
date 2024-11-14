@@ -1839,39 +1839,6 @@ TEST_F(SharedStorageWorkletTest, Set_ClientError) {
   EXPECT_EQ(observed_params->value, u"value0");
 }
 
-TEST_F(SharedStorageWorkletTest,
-       InterestGroups_RunAdAuctionPermissionsPolicyNotAllowed) {
-  permissions_policy_state_ =
-      blink::mojom::SharedStorageWorkletPermissionsPolicyState::New(
-          /*private_aggregation_allowed=*/true,
-          /*join_ad_interest_group_allowed=*/true,
-          /*run_ad_auction_allowed=*/false);
-
-  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
-      class TestClass {
-        async run() {
-          const groups = await interestGroups();
-        }
-      };
-
-      register("test-operation", TestClass);
-  )");
-
-  EXPECT_TRUE(add_module_result.success);
-
-  test_client_->interest_groups_result_ =
-      blink::mojom::GetInterestGroupsResult::NewGroups({});
-
-  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
-
-  EXPECT_FALSE(run_result.success);
-  EXPECT_THAT(run_result.error_message,
-              testing::HasSubstr("The \"run-ad-auction\" Permissions Policy "
-                                 "denied the interestGroups() method"));
-
-  EXPECT_EQ(test_client_->observed_get_interest_groups_count_, 0u);
-}
-
 TEST_F(SharedStorageWorkletTest, InterestGroups_ClientError) {
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
       class TestClass {

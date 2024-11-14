@@ -701,26 +701,6 @@ SharedStorageWorkletGlobalScope::interestGroups(
     return EmptyPromise();
   }
 
-  if (!permissions_policy_state_->join_ad_interest_group_allowed) {
-    RecordInterestGroupsResultStatusUma(
-        InterestGroupsResultStatus::kFailurePermissionsPolicyDenied);
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The \"join-ad-interest-group\" Permissions Policy denied the "
-        "interestGroups() method.");
-    return EmptyPromise();
-  }
-
-  if (!permissions_policy_state_->run_ad_auction_allowed) {
-    RecordInterestGroupsResultStatusUma(
-        InterestGroupsResultStatus::kFailurePermissionsPolicyDenied);
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The \"run-ad-auction\" Permissions Policy denied the interestGroups() "
-        "method.");
-    return EmptyPromise();
-  }
-
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLSequence<StorageInterestGroup>>>(
       script_state, exception_state.GetContext());
