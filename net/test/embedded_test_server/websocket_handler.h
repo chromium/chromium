@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -35,6 +34,9 @@ class WebSocketHandler {
   // response headers are sent.
   virtual void OnHandshake(const HttpRequest& request) {}
 
+  // Called after handshake response headers have been sent.
+  virtual void OnHandshakeComplete() {}
+
   // Called when a text message has been received. `message` will only be valid
   // until this call returns.
   virtual void OnTextMessage(std::string_view message) {}
@@ -53,10 +55,10 @@ class WebSocketHandler {
 
   // Called when a CLOSE frame is received from the remote server. `code` will
   // be std::nullopt if the CLOSE frame contained no data. `message` will only
-  // be valid until this call returns. If a CLOSE frame has not already been
-  // sent, one is automatically sent in response after this method returns.
+  // be valid until this call returns. The default implementation responds with
+  // a close frame.
   virtual void OnClosingHandshake(std::optional<uint16_t> code,
-                                  std::string_view message) {}
+                                  std::string_view message);
 
  protected:
   // Constructor that initializes the WebSocketHandler with a pointer to the

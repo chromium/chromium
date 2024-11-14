@@ -66,6 +66,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/embedded_test_server/websocket_echo_handler.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/ssl_test_util.h"
@@ -478,16 +479,15 @@ TEST_F(WebSocketEndToEndTest, EmbeddedBasicSmokeTest) {
 }
 
 TEST_F(WebSocketEndToEndTest, WebSocketEchoHandlerTest) {
-  net::test_server::EmbeddedTestServer embedded_test_server(
-      net::test_server::EmbeddedTestServer::TYPE_HTTP);
+  test_server::EmbeddedTestServer embedded_test_server(
+      test_server::EmbeddedTestServer::TYPE_HTTP);
 
-  embedded_test_server.RegisterUpgradeRequestHandler(
-      net::test_server::WebSocketEchoHandler::CreateHandler());
+  test_server::InstallDefaultWebSocketHandlers(embedded_test_server);
 
   ASSERT_TRUE(embedded_test_server.Start());
 
-  GURL echo_url = ReplaceUrlScheme(
-      embedded_test_server.GetURL("/echo-with-no-extension"), "ws");
+  GURL echo_url = test_server::ToWebSocketUrl(
+      embedded_test_server.GetURL("/echo-with-no-extension"));
   ASSERT_TRUE(ConnectAndWait(echo_url));
 
   const std::string test_message = "hello echo";

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/test/embedded_test_server/create_websocket_handler.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -32,15 +31,6 @@ void WebSocketEchoHandler::OnTextMessage(std::string_view message) {
 void WebSocketEchoHandler::OnBinaryMessage(base::span<const uint8_t> message) {
   CHECK(connection());
   connection()->SendBinaryMessage(message);
-}
-
-void WebSocketEchoHandler::OnClosingHandshake(std::optional<uint16_t> code,
-                                              std::string_view message) {
-  DVLOG(3) << "Closing handshake received with code: "
-           << (code.has_value() ? base::NumberToString(code.value()) : "none")
-           << ", message: " << message;
-
-  connection()->RespondToCloseFrame(code, message);
 }
 
 EmbeddedTestServer::HandleUpgradeRequestCallback

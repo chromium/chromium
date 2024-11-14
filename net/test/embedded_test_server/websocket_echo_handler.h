@@ -34,10 +34,6 @@ class WebSocketEchoHandler : public WebSocketHandler {
 
   // Echoes back any received binary message.
   void OnBinaryMessage(base::span<const uint8_t> message) override;
-
-  // Handles a closing handshake; does nothing in this implementation.
-  void OnClosingHandshake(std::optional<uint16_t> code,
-                          std::string_view message) override;
 };
 
 }  // namespace net::test_server

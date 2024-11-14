@@ -90,13 +90,6 @@ class WebSocketConnection final : public base::RefCounted<WebSocketConnection> {
   // Set the WebSocketHandler instance for this connection.
   void SetHandler(std::unique_ptr<WebSocketHandler> handler);
 
-  // Returns a WeakPtr to the WebSocketConnection instance.
-  // For ensuring the connection is not used after it is destroyed.
-  base::WeakPtr<WebSocketConnection> GetWeakPtr();
-
- protected:
-  virtual ~WebSocketConnection();
-
  private:
   friend class base::RefCounted<WebSocketConnection>;
 
@@ -110,6 +103,8 @@ class WebSocketConnection final : public base::RefCounted<WebSocketConnection> {
     kDisconnectingSoon,
     kClosed
   };
+
+  ~WebSocketConnection();
 
   // Internal function to immediately disconnect, deleting the handler and
   // closing the socket.
@@ -131,29 +126,6 @@ class WebSocketConnection final : public base::RefCounted<WebSocketConnection> {
   void HandleFrame(WebSocketFrameHeader::OpCode opcode,
                    base::span<const char> payload,
                    bool is_final) VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Internal helper for building WebSocket frames (both data and control
-  // frames).
-  scoped_refptr<IOBufferWithSize> BuildWebSocketFrame(
-      base::span<const uint8_t> payload,
-      WebSocketFrameHeader::OpCode op_code)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Methods to create specific WebSocket frames.
-  scoped_refptr<IOBufferWithSize> CreateTextFrame(std::string_view message)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-  scoped_refptr<IOBufferWithSize> CreateBinaryFrame(
-      base::span<const uint8_t> message)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-  scoped_refptr<IOBufferWithSize> CreateCloseFrame(std::optional<uint16_t> code,
-                                                   std::string_view message)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-  scoped_refptr<IOBufferWithSize> CreatePingFrame(
-      base::span<const uint8_t> payload)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-  scoped_refptr<IOBufferWithSize> CreatePongFrame(
-      base::span<const uint8_t> payload)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Internal function to handle sending buffers.
   // `wait_for_handshake`: If true, the message will be queued until the
@@ -189,6 +161,22 @@ class WebSocketConnection final : public base::RefCounted<WebSocketConnection> {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+// Methods to create specific WebSocket frames.
+scoped_refptr<IOBufferWithSize> CreateTextFrame(std::string_view message);
+scoped_refptr<IOBufferWithSize> CreateBinaryFrame(
+    base::span<const uint8_t> message);
+scoped_refptr<IOBufferWithSize> CreateCloseFrame(std::optional<uint16_t> code,
+                                                 std::string_view message);
+scoped_refptr<IOBufferWithSize> CreatePingFrame(
+    base::span<const uint8_t> payload);
+scoped_refptr<IOBufferWithSize> CreatePongFrame(
+    base::span<const uint8_t> payload);
+
+// Helper for building WebSocket frames (both data and control frames).
+scoped_refptr<IOBufferWithSize> BuildWebSocketFrame(
+    base::span<const uint8_t> payload,
+    WebSocketFrameHeader::OpCode op_code);
 
 }  // namespace test_server
 

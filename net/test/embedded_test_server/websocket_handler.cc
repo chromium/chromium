@@ -11,7 +11,7 @@ namespace net::test_server {
 
 WebSocketHandler::WebSocketHandler(
     scoped_refptr<WebSocketConnection> connection)
-    : connection_(connection) {}
+    : connection_(std::move(connection)) {}
 
 WebSocketHandler::~WebSocketHandler() = default;
 
@@ -25,8 +25,17 @@ void WebSocketHandler::OnPing(base::span<const uint8_t> payload) {
 // Default implementation of OnPong that does nothing.
 void WebSocketHandler::OnPong(base::span<const uint8_t> payload) {
   // Default implementation does nothing.
-  // Optionally, you could log the receipt of the PONG message.
   DVLOG(3) << "Received PONG message.";
+}
+
+// Default implementation of OnClosingHandshake.
+void WebSocketHandler::OnClosingHandshake(std::optional<uint16_t> code,
+                                          std::string_view message) {
+  DVLOG(3) << "Closing handshake received with code: "
+           << (code.has_value() ? base::NumberToString(code.value()) : "none")
+           << ", message: " << message;
+
+  connection()->RespondToCloseFrame(code, message);
 }
 
 }  // namespace net::test_server

@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -52,7 +53,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -64,8 +66,6 @@
 
 namespace {
 
-using SSLOptions = net::SpawnedTestServer::SSLOptions;
-
 using testing::HasSubstr;
 using testing::Not;
 
@@ -74,32 +74,44 @@ constexpr char kHostB[] = "b.test";
 
 class WebSocketBrowserTest : public InProcessBrowserTest {
  public:
-  explicit WebSocketBrowserTest(
-      SSLOptions::ServerCertificate cert = SSLOptions::CERT_OK)
-      : ws_server_(net::SpawnedTestServer::TYPE_WS,
-                   net::GetWebSocketTestDataDirectory()),
-        wss_server_(net::SpawnedTestServer::TYPE_WSS,
-                    SSLOptions(cert),
-                    net::GetWebSocketTestDataDirectory()) {}
+  explicit WebSocketBrowserTest(net::EmbeddedTestServer::ServerCertificate
+                                    cert = net::EmbeddedTestServer::CERT_OK)
+      : ws_server_(net::EmbeddedTestServer::TYPE_HTTP),
+        wss_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // Set SSL configuration for the secure WebSocket server.
+    wss_server_.SetSSLConfig(cert);
+
+    // Set up the file path for serving test files.
+    base::FilePath src_dir;
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
+
+    // Serve WebSocket test data directory for both HTTP and HTTPS servers.
+    const base::FilePath websocket_data =
+        src_dir.AppendASCII("net").AppendASCII("data").AppendASCII("websocket");
+    ws_server_.ServeFilesFromDirectory(websocket_data);
+    wss_server_.ServeFilesFromDirectory(websocket_data);
+
+    // Install default WebSocket handlers for both HTTP and HTTPS servers.
+    net::test_server::InstallDefaultWebSocketHandlers(ws_server_);
+    net::test_server::InstallDefaultWebSocketHandlers(wss_server_);
+  }
 
   WebSocketBrowserTest(const WebSocketBrowserTest&) = delete;
   WebSocketBrowserTest& operator=(const WebSocketBrowserTest&) = delete;
 
  protected:
-  void NavigateToHTTP(const std::string& path) {
+  void NavigateToHTTPPage(const std::string& path) {
     // Visit a HTTP page for testing.
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr("http");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), ws_server_.GetURL(path).ReplaceComponents(replacements)));
+    const GURL url = ws_server_.GetURL(path);
+    ASSERT_TRUE(url.SchemeIs("http"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
-  void NavigateToHTTPS(const std::string& path) {
+  void NavigateToHTTPSPage(const std::string& path) {
     // Visit a HTTPS page for testing.
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr("https");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), wss_server_.GetURL(path).ReplaceComponents(replacements)));
+    const GURL url = wss_server_.GetURL(path);
+    ASSERT_TRUE(url.SchemeIs("https"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   void NavigateToPath(const std::string& relative) {
@@ -172,8 +184,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
                     : content_settings::CookieControlsMode::kOff));
   }
 
-  net::SpawnedTestServer ws_server_;
-  net::SpawnedTestServer wss_server_;
+  net::EmbeddedTestServer ws_server_;
+  net::EmbeddedTestServer wss_server_;
 
  private:
   std::unique_ptr<content::TitleWatcher> watcher_;
@@ -194,7 +206,8 @@ class WebSocketBrowserTestWithAllowFileAccessFromFiles
 class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
  protected:
   explicit WebSocketBrowserConnectToTest(
-      SSLOptions::ServerCertificate cert = SSLOptions::CERT_OK)
+      net::EmbeddedTestServer::ServerCertificate cert =
+          net::EmbeddedTestServer::CERT_OK)
       : WebSocketBrowserTest(cert) {}
 
   // The title watcher and HTTP server are set up automatically by the test
@@ -241,7 +254,8 @@ class WebSocketBrowserHTTPSConnectToTest
     : public WebSocketBrowserConnectToTest {
  protected:
   explicit WebSocketBrowserHTTPSConnectToTest(
-      SSLOptions::ServerCertificate cert = SSLOptions::CERT_TEST_NAMES)
+      net::EmbeddedTestServer::ServerCertificate cert =
+          net::EmbeddedTestServer::CERT_OK)
       : WebSocketBrowserConnectToTest(cert),
         https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
 
@@ -272,24 +286,16 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketSplitSegments) {
   // Launch a WebSocket server.
   ASSERT_TRUE(ws_server_.Start());
 
-  NavigateToHTTP("split_packet_check.html");
+  NavigateToHTTPPage("/split_packet_check.html");
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
-// does not support modern TLS on the macOS bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SecureWebSocketSplitRecords DISABLED_SecureWebSocketSplitRecords
-#else
-#define MAYBE_SecureWebSocketSplitRecords SecureWebSocketSplitRecords
-#endif
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
-                       MAYBE_SecureWebSocketSplitRecords) {
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SecureWebSocketSplitRecords) {
   // Launch a secure WebSocket server.
   ASSERT_TRUE(wss_server_.Start());
 
-  NavigateToHTTPS("split_packet_check.html");
+  NavigateToHTTPSPage("/split_packet_check.html");
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -311,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SendCloseFrameWhenTabIsClosed) {
 
     content::TitleWatcher connected_title_watcher(raw_new_tab, u"CONNECTED");
     connected_title_watcher.AlsoWaitForTitle(u"CLOSED");
-    NavigateToHTTP("connect_and_be_observed.html");
+    NavigateToHTTPPage("/connect_and_be_observed.html");
     const std::u16string result = connected_title_watcher.WaitAndGetTitle();
     EXPECT_TRUE(base::EqualsASCII(result, "CONNECTED"));
 
@@ -320,47 +326,38 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SendCloseFrameWhenTabIsClosed) {
     destroyed_watcher.Wait();
   }
 
-  NavigateToHTTP("close_observer.html");
+  NavigateToHTTPPage("/close_observer.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPURL) {
   // Launch a basic-auth-protected WebSocket server.
-  ws_server_.set_websocket_basic_auth(true);
+  net::test_server::RegisterBasicAuthHandler(ws_server_, "test", "test");
   ASSERT_TRUE(ws_server_.Start());
 
   // Open connect_check.html via HTTP with credentials in the URL.
   GURL::Replacements replacements;
   replacements.SetSchemeStr("http");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      ws_server_.GetURLWithUserAndPassword("connect_check.html", "test", "test")
-          .ReplaceComponents(replacements)));
+
+  GURL url = net::test_server::GetURLWithUserAndPassword(
+      ws_server_, "/connect_check.html", "test", "test");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
-// does not support modern TLS on the macOS bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WebSocketBasicAuthInHTTPSURL DISABLED_WebSocketBasicAuthInHTTPSURL
-#else
-#define MAYBE_WebSocketBasicAuthInHTTPSURL WebSocketBasicAuthInHTTPSURL
-#endif
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
-                       MAYBE_WebSocketBasicAuthInHTTPSURL) {
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPSURL) {
   // Launch a basic-auth-protected secure WebSocket server.
-  wss_server_.set_websocket_basic_auth(true);
+  net::test_server::RegisterBasicAuthHandler(wss_server_, "test", "test");
   ASSERT_TRUE(wss_server_.Start());
 
   // Open connect_check.html via HTTPS with credentials in the URL.
   GURL::Replacements replacements;
-  replacements.SetSchemeStr("https");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      wss_server_
-          .GetURLWithUserAndPassword("connect_check.html", "test", "test")
-          .ReplaceComponents(replacements)));
+  replacements.SetSchemeStr("http");
+
+  GURL url = net::test_server::GetURLWithUserAndPassword(
+      wss_server_, "/connect_check.html", "test", "test");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -371,9 +368,9 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
                        ReuseMainPageBasicAuthCredentialsForWebSocket) {
   // Launch a basic-auth-protected WebSocket server.
-  ws_server_.set_websocket_basic_auth(true);
+  net::test_server::RegisterBasicAuthHandler(ws_server_, "test", "test");
   ASSERT_TRUE(ws_server_.Start());
-  NavigateToHTTP("connect_check.html");
+  NavigateToHTTPPage("/connect_check.html");
 
   ASSERT_TRUE(base::test::RunUntil(
       []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
@@ -385,11 +382,13 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
                        WebSocketBasicAuthInWSURL) {
   // Launch a basic-auth-protected WebSocket server.
-  ws_server_.set_websocket_basic_auth(true);
+  net::test_server::RegisterBasicAuthHandler(ws_server_, "test", "test");
   ASSERT_TRUE(ws_server_.Start());
 
-  ConnectTo(ws_server_.GetURLWithUserAndPassword(
-      "echo-with-no-extension", "test", "test"));
+  GURL url = net::test_server::GetURLWithUserAndPassword(
+      ws_server_, "/echo-with-no-extension", "test", "test");
+
+  ConnectTo(url);
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -397,11 +396,13 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
                        WebSocketBasicAuthInWSURLBadCreds) {
   // Launch a basic-auth-protected WebSocket server.
-  ws_server_.set_websocket_basic_auth(true);
+  net::test_server::RegisterBasicAuthHandler(ws_server_, "test", "test");
   ASSERT_TRUE(ws_server_.Start());
 
-  ConnectTo(ws_server_.GetURLWithUserAndPassword(
-      "echo-with-no-extension", "wrong-user", "wrong-password"));
+  GURL url = net::test_server::GetURLWithUserAndPassword(
+      ws_server_, "/echo-with-no-extension", "wrong-user", "wrong-password");
+
+  ConnectTo(url);
 
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
@@ -409,10 +410,10 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
                        WebSocketBasicAuthNoCreds) {
   // Launch a basic-auth-protected WebSocket server.
-  ws_server_.set_websocket_basic_auth(true);
+  net::test_server::RegisterBasicAuthHandler(ws_server_, "test", "test");
   ASSERT_TRUE(ws_server_.Start());
 
-  ConnectTo(ws_server_.GetURL("echo-with-no-extension"));
+  ConnectTo(ws_server_.GetURL("/echo-with-no-extension"));
 
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
@@ -420,43 +421,33 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
 // HTTPS connection limits should not be applied to wss:. This is only tested
 // for secure connections here because the unencrypted case is tested in the
 // Blink layout tests, and browser tests are expensive to run.
-// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
-// does not support modern TLS on the macOS bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SSLConnectionLimit DISABLED_SSLConnectionLimit
-#else
-#define MAYBE_SSLConnectionLimit SSLConnectionLimit
-#endif
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_SSLConnectionLimit) {
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SSLConnectionLimit) {
   ASSERT_TRUE(wss_server_.Start());
 
-  NavigateToHTTPS("multiple-connections.html");
+  NavigateToHTTPSPage("/multiple-connections.html");
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 // Regression test for crbug.com/903553005
-// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
-// does not support modern TLS on the macOS bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WebSocketAppliesHSTS DISABLED_WebSocketAppliesHSTS
-#else
-#define MAYBE_WebSocketAppliesHSTS WebSocketAppliesHSTS
-#endif
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  net::SpawnedTestServer wss_server(net::SpawnedTestServer::TYPE_WSS,
-                                    SSLOptions(SSLOptions::CERT_TEST_NAMES),
-                                    net::GetWebSocketTestDataDirectory());
   // This test sets HSTS on a.test. To avoid being redirected to https, start
   // the http server on 127.0.0.1 instead.
   net::EmbeddedTestServer http_server;
   http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+
+  net::EmbeddedTestServer wss_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  wss_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  wss_server.ServeFilesFromSourceDirectory(
+      net::GetWebSocketTestDataDirectory());
+  net::test_server::InstallDefaultWebSocketHandlers(wss_server);
+
   ASSERT_TRUE(https_server.Start());
   ASSERT_TRUE(http_server.Start());
-  ASSERT_TRUE(wss_server.StartInBackground());
+  ASSERT_TRUE(wss_server.Start());
 
   // Navigate to a page that will set HSTS on |test_server_hostname|.
   std::string test_server_hostname = "a.test";
@@ -468,10 +459,10 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
   const std::u16string result = title_watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "SET"));
 
-  // Verify that HSTS applies to WebSockets.
-  ASSERT_TRUE(wss_server.BlockUntilStarted());
-  GURL wss_url =
-      wss_server.GetURL(test_server_hostname, "echo-with-no-extension");
+  // Verify that HSTS applies to WebSocket connections.
+  GURL wss_url = net::test_server::GetWebSocketURL(
+      wss_server, test_server_hostname, "/echo-with-no-extension");
+
   std::string scheme("ws");
   GURL::Replacements scheme_replacement;
   scheme_replacement.SetSchemeStr(scheme);
@@ -631,7 +622,9 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SendBadUtf8) {
   auto handshake_client = std::make_unique<InvalidUtf8HandshakeClient>(
       std::move(client), fail_closure);
 
-  MakeWebSocketConnection(ws_server_.GetURL("close"), handshake_client->Bind());
+  MakeWebSocketConnection(
+      net::test_server::GetWebSocketURL(ws_server_, "/close"),
+      handshake_client->Bind());
 
   run_loop.Run();
 
@@ -698,7 +691,8 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, FailuresReported) {
     base::RunLoop run_loop;
     auto handshake_client = std::make_unique<FailureMonitoringHandshakeClient>(
         run_loop.QuitClosure());
-    MakeWebSocketConnection(ws_server_.GetURL("echo-with-no-extension"),
+    MakeWebSocketConnection(net::test_server::GetWebSocketURL(
+                                ws_server_, "/echo-with-no-extension"),
                             handshake_client->Bind());
     run_loop.Run();
     EXPECT_FALSE(handshake_client->result().failure_reported);
@@ -710,8 +704,9 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, FailuresReported) {
     base::RunLoop run_loop;
     auto handshake_client = std::make_unique<FailureMonitoringHandshakeClient>(
         run_loop.QuitClosure());
-    MakeWebSocketConnection(ws_server_.GetURL("nonsensedoesntexist"),
-                            handshake_client->Bind());
+    MakeWebSocketConnection(
+        net::test_server::GetWebSocketURL(ws_server_, "/nonsensedoesntexist"),
+        handshake_client->Bind());
     run_loop.Run();
     EXPECT_TRUE(handshake_client->result().failure_reported);
     EXPECT_EQ(404, handshake_client->result().response_code);
@@ -745,6 +740,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWithAllowFileAccessFromFiles,
 
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTestPre3pcd,
                        CookieAccess_ThirdPartyAllowed) {
+  wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(wss_server_.Start());
 
   SetBlockThirdPartyCookies(false);
@@ -755,7 +751,8 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTestPre3pcd,
 
   content::DOMMessageQueue message_queue(
       browser()->tab_strip_model()->GetActiveWebContents());
-  ConnectTo(kHostB, wss_server_.GetURL(kHostA, "echo-request-headers"));
+  ConnectTo(kHostB, net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                                      "/echo-request-headers"));
 
   std::string message;
   EXPECT_TRUE(message_queue.WaitForMessage(&message));
@@ -765,6 +762,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTestPre3pcd,
 
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
                        CookieAccess_ThirdPartyBlocked) {
+  wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(wss_server_.Start());
 
   SetBlockThirdPartyCookies(true);
@@ -775,7 +773,8 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
 
   content::DOMMessageQueue message_queue(
       browser()->tab_strip_model()->GetActiveWebContents());
-  ConnectTo(kHostB, wss_server_.GetURL(kHostA, "echo-request-headers"));
+  ConnectTo(kHostB, net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                                      "/echo-request-headers"));
 
   std::string message;
   EXPECT_TRUE(message_queue.WaitForMessage(&message));
@@ -785,6 +784,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
 
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
                        CookieAccess_ThirdPartyAllowedBySetting) {
+  wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(wss_server_.Start());
 
   SetBlockThirdPartyCookies(true);
@@ -827,7 +827,8 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
 
   content::DOMMessageQueue message_queue(
       browser()->tab_strip_model()->GetActiveWebContents());
-  ConnectTo(kHostB, wss_server_.GetURL(kHostA, "echo-request-headers"));
+  ConnectTo(kHostB, net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                                      "/echo-request-headers"));
 
   std::string message;
   EXPECT_TRUE(message_queue.WaitForMessage(&message));

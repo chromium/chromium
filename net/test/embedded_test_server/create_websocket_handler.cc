@@ -22,6 +22,14 @@ namespace net::test_server {
 
 namespace {
 
+// Helper function to strip the query part of the URL
+std::string_view StripQuery(std::string_view url) {
+  const size_t query_position = url.find('?');
+  return (query_position == std::string_view::npos)
+             ? url
+             : url.substr(0, query_position);
+}
+
 std::unique_ptr<HttpResponse> MakeErrorResponse(HttpStatusCode code,
                                                 std::string_view content) {
   auto error_response = std::make_unique<BasicHttpResponse>();
@@ -39,7 +47,9 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
     HttpConnection* connection) {
   DVLOG(3) << "Handling WebSocket upgrade for path: " << handle_path;
 
-  if (request.relative_url != handle_path) {
+  std::string_view request_path = StripQuery(request.relative_url);
+
+  if (request_path != handle_path) {
     return UpgradeResult::kNotHandled;
   }
 

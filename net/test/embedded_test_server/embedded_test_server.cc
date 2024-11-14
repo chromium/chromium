@@ -723,6 +723,14 @@ void EmbeddedTestServer::HandleRequest(
   HttpConnection* connection = GetConnectionForSocket(socket);
   CHECK(connection);
 
+  if (auth_handler_) {
+    auto auth_result = auth_handler_.Run(*request);
+    if (auth_result) {
+      DispatchResponseToDelegate(std::move(auth_result), delegate);
+      return;
+    }
+  }
+
   for (const auto& upgrade_request_handler : upgrade_request_handlers_) {
     auto upgrade_response = upgrade_request_handler.Run(*request, connection);
     if (upgrade_response.has_value()) {
@@ -944,6 +952,16 @@ base::FilePath EmbeddedTestServer::GetFullPathFromSourceDirectory(
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   return test_data_dir.Append(relative);
+}
+
+void EmbeddedTestServer::RegisterAuthHandler(
+    const HandleRequestCallback& callback) {
+  CHECK(!io_thread_)
+      << "Handlers must be registered before starting the server.";
+  if (auth_handler_) {
+    DVLOG(2) << "Overwriting existing Auth handler.";
+  }
+  auth_handler_ = callback;
 }
 
 void EmbeddedTestServer::RegisterUpgradeRequestHandler(

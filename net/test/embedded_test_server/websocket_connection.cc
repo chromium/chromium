@@ -61,14 +61,14 @@ void WebSocketConnection::SendTextMessage(std::string_view message) {
   CHECK(base::IsStringUTF8AllowingNoncharacters(message));
   scoped_refptr<IOBufferWithSize> frame = CreateTextFrame(message);
 
-  SendInternal(std::move(frame), /* wait_for_handshake */ true);
+  SendInternal(std::move(frame), /*wait_for_handshake=*/true);
 }
 
 void WebSocketConnection::SendBinaryMessage(base::span<const uint8_t> message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(stream_socket_);
   scoped_refptr<IOBufferWithSize> frame = CreateBinaryFrame(message);
-  SendInternal(std::move(frame), /* wait_for_handshake */ true);
+  SendInternal(std::move(frame), /*wait_for_handshake=*/true);
 }
 
 void WebSocketConnection::StartClosingHandshake(std::optional<uint16_t> code,
@@ -87,13 +87,13 @@ void WebSocketConnection::StartClosingHandshake(std::optional<uint16_t> code,
     CHECK(base::IsStringUTF8AllowingNoncharacters(message));
     SendInternal(BuildWebSocketFrame(base::span<const uint8_t>(),
                                      WebSocketFrameHeader::kOpCodeClose),
-                 /* wait_for_handshake */ false);
+                 /*wait_for_handshake=*/true);
     state_ = WebSocketState::kWaitingForClientClose;
     return;
   }
 
   scoped_refptr<IOBufferWithSize> close_frame = CreateCloseFrame(code, message);
-  SendInternal(std::move(close_frame), /* wait_for_handshake */ false);
+  SendInternal(std::move(close_frame), /*wait_for_handshake=*/true);
 
   state_ = WebSocketState::kWaitingForClientClose;
 }
@@ -109,20 +109,20 @@ void WebSocketConnection::RespondToCloseFrame(std::optional<uint16_t> code,
 
   CHECK(base::IsStringUTF8AllowingNoncharacters(message));
   scoped_refptr<IOBufferWithSize> close_frame = CreateCloseFrame(code, message);
-  SendInternal(std::move(close_frame), /* wait_for_handshake */ false);
+  SendInternal(std::move(close_frame), /*wait_for_handshake=*/false);
   DisconnectAfterAnyWritesDone();
 }
 
 void WebSocketConnection::SendPing(base::span<const uint8_t> payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scoped_refptr<IOBufferWithSize> ping_frame = CreatePingFrame(payload);
-  SendInternal(std::move(ping_frame), /* wait_for_handshake */ true);
+  SendInternal(std::move(ping_frame), /*wait_for_handshake=*/true);
 }
 
 void WebSocketConnection::SendPong(base::span<const uint8_t> payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scoped_refptr<IOBufferWithSize> pong_frame = CreatePongFrame(payload);
-  SendInternal(std::move(pong_frame), /* wait_for_handshake */ true);
+  SendInternal(std::move(pong_frame), /*wait_for_handshake=*/true);
 }
 
 void WebSocketConnection::DisconnectAfterAnyWritesDone() {
@@ -169,7 +169,7 @@ void WebSocketConnection::SendRaw(base::span<const uint8_t> bytes) {
   scoped_refptr<IOBufferWithSize> buffer =
       base::MakeRefCounted<IOBufferWithSize>(bytes.size());
   buffer->span().copy_from(bytes);
-  SendInternal(std::move(buffer), /* wait_for_handshake */ false);
+  SendInternal(std::move(buffer), /*wait_for_handshake=*/false);
 }
 
 void WebSocketConnection::SendInternal(scoped_refptr<IOBufferWithSize> buffer,
@@ -229,7 +229,7 @@ void WebSocketConnection::OnWriteComplete(int result)
     scoped_refptr<IOBufferWithSize> next_message =
         std::move(pending_messages_.front());
     pending_messages_.pop();
-    SendInternal(std::move(next_message), /* wait_for_handshake */ false);
+    SendInternal(std::move(next_message), /*wait_for_handshake=*/false);
     return;
   }
 
@@ -346,75 +346,6 @@ void WebSocketConnection::HandleFrame(WebSocketFrameHeader::OpCode opcode,
   }
 }
 
-scoped_refptr<IOBufferWithSize> WebSocketConnection::CreateTextFrame(
-    std::string_view message) VALID_CONTEXT_REQUIRED(sequence_checker_) {
-  return BuildWebSocketFrame(base::as_bytes(base::make_span(message)),
-                             WebSocketFrameHeader::kOpCodeText);
-}
-
-scoped_refptr<IOBufferWithSize> WebSocketConnection::CreateBinaryFrame(
-    base::span<const uint8_t> message)
-    VALID_CONTEXT_REQUIRED(sequence_checker_) {
-  return BuildWebSocketFrame(message, WebSocketFrameHeader::kOpCodeBinary);
-}
-
-scoped_refptr<IOBufferWithSize> WebSocketConnection::CreateCloseFrame(
-    std::optional<uint16_t> code,
-    std::string_view message) VALID_CONTEXT_REQUIRED(sequence_checker_) {
-  DVLOG(3) << "Creating close frame with code: "
-           << (code ? base::NumberToString(*code) : "none")
-           << ", Message: " << message;
-  CHECK(message.empty() || code);
-  CHECK(base::IsStringUTF8AllowingNoncharacters(message));
-
-  if (!code) {
-    return BuildWebSocketFrame(base::span<const uint8_t>(),
-                               WebSocketFrameHeader::kOpCodeClose);
-  }
-
-  auto payload =
-      base::HeapArray<uint8_t>::Uninit(sizeof(uint16_t) + message.size());
-  base::SpanWriter<uint8_t> writer{payload};
-  writer.WriteU16BigEndian(code.value());
-  writer.Write(base::as_byte_span(message));
-
-  return BuildWebSocketFrame(payload, WebSocketFrameHeader::kOpCodeClose);
-}
-
-scoped_refptr<IOBufferWithSize> WebSocketConnection::CreatePingFrame(
-    base::span<const uint8_t> payload)
-    VALID_CONTEXT_REQUIRED(sequence_checker_) {
-  return BuildWebSocketFrame(payload, WebSocketFrameHeader::kOpCodePing);
-}
-
-scoped_refptr<IOBufferWithSize> WebSocketConnection::CreatePongFrame(
-    base::span<const uint8_t> payload)
-    VALID_CONTEXT_REQUIRED(sequence_checker_) {
-  return BuildWebSocketFrame(payload, WebSocketFrameHeader::kOpCodePong);
-}
-
-scoped_refptr<IOBufferWithSize> WebSocketConnection::BuildWebSocketFrame(
-    base::span<const uint8_t> payload,
-    WebSocketFrameHeader::OpCode op_code)
-    VALID_CONTEXT_REQUIRED(sequence_checker_) {
-  WebSocketFrameHeader header(op_code);
-  header.final = true;
-  header.payload_length = payload.size();
-
-  const size_t header_size = GetWebSocketFrameHeaderSize(header);
-
-  scoped_refptr<IOBufferWithSize> buffer =
-      base::MakeRefCounted<IOBufferWithSize>(header_size + payload.size());
-
-  const int written_header_size =
-      WriteWebSocketFrameHeader(header, nullptr, buffer->span());
-  base::span<uint8_t> buffer_span = buffer->span().subspan(
-      base::checked_cast<size_t>(written_header_size), payload.size());
-  buffer_span.copy_from(payload);
-
-  return buffer;
-}
-
 void WebSocketConnection::SendHandshakeResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -435,6 +366,71 @@ void WebSocketConnection::SendHandshakeResponse() {
   state_ = WebSocketState::kOpen;
 
   Read();
+
+  handler_->OnHandshakeComplete();
+}
+
+scoped_refptr<IOBufferWithSize> CreateTextFrame(std::string_view message) {
+  return BuildWebSocketFrame(base::as_byte_span(message),
+                             WebSocketFrameHeader::kOpCodeText);
+}
+
+scoped_refptr<IOBufferWithSize> CreateBinaryFrame(
+    base::span<const uint8_t> message) {
+  return BuildWebSocketFrame(message, WebSocketFrameHeader::kOpCodeBinary);
+}
+
+scoped_refptr<IOBufferWithSize> CreateCloseFrame(std::optional<uint16_t> code,
+                                                 std::string_view message) {
+  DVLOG(3) << "Creating close frame with code: "
+           << (code ? base::NumberToString(*code) : "none")
+           << ", Message: " << message;
+  CHECK(message.empty() || code);
+  CHECK(base::IsStringUTF8AllowingNoncharacters(message));
+
+  if (!code) {
+    return BuildWebSocketFrame(base::span<const uint8_t>(),
+                               WebSocketFrameHeader::kOpCodeClose);
+  }
+
+  auto payload =
+      base::HeapArray<uint8_t>::Uninit(sizeof(uint16_t) + message.size());
+  base::SpanWriter<uint8_t> writer{payload};
+  writer.WriteU16BigEndian(code.value());
+  writer.Write(base::as_byte_span(message));
+
+  return BuildWebSocketFrame(payload, WebSocketFrameHeader::kOpCodeClose);
+}
+
+scoped_refptr<IOBufferWithSize> CreatePingFrame(
+    base::span<const uint8_t> payload) {
+  return BuildWebSocketFrame(payload, WebSocketFrameHeader::kOpCodePing);
+}
+
+scoped_refptr<IOBufferWithSize> CreatePongFrame(
+    base::span<const uint8_t> payload) {
+  return BuildWebSocketFrame(payload, WebSocketFrameHeader::kOpCodePong);
+}
+
+scoped_refptr<IOBufferWithSize> BuildWebSocketFrame(
+    base::span<const uint8_t> payload,
+    WebSocketFrameHeader::OpCode op_code) {
+  WebSocketFrameHeader header(op_code);
+  header.final = true;
+  header.payload_length = payload.size();
+
+  const size_t header_size = GetWebSocketFrameHeaderSize(header);
+
+  scoped_refptr<IOBufferWithSize> buffer =
+      base::MakeRefCounted<IOBufferWithSize>(header_size + payload.size());
+
+  const int written_header_size =
+      WriteWebSocketFrameHeader(header, nullptr, buffer->span());
+  base::span<uint8_t> buffer_span = buffer->span().subspan(
+      base::checked_cast<size_t>(written_header_size), payload.size());
+  buffer_span.copy_from(payload);
+
+  return buffer;
 }
 
 }  // namespace net::test_server
