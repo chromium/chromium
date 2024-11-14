@@ -62,7 +62,9 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
       provider_(std::move(provider)),
-      info_(info),
+      sk_color_type_(info.colorType()),
+      sk_alpha_type_(info.alphaType()),
+      sk_color_space_(info.refColorSpace()),
       filter_quality_(filter_quality) {}
 
 CanvasResource::~CanvasResource() {}

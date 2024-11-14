@@ -237,9 +237,9 @@ class PLATFORM_EXPORT CanvasResource
       viz::TransferableResource* out_resource) {
     NOTREACHED();
   }
-  SkColorType GetSkColorType() const { return info_.colorType(); }
-  SkAlphaType GetSkAlphaType() const { return info_.alphaType(); }
-  sk_sp<SkColorSpace> GetSkColorSpace() const { return info_.refColorSpace(); }
+  SkColorType GetSkColorType() const { return sk_color_type_; }
+  SkAlphaType GetSkAlphaType() const { return sk_alpha_type_; }
+  sk_sp<SkColorSpace> GetSkColorSpace() const { return sk_color_space_; }
 
   CanvasResourceProvider* Provider() { return provider_.get(); }
   base::WeakPtr<CanvasResourceProvider> WeakProvider() { return provider_; }
@@ -262,7 +262,9 @@ class PLATFORM_EXPORT CanvasResource
   }
 
   base::WeakPtr<CanvasResourceProvider> provider_;
-  SkColorInfo info_;
+  SkColorType sk_color_type_;
+  SkAlphaType sk_alpha_type_;
+  sk_sp<SkColorSpace> sk_color_space_;
   cc::PaintFlags::FilterQuality filter_quality_;
   LastUnrefCallback last_unref_callback_;
 };
