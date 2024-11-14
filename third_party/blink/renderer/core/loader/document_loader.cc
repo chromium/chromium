@@ -1483,8 +1483,8 @@ void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
 }
 
 void DocumentLoader::HandleRedirect(
-    WebNavigationParams::RedirectInfo& redirect) {
-  ResourceResponse redirect_response =
+    const WebNavigationParams::RedirectInfo& redirect) {
+  const ResourceResponse& redirect_response =
       redirect.redirect_response.ToResourceResponse();
   const KURL& url_before_redirect = redirect_response.CurrentRequestUrl();
   url_ = redirect.new_url;
@@ -1992,7 +1992,7 @@ void DocumentLoader::StartLoadingInternal() {
                                    main_resource_identifier_, this, url_,
                                    http_method_, http_body_.get());
 
-  for (WebNavigationParams::RedirectInfo& redirect : params_->redirects) {
+  for (const WebNavigationParams::RedirectInfo& redirect : params_->redirects) {
     HandleRedirect(redirect);
   }
 
