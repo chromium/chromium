@@ -7,7 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
+#include "base/check.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -26,7 +30,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   ParseAdAuctionResultResponseHeader(header_value);
 
   std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>> output;
-  ParseAdAuctionAdditionalBidResponseHeader(header_value, output);
+  base::expected<void, std::string> result =
+      ParseAdAuctionAdditionalBidResponseHeader(header_value, output);
+  if (!result.has_value()) {
+    CHECK(!result.error().empty());
+  }
   return 0;
 }
 

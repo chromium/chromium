@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +18,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -30,6 +34,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/origin.h"
 
@@ -202,7 +207,7 @@ std::vector<std::string> ParseAdAuctionResultResponseHeader(
 // this function simple and avoid adding custom logic.
 //
 // Fuzzer: ad_auction_headers_util_fuzzer
-void ParseAdAuctionAdditionalBidResponseHeader(
+base::expected<void, std::string> ParseAdAuctionAdditionalBidResponseHeader(
     const std::string& header_line,
     std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>&
         nonce_additional_bids_map) {
@@ -225,14 +230,26 @@ void ParseAdAuctionAdditionalBidResponseHeader(
       base::UmaHistogramEnumeration(
           "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
           AdditionalBidHeaderType::kMalformedHeaderWrongAuctionNonceSize);
-      return;
+      return base::unexpected(base::StringPrintf(
+          "Malformed %s: The first colon-delimited part (the auction nonce) is "
+          "expected to be %zu characters in size (representing the canonical "
+          "representation of a UUIDv4), but was instead %zu characters. "
+          "Header received: %s",
+          kAdAuctionAdditionalBidResponseHeaderKey, kNonceSize,
+          auction_nonce.size(), header_line));
     }
     std::string seller_nonce = std::move(nonces_and_additional_bid[1]);
     if (seller_nonce.size() != kNonceSize) {
       base::UmaHistogramEnumeration(
           "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
           AdditionalBidHeaderType::kMalformedHeaderWrongSellerNonceSize);
-      return;
+      return base::unexpected(base::StringPrintf(
+          "Malformed %s: The second colon-delimited part (the seller nonce) is "
+          "expected to be %zu characters in size (representing the canonical "
+          "representation of a UUIDv4), but was instead %zu characters. "
+          "Header received: %s",
+          kAdAuctionAdditionalBidResponseHeaderKey, kNonceSize,
+          seller_nonce.size(), header_line));
     }
     std::string additional_bid = std::move(nonces_and_additional_bid[2]);
 
@@ -249,7 +266,13 @@ void ParseAdAuctionAdditionalBidResponseHeader(
       base::UmaHistogramEnumeration(
           "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
           AdditionalBidHeaderType::kMalformedHeaderWrongAuctionNonceSize);
-      return;
+      return base::unexpected(base::StringPrintf(
+          "Malformed %s: The first colon-delimited part (the auction nonce) is "
+          "expected to be %zu characters in size (representing the canonical "
+          "representation of a UUIDv4), but was instead %zu characters. "
+          "Header received: %s",
+          kAdAuctionAdditionalBidResponseHeaderKey, kNonceSize,
+          auction_nonce.size(), header_line));
     }
     std::string additional_bid = std::move(nonces_and_additional_bid[1]);
 
@@ -264,7 +287,13 @@ void ParseAdAuctionAdditionalBidResponseHeader(
     base::UmaHistogramEnumeration(
         "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
         AdditionalBidHeaderType::kMalformedHeaderWrongNumberOfColons);
+    return base::unexpected(base::StringPrintf(
+        "Malformed %s: Expected two or three colon-delimited parts, but "
+        "instead received %zu. Header received: %s",
+        kAdAuctionAdditionalBidResponseHeaderKey,
+        nonces_and_additional_bid.size(), header_line));
   }
+  return base::ok();
 }
 
 // NOTE: This function processes untrusted content, in an unsafe language, from
@@ -273,13 +302,13 @@ void ParseAdAuctionAdditionalBidResponseHeader(
 // by fuzz tests.
 void ProcessAdAuctionResponseHeaders(
     const url::Origin& request_origin,
-    Page& page,
+    RenderFrameHostImpl& rfh,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   if (!headers) {
     return;
   }
   AdAuctionPageData* ad_auction_page_data =
-      PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
+      PageUserData<AdAuctionPageData>::GetOrCreateForPage(rfh.GetPage());
 
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
@@ -313,8 +342,14 @@ void ProcessAdAuctionResponseHeaders(
   std::string header_line;
   while (headers->EnumerateHeader(
       &iter, kAdAuctionAdditionalBidResponseHeaderKey, &header_line)) {
-    ParseAdAuctionAdditionalBidResponseHeader(header_line,
-                                              nonce_additional_bids_map);
+    base::expected<void, std::string> result =
+        ParseAdAuctionAdditionalBidResponseHeader(header_line,
+                                                  nonce_additional_bids_map);
+    if (!result.has_value()) {
+      devtools_instrumentation::LogWorkletMessage(
+          rfh, blink::mojom::ConsoleMessageLevel::kError,
+          std::move(result).error());
+    }
   }
   if (!nonce_additional_bids_map.empty()) {
     ad_auction_page_data->AddAuctionAdditionalBidsWitnessForOrigin(

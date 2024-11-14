@@ -19157,6 +19157,75 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(
     InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    AdAuctionHeadersEligible_MalformedAdAuctionAdditionalBidResponseHeader) {
+  // The second block has 3 digits, but it should have 4.
+  constexpr char kTooShortUuidV4[] = "00000000-000-0000-0000-000000000000";
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .ad_auction_headers = base::StrCat(
+          {"Ad-Auction-Additional-Bid: ", kTooShortUuidV4, ":e30="})});
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
+  console_observer.SetPattern(base::StrCat(
+      {"Malformed Ad-Auction-Additional-Bid: The first colon-delimited part "
+       "(the auction nonce) is expected to be 36 characters in size "
+       "(representing the canonical representation of a UUIDv4), but was "
+       "instead 35 characters. Header received: ",
+       kTooShortUuidV4, ":e30="}));
+
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(
+          NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                     "a.test", "/interest_group/empty.html")));
+
+      // Verify that the JavaScript doesn't see the `Ad-Auction-Additional-Bid`
+      // response header.
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1, {adAuctionHeaders: true}).then((response) => {
+              if (response.headers.get('Ad-Auction-Additional-Bid')) {
+                throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(
+          NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                     "a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
+
+  std::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+  EXPECT_TRUE(ad_auction_header);
+  EXPECT_EQ(*ad_auction_header, "?1");
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+  EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(request_origin,
+                                                         kTooShortUuidV4),
+              ::testing::IsEmpty());
+
+  // Verify the expected error is logged to the console.
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
     AdAuctionHeadersEligible_HasAllResponseHeaders) {
   GURL fetch_url = GetFetchURL((FetchURLParams){
       .origin = is_cross_origin() ? "b.test" : "a.test",
