@@ -2128,9 +2128,10 @@ TEST_F(BackupRefPtrTest, RawPtrNotDangling) {
         allocator_.root()->Free(ptr);  // Dangling raw_ptr detected.
         dangling_ptr = nullptr;        // Dangling raw_ptr released.
       },
-      AllOf(HasSubstr("Detected dangling raw_ptr"),
-            HasSubstr("The memory was freed at:"),
-            HasSubstr("The dangling raw_ptr was released at:")));
+      AllOf(HasSubstr("[DanglingPtr](1/3) A raw_ptr/raw_ref is dangling."),
+            HasSubstr("[DanglingPtr](2/3) First, the memory was freed at:"),
+            HasSubstr("[DanglingPtr](3/3) Later, the dangling raw_ptr was "
+                      "released at:")));
 #else
   allocator_.root()->Free(ptr);
   dangling_ptr = nullptr;
@@ -2226,9 +2227,10 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
         allocator_.root()->Free(ptr.get());  // Dangling raw_ptr detected.
         ptr = nullptr;                       // Dangling raw_ptr released.
       },
-      AllOf(HasSubstr("Detected dangling raw_ptr"),
-            HasSubstr("The memory was freed at:"),
-            HasSubstr("The dangling raw_ptr was released at:")));
+      AllOf(HasSubstr("[DanglingPtr](1/3) A raw_ptr/raw_ref is dangling."),
+            HasSubstr("[DanglingPtr](2/3) First, the memory was freed at:"),
+            HasSubstr("[DanglingPtr](3/3) Later, the dangling raw_ptr was "
+                      "released at:")));
 #else
   allocator_.root()->Free(ptr.get());
   ptr = nullptr;

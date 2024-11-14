@@ -83,10 +83,11 @@ TEST(PartitionAllocDanglingPtrChecks, Basic) {
         partition_alloc::GetDanglingRawPtrDetectedFn()(42);
         partition_alloc::GetDanglingRawPtrReleasedFn()(42);
       },
-      AllOf(HasSubstr("Detected dangling raw_ptr with id=0x000000000000002a:"),
-            HasSubstr("[DanglingSignature]\t"),
-            HasSubstr("The memory was freed at:"),
-            HasSubstr("The dangling raw_ptr was released at:")));
+      AllOf(HasSubstr("[DanglingSignature]\t"),
+            HasSubstr("[DanglingPtr](1/3) A raw_ptr/raw_ref is dangling."),
+            HasSubstr("[DanglingPtr](2/3) First, the memory was freed at:"),
+            HasSubstr("[DanglingPtr](3/3) Later, the dangling raw_ptr was "
+                      "released at:")));
 }
 
 // The StackTrace buffer might run out of storage and not record where the
@@ -97,10 +98,12 @@ TEST(PartitionAllocDanglingPtrChecks, FreeNotRecorded) {
         ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
         partition_alloc::GetDanglingRawPtrReleasedFn()(42);
       },
-      AllOf(HasSubstr("Detected dangling raw_ptr with id=0x000000000000002a:"),
-            HasSubstr("[DanglingSignature]\tmissing\tmissing\t"),
-            HasSubstr("It was not recorded where the memory was freed."),
-            HasSubstr("The dangling raw_ptr was released at:")));
+      AllOf(HasSubstr("[DanglingSignature]\tmissing\tmissing\t"),
+            HasSubstr("[DanglingPtr](1/3) A raw_ptr/raw_ref is dangling."),
+            HasSubstr("[DanglingPtr](2/3) It was not recorded where the memory "
+                      "was freed."),
+            HasSubstr("[DanglingPtr](3/3) Later, the dangling raw_ptr was "
+                      "released at:")));
 }
 
 // TODO(crbug.com/40260713): Check for leaked refcount on Android.
@@ -153,10 +156,11 @@ TEST(PartitionAllocDanglingPtrChecks, CrossTask) {
 
         task_environment.RunUntilIdle();
       },
-      AllOf(HasSubstr("Detected dangling raw_ptr with id=0x000000000000002a:"),
-            HasSubstr("[DanglingSignature]\t"),
-            HasSubstr("The memory was freed at:"),
-            HasSubstr("The dangling raw_ptr was released at:")));
+      AllOf(HasSubstr("[DanglingSignature]\t"),
+            HasSubstr("[DanglingPtr](1/3) A raw_ptr/raw_ref is dangling."),
+            HasSubstr("[DanglingPtr](2/3) First, the memory was freed at:"),
+            HasSubstr("[DanglingPtr](3/3) Later, the dangling raw_ptr was "
+                      "released at:")));
 }
 
 TEST(PartitionAllocDanglingPtrChecks, CrossTaskIgnoredFailuresClearsCache) {
