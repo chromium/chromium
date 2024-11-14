@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -204,6 +205,55 @@ TEST(AutofillAiUtilsTest, SetFieldFillingEligibility) {
   EXPECT_EQ(form.fields()[1]->field_is_eligible_for_prediction_improvements(),
             false);
 }
+
+struct IsFieldEligibleForFillingTestCase {
+  bool is_select_element;
+  bool current_field_value_is_empty;
+  bool should_be_eligible_for_filling;
+};
+
+class AutofillAiIsFieldEligibleForFillingTest
+    : public testing::TestWithParam<IsFieldEligibleForFillingTestCase> {};
+
+// Tests a field's eligibility for filling given that its type is
+// IMPROVED_PREDICTION.
+TEST_P(AutofillAiIsFieldEligibleForFillingTest, IsFieldEligibleForFilling) {
+  IsFieldEligibleForFillingTestCase test_case = GetParam();
+
+  AutofillField field;
+  AddImprovedPredictionType(field);
+
+  if (test_case.is_select_element) {
+    field.set_form_control_type(autofill::FormControlType::kSelectOne);
+  }
+  if (!test_case.current_field_value_is_empty) {
+    field.set_value(u"non-empty value");
+  }
+
+  EXPECT_EQ(IsFieldEligibleForFilling(field),
+            test_case.should_be_eligible_for_filling);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AutofillAiIsFieldEligibleForFillingTest,
+                         testing::Values(
+                             IsFieldEligibleForFillingTestCase{
+                                 .is_select_element = true,
+                                 .current_field_value_is_empty = true,
+                                 .should_be_eligible_for_filling = true},
+                             IsFieldEligibleForFillingTestCase{
+                                 .is_select_element = true,
+                                 .current_field_value_is_empty = false,
+                                 .should_be_eligible_for_filling = true},
+                             IsFieldEligibleForFillingTestCase{
+                                 .is_select_element = false,
+                                 .current_field_value_is_empty = true,
+                                 .should_be_eligible_for_filling = true},
+                             IsFieldEligibleForFillingTestCase{
+                                 .is_select_element = false,
+                                 .current_field_value_is_empty = false,
+                                 .should_be_eligible_for_filling = false}));
+
 }  // namespace
 
 }  // namespace autofill_ai

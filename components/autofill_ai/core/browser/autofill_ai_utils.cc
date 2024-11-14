@@ -66,7 +66,8 @@ bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field) {
 
 bool IsFieldEligibleForFilling(const AutofillField& form_field) {
   return IsFieldEligibleByTypeCriteria(form_field) &&
-         form_field.value(autofill::ValueSemantics::kCurrent).empty();
+         (form_field.IsSelectElement() ||
+          form_field.value(autofill::ValueSemantics::kCurrent).empty());
 }
 
 void SetFieldFillingEligibility(autofill::FormStructure& form) {

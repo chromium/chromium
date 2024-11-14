@@ -17,10 +17,7 @@ bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field);
 
 // For a field to be fillable
 //  - it must have the correct field type.
-//  - its value must be empty.
-//  - it has to be focusable. In field filling skip reasons select fields may
-//    be unfocusable, for the estimated `total_number_of_fillable_fields`
-//    however that exception has shown to offer suggestions too often.
+//  - its value must be empty, unless it's a select field.
 bool IsFieldEligibleForFilling(const autofill::AutofillField& form_field);
 
 // Returns weather the forms is eligible for the filling journey.
