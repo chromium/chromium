@@ -647,6 +647,28 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
     const uint8_t* u_data,
     const uint8_t* v_data,
     base::TimeDelta timestamp) {
+  const VideoPixelFormat format = layout.format();
+  std::array<const uint8_t*, 3> data = {y_data, u_data, v_data};
+  std::array<base::span<const uint8_t>, 3> spans;
+  for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
+    // TODO(crbug.com/338570700): Remove this function and migrate to the
+    // version accepting a span.
+    spans[plane] = UNSAFE_TODO(
+        base::span<const uint8_t>(data[plane], layout.planes()[plane].size));
+  }
+  return WrapExternalYuvDataWithLayout(layout, visible_rect, natural_size,
+                                       spans[0], spans[1], spans[2], timestamp);
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
+    const VideoFrameLayout& layout,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::span<const uint8_t> y_data,
+    base::span<const uint8_t> u_data,
+    base::span<const uint8_t> v_data,
+    base::TimeDelta timestamp) {
   const StorageType storage = STORAGE_UNOWNED_MEMORY;
   const VideoPixelFormat format = layout.format();
   if (!IsValidConfig(format, storage, layout.coded_size(), visible_rect,
@@ -656,19 +678,16 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
                                   visible_rect, natural_size);
     return nullptr;
   }
-  if (!IsYuvPlanar(format)) {
+  if (!IsYuvPlanar(format) || NumPlanes(format) > 3) {
     DLOG(ERROR) << __func__ << " Format is not YUV. " << format;
     return nullptr;
   }
 
-  DCHECK_LE(NumPlanes(format), 3u);
   scoped_refptr<VideoFrame> frame(
       new VideoFrame(layout, storage, visible_rect, natural_size, timestamp));
-  std::array<const uint8_t*, 3> data = {y_data, u_data, v_data};
+  std::array<base::span<const uint8_t>, 3> data = {y_data, u_data, v_data};
   for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
-    // TODO(crbug.com/338570700): y_data, u_data, v_data should be spans
-    frame->data_[plane] =
-        UNSAFE_TODO(base::span(data[plane], layout.planes()[plane].size));
+    frame->data_[plane] = data[plane];
   }
   return frame;
 }
