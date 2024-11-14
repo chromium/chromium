@@ -3021,6 +3021,12 @@ const char kLeftHandSideActivityIndicatorsName[] =
 const char kLeftHandSideActivityIndicatorsDescription[] =
     "Moves activity indicators to the left-hand side of location bar.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kMerchantTrustName[] = "Merchant Trust";
+const char kMerchantTrustDescription[] =
+    "Enables the merchant trust UI in page info.";
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kCrosSystemLevelPermissionBlockedWarningsName[] =
     "Chrome OS block warnings";

@@ -5912,6 +5912,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "merchant-trust",
+    "owners": [ "tommasin@chromium.org", "privacy-on-the-web@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "metal",
     "owners": [ "ccameron@chromium.org", "jvanverth@chromium.org" ],
     "expiry_milestone": 83

@@ -8560,6 +8560,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          content_settings::features::kLeftHandSideActivityIndicators)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"merchant-trust", flag_descriptions::kMerchantTrustName,
+     flag_descriptions::kMerchantTrustDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(page_info::kMerchantTrust)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-block-warnings",
      flag_descriptions::kCrosSystemLevelPermissionBlockedWarningsName,

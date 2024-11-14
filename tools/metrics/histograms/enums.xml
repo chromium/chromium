@@ -18215,6 +18215,7 @@ from previous Chrome versions.
   <int value="-829665817" label="AltClickAndSixPackCustomization:enabled"/>
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
   <int value="-826848767" label="DataSharing:enabled"/>
+  <int value="-826067311" label="MerchantTrust:disabled"/>
   <int value="-826010284" label="EnterpriseReportingUI:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
   <int value="-825514105" label="TimeOfDayDlc:enabled"/>
@@ -23655,6 +23656,7 @@ from previous Chrome versions.
   <int value="1371190773"
       label="AutofillEnableVirtualCardsRiskBasedAuthentication:enabled"/>
   <int value="1371344350" label="MediaSessionWebRTC:disabled"/>
+  <int value="1371902905" label="MerchantTrust:enabled"/>
   <int value="1371907429" label="enable-wallet-card-import"/>
   <int value="1372680885" label="enable-mtp-write-support"/>
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>

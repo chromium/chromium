@@ -1727,6 +1727,11 @@ extern const char kImprovedSemanticsActivityIndicatorsDescription[];
 extern const char kLeftHandSideActivityIndicatorsName[];
 extern const char kLeftHandSideActivityIndicatorsDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kMerchantTrustName[];
+extern const char kMerchantTrustDescription[];
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kCrosSystemLevelPermissionBlockedWarningsName[];
 extern const char kCrosSystemLevelPermissionBlockedWarningsDescription[];
