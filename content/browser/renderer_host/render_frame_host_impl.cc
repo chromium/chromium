@@ -278,7 +278,6 @@
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
@@ -10669,17 +10668,11 @@ void RenderFrameHostImpl::HandleAXEvents(
     needs_ax_root_id_ = false;
   }
 
-  if (features::IsUseMoveNotCopyInMergeTreeUpdateEnabled()) {
-    // While experimenting with moving data, we have to ensure this call
-    // order. This won't be the final structure of the code.
-    delegate_->ProcessAccessibilityUpdatesAndEvents(updates_and_events);
+  // We have to ensure this call when moving rather than copying.
+  delegate_->ProcessAccessibilityUpdatesAndEvents(updates_and_events);
 
-    // This call steals the contents of the data to avoid copying.
-    SendAccessibilityEventsToManager(updates_and_events);
-  } else {
-    SendAccessibilityEventsToManager(updates_and_events);
-    delegate_->ProcessAccessibilityUpdatesAndEvents(updates_and_events);
-  }
+  // This call steals the contents of the data to avoid copying.
+  SendAccessibilityEventsToManager(updates_and_events);
 
   // For testing only.
   if (!accessibility_testing_callback_.is_null()) {

@@ -919,9 +919,6 @@ public final class ProductionSupportedFlagList {
                 "UseMoveNotCopyInAXTreeCombiner",
                 "Enables moves instead of copies of snapshot tree data when combining updates."),
         Flag.baseFeature(
-                "UseMoveNotCopyInMergeTreeUpdate",
-                "Enables moves instead of copies of snapshot tree data when merging udpates."),
-        Flag.baseFeature(
                 "EnableHangWatcher", "Controls whether hooks for hang detection are active"),
         Flag.baseFeature(
                 "MojoPredictiveAllocation",
