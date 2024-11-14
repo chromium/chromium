@@ -8571,3 +8571,6 @@ crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/RTCPeerConnection-creat
 
 crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.any.html [ Pass Timeout ]
 crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.any.worker.html [ Pass Timeout ]
+
+# Gardener 2024-11-14
+crbug.com/379003897 [ Win11 ] external/wpt/css/css-anchor-position/anchor-parse-valid.html [ Failure Pass ]
