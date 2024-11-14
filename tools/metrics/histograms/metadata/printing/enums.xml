@@ -238,6 +238,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="NON_DEFAULT_DPI"/>
   <int value="24" label="PIN"/>
   <int value="25" label="FIT_TO_PAPER"/>
+  <int value="26" label="NON_SQUARE_DPI_PRINTER"/>
 </enum>
 
 <enum name="UsbPrinterSetupSource">
