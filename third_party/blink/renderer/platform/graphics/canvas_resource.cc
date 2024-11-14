@@ -256,17 +256,20 @@ gfx::ColorSpace CanvasResource::GetColorSpace() const {
 //==============================================================================
 
 CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType sk_alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider,
     cc::PaintFlags::FilterQuality filter_quality)
     : CanvasResource(std::move(provider),
                      filter_quality,
-                     info.colorInfo().colorType(),
-                     info.colorInfo().alphaType(),
-                     info.colorInfo().refColorSpace()),
-      size_(info.width(), info.height()) {
+                     sk_color_type,
+                     sk_alpha_type,
+                     std::move(sk_color_space)),
+      size_(size) {
   if (features::IsCanvasSharedBitmapConversionEnabled()) {
     if (!shared_image_interface_provider) {
       return;
@@ -360,13 +363,17 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
 }
 
 scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType sk_alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider,
     cc::PaintFlags::FilterQuality filter_quality) {
   auto resource = AdoptRef(new CanvasResourceSharedBitmap(
-      info, std::move(provider), std::move(shared_image_interface_provider),
+      size, sk_color_type, sk_alpha_type, std::move(sk_color_space),
+      std::move(provider), std::move(shared_image_interface_provider),
       filter_quality));
   return resource->IsValid() ? resource : nullptr;
 }

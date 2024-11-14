@@ -246,9 +246,10 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
       info = info.makeColorType(kN32_SkColorType);
     }
 
-    return CanvasResourceSharedBitmap::Create(info, CreateWeakPtr(),
-                                              shared_image_interface_provider_,
-                                              FilterQuality());
+    return CanvasResourceSharedBitmap::Create(
+        gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
+        info.colorInfo().alphaType(), info.colorInfo().refColorSpace(),
+        CreateWeakPtr(), shared_image_interface_provider_, FilterQuality());
   }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(

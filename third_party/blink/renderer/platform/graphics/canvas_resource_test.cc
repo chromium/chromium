@@ -31,10 +31,11 @@ TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
       test_web_shared_image_interface_provider->GetWeakPtr();
 
   scoped_refptr<CanvasResource> canvas_resource =
-      CanvasResourceSharedBitmap::Create(SkImageInfo::MakeN32Premul(10, 10),
-                                         /*CanvasResourceProvider=*/nullptr,
-                                         shared_image_interface_provider,
-                                         cc::PaintFlags::FilterQuality::kLow);
+      CanvasResourceSharedBitmap::Create(
+          gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
+          /*sk_color_space=*/nullptr,
+          /*CanvasResourceProvider=*/nullptr, shared_image_interface_provider,
+          cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
   viz::TransferableResource resource;
   CanvasResource::ReleaseCallback release_callback;
