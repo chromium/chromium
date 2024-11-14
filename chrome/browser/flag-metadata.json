@@ -5127,12 +5127,12 @@
   {
     "name": "identity-confirmation-snackbar",
     "owners": ["jood@google.com", "treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 132
+    "expiry_milestone": 135
   },
   {
     "name": "identity-disc-account-menu",
-    "owners": ["treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 132
+    "owners": ["jood@google.com", "treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
+    "expiry_milestone": 135
   },
   {
     "name": "ignore-gpu-blocklist",
