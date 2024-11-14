@@ -19,14 +19,13 @@ found in the LICENSE file.
     <ImageView
         android:id="@+id/ewallet_icon"
         android:importantForAccessibility="no"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_height="@dimen/facilitated_payments_fop_icon_height"
+        android:layout_width="@dimen/facilitated_payments_fop_icon_width"
         android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentStart="true"
         android:layout_marginEnd="16dp"
         android:background="@drawable/facilitated_payments_fop_icon_background"
-        android:paddingHorizontal="@dimen/facilitated_payments_fop_icon_padding_horizontal"
-        android:paddingVertical="@dimen/facilitated_payments_fop_icon_padding_vertical"
         android:scaleType="centerInside" />
 
     <TextView
