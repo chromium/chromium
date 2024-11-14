@@ -41,6 +41,7 @@ class IOSCredentialProviderInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetTitleText() const override;
   std::u16string GetMessageText() const override;
   ui::ImageModel GetIcon() const override;
+  bool UseIconBackgroundTint() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
 

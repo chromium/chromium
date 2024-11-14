@@ -63,6 +63,10 @@ ui::ImageModel IOSCredentialProviderInfoBarDelegate::GetIcon() const {
   return ui::ImageModel::FromImage(gfx::Image(image));
 }
 
+bool IOSCredentialProviderInfoBarDelegate::UseIconBackgroundTint() const {
+  return false;
+}
+
 std::u16string IOSCredentialProviderInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16(IDS_IOS_CREDENTIAL_PROVIDER_VIEW_PASSKEY);
