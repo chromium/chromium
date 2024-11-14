@@ -43,20 +43,28 @@ if (enable_openxr) {
   if (is_android) {
     # On Android, the loader comes with a couple more external dependencies.
 
+    config("android-jni-wrappers-config") {
+      include_dirs = [ "src/src/external/jnipp" ]
+    }
+
     source_set("jnipp") {
       sources = [
-        "src/src/external/jnipp/jnipp.cpp",
         "src/src/external/jnipp/jnipp.h",
+
+        # TODO(https://crbug.com/378814615): use
+        # src/src/external/jnipp/jnipp.cpp after rolling OpenXR.
+        "src_overrides/src/external/jnipp/jnipp.cpp",
       ]
 
       cflags_cc = [ "-Wno-shadow" ]
 
-      # JNIPP uses exceptions to communicate failures:
-      configs += [ "//build/config/compiler:exceptions" ]
-    }
+      configs += [
+        # JNIPP uses exceptions to communicate failures:
+        "//build/config/compiler:exceptions",
 
-    config("android-jni-wrappers-config") {
-      include_dirs = [ "src/src/external/jnipp" ]
+        # TODO(https://crbug.com/378814615): Remove this after rolling OpenXR.
+        ":android-jni-wrappers-config",
+      ]
     }
 
     source_set("android-jni-wrappers") {
