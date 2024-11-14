@@ -269,7 +269,13 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, LacksPermission) {
   ASSERT_TRUE(VerifyBackgroundMode(false));
 }
 
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, ManifestBackgroundPage) {
+// TODO(crbug.com/378997487): test fails on win-asan
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ManifestBackgroundPage DISABLED_ManifestBackgroundPage
+#else
+#define MAYBE_ManifestBackgroundPage ManifestBackgroundPage
+#endif
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_ManifestBackgroundPage) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
@@ -373,7 +379,14 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsBackgroundPage) {
   UnloadExtension(extension->id());
 }
 
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsManifestBackgroundPage) {
+// TODO(crbug.com/378997487): test fails on win-asan
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_NoJsManifestBackgroundPage DISABLED_NoJsManifestBackgroundPage
+#else
+#define MAYBE_NoJsManifestBackgroundPage NoJsManifestBackgroundPage
+#endif
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest,
+                       MAYBE_NoJsManifestBackgroundPage) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
