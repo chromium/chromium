@@ -116,7 +116,7 @@ void TrustedVaultDegradedRecoverabilityHandler::UpdateCurrentRefreshPeriod() {
 
 void TrustedVaultDegradedRecoverabilityHandler::Start() {
   base::UmaHistogramExactLinear(
-      "Sync.TrustedVaultDegradedRecoverabilityValue2",
+      "TrustedVault.TrustedVaultDegradedRecoverabilityValue",
       degraded_recoverability_value_,
       trusted_vault_pb::DegradedRecoverabilityValue_ARRAYSIZE);
   next_refresh_timer_.Start(
