@@ -546,6 +546,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
   [sharedDefaults removeObjectForKey:commandDictionaryPreference];
 
+  // `sharedDefaults` is used for communication between apps. Synchronize to
+  // avoid synchronization issues (like removing the next order).
+  [sharedDefaults synchronize];
+
   if (!commandDictionary) {
     return nil;
   }
