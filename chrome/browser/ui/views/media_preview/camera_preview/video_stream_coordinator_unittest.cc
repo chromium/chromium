@@ -38,6 +38,8 @@ constexpr char kTotalVisibleDuration[] =
     "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration";
 constexpr char kTimeToActionWithoutPreview[] =
     "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview";
+constexpr char kCapturedErrors[] =
+    "MediaPreviews.UI.Preview.Permissions.VideoCaptureError";
 
 }  // namespace
 
@@ -89,6 +91,14 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
     video_stream_view->OnPaint(&canvas);
   }
 
+  void SendAndWaitForError(media::VideoCaptureError error) {
+    base::test::TestFuture<void> got_error;
+    coordinator_->SetErrorReceivedCallbackForTest(
+        got_error.GetRepeatingCallback());
+    fake_video_source_.SendError(error);
+    EXPECT_TRUE(got_error.WaitAndClear());
+  }
+
   std::unique_ptr<views::View> parent_view_;
   std::unique_ptr<VideoStreamCoordinator> coordinator_;
 
@@ -123,6 +133,12 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
       TriggerPaint();
     }
   }
+
+  const auto error = media::VideoCaptureError::
+      kErrorFakeDeviceIntentionallyEmittingErrorEvent;  // any random error.
+  SendAndWaitForError(error);
+  histogram_tester_.ExpectUniqueSample(kCapturedErrors,
+                                       /*bucket_index=*/error, 1);
 
   coordinator_->Stop();
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
@@ -161,8 +177,18 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
   base::RunLoop().RunUntilIdle();
   task_environment()->AdvanceClock(base::Milliseconds(130));
 
+  const auto error = media::VideoCaptureError::
+      kVideoCaptureControllerUnsupportedPixelFormat;  // any random error.
+  SendAndWaitForError(error);
+  histogram_tester_.ExpectUniqueSample(kCapturedErrors,
+                                       /*bucket_index=*/error, 1);
+
+  fake_video_source_.SendError(error);
   coordinator_->Stop();
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
+
+  // Sending errors close to stopping time is disregarded.
+  histogram_tester_.ExpectTotalCount(kCapturedErrors, 1);
 
   histogram_tester_.ExpectTotalCount(kVideoDelay, 0);
 

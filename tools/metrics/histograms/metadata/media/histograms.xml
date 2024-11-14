@@ -7101,6 +7101,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="MediaPreviews.UI.Preview.{UiLocation}.VideoCaptureError"
+    units="VideoCaptureError" expires_after="2025-11-11">
+  <owner>ahmedmoussa@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records video capture errors received from the {UiLocation} camera preview.
+  </summary>
+  <token key="UiLocation">
+    <variant name="PageInfo"/>
+    <variant name="Permissions"/>
+  </token>
+</histogram>
+
 <histogram name="MediaPreviews.UI.{UiLocation}.OriginTrialAllowed"
     enum="Boolean" expires_after="2025-05-08">
   <owner>mfoltz@chromium.org</owner>

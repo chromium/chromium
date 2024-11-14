@@ -141,6 +141,16 @@ void VideoStreamCoordinator::OnFatalErrorOrDisconnection() {
     video_stream_view_->ClearFrame();
     preview_badge_view_->SetVisible(false);
   }
+  OnError(media::VideoCaptureError::kVideoCaptureManagerDeviceConnectionLost);
+}
+
+void VideoStreamCoordinator::OnError(media::VideoCaptureError error) {
+  if (error_received_callback_for_test_) {
+    error_received_callback_for_test_.Run();
+  }
+
+  media_preview_metrics::RecordVideoCaptureError(metrics_context_, error);
+  // TODO: Consider notifying CameraCoordinator to request new connection.
 }
 
 void VideoStreamCoordinator::StopAndCleanup(

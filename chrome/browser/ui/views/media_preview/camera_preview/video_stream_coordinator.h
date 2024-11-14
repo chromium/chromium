@@ -61,11 +61,16 @@ class VideoStreamCoordinator
   // capture_mode::CameraVideoFrameHandler::Delegate implementation.
   void OnCameraVideoFrame(scoped_refptr<media::VideoFrame> frame) override;
   void OnFatalErrorOrDisconnection() override;
+  void OnError(media::VideoCaptureError error) override;
 
   void OnPermissionChange(bool has_permission);
 
   void SetFrameReceivedCallbackForTest(base::RepeatingClosure callback) {
     frame_received_callback_for_test_ = std::move(callback);
+  }
+
+  void SetErrorReceivedCallbackForTest(base::RepeatingClosure callback) {
+    error_received_callback_for_test_ = std::move(callback);
   }
 
   VideoStreamView* GetVideoStreamView() { return video_stream_view_; }
@@ -110,6 +115,9 @@ class VideoStreamCoordinator
 
   // Runs when a new frame is received. Used for testing.
   base::RepeatingClosure frame_received_callback_for_test_;
+
+  // Runs when a error is received. Used for testing.
+  base::RepeatingClosure error_received_callback_for_test_;
 
   const media_preview_metrics::Context metrics_context_;
   size_t video_stream_total_frames_ = 0;
