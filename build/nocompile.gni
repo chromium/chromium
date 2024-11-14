@@ -44,7 +44,7 @@
 #    }
 #
 #    The verification logic is built as part of clang; full documentation is at
-#    https://clang.llvm.org/doxygen/classclang_1_1VerifyDiagnosticConsumer.html.
+#    https://clang.llvm.org/docs/InternalsManual.html#specifying-diagnostics.
 #
 # Also see:
 #   http://dev.chromium.org/developers/testing/no-compile-tests
