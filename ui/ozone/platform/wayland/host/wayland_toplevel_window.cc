@@ -95,11 +95,6 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   SetUpShellIntegration();
   OnDecorationModeChanged();
 
-  auto* zaura_surface = GetZAuraSurface();
-  if (system_modal_ && zaura_surface) {
-    zaura_surface->SetFrame(ZAURA_SURFACE_FRAME_TYPE_SHADOW);
-  }
-
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
   // during the call to WaylandWindow::Initialize().
@@ -156,17 +151,13 @@ void WaylandToplevelWindow::Hide() {
   }
   WaylandWindow::Hide();
 
-  if (root_surface()) {
-    root_surface()->ResetZAuraSurface();
-
-    // When running under Weston, if we don't do this immediately, the window
-    // will be unable to receive mouse events after making it visible again.
-    // See https://gitlab.freedesktop.org/wayland/weston/-/issues/950.
-    if (root_surface()->buffer_id() != 0) {
-      root_surface()->AttachBuffer(nullptr);
-      root_surface()->ApplyPendingState();
-      root_surface()->Commit(false);
-    }
+  // When running under Weston, if we don't do this immediately, the window
+  // will be unable to receive mouse events after making it visible again.
+  // See https://gitlab.freedesktop.org/wayland/weston/-/issues/950.
+  if (root_surface() && root_surface()->buffer_id() != 0) {
+    root_surface()->AttachBuffer(nullptr);
+    root_surface()->ApplyPendingState();
+    root_surface()->Commit(false);
   }
 
   if (gtk_surface1_)
@@ -294,10 +285,7 @@ void WaylandToplevelWindow::Activate() {
   // compositor as well; for example, Mutter doesn't bring the window to the top
   // when it requests focus, but instead shows a system popup notification to
   // user.
-  auto* zaura_surface = GetZAuraSurface();
-  if (zaura_surface && zaura_surface->SupportsActivate()) {
-    zaura_surface->Activate();
-  } else if (connection()->xdg_activation()) {
+  if (connection()->xdg_activation()) {
     if (auto token = base::nix::TakeXdgActivationToken()) {
       ActivateWithToken(token.value());
     } else {
@@ -400,12 +388,6 @@ void WaylandToplevelWindow::NotifyStartupComplete(
     const std::string& startup_id) {
   if (auto* gtk_shell = connection()->gtk_shell1())
     gtk_shell->SetStartupId(startup_id);
-}
-
-void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    zaura_surface->SetAspectRatio(aspect_ratio.width(), aspect_ratio.height());
-  }
 }
 
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
@@ -675,22 +657,6 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
   connection()->window_drag_controller()->StartDragSession(this, event_source);
 }
 
-void WaylandToplevelWindow::SetCanGoBack(bool value) {
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    if (value) {
-      zaura_surface->SetCanGoBack();
-    } else {
-      zaura_surface->UnsetCanGoBack();
-    }
-  }
-}
-
-void WaylandToplevelWindow::SetPip() {
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    zaura_surface->SetPip();
-  }
-}
-
 bool WaylandToplevelWindow::SupportsPointerLock() {
   return !!connection()->zwp_pointer_constraints() &&
          !!connection()->zwp_relative_pointer_manager();
@@ -879,10 +845,6 @@ void WaylandToplevelWindow::SetSizeConstraints() {
 void WaylandToplevelWindow::SetUpShellIntegration() {
   // This method should be called after the XDG surface is initialized.
   DCHECK(shell_toplevel_);
-  if (connection()->zaura_shell()) {
-    SetInitialWorkspace();
-  }
-
   // We must not request a new GtkSurface if we already have one, else we get a
   // "gtk_shell::get_gtk_surface already requested" error. (crbug.com/1380419)
   if (connection()->gtk_shell1() && !gtk_surface1_) {
@@ -893,28 +855,14 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
 
 void WaylandToplevelWindow::OnDecorationModeChanged() {
   DCHECK(shell_toplevel_);
-  auto* zaura_surface = GetZAuraSurface();
   if (use_native_frame_) {
     // Set server-side decoration for windows using a native frame,
     // e.g. taskmanager
     shell_toplevel_->SetDecoration(
         ShellToplevelWrapper::DecorationMode::kServerSide);
-  } else if (zaura_surface && zaura_surface->SupportsSetServerStartResize()) {
-    // Sets custom-decoration mode for window that supports aura_shell.
-    // e.g. lacros-browser.
-    zaura_surface->SetServerStartResize();
   } else {
     shell_toplevel_->SetDecoration(
         ShellToplevelWrapper::DecorationMode::kClientSide);
-  }
-}
-
-void WaylandToplevelWindow::SetInitialWorkspace() {
-  if (!workspace_.has_value())
-    return;
-
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    zaura_surface->SetInitialWorkspace(workspace_.value());
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
+#include <aura-shell-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>

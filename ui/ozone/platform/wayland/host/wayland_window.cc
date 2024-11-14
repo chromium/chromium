@@ -182,10 +182,6 @@ void WaylandWindow::OnEnteredOutputScaleChanged() {
   UpdateWindowScale(/*update_bounds=*/true);
 }
 
-WaylandZAuraSurface* WaylandWindow::GetZAuraSurface() {
-  return root_surface_ ? root_surface_->zaura_surface() : nullptr;
-}
-
 gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
   return accelerated_widget_;
 }

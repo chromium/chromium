@@ -45,12 +45,7 @@ void WaylandBubble::Hide() {
   }
 
   WaylandWindow::Hide();
-  if (root_surface()) {
-    root_surface()->ResetZAuraSurface();
-  }
-
   Deactivate();
-
   subsurface_.reset();
   connection()->Flush();
 }

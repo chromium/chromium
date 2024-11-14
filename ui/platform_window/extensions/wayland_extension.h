@@ -55,15 +55,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandToplevelExtension {
       ui::mojom::DragEventSource event_source,
       bool allow_system_drag) = 0;
 
-  // Signals the underneath platform whether the current tab of the browser
-  // window can go back. The underneath platform might react, for example,
-  // by minimizing the window upon a system wide back gesture.
-  virtual void SetCanGoBack(bool value) = 0;
-
-  // Requests the underneath platform to set the window to picture-in-picture
-  // (PIP).
-  virtual void SetPip() = 0;
-
   // Whether or not the underlying platform supports native pointer locking.
   virtual bool SupportsPointerLock() = 0;
   virtual void LockPointer(bool enabled) = 0;

@@ -114,7 +114,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetInputRegion(std::optional<std::vector<gfx::Rect>> region_px) override;
   bool IsClientControlledWindowMovementSupported() const override;
   void NotifyStartupComplete(const std::string& startup_id) override;
-  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
@@ -124,8 +123,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void StartWindowDraggingSessionIfNeeded(
       ui::mojom::DragEventSource event_source,
       bool allow_system_drag) override;
-  void SetCanGoBack(bool value) override;
-  void SetPip() override;
   bool SupportsPointerLock() override;
   void LockPointer(bool enabled) override;
   bool GetTabletMode() override;
@@ -184,10 +181,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // Sets decoration mode for a window.
   void OnDecorationModeChanged();
-
-  // Sets `workspace_` to `aura_surface_`.
-  // This must be called in SetUpShellIntegration().
-  void SetInitialWorkspace();
 
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;

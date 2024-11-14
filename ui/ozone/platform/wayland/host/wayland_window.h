@@ -34,7 +34,6 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_surface.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -109,8 +108,6 @@ class WaylandWindow : public PlatformWindow,
   const WidgetSubsurfaceSet& wayland_subsurfaces() const {
     return wayland_subsurfaces_;
   }
-  WaylandZAuraSurface* GetZAuraSurface();
-
   base::LinkedList<WaylandSubsurface>* subsurface_stack_committed() {
     return &subsurface_stack_committed_;
   }
@@ -399,9 +396,6 @@ class WaylandWindow : public PlatformWindow,
 
   WaylandConnection* connection() { return connection_; }
   const WaylandConnection* connection() const { return connection_; }
-  zaura_surface* aura_surface() {
-    return aura_surface_ ? aura_surface_.get() : nullptr;
-  }
   const std::vector<raw_ptr<WaylandBubble>>& child_bubbles() {
     return child_bubbles_;
   }
@@ -610,8 +604,6 @@ class WaylandWindow : public PlatformWindow,
   // The stack of sub-surfaces currently committed. This list is altered when
   // the subsurface arrangement are played back by WaylandFrameManager.
   base::LinkedList<WaylandSubsurface> subsurface_stack_committed_;
-
-  wl::Object<zaura_surface> aura_surface_;
 
 #if BUILDFLAG(IS_LINUX)
   // The current asynchronously loaded cursor (Linux specific).

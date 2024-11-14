@@ -8,22 +8,12 @@
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
-#include "ui/ozone/platform/wayland/test/test_zaura_surface.h"
 
 namespace wl {
 
 namespace {
 
 constexpr uint32_t kZAuraShellVersion = 65;
-
-void GetAuraSurface(wl_client* client,
-                    wl_resource* resource,
-                    uint32_t id,
-                    wl_resource* surface_resource) {
-  CreateResourceWithImpl<TestZAuraSurface>(client, &zaura_surface_interface,
-                                           kZAuraShellVersion,
-                                           &kTestZAuraSurfaceImpl, id);
-}
 
 void SurfaceSubmissionInPixelCoordinates(wl_client* client,
                                          wl_resource* resource) {
@@ -33,8 +23,8 @@ void SurfaceSubmissionInPixelCoordinates(wl_client* client,
 }
 
 const struct zaura_shell_interface kTestZAuraShellImpl = {
-    &GetAuraSurface, nullptr, &SurfaceSubmissionInPixelCoordinates,
-    nullptr,         nullptr, &DestroyResource,
+    nullptr, nullptr, &SurfaceSubmissionInPixelCoordinates,
+    nullptr, nullptr, &DestroyResource,
 };
 
 }  // namespace
