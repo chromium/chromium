@@ -26,13 +26,16 @@ class DeviceInfoTracker;
 }  // namespace syncer
 
 namespace tab_groups {
+class CollaborationFinder;
+
 std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
     version_info::Channel channel,
     syncer::DataTypeStoreService* data_type_store_service,
     PrefService* pref_service,
     syncer::DeviceInfoTracker* device_info_tracker,
     optimization_guide::OptimizationGuideDecider* optimization_guide,
-    signin::IdentityManager* identity_manager);
+    signin::IdentityManager* identity_manager,
+    std::unique_ptr<CollaborationFinder> collaboration_finder);
 
 }  // namespace tab_groups
 

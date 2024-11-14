@@ -6365,6 +6365,7 @@ test("unit_tests") {
     "//components/certificate_transparency",
     "//components/certificate_transparency:proto",
     "//components/collaboration/internal",
+    "//components/collaboration/internal:collaboration_finder",
     "//components/collaboration/public",
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:commerce_heuristics_data",

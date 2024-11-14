@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/internal/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_metrics_logger_impl.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
+#include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -98,6 +99,15 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
   MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
 };
 
+class MockCollaborationFinder : public CollaborationFinder {
+ public:
+  MockCollaborationFinder() = default;
+  ~MockCollaborationFinder() override = default;
+
+  MOCK_METHOD(bool, IsCollaborationAvailable, (const std::string&));
+  MOCK_METHOD(void, SetClient, (Client*));
+};
+
 MATCHER_P(UuidEq, uuid, "") {
   return arg.saved_guid() == uuid;
 }
@@ -137,7 +147,9 @@ class TabGroupSyncServiceTest : public testing::Test {
 
     auto metrics_logger =
         std::make_unique<TabGroupSyncMetricsLoggerImpl>(&device_info_tracker_);
-
+    auto collaboration_finder =
+        std::make_unique<testing::NiceMock<MockCollaborationFinder>>();
+    collaboration_finder_ = collaboration_finder.get();
     EXPECT_CALL(*decider_, RegisterOptimizationTypes(_)).Times(1);
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model),
@@ -150,7 +162,8 @@ class TabGroupSyncServiceTest : public testing::Test {
             syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 shared_store_.get())),
         &pref_service_, std::move(metrics_logger), decider_.get(),
-        identity_test_environment_.identity_manager());
+        identity_test_environment_.identity_manager(),
+        std::move(collaboration_finder));
     ON_CALL(saved_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(saved_processor_, TrackedCacheGuid())
@@ -158,6 +171,8 @@ class TabGroupSyncServiceTest : public testing::Test {
     ON_CALL(saved_processor_, GetControllerDelegate())
         .WillByDefault(testing::Return(fake_controller_delegate_.GetWeakPtr()));
     ON_CALL(shared_processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*collaboration_finder_, IsCollaborationAvailable(_))
         .WillByDefault(testing::Return(true));
 
     auto coordinator =
@@ -183,6 +198,7 @@ class TabGroupSyncServiceTest : public testing::Test {
     tab_group_sync_service_->RemoveObserver(observer_.get());
     model_ = nullptr;
     coordinator_ = nullptr;
+    collaboration_finder_ = nullptr;
   }
 
   // Enable sub-classes to not load initial test groups.
@@ -268,6 +284,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   std::unique_ptr<syncer::DataTypeStore> saved_store_;
   std::unique_ptr<syncer::DataTypeStore> shared_store_;
   std::unique_ptr<testing::NiceMock<MockTabGroupSyncServiceObserver>> observer_;
+  raw_ptr<testing::NiceMock<MockCollaborationFinder>> collaboration_finder_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;
   raw_ptr<testing::NiceMock<MockTabGroupSyncCoordinator>> coordinator_;
   std::unique_ptr<optimization_guide::MockOptimizationGuideDecider> decider_;
@@ -870,6 +887,61 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
   WaitForPostedTasks();
 }
 
+TEST_F(TabGroupSyncServiceTest, SharedTabGroupAddedWillWaitForCollaboration) {
+  EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
+
+  // Create shared tab group 4 for which collaboration ID isn't yet available.
+  std::string collaboration_id_1 = "foo_1";
+  SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
+  group_4.SetCollaborationId(collaboration_id_1);
+  ON_CALL(*collaboration_finder_,
+          IsCollaborationAvailable(Eq(collaboration_id_1)))
+      .WillByDefault(testing::Return(false));
+
+  // Create shared tab group 5 for which collaboration ID is already available.
+  std::string collaboration_id_2 = "foo_2";
+  SavedTabGroup group_5 = test::CreateTestSavedTabGroup();
+  group_5.SetCollaborationId(collaboration_id_2);
+  ON_CALL(*collaboration_finder_,
+          IsCollaborationAvailable(Eq(collaboration_id_2)))
+      .WillByDefault(testing::Return(true));
+
+  // Add both the groups to model from sync. Observers won't be notified for
+  // group 4 but will be notified for group 5.
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
+                                          Eq(TriggerSource::REMOTE)))
+      .Times(0);
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_5.saved_guid()),
+                                          Eq(TriggerSource::REMOTE)))
+      .Times(1);
+  model_->AddedFromSync(group_4);
+  model_->AddedFromSync(group_5);
+  WaitForPostedTasks();
+
+  // GetAllGroups will skip group 4 as it's collaboration isn't ready yet.
+  EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 4u);
+
+  // Send an update to group 4 from sync. The update won't be notified as the
+  // collaboration is pending.
+  TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_4.saved_guid()),
+                                            Eq(TriggerSource::REMOTE)))
+      .Times(0);
+  model_->UpdatedVisualDataFromSync(group_4.saved_guid(), &visual_data);
+
+  // Make the collaboration available for group 4. Observer will be notified.
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
+                                          Eq(TriggerSource::REMOTE)))
+      .Times(1);
+
+  ON_CALL(*collaboration_finder_,
+          IsCollaborationAvailable(Eq(collaboration_id_1)))
+      .WillByDefault(testing::Return(true));
+  tab_group_sync_service_->OnCollaborationAvailable(collaboration_id_1);
+  WaitForPostedTasks();
+  EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 5u);
+}
+
 TEST_F(TabGroupSyncServiceTest, EmptyGroupAddedFromLocalSource) {
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
 
@@ -1456,8 +1528,12 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
   ASSERT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
   ASSERT_THAT(model_->saved_tab_groups(), SizeIs(3));
 
+  std::string collaboration_id = "collaboration";
+  ON_CALL(*collaboration_finder_,
+          IsCollaborationAvailable(Eq(collaboration_id)))
+      .WillByDefault(testing::Return(true));
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
-                                              "collaboration");
+                                              collaboration_id);
   // The new group replaces the originating one asynchronously.
   WaitForPostedTasks();
 

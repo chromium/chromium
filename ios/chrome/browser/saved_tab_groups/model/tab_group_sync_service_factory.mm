@@ -7,6 +7,7 @@
 #import <algorithm>
 #import <memory>
 
+#import "components/collaboration/internal/collaboration_finder_impl.h"
 #import "components/data_sharing/public/features.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -14,6 +15,7 @@
 #import "components/saved_tab_groups/public/tab_group_sync_service_factory_helper.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
@@ -54,6 +56,7 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
   // The dependency on IdentityManager is only for the purpose of recording "on
   // signin" metrics.
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -79,10 +82,14 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
           ->GetDeviceInfoTracker();
   auto* opt_guide = OptimizationGuideServiceFactory::GetForProfile(profile);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto collaboration_finder =
+      std::make_unique<collaboration::CollaborationFinderImpl>(
+          data_sharing::DataSharingServiceFactory::GetForProfile(profile));
 
   std::unique_ptr<TabGroupSyncService> sync_service = CreateTabGroupSyncService(
       ::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
-      profile->GetPrefs(), device_info_tracker, opt_guide, identity_manager);
+      profile->GetPrefs(), device_info_tracker, opt_guide, identity_manager,
+      std::move(collaboration_finder));
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer =

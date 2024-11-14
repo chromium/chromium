@@ -12,6 +12,7 @@
 #include "components/saved_tab_groups/internal/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_metrics_logger_impl.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
+#include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -56,7 +57,8 @@ std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
     PrefService* pref_service,
     syncer::DeviceInfoTracker* device_info_tracker,
     optimization_guide::OptimizationGuideDecider* optimization_guide,
-    signin::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager,
+    std::unique_ptr<CollaborationFinder> collaboration_finder) {
   auto metrics_logger =
       std::make_unique<TabGroupSyncMetricsLoggerImpl>(device_info_tracker);
   auto model = std::make_unique<SavedTabGroupModel>();
@@ -68,7 +70,7 @@ std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
   return std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
       pref_service, std::move(metrics_logger), optimization_guide,
-      identity_manager);
+      identity_manager, std::move(collaboration_finder));
 }
 
 }  // namespace tab_groups

@@ -17,6 +17,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/collaboration/internal:collaboration_finder",
     "//components/data_sharing/public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
@@ -29,6 +30,7 @@ source_set("model") {
     "//components/tab_groups",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/sessions/model:restoration_observer",
     "//ios/chrome/browser/sessions/model:session_restoration_service",

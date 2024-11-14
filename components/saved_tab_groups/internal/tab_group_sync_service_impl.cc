@@ -26,6 +26,7 @@
 #include "components/saved_tab_groups/internal/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_coordinator_impl.h"
+#include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -118,7 +119,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     PrefService* pref_service,
     std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    std::unique_ptr<CollaborationFinder> collaboration_finder)
     : model_(std::move(model)),
       sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
           model_.get(),
@@ -126,8 +128,10 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
           std::move(saved_tab_group_configuration),
           std::move(shared_tab_group_configuration))),
       metrics_logger_(std::move(metrics_logger)),
+      collaboration_finder_(std::move(collaboration_finder)),
       pref_service_(pref_service),
       opt_guide_(optimization_guide_decider) {
+  collaboration_finder_->SetClient(this);
   model_->AddObserver(this);
   if (opt_guide_) {
     opt_guide_->RegisterOptimizationTypes(
@@ -214,6 +218,11 @@ void TabGroupSyncServiceImpl::OnPrimaryAccountChanged(
 
 void TabGroupSyncServiceImpl::SetIsInitializedForTesting(bool initialized) {
   is_initialized_ = initialized;
+}
+
+CollaborationFinder*
+TabGroupSyncServiceImpl::GetCollaborationFinderForTesting() {
+  return collaboration_finder_.get();
 }
 
 void TabGroupSyncServiceImpl::Shutdown() {
@@ -526,6 +535,17 @@ std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() const {
       tab_groups_to_skip.insert(
           group.originating_saved_tab_group_guid().value());
     }
+    auto iter =
+        std::find_if(shared_tab_groups_waiting_for_collaboration_.begin(),
+                     shared_tab_groups_waiting_for_collaboration_.end(),
+                     [&](const auto& entry) {
+                       return std::get<1>(entry) == group.saved_guid();
+                     });
+    if (iter != shared_tab_groups_waiting_for_collaboration_.end()) {
+      // Exclude, if we are waiting for the corresponding people group to be
+      // available in DataSharingService.
+      tab_groups_to_skip.insert(group.saved_guid());
+    }
   }
 
   std::vector<SavedTabGroup> tab_groups;
@@ -779,6 +799,15 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
     return;
   }
 
+  if (saved_tab_group->collaboration_id()) {
+    std::string collaboration_id = saved_tab_group->collaboration_id().value();
+    if (!collaboration_finder_->IsCollaborationAvailable(collaboration_id)) {
+      shared_tab_groups_waiting_for_collaboration_.emplace_back(
+          collaboration_id, guid, source);
+      return;
+    }
+  }
+
   // Post task is used here to avoid reentrancy. See crbug.com/373500807 for
   // details.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -796,6 +825,17 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
 
   const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
   if (!saved_tab_group || saved_tab_group->saved_tabs().empty()) {
+    return;
+  }
+
+  auto iter = std::find_if(shared_tab_groups_waiting_for_collaboration_.begin(),
+                           shared_tab_groups_waiting_for_collaboration_.end(),
+                           [group_guid](const auto& entry) {
+                             return std::get<1>(entry) == group_guid;
+                           });
+  if (iter != shared_tab_groups_waiting_for_collaboration_.end()) {
+    // We are waiting for the corresponding people group to be available in
+    // DataSharingService. Ignore this update and continue waiting.
     return;
   }
 
@@ -850,6 +890,7 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
     std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
     TriggerSource source) {
   VLOG(2) << __func__;
+  base::Uuid sync_tab_group_id = id_pair.first;
 
   // When a group is deleted, there's no more need to keep any "was locally
   // closed" pref entry around.
@@ -859,23 +900,30 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
   // account_id has already been cleared here, which is fragile. Ideally,
   // HandleTabGroupRemoved() would receive a "reason" param, where one of the
   // possible values would be "signout".
-  RemoveLocallyClosedGroupIdFromPref(id_pair.first);
+  RemoveLocallyClosedGroupIdFromPref(sync_tab_group_id);
+
+  // Clean up from the list of shared groups waiting for people group, if
+  // applicable.
+  std::erase_if(shared_tab_groups_waiting_for_collaboration_,
+                [&](const auto& entry) {
+                  return std::get<1>(entry) == sync_tab_group_id;
+                });
 
   if (is_initialized_) {
     for (auto& observer : observers_) {
-      observer.OnTabGroupRemoved(id_pair.first, source);
+      observer.OnTabGroupRemoved(sync_tab_group_id, source);
     }
   }
 
-  auto local_id = id_pair.second;
-  if (!local_id.has_value()) {
+  auto local_tab_group_id = id_pair.second;
+  if (!local_tab_group_id.has_value()) {
     return;
   }
 
   // For sync initiated deletions, cache the local ID in prefs until the group
   // is closed in the UI.
   if (source == TriggerSource::REMOTE) {
-    AddDeletedGroupIdToPref(local_id.value(), id_pair.first);
+    AddDeletedGroupIdToPref(local_tab_group_id.value(), sync_tab_group_id);
   }
 
   if (!is_initialized_) {
@@ -883,7 +931,7 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
   }
 
   for (auto& observer : observers_) {
-    observer.OnTabGroupRemoved(local_id.value(), source);
+    observer.OnTabGroupRemoved(local_tab_group_id.value(), source);
   }
 }
 
@@ -1007,6 +1055,22 @@ void TabGroupSyncServiceImpl::NotifyServiceInitialized() {
       base::BindOnce(&TabGroupSyncServiceImpl::RecordMetrics,
                      weak_ptr_factory_.GetWeakPtr()),
       kDelayBeforeMetricsLogged);
+}
+
+void TabGroupSyncServiceImpl::OnCollaborationAvailable(
+    const std::string& collaboration_id) {
+  // If there was a shared tab group waiting for the corresponding people group,
+  // proceed now to notify the UI.
+  auto iter = std::find_if(shared_tab_groups_waiting_for_collaboration_.begin(),
+                           shared_tab_groups_waiting_for_collaboration_.end(),
+                           [&](const auto& entry) {
+                             return std::get<0>(entry) == collaboration_id;
+                           });
+  if (iter != shared_tab_groups_waiting_for_collaboration_.end()) {
+    auto [unused, group_id, source] = std::move(*iter);
+    shared_tab_groups_waiting_for_collaboration_.erase(iter);
+    HandleTabGroupAdded(group_id, source);
+  }
 }
 
 void TabGroupSyncServiceImpl::UpdateAttributions(

@@ -55,6 +55,19 @@ static_library("core_internal") {
   }
 }
 
+source_set("collaboration_finder") {
+  sources = [
+    "collaboration_finder_impl.cc",
+    "collaboration_finder_impl.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
+  ]
+}
+
 static_library("messaging_internal") {
   sources = [
     "messaging/configuration.cc",
@@ -97,6 +110,7 @@ group("unit_tests") {
   visibility = [ "//components/collaboration:unit_tests" ]
 
   deps = [
+    ":collaboration_finder_unit_tests",
     ":core_unit_tests",
     ":messaging_unit_tests",
   ]
@@ -151,6 +165,21 @@ source_set("messaging_unit_tests") {
       "//components/saved_tab_groups/public:conversion_utils",
     ]
   }
+}
+
+source_set("collaboration_finder_unit_tests") {
+  testonly = true
+
+  sources = [ "collaboration_finder_impl_unittest.cc" ]
+
+  deps = [
+    ":collaboration_finder",
+    "//base/test:test_support",
+    "//components/data_sharing:test_support",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
+    "//testing/gtest",
+  ]
 }
 
 if (is_android) {

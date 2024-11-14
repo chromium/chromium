@@ -10,11 +10,13 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "collaboration_finder.h",
     "saved_tab_group.cc",
     "saved_tab_group.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
     "tab_group_sync_metrics_logger.h",
+    "tab_group_sync_service.cc",
     "tab_group_sync_service.h",
     "tab_group_sync_service_factory_helper.h",
     "types.cc",

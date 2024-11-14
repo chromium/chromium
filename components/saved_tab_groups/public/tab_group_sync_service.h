@@ -30,6 +30,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tab_groups {
+class CollaborationFinder;
 class TabGroupSyncDelegate;
 class TabGroupSyncMetricsLogger;
 
@@ -263,6 +264,10 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // service init as we need to explicitly un-initialize the service for these
   // scenarios.
   virtual void SetIsInitializedForTesting(bool initialized) {}
+
+  // For testing only. This is needed to test shared tab groups flow without
+  // depending on real people groups from data sharing service backend.
+  virtual CollaborationFinder* GetCollaborationFinderForTesting();
 };
 
 }  // namespace tab_groups

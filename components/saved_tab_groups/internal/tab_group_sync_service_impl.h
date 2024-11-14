@@ -21,6 +21,7 @@
 #include "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_coordinator.h"
+#include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -36,6 +37,7 @@ struct SyncDataTypeConfiguration;
 // The internal implementation of the TabGroupSyncService.
 class TabGroupSyncServiceImpl : public TabGroupSyncService,
                                 public SavedTabGroupModelObserver,
+                                public CollaborationFinder::Client,
                                 public signin::IdentityManager::Observer {
  public:
   // `saved_tab_group_configuration` must not be `nullptr`.
@@ -47,7 +49,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       PrefService* pref_service,
       std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      std::unique_ptr<CollaborationFinder> collaboration_finder);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.
@@ -143,8 +146,12 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
+  // tab_groups::CollaborationFinder::Client:
+  void OnCollaborationAvailable(const std::string& collaboration_id) override;
+
   // For testing only.
   void SetIsInitializedForTesting(bool initialized) override;
+  CollaborationFinder* GetCollaborationFinderForTesting() override;
 
   // Called to set a coordinator that will manage all interactions with the tab
   // model UI layer.
@@ -251,6 +258,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // Helper class for logging metrics.
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
 
+  // For finding collaboration availability info from DataSharingService.
+  std::unique_ptr<CollaborationFinder> collaboration_finder_;
+
   // The pref service for storing migration status.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
@@ -262,6 +272,14 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // from sync. UI can't handle these groups, hence the service needs to wait
   // before notifying the observers.
   std::set<base::Uuid> empty_groups_;
+
+  // Keeps track of shared tab groups that are waiting for their respective
+  // people groups to be available in DataSharingService backend. UI can't
+  // handle these groups, hence the service needs to wait before notifying the
+  // observers. Once the group becomes available, OnTabGroupAdded() will be
+  // invoked for the shared tab group.
+  std::vector<std::tuple<std::string, base::Uuid, TriggerSource>>
+      shared_tab_groups_waiting_for_collaboration_;
 
   // Obsevers of the model.
   base::ObserverList<TabGroupSyncService::Observer> observers_;

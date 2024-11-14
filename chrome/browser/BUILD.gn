@@ -2020,6 +2020,7 @@ static_library("browser") {
     "//components/client_hints/browser",
     "//components/cloud_devices/common",
     "//components/collaboration/internal",
+    "//components/collaboration/internal:collaboration_finder",
     "//components/collaboration/public",
     "//components/color",
     "//components/commerce/content/browser:browser",

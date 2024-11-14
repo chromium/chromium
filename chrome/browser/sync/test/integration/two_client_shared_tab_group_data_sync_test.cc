@@ -10,6 +10,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -45,6 +46,7 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
     // filtration of local entities on GetUpdates).
     GetFakeServer()->AddCollaboration(kCollaborationId);
   }
+
   ~TwoClientSharedTabGroupDataSyncTest() override = default;
 
   TabGroupSyncService* GetTabGroupSyncService(int profile_index) const {
@@ -92,6 +94,14 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
 #endif
   }
 
+  void FakeCollaborationAvailable(int profile_index,
+                                  const std::string& collaborationId) {
+    CollaborationFinder* collaboration_finder =
+        GetTabGroupSyncService(profile_index)
+            ->GetCollaborationFinderForTesting();
+    collaboration_finder->SetCollaborationAvailableForTesting(collaborationId);
+  }
+
  private:
   base::test::ScopedFeatureList feature_overrides_;
 };
@@ -99,6 +109,8 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                        ShouldSyncGroupWithTabs) {
   ASSERT_TRUE(SetupSync());
+  FakeCollaborationAvailable(0, kCollaborationId);
+  FakeCollaborationAvailable(1, kCollaborationId);
 
   SavedTabGroup group(u"title", TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -124,6 +136,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                        ShouldSyncTabPositions) {
   ASSERT_TRUE(SetupSync());
+  FakeCollaborationAvailable(0, kCollaborationId);
+  FakeCollaborationAvailable(1, kCollaborationId);
 
   SavedTabGroup group(u"title", TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);

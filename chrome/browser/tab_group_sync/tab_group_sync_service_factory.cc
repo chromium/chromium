@@ -8,6 +8,7 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/common/channel_info.h"
+#include "components/collaboration/internal/collaboration_finder_impl.h"
 #include "components/data_sharing/public/features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/saved_tab_groups/delegate/empty_tab_group_sync_delegate.h"
@@ -64,6 +66,7 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
   // The dependency on IdentityManager is only for the purpose of recording "on
   // signin" metrics.
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -79,13 +82,17 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  auto collaboration_finder =
+      std::make_unique<collaboration::CollaborationFinderImpl>(
+          data_sharing::DataSharingServiceFactory::GetForProfile(profile));
   auto service = CreateTabGroupSyncService(
       chrome::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
       pref_service,
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile),
+      std::move(collaboration_finder));
 
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

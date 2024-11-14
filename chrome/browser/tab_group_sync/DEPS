@@ -4,6 +4,7 @@ include_rules = [
 
 specific_include_rules = {
   'tab_group_sync_service_factory.cc': [
+    "+components/collaboration/internal/collaboration_finder_impl.h",
     "+components/saved_tab_groups",
   ],
 
