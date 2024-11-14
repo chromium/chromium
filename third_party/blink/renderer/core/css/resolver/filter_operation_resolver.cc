@@ -139,10 +139,21 @@ double FilterOperationResolver::ResolveNumericArgumentForFunction(
     case CSSValueID::kOpacity: {
       if (filter.length() == 1) {
         const CSSPrimitiveValue& value = To<CSSPrimitiveValue>(filter.Item(0));
+        double computed_value;
         if (value.IsPercentage()) {
-          return value.ComputePercentage(length_resolver) / 100;
+          computed_value = value.ComputePercentage(length_resolver) / 100;
+        } else {
+          computed_value = value.ComputeNumber(length_resolver);
         }
-        return value.ComputeNumber(length_resolver);
+        if (filter.FunctionType() != CSSValueID::kBrightness &&
+            filter.FunctionType() != CSSValueID::kSaturate &&
+            filter.FunctionType() != CSSValueID::kContrast) {
+          // Most values will be clamped at parse time, but the ones within
+          // calc() will not, so we need to clamp them again here.
+          return std::clamp(computed_value, 0.0, 1.0);
+        } else {
+          return computed_value;
+        }
       }
       return 1;
     }

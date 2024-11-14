@@ -764,7 +764,13 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
           parsed_value = ConsumeNumber(
               stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
         }
-        if (parsed_value && filter_type != CSSValueID::kSaturate &&
+        // NOTE: calc() values should not be attempted evaluated parse-time,
+        // and will be clamped in
+        // FilterOperationResolver::ResolveNumericArgumentForFunction() instead,
+        // when we can resolve e.g. length units.
+        if (parsed_value &&
+            !To<CSSPrimitiveValue>(parsed_value)->IsCalculated() &&
+            filter_type != CSSValueID::kSaturate &&
             filter_type != CSSValueID::kContrast) {
           bool is_percentage =
               To<CSSPrimitiveValue>(parsed_value)->IsPercentage();
