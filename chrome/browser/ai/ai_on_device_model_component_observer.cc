@@ -34,6 +34,8 @@ void AIOnDeviceModelComponentObserver::OnEvent(
 
   if (item.state == update_client::ComponentState::kDownloading ||
       item.state == update_client::ComponentState::kDownloadingDiff ||
+      item.state == update_client::ComponentState::kUpdating ||
+      item.state == update_client::ComponentState::kUpdatingDiff ||
       item.state == update_client::ComponentState::kUpToDate) {
     if (item.downloaded_bytes >= 0 && item.total_bytes >= 0) {
       ai_manager_->OnTextModelDownloadProgressChange(
