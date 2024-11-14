@@ -1,5 +1,5 @@
 //components/safe_browsing is a layered component
-(https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
+(https://www.chromium.org/developers/design-documents/layered-components-design/)
 to enable it to be shared cleanly on iOS.
 
 The component has the following structure:
