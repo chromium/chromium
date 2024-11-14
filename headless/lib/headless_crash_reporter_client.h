@@ -28,11 +28,7 @@ class HeadlessCrashReporterClient : public crash_reporter::CrashReporterClient {
   }
   const base::FilePath& crash_dumps_dir() const { return crash_dumps_dir_; }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-  void GetProductNameAndVersion(std::string* product_name,
-                                std::string* version,
-                                std::string* channel) override;
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+  void GetProductInfo(ProductInfo* product_info) override;
 
 #if BUILDFLAG(IS_WIN)
   bool GetCrashDumpLocation(std::wstring* crash_dir) override;
