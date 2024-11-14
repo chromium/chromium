@@ -145,6 +145,10 @@ def _format_attribute_list(node, indent, newline=True):
                 lw.write('"')
                 lw.write(attr.value.replace('"', '\\"'))
                 lw.write('"')
+            elif isinstance(attr.value, ast.AttributeValueOrList):
+                lw.write('|'.join(x.name for x in attr.value))
+            elif isinstance(attr.value, ast.AttributeValueAndList):
+                lw.write('&'.join(x.name for x in attr.value))
             else:
                 raise ValueError(
                     f'Unxpected value type {type(attr.value)} for {attr}')
