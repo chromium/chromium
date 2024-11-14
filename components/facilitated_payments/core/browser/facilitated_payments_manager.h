@@ -100,15 +100,14 @@ class FacilitatedPaymentsManager {
                            ShowsPixPaymentPromptWhenApiClientAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ShowsPixPaymentPrompt_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      PixPaymentPromptNotAccepted_LoadRiskDataNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           OnPixPaymentPromptResult_FopSelectorDeclined);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RiskDataNotEmpty_HistogramsLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RiskDataEmpty_HistogramsLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PixPaymentPromptAccepted_TriggersLoadRiskData);
+                           OnPixPaymentPromptResult_FopSelected);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PayflowExitedReason_RiskDataEmpty);
   FRIEND_TEST_ALL_PREFIXES(
@@ -120,10 +119,6 @@ class FacilitatedPaymentsManager {
                            LogGetClientTokenResultAndLatency);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PayflowExitedReason_ClientTokenNotAvailable);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PixPaymentPromptAccepted_ProgressSceenShown);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PixPaymentPromptRejected_ProgressSceenNotShown);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            OnGetClientToken_ClientTokenEmpty_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(

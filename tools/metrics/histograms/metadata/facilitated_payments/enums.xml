@@ -23,6 +23,16 @@ reviewer.
 
 <enums>
 
+<!-- LINT.IfChange(FacilitatedPayments.FopSelectorAction) -->
+
+<enum name="FacilitatedPayments.FopSelectorAction">
+  <int value="0" label="FOP selected."/>
+  <int value="1" label="Turn off payment prompt link clicked."/>
+  <int value="2" label="Manage payment methods option selected."/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h:FopSelectorAction) -->
+
 <enum name="FacilitatedPayments.PayFlowExitedReason">
   <int value="0" label="Code validator failed"/>
   <int value="1" label="Invalid code"/>

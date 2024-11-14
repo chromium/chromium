@@ -123,6 +123,23 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.FopSelector.UserAction"
+    enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for {FacilitatedPaymentsType} transactions on
+    Chrome, this histogram logs user actions on the {FacilitatedPaymentsType}
+    FOP selector. [Frequency] Logged once per {FacilitatedPaymentsType} payflow.
+    {FacilitatedPaymentsType} payflow is triggered at most once per page load.
+    [Trigger] User interacts with the {FacilitatedPaymentsType} FOP selector.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>

@@ -194,7 +194,7 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
                          ukm_source_id_);
     return;
   }
-
+  LogFopSelected();
   ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;

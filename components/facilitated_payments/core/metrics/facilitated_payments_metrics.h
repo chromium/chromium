@@ -80,6 +80,9 @@ enum class TriggerSource {
 // website.
 void LogPixCodeCopied();
 
+// Log when user selects a FOP to pay with.
+void LogFopSelected();
+
 // Log the result and latency for validating a payment code using
 // `data_decoder::DataDecoder`.
 void LogPaymentCodeValidationResultAndLatency(

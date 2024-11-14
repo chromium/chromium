@@ -181,24 +181,43 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnApiAvailabilityReceived(true);
 }
 
-// If the user does not select a payment account in the payment prompt, request
-// for risk data is not made.
+// If the user does not select a payment account on the payment prompt,
+// 1. Request for risk data is not made.
+// 2. Progress screen is not shown.
+// 3. Histogram is not logged.
 TEST_F(FacilitatedPaymentsManagerTest,
-       PixPaymentPromptNotAccepted_LoadRiskDataNotTriggered) {
+       OnPixPaymentPromptResult_FopSelectorDeclined) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, ShowProgressScreen()).Times(0);
   EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
 
   manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
                                      /*selected_instrument_id=*/0);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelector.UserAction",
+      /*sample=*/FopSelectorAction::kFopSelected,
+      /*expected_bucket_count=*/0);
 }
 
-// If the user selects a payment account in the payment prompt, request for risk
-// data is made.
-TEST_F(FacilitatedPaymentsManagerTest,
-       PixPaymentPromptAccepted_TriggersLoadRiskData) {
+// If the user selects a payment account on the payment prompt,
+// 1. Request for risk data is made.
+// 2. Progress screen is shown.
+// 3. Histogram is logged.
+TEST_F(FacilitatedPaymentsManagerTest, OnPixPaymentPromptResult_FopSelected) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, ShowProgressScreen());
   EXPECT_CALL(*client_, LoadRiskData(testing::_));
 
   manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
                                      /*selected_instrument_id=*/0);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelector.UserAction",
+      /*sample=*/FopSelectorAction::kFopSelected,
+      /*expected_bucket_count=*/1);
 }
 
 // Verify risk data metrics are logged when risk data is fetched successfully.
@@ -295,22 +314,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
       "FacilitatedPayments.Pix.PayflowExitedReason",
       /*sample=*/PayflowExitedReason::kClientTokenNotAvailable,
       /*expected_bucket_count=*/1);
-}
-
-TEST_F(FacilitatedPaymentsManagerTest,
-       PixPaymentPromptAccepted_ProgressSceenShown) {
-  EXPECT_CALL(*client_, ShowProgressScreen());
-
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                     /*selected_instrument_id=*/-1);
-}
-
-TEST_F(FacilitatedPaymentsManagerTest,
-       PixPaymentPromptRejected_ProgressSceenNotShown) {
-  EXPECT_CALL(*client_, ShowProgressScreen()).Times(0);
-
-  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
-                                     /*selected_instrument_id=*/-1);
 }
 
 TEST_F(FacilitatedPaymentsManagerTest,

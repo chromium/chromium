@@ -46,6 +46,29 @@ enum class UiEvent {
   kMaxValue = kScreenClosedByUser,
 };
 
+// This enum is used to denote user actions on the FOP selector.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FopSelectorAction)
+//
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.facilitated_payments.core.ui_utils)
+enum class FopSelectorAction {
+  // User selected a FOP for payment.
+  kFopSelected = 0,
+  // User clicked on the link to disable payment for the type of FOP shown in
+  // the FOP selector. The link takes them to the settings page where the type
+  // of FOPs shown can be managed.
+  kTurnOffPaymentPromptLinkClicked = 1,
+  // User selected the "Manage payment accounts" option. This takes them to
+  // Chrome's Payments settings page.
+  kManagePaymentMethodsOptionSelected = 2,
+  kMaxValue = kManagePaymentMethodsOptionSelected,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.FopSelectorAction)
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_UI_UTILS_FACILITATED_PAYMENTS_UI_UTILS_H_
