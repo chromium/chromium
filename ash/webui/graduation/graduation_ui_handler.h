@@ -11,8 +11,13 @@
 #include "ash/webui/graduation/graduation_state_tracker.h"
 #include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash::graduation {
 
@@ -37,7 +42,8 @@ class GraduationUiHandler : public graduation_ui::mojom::GraduationUiHandler {
 
   GraduationUiHandler(
       mojo::PendingReceiver<graduation_ui::mojom::GraduationUiHandler> receiver,
-      std::unique_ptr<WebviewAuthHandler> auth_handler);
+      std::unique_ptr<WebviewAuthHandler> auth_handler,
+      const user_manager::User& user);
 
   GraduationUiHandler(const GraduationUiHandler&) = delete;
   GraduationUiHandler& operator=(const GraduationUiHandler&) = delete;
@@ -59,6 +65,7 @@ class GraduationUiHandler : public graduation_ui::mojom::GraduationUiHandler {
 
   // Helper for authenticating webview.
   std::unique_ptr<WebviewAuthHandler> auth_handler_;
+  const raw_ref<const user_manager::User> user_;
 
   // Tracks the current state of the flow, used for metrics.
   GraduationStateTracker state_tracker_;

@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image.h"
@@ -36,9 +35,11 @@ WebviewAuthHandler* GraduationUiHandler::TestApi::GetWebviewAuthHandler() {
 
 GraduationUiHandler::GraduationUiHandler(
     mojo::PendingReceiver<graduation_ui::mojom::GraduationUiHandler> receiver,
-    std::unique_ptr<WebviewAuthHandler> auth_handler)
+    std::unique_ptr<WebviewAuthHandler> auth_handler,
+    const user_manager::User& user)
     : receiver_(this, std::move(receiver)),
-      auth_handler_(std::move(auth_handler)) {
+      auth_handler_(std::move(auth_handler)),
+      user_(user) {
   CHECK(auth_handler_);
 }
 
@@ -52,15 +53,10 @@ void GraduationUiHandler::AuthenticateWebview(
 }
 
 void GraduationUiHandler::GetProfileInfo(GetProfileInfoCallback callback) {
-  const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(active_user);
-
-  const gfx::ImageSkia icon = active_user->GetImage();
-
   std::move(callback).Run(graduation_ui::mojom::ProfileInfo::New(
-      active_user->GetDisplayEmail(),
-      webui::GetBitmapDataUrl(icon.GetRepresentation(1.0f).GetBitmap())));
+      user_->GetDisplayEmail(),
+      webui::GetBitmapDataUrl(
+          user_->GetImage().GetRepresentation(1.0f).GetBitmap())));
 }
 
 void GraduationUiHandler::OnScreenSwitched(

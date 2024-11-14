@@ -50,18 +50,24 @@ class MockWebviewAuthHandler : public WebviewAuthHandler {
 
 class GraduationUiHandlerTest : public testing::Test {
  public:
-  GraduationUiHandlerTest()
-      : handler_(std::make_unique<GraduationUiHandler>(
-            handler_remote_.BindNewPipeAndPassReceiver(),
-            std::make_unique<MockWebviewAuthHandler>(&test_context_,
-                                                     kWebviewHostName))) {}
-
+  GraduationUiHandlerTest() = default;
   ~GraduationUiHandlerTest() override = default;
 
   void SetUp() override {
     auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kUserGaiaId);
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
-    fake_user_manager_->AddUser(account_id);
+    auto* user = fake_user_manager_->AddUser(account_id);
+
+    handler_ = std::make_unique<GraduationUiHandler>(
+        handler_remote_.BindNewPipeAndPassReceiver(),
+        std::make_unique<MockWebviewAuthHandler>(&test_context_,
+                                                 kWebviewHostName),
+        *user);
+  }
+
+  void TearDown() override {
+    handler_.reset();
+    fake_user_manager_.Reset();
   }
 
   GraduationUiHandler* handler() { return handler_.get(); }
@@ -72,9 +78,9 @@ class GraduationUiHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext test_context_;
   mojo::Remote<graduation_ui::mojom::GraduationUiHandler> handler_remote_;
-  std::unique_ptr<GraduationUiHandler> handler_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
+  std::unique_ptr<GraduationUiHandler> handler_;
 };
 
 TEST_F(GraduationUiHandlerTest, AuthenticateWebviewSuccess) {

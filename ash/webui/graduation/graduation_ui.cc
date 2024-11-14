@@ -24,8 +24,10 @@
 #include "ash/webui/graduation/webview_auth_handler.h"
 #include "ash/webui/grit/ash_graduation_resources.h"
 #include "ash/webui/grit/ash_graduation_resources_map.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -135,9 +137,11 @@ void GraduationUI::BindInterface(
   CHECK(context);
   const std::string host_name =
       web_ui()->GetWebContents()->GetVisibleURL().host();
-  auto auth_handler = std::make_unique<WebviewAuthHandler>(context, host_name);
-  ui_handler_ = std::make_unique<GraduationUiHandler>(std::move(receiver),
-                                                      std::move(auth_handler));
+  ui_handler_ = std::make_unique<GraduationUiHandler>(
+      std::move(receiver),
+      std::make_unique<WebviewAuthHandler>(context, host_name),
+      CHECK_DEREF(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context)));
 }
 
 void GraduationUI::BindInterface(
