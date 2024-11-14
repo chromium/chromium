@@ -1,0 +1,145 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome.cros.reporting.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// The message is used to upload the report of cloud policy valiation.
+// This message should be the same as
+// google3/wireless/android/enterprise/devicemanagement/proto/dm_api.proto?rcl=260212387&l=1435
+message PolicyValidationReportEvent {
+  reserved 5;
+
+  // A validation issue from validating a policy value that was contained in
+  // the payload of the policy fetch response.
+  string policy_type = 1;
+
+  // |policy_token| from the PolicyFetchResponse. This is used to identify the
+  // specific policy fetch event that triggered this validation report.
+  string policy_token = 2;
+
+  // Specifies the result type of the validation.
+  // Each enum value can correspond to one of three client behaviors (noted as
+  // 'Client behavior' in the comment for each enum value):
+  // - Unknown:
+  //     It is not known if the fetched policy blob was accepted or rejected.
+  // - Policy blob accepted:
+  //     The client has accepted and applied the fetched policy blob.
+  // - Policy blob rejected:
+  //     The client has completely rejected the fetched policy blob.
+  enum ValidationResultType {
+    // An enum value was received which is not known in this version of the
+    // proto.
+    // Client behavior: Unknown.
+    VALIDATION_RESULT_TYPE_ERROR_UNSPECIFIED = 0;
+
+    // Policy validated successfully.
+    // Client behavior: Policy blob accepted.
+    // Note: This result is here for completeness, the client will not send
+    // reports with this enum value.
+    VALIDATION_RESULT_TYPE_SUCCESS = 1;
+
+    // Bad signature on the initial key.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_BAD_INITIAL_SIGNATURE = 2;
+
+    // Bad signature.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_BAD_SIGNATURE = 3;
+
+    // Policy blob contains error code.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_ERROR_CODE_PRESENT = 4;
+
+    // Policy payload failed to decode.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_PAYLOAD_PARSE_ERROR = 5;
+
+    // Unexpected policy type.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_WRONG_POLICY_TYPE = 6;
+
+    // Unexpected settings entity id.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_WRONG_SETTINGS_ENTITY_ID = 7;
+
+    // Timestamp is missing or is older than the timestamp of the previous
+    // policy.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_BAD_TIMESTAMP = 8;
+
+    // DM token is empty or doesn't match.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_BAD_DM_TOKEN = 9;
+
+    // Device id is empty or doesn't match.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_BAD_DEVICE_ID = 10;
+
+    // Username doesn't match.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_BAD_USER = 11;
+
+    // Policy payload protobuf parse error.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_POLICY_PARSE_ERROR = 12;
+
+    // Policy key signature could not be verified using the hard-coded
+    // verification key.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_BAD_KEY_VERIFICATION_SIGNATURE = 13;
+
+    // There were validation warnings during validation of policy values in the
+    // payload. See |policy_value_validation_results|.
+    // Client behavior: Policy blob accepted.
+    VALIDATION_RESULT_TYPE_VALUE_WARNING = 14;
+
+    // There were validation errors during validation of policy values in the
+    // payload. There may also have been warnings. See
+    // |policy_value_validation_results| - that list will contain at least one
+    // payload validation errors, and zero or more payload validation warnings.
+    // Client behavior: Policy blob rejected.
+    VALIDATION_RESULT_TYPE_VALUE_ERROR = 15;
+  }
+
+  // The validation result.
+  ValidationResultType validation_result_type = 3;
+
+  // Value validation issues in the policy payload. Will be filled if
+  // |validation_result_type| is VALIDATION_RESULT_TYPE_VALUE_WARNING
+  // or VALIDATION_RESULT_TYPE_VALUE_ERROR.
+  repeated PolicyValueValidationIssue policy_value_validation_issues = 4;
+
+  // next ID: 6
+}
+
+// A validation issue from validating a policy value that was contained in
+// the payload of the policy fetch response.
+message PolicyValueValidationIssue {
+  // Policy name of the faulty value.
+  string policy_name = 1;
+
+  enum ValueValidationIssueSeverity {
+    // Default value for when a severity is not specified.
+    VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED = 0;
+
+    // This result is a warning. The policy blob has not been rejected.
+    VALUE_VALIDATION_ISSUE_SEVERITY_WARNING = 1;
+
+    // This result is an error. The policy blob was rejected completely and not
+    // updated on the device.
+    VALUE_VALIDATION_ISSUE_SEVERITY_ERROR = 2;
+  }
+
+  // Severity of this policy value validation result.
+  ValueValidationIssueSeverity severity = 2;
+
+  // Message containing detailed information about the value validation warning
+  // or error (e.g. type and specific location). This message is intended as
+  // debug information for developers (not localized).
+  string debug_message = 3;
+}
