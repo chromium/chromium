@@ -1103,7 +1103,7 @@ TEST_F(UserMediaClientTest, DefaultConstraintsPropagate) {
   EXPECT_EQ(EchoCancellationType::kEchoCancellationAec3,
             properties.echo_cancellation_type);
   EXPECT_FALSE(properties.goog_audio_mirroring);
-  EXPECT_TRUE(properties.goog_auto_gain_control);
+  EXPECT_TRUE(properties.auto_gain_control);
   EXPECT_TRUE(properties.goog_noise_suppression);
   EXPECT_TRUE(properties.goog_highpass_filter);
 
@@ -1156,7 +1156,7 @@ TEST_F(UserMediaClientTest, DefaultTabCapturePropagate) {
   EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
             properties.echo_cancellation_type);
   EXPECT_FALSE(properties.goog_audio_mirroring);
-  EXPECT_FALSE(properties.goog_auto_gain_control);
+  EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.goog_noise_suppression);
   EXPECT_FALSE(properties.goog_highpass_filter);
 
@@ -1207,7 +1207,7 @@ TEST_F(UserMediaClientTest, DefaultDesktopCapturePropagate) {
   EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
             properties.echo_cancellation_type);
   EXPECT_FALSE(properties.goog_audio_mirroring);
-  EXPECT_FALSE(properties.goog_auto_gain_control);
+  EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.goog_noise_suppression);
   EXPECT_FALSE(properties.goog_highpass_filter);
 
@@ -1272,7 +1272,7 @@ TEST_F(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
   EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
             properties.echo_cancellation_type);
   EXPECT_TRUE(properties.goog_audio_mirroring);
-  EXPECT_FALSE(properties.goog_auto_gain_control);
+  EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.goog_noise_suppression);
   EXPECT_FALSE(properties.goog_highpass_filter);
 }

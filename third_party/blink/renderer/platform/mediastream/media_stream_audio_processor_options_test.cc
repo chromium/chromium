@@ -42,7 +42,7 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
       .echo_cancellation_type = AudioProcessingProperties::
           EchoCancellationType::kEchoCancellationAec3,
       .goog_audio_mirroring = true,
-      .goog_auto_gain_control = true,
+      .auto_gain_control = true,
       .goog_noise_suppression = true,
       .goog_highpass_filter = true};
   const media::AudioProcessingSettings settings =
@@ -107,7 +107,7 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
 TEST(AudioProcessingPropertiesTest,
      GainControlEnabledReturnsTrueIfBrowserAgcEnabled) {
   constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
-      .goog_auto_gain_control = true};
+      .auto_gain_control = true};
   EXPECT_TRUE(kPropertiesWithBrowserAgc.GainControlEnabled());
 }
 
@@ -115,7 +115,7 @@ TEST(AudioProcessingPropertiesTest,
      GainControlEnabledReturnsTrueIfSystemAgcEnabled) {
   constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
       .system_gain_control_activated = true,
-      .goog_auto_gain_control = true,
+      .auto_gain_control = true,
   };
   EXPECT_TRUE(kPropertiesWithBrowserAgc.GainControlEnabled());
 }
@@ -123,7 +123,7 @@ TEST(AudioProcessingPropertiesTest,
 TEST(AudioProcessingPropertiesTest,
      GainControlEnabledReturnsFalseIfAgcDisabled) {
   constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
-      .goog_auto_gain_control = false};
+      .auto_gain_control = false};
   EXPECT_FALSE(kPropertiesWithBrowserAgc.GainControlEnabled());
 }
 

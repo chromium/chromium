@@ -8,7 +8,7 @@ namespace blink {
 
 void AudioProcessingProperties::DisableDefaultProperties() {
   echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled;
-  goog_auto_gain_control = false;
+  auto_gain_control = false;
   goog_noise_suppression = false;
   goog_highpass_filter = false;
   voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
@@ -32,14 +32,14 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
     const AudioProcessingProperties& other) const {
   return disable_hw_noise_suppression == other.disable_hw_noise_suppression &&
          goog_audio_mirroring == other.goog_audio_mirroring &&
-         goog_auto_gain_control == other.goog_auto_gain_control &&
+         auto_gain_control == other.auto_gain_control &&
          goog_noise_suppression == other.goog_noise_suppression &&
          goog_highpass_filter == other.goog_highpass_filter &&
          voice_isolation == other.voice_isolation;
 }
 
 bool AudioProcessingProperties::GainControlEnabled() const {
-  return goog_auto_gain_control;
+  return auto_gain_control;
 }
 
 media::AudioProcessingSettings
@@ -52,7 +52,7 @@ AudioProcessingProperties::ToAudioProcessingSettings(
       goog_noise_suppression && !system_noise_suppression_activated;
 
   out.automatic_gain_control =
-      goog_auto_gain_control && !system_gain_control_activated;
+      auto_gain_control && !system_gain_control_activated;
 
   out.high_pass_filter = goog_highpass_filter;
   out.multi_channel_capture_processing = multi_channel_capture_processing;

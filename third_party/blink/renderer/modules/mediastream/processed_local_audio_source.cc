@@ -83,13 +83,13 @@ std::string GetAudioProcesingPropertiesLogString(
       "aec: %s, "
       "disable_hw_ns: %s, "
       "goog_audio_mirroring: %s, "
-      "goog_auto_gain_control: %s, "
+      "auto_gain_control: %s, "
       "goog_noise_suppression: %s, "
       "goog_highpass_filter: %s, ",
       aec_to_string(properties.echo_cancellation_type),
       bool_to_string(properties.disable_hw_noise_suppression),
       bool_to_string(properties.goog_audio_mirroring),
-      bool_to_string(properties.goog_auto_gain_control),
+      bool_to_string(properties.auto_gain_control),
       bool_to_string(properties.goog_noise_suppression),
       bool_to_string(properties.goog_highpass_filter));
   return str;
@@ -284,7 +284,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     // that.
     disable_system_automatic_gain_control =
         disable_system_automatic_gain_control ||
-        !audio_processing_properties_.goog_auto_gain_control;
+        !audio_processing_properties_.auto_gain_control;
 
     if (disable_system_automatic_gain_control) {
       modified_device.input.set_effects(
@@ -387,7 +387,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
       }
     }
 
-    if (audio_processing_properties_.goog_auto_gain_control) {
+    if (audio_processing_properties_.auto_gain_control) {
       audio_processing_properties_.system_gain_control_activated =
           device().input.effects() &
           media::AudioParameters::AUTOMATIC_GAIN_CONTROL;

@@ -92,7 +92,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   bool IsDeviceCapture() { return GetMediaStreamSource().empty(); }
   static AudioPropertiesBoolMembers GetAudioProcessingProperties() {
     return {&AudioProcessingProperties::goog_audio_mirroring,
-            &AudioProcessingProperties::goog_auto_gain_control,
+            &AudioProcessingProperties::auto_gain_control,
             &AudioProcessingProperties::goog_noise_suppression,
             &AudioProcessingProperties::goog_highpass_filter};
   }
@@ -203,8 +203,8 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
       EXPECT_FALSE(properties.goog_audio_mirroring);
     }
     if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_auto_gain_control)) {
-      EXPECT_TRUE(properties.goog_auto_gain_control);
+                  &AudioProcessingProperties::auto_gain_control)) {
+      EXPECT_TRUE(properties.auto_gain_control);
     }
     if (!Contains(exclude_audio_properties,
                   &AudioProcessingProperties::goog_noise_suppression)) {
@@ -236,8 +236,8 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
       EXPECT_FALSE(properties.goog_audio_mirroring);
     }
     if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_auto_gain_control)) {
-      EXPECT_FALSE(properties.goog_auto_gain_control);
+                  &AudioProcessingProperties::auto_gain_control)) {
+      EXPECT_FALSE(properties.auto_gain_control);
     }
     if (!Contains(exclude_audio_properties,
                   &AudioProcessingProperties::goog_noise_suppression)) {
@@ -327,7 +327,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
     EXPECT_EQ(EchoCancellationType::kEchoCancellationSystem,
               properties.echo_cancellation_type);
-    EXPECT_TRUE(properties.goog_auto_gain_control);
+    EXPECT_TRUE(properties.auto_gain_control);
     EXPECT_TRUE(properties.goog_noise_suppression);
     EXPECT_TRUE(properties.goog_highpass_filter);
 
@@ -623,7 +623,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
   const WTF::Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
       kAudioProcessingConstraints = {
           &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
-          &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
+          &MediaTrackConstraintSetPlatform::auto_gain_control,
           &MediaTrackConstraintSetPlatform::goog_noise_suppression,
           &MediaTrackConstraintSetPlatform::goog_highpass_filter,
       };
@@ -1331,8 +1331,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithWebRtc) {
                   properties.echo_cancellation_type);
         const bool enable_webrtc_audio_processing =
             IsDeviceCapture() ? value : false;
-        EXPECT_EQ(enable_webrtc_audio_processing,
-                  properties.goog_auto_gain_control);
+        EXPECT_EQ(enable_webrtc_audio_processing, properties.auto_gain_control);
         EXPECT_EQ(enable_webrtc_audio_processing,
                   properties.goog_noise_suppression);
         EXPECT_EQ(enable_webrtc_audio_processing,
@@ -1390,7 +1389,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithSystem) {
                   : EchoCancellationType::kEchoCancellationDisabled;
         EXPECT_EQ(expected_echo_cancellation_type,
                   properties.echo_cancellation_type);
-        EXPECT_EQ(value, properties.goog_auto_gain_control);
+        EXPECT_EQ(value, properties.auto_gain_control);
         EXPECT_EQ(value, properties.goog_noise_suppression);
         EXPECT_EQ(value, properties.goog_highpass_filter);
 
@@ -1413,7 +1412,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   const WTF::Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
       kAudioProcessingConstraints = {
           &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
-          &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
+          &MediaTrackConstraintSetPlatform::auto_gain_control,
           &MediaTrackConstraintSetPlatform::goog_noise_suppression,
           &MediaTrackConstraintSetPlatform::goog_highpass_filter,
       };
@@ -1668,7 +1667,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
       properties.echo_cancellation_type =
           EchoCancellationType::kEchoCancellationDisabled;
       properties.goog_audio_mirroring = !properties.goog_audio_mirroring;
-      properties.goog_auto_gain_control = !properties.goog_auto_gain_control;
+      properties.auto_gain_control = !properties.auto_gain_control;
       properties.goog_noise_suppression = !properties.goog_noise_suppression;
       properties.goog_highpass_filter = !properties.goog_highpass_filter;
     }
@@ -1681,7 +1680,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
         blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
         kAudioProcessingConstraints = {
             &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
-            &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
+            &MediaTrackConstraintSetPlatform::auto_gain_control,
             &MediaTrackConstraintSetPlatform::goog_noise_suppression,
             &MediaTrackConstraintSetPlatform::goog_highpass_filter,
         };

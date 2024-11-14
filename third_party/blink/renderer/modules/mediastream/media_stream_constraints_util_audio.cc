@@ -480,7 +480,7 @@ class EchoCancellationContainer {
     bool default_audio_processing_value =
         GetDefaultValueForAudioProperties(echo_cancellation_constraint);
 
-    properties->goog_auto_gain_control &= default_audio_processing_value;
+    properties->auto_gain_control &= default_audio_processing_value;
 
     properties->goog_noise_suppression &= default_audio_processing_value;
     properties->voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
@@ -629,17 +629,16 @@ class AutoGainControlContainer {
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
     BoolSet agc_set = blink::media_constraints::BoolSetFromConstraint(
-        constraint_set.goog_auto_gain_control);
+        constraint_set.auto_gain_control);
     // Apply autoGainControl/googAutoGainControl constraint.
     allowed_values_ = allowed_values_.Intersection(agc_set);
-    return IsEmpty() ? constraint_set.goog_auto_gain_control.GetName()
-                     : nullptr;
+    return IsEmpty() ? constraint_set.auto_gain_control.GetName() : nullptr;
   }
 
   std::tuple<double, bool> SelectSettingsAndScore(
       const ConstraintSet& constraint_set,
       bool default_setting) const {
-    BooleanConstraint agc_constraint = constraint_set.goog_auto_gain_control;
+    BooleanConstraint agc_constraint = constraint_set.auto_gain_control;
 
     if (agc_constraint.HasIdeal()) {
       bool agc_ideal = agc_constraint.Ideal();
@@ -915,9 +914,9 @@ class ProcessingBasedContainer {
     echo_cancellation_container_.UpdateDefaultValues(
         constraint_set.echo_cancellation, &properties);
 
-    std::tie(sub_score, properties.goog_auto_gain_control) =
+    std::tie(sub_score, properties.auto_gain_control) =
         auto_gain_control_container_.SelectSettingsAndScore(
-            constraint_set, properties.goog_auto_gain_control);
+            constraint_set, properties.auto_gain_control);
     score += sub_score;
 
     std::tie(sub_score, properties.voice_isolation) =
@@ -1047,7 +1046,7 @@ class ProcessingBasedContainer {
     // for this is that opening multiple instances of the APM is costly.
     // TODO(crbug.com/1147928): Consider removing this restriction.
     auto_gain_control_container_ = AutoGainControlContainer(
-        BoolSet({source_info.properties().goog_auto_gain_control}));
+        BoolSet({source_info.properties().auto_gain_control}));
 
     for (size_t i = 0; i < kNumBooleanContainerIds; ++i) {
       auto& info = kBooleanPropertyContainerInfoMap[i];

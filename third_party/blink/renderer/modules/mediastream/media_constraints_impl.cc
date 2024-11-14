@@ -212,7 +212,7 @@ static void ParseOldStyleNames(
       // https://crbug.com/576582
       result.render_to_associated_sink.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogAutoGainControl) {
-      result.goog_auto_gain_control.SetExact(ToBoolean(constraint.value_));
+      result.auto_gain_control.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogNoiseSuppression) {
       result.goog_noise_suppression.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogHighpassFilter) {
@@ -544,7 +544,7 @@ bool ValidateAndCopyConstraintSet(
 
   if (constraints_in->hasAutoGainControl()) {
     CopyBooleanConstraint(constraints_in->autoGainControl(), naked_treatment,
-                          constraint_buffer.goog_auto_gain_control);
+                          constraint_buffer.auto_gain_control);
   }
 
   if (constraints_in->hasNoiseSuppression()) {
@@ -860,9 +860,9 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setEchoCancellation(
         ConvertBoolean(input.echo_cancellation, naked_treatment));
   }
-  if (!input.goog_auto_gain_control.IsUnconstrained()) {
+  if (!input.auto_gain_control.IsUnconstrained()) {
     output->setAutoGainControl(
-        ConvertBoolean(input.goog_auto_gain_control, naked_treatment));
+        ConvertBoolean(input.auto_gain_control, naked_treatment));
   }
   if (!input.goog_noise_suppression.IsUnconstrained()) {
     output->setNoiseSuppression(

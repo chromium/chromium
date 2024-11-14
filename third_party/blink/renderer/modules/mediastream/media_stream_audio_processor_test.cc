@@ -813,7 +813,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
   test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
-  properties.goog_auto_gain_control = true;
+  properties.auto_gain_control = true;
   // WouldModifyAudio overrides this effect on iOS, but not the audio processor.
   // TODO(https://crbug.com/1269364): Make these functions behave consistently.
 #if !BUILDFLAG(IS_IOS)

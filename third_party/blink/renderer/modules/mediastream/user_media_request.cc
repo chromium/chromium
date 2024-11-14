@@ -226,8 +226,7 @@ void CountAudioConstraintUses(ExecutionContext* context,
         WebFeature::kMediaStreamConstraintsGoogExperimentalEchoCancellation);
   }
   if (RequestUsesDiscreteConstraint(
-          constraints,
-          &MediaTrackConstraintSetPlatform::goog_auto_gain_control)) {
+          constraints, &MediaTrackConstraintSetPlatform::auto_gain_control)) {
     counter.Count(WebFeature::kMediaStreamConstraintsGoogAutoGainControl);
   }
   if (RequestUsesDiscreteConstraint(

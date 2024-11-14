@@ -216,7 +216,7 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
     source->SetAudioProcessingProperties(
         properties.echo_cancellation_type !=
             EchoCancellationType::kEchoCancellationDisabled,
-        properties.goog_auto_gain_control, properties.goog_noise_suppression,
+        properties.auto_gain_control, properties.goog_noise_suppression,
         properties.voice_isolation ==
             AudioProcessingProperties::VoiceIsolationType::
                 kVoiceIsolationEnabled);

@@ -301,14 +301,14 @@ class ProcessedLocalAudioSourceIgnoreUiGainsTest
   void SetUpAudioProcessingProperties(AudioProcessingProperties* properties) {
     switch (std::get<1>(GetParam())) {
       case AGC_DISABLED:
-        properties->goog_auto_gain_control = false;
+        properties->auto_gain_control = false;
         break;
       case BROWSER_AGC:
-        properties->goog_auto_gain_control = true;
+        properties->auto_gain_control = true;
         properties->system_gain_control_activated = false;
         break;
       case SYSTEM_AGC:
-        properties->goog_auto_gain_control = true;
+        properties->auto_gain_control = true;
         properties->system_gain_control_activated = true;
         break;
     }
