@@ -57,11 +57,11 @@ StringView::~StringView() {
 
 // Helper to write a three-byte UTF-8 code point to the buffer, caller must
 // check room is available.
-static inline void PutUTF8Triple(char*& buffer, UChar ch) {
+static inline void PutUTF8Triple(base::span<uint8_t, 3u> buffer, UChar ch) {
   DCHECK_GE(ch, 0x0800);
-  *buffer++ = static_cast<char>(((ch >> 12) & 0x0F) | 0xE0);
-  *buffer++ = static_cast<char>(((ch >> 6) & 0x3F) | 0x80);
-  *buffer++ = static_cast<char>((ch & 0x3F) | 0x80);
+  buffer[0] = ((ch >> 12) & 0x0F) | 0xE0;
+  buffer[1] = ((ch >> 6) & 0x3F) | 0x80;
+  buffer[2] = (ch & 0x3F) | 0x80;
 }
 
 std::string StringView::Utf8(UTF8ConversionMode mode) const {
@@ -83,73 +83,78 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
   if (length > std::numeric_limits<unsigned>::max() / 3)
     return std::string();
   Vector<char, 1024> buffer_vector(length * 3);
-
-  char* buffer = buffer_vector.data();
+  size_t buffer_written = 0;
 
   if (Is8Bit()) {
     unicode::ConversionResult result = unicode::ConvertLatin1ToUTF8(
         Span8(), base::as_writable_byte_span(buffer_vector));
     // (length * 3) should be sufficient for any conversion
     DCHECK_NE(result.status, unicode::kTargetExhausted);
-    buffer += result.converted.size();
+    buffer_written = result.converted.size();
   } else {
-    const UChar* characters = Characters16();
+    base::span<const UChar> characters = Span16();
+    base::span<uint8_t> buffer(base::as_writable_byte_span(buffer_vector));
 
     if (mode == kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD) {
-      const UChar* characters_end = characters + length;
-      char* buffer_end = buffer + buffer_vector.size();
-      while (characters < characters_end) {
+      while (!characters.empty()) {
         // Use strict conversion to detect unpaired surrogates.
-        unicode::ConversionStatus result = unicode::ConvertUTF16ToUTF8(
-            &characters, characters_end, &buffer, buffer_end, true);
-        DCHECK_NE(result, unicode::kTargetExhausted);
+        unicode::ConversionResult result =
+            unicode::ConvertUTF16ToUTF8(characters, buffer, true);
+        DCHECK_NE(result.status, unicode::kTargetExhausted);
+        buffer = buffer.subspan(result.converted.size());
         // Conversion fails when there is an unpaired surrogate.  Put
         // replacement character (U+FFFD) instead of the unpaired
         // surrogate.
-        if (result != unicode::kConversionOK) {
-          DCHECK_LE(0xD800, *characters);
-          DCHECK_LE(*characters, 0xDFFF);
+        if (result.status != unicode::kConversionOK) {
+          DCHECK_LE(0xD800, characters[result.consumed]);
+          DCHECK_LE(characters[result.consumed], 0xDFFF);
           // There should be room left, since one UChar hasn't been
           // converted.
-          DCHECK_LE(buffer + 3, buffer_end);
-          PutUTF8Triple(buffer, kReplacementCharacter);
-          ++characters;
+          auto [replacement_buffer, rest] = buffer.split_at<3u>();
+          PutUTF8Triple(replacement_buffer, kReplacementCharacter);
+          buffer = rest;
+          result.consumed++;
         }
+        characters = characters.subspan(result.consumed);
       }
+      buffer_written = buffer_vector.size() - buffer.size();
     } else {
-      bool strict = mode == kStrictUTF8Conversion;
-      unicode::ConversionStatus result =
-          unicode::ConvertUTF16ToUTF8(&characters, characters + length, &buffer,
-                                      buffer + buffer_vector.size(), strict);
+      const bool strict = mode == kStrictUTF8Conversion;
+
+      unicode::ConversionResult result =
+          unicode::ConvertUTF16ToUTF8(characters, buffer, strict);
       // (length * 3) should be sufficient for any conversion
-      DCHECK_NE(result, unicode::kTargetExhausted);
+      DCHECK_NE(result.status, unicode::kTargetExhausted);
 
       // Only produced from strict conversion.
-      if (result == unicode::kSourceIllegal) {
+      if (result.status == unicode::kSourceIllegal) {
         DCHECK(strict);
         return std::string();
       }
 
       // Check for an unconverted high surrogate.
-      if (result == unicode::kSourceExhausted) {
+      if (result.status == unicode::kSourceExhausted) {
         if (strict)
           return std::string();
+        buffer = buffer.subspan(result.converted.size());
+
         // This should be one unpaired high surrogate. Treat it the same
         // was as an unpaired high surrogate would have been handled in
         // the middle of a string with non-strict conversion - which is
         // to say, simply encode it to UTF-8.
-        DCHECK_EQ(characters + 1, Characters16() + length);
-        DCHECK_GE(*characters, 0xD800);
-        DCHECK_LE(*characters, 0xDBFF);
+        DCHECK_EQ(result.consumed + 1, characters.size());
+        DCHECK_GE(characters[result.consumed], 0xD800);
+        DCHECK_LE(characters[result.consumed], 0xDBFF);
         // There should be room left, since one UChar hasn't been
         // converted.
-        DCHECK_LE(buffer + 3, buffer + buffer_vector.size());
-        PutUTF8Triple(buffer, *characters);
+        auto unpaired_surrogate_buffer = buffer.first<3u>();
+        PutUTF8Triple(unpaired_surrogate_buffer, characters[result.consumed]);
+        buffer_written = unpaired_surrogate_buffer.size();
       }
+      buffer_written += result.converted.size();
     }
   }
-
-  return std::string(buffer_vector.data(), buffer - buffer_vector.data());
+  return std::string(buffer_vector.data(), buffer_written);
 }
 
 bool StringView::ContainsOnlyASCIIOrEmpty() const {

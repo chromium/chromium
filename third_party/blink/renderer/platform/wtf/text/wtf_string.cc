@@ -473,17 +473,14 @@ String String::FromUTF8(base::span<const uint8_t> bytes) {
     return StringImpl::Create(bytes, attributes);
 
   Vector<UChar, 1024> buffer(length);
-  UChar* buffer_start = buffer.data();
 
-  UChar* buffer_current = buffer_start;
-  const char* string_current = reinterpret_cast<const char*>(string_start);
-  if (unicode::ConvertUTF8ToUTF16(
-          &string_current, reinterpret_cast<const char*>(string_start + length),
-          &buffer_current,
-          buffer_current + buffer.size()) != unicode::kConversionOK)
+  unicode::ConversionResult result =
+      unicode::ConvertUTF8ToUTF16(bytes, base::span(buffer));
+  if (result.status != unicode::kConversionOK) {
     return String();
+  }
 
-  return StringImpl::Create(base::span(buffer_start, buffer_current));
+  return StringImpl::Create(result.converted);
 }
 
 String String::FromUTF8(const char* s) {

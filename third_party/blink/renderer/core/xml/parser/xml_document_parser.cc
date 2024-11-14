@@ -1485,24 +1485,20 @@ static base::span<const char, N - 1> CopyToEntityBuffer(
 
 static base::span<const char> ConvertUTF16EntityToUTF8(
     const DecodedHTMLEntity& entity) {
-  DCHECK_LE(entity.length, 4u);
-  const UChar* utf16_entity = entity.data.data();
+  auto utf16_entity = base::span(entity.data).first(entity.length);
   auto entity_buffer =
-      base::as_writable_chars(base::span(g_shared_xhtml_entity_result));
-  char* target = entity_buffer.data();
-  const char* original_target = target;
-  WTF::unicode::ConversionStatus conversion_result =
-      WTF::unicode::ConvertUTF16ToUTF8(&utf16_entity,
-                                       utf16_entity + entity.length, &target,
-                                       target + entity_buffer.size());
-  if (conversion_result != WTF::unicode::kConversionOK)
+      base::as_writable_bytes(base::span(g_shared_xhtml_entity_result));
+  WTF::unicode::ConversionResult conversion_result =
+      WTF::unicode::ConvertUTF16ToUTF8(utf16_entity, entity_buffer);
+  if (conversion_result.status != WTF::unicode::kConversionOK) {
     return {};
+  }
 
-  DCHECK_GT(target, original_target);
+  DCHECK(!conversion_result.converted.empty());
   // Even though we must pass the length, libxml expects the entity string to be
   // null terminated.
-  *target = '\0';
-  return entity_buffer.first(static_cast<size_t>(target - original_target));
+  entity_buffer[conversion_result.converted.size()] = '\0';
+  return base::as_chars(conversion_result.converted);
 }
 
 static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {

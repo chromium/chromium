@@ -66,21 +66,19 @@ struct ConversionResult {
 // 0x10FFFF; in UTF-8, the 4-byte form is similarly unable to encode codepoints
 // higher than 0x10FFFF.
 
-WTF_EXPORT ConversionStatus ConvertUTF8ToUTF16(const char** source_start,
-                                               const char* source_end,
-                                               UChar** target_start,
-                                               UChar* target_end,
-                                               bool strict = true);
+WTF_EXPORT ConversionResult<UChar> ConvertUTF8ToUTF16(
+    base::span<const uint8_t> source,
+    base::span<UChar> target,
+    bool strict = true);
 
 WTF_EXPORT ConversionResult<uint8_t> ConvertLatin1ToUTF8(
     base::span<const LChar> source,
     base::span<uint8_t> target);
 
-WTF_EXPORT ConversionStatus ConvertUTF16ToUTF8(const UChar** source_start,
-                                               const UChar* source_end,
-                                               char** target_start,
-                                               char* target_end,
-                                               bool strict = true);
+WTF_EXPORT ConversionResult<uint8_t> ConvertUTF16ToUTF8(
+    base::span<const UChar> source,
+    base::span<uint8_t> target,
+    bool strict = true);
 
 // Returns the number of UTF-16 code points.
 WTF_EXPORT unsigned CalculateStringLengthFromUTF8(const char* data,

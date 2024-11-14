@@ -188,26 +188,22 @@ static inline void SetXSLTLoadCallBack(xsltDocLoaderFunc func,
 }
 
 static int WriteToStringBuilder(void* context, const char* buffer, int len) {
-  StringBuilder& result_output = *static_cast<StringBuilder*>(context);
-
   if (!len)
     return 0;
 
   StringBuffer<UChar> string_buffer(len);
-  UChar* buffer_u_char = string_buffer.Characters();
-  UChar* buffer_u_char_end = buffer_u_char + len;
 
-  const char* string_current = buffer;
-  WTF::unicode::ConversionStatus result = WTF::unicode::ConvertUTF8ToUTF16(
-      &string_current, buffer + len, &buffer_u_char, buffer_u_char_end);
-  if (result != WTF::unicode::kConversionOK &&
-      result != WTF::unicode::kSourceExhausted) {
-    NOTREACHED();
-  }
+  base::span<const uint8_t> source_buffer(
+      reinterpret_cast<const uint8_t*>(buffer),
+      base::checked_cast<size_t>(len));
+  WTF::unicode::ConversionResult result =
+      WTF::unicode::ConvertUTF8ToUTF16(source_buffer, string_buffer.Span());
+  CHECK(result.status == WTF::unicode::kConversionOK ||
+        result.status == WTF::unicode::kSourceExhausted);
 
-  result_output.Append(string_buffer.Span().first(
-      static_cast<size_t>(buffer_u_char - string_buffer.Characters())));
-  return static_cast<int>(string_current - buffer);
+  StringBuilder& result_output = *static_cast<StringBuilder*>(context);
+  result_output.Append(result.converted);
+  return base::checked_cast<int>(result.consumed);
 }
 
 static bool SaveResultToString(xmlDocPtr result_doc,
