@@ -9,15 +9,6 @@
 
 namespace blink {
 
-SkiaPngRustImageDecoder::SkiaPngRustImageDecoder(AlphaOption alpha_option,
-                                                 ColorBehavior color_behavior,
-                                                 wtf_size_t max_decoded_bytes,
-                                                 wtf_size_t offset)
-    : SkiaImageDecoderBase(alpha_option,
-                           color_behavior,
-                           max_decoded_bytes,
-                           offset) {}
-
 SkiaPngRustImageDecoder::~SkiaPngRustImageDecoder() = default;
 
 String SkiaPngRustImageDecoder::FilenameExtension() const {

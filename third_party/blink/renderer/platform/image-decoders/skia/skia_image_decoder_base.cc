@@ -48,12 +48,14 @@ ImageFrame::AlphaBlendSource ConvertAlphaBlendSource(
 
 }  // anonymous namespace
 
-SkiaImageDecoderBase::SkiaImageDecoderBase(AlphaOption alpha_option,
-                                           ColorBehavior color_behavior,
-                                           wtf_size_t max_decoded_bytes,
-                                           wtf_size_t reading_offset)
+SkiaImageDecoderBase::SkiaImageDecoderBase(
+    AlphaOption alpha_option,
+    ColorBehavior color_behavior,
+    wtf_size_t max_decoded_bytes,
+    wtf_size_t reading_offset,
+    HighBitDepthDecodingOption high_bit_depth_decoding_option)
     : ImageDecoder(alpha_option,
-                   ImageDecoder::kDefaultBitDepth,
+                   high_bit_depth_decoding_option,
                    color_behavior,
                    cc::AuxImage::kDefault,
                    max_decoded_bytes),
@@ -240,6 +242,13 @@ void SkiaImageDecoderBase::InitializeNewFrame(wtf_size_t index) {
   frame.SetRequiredPreviousFrameIndex(required_previous_frame_index);
   frame.SetDisposalMethod(ConvertDisposalMethod(frame_info.fDisposalMethod));
   frame.SetAlphaBlendSource(ConvertAlphaBlendSource(frame_info.fBlend));
+
+  if (high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat &&
+      ImageIsHighBitDepth()) {
+    frame.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
+  } else {
+    frame.SetPixelFormat(ImageFrame::PixelFormat::kN32);
+  }
 }
 
 void SkiaImageDecoderBase::Decode(wtf_size_t index) {
@@ -325,10 +334,21 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
         }
       }
 
+      SkColorType color_type = kUnknown_SkColorType;
+      switch (frame.GetPixelFormat()) {
+        case ImageFrame::PixelFormat::kRGBA_F16:
+          color_type = kRGBA_F16_SkColorType;
+          break;
+        case ImageFrame::PixelFormat::kN32:
+          color_type = kN32_SkColorType;
+          break;
+      }
+      DCHECK_NE(color_type, kUnknown_SkColorType);
+
       SkImageInfo image_info = codec_->getInfo()
-                                  .makeColorType(kN32_SkColorType)
-                                  .makeColorSpace(ColorSpaceForSkImages())
-                                  .makeAlphaType(alpha_type);
+                                   .makeColorType(color_type)
+                                   .makeColorSpace(ColorSpaceForSkImages())
+                                   .makeAlphaType(alpha_type);
 
       SkCodec::Options options;
       options.fFrameIndex = current_frame_index;

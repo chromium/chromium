@@ -22,10 +22,9 @@ std::unique_ptr<ImageDecoder> CreatePngImageDecoder(
     wtf_size_t offset) {
   if (skia::IsRustyPngEnabled()) {
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
-    // TODO(https://crbug.com/359350061): Stop ignoring
-    // `high_bit_depth_decoding_option`.
     return std::make_unique<SkiaPngRustImageDecoder>(
-        alpha_option, color_behavior, max_decoded_bytes, offset);
+        alpha_option, color_behavior, max_decoded_bytes, offset,
+        high_bit_depth_decoding_option);
 #else
     NOTREACHED();  // The `if` condition guarantees `ENABLE_RUST_PNG`.
 #endif

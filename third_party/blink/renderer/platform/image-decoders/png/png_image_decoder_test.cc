@@ -1381,12 +1381,6 @@ static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
   ASSERT_EQ(1u, decoder->FrameCount());
   ASSERT_EQ(kAnimationNone, decoder->RepetitionCount());
 
-  // TODO(https://crbug.com/359350061): Add high-bit support to `SkCodec`.
-  if (skia::IsRustyPngEnabled()) {
-    GTEST_SKIP() << "TODO(https://crbug.com/359350061): "
-                 << "Add high-bit support to `SkCodec`";
-  }
-
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
   ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
@@ -1575,6 +1569,8 @@ TEST_P(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
   FillPNGSamplesSourcePixels(png_samples);
   String path = "/images/resources/png-16bit/";
   for (PNGSample& png_sample : png_samples) {
+    SCOPED_TRACE(testing::Message()
+                 << "Testing '" << png_sample.filename << "'");
     String full_path = path + png_sample.filename;
     png_sample.png_contents = ReadFileToSharedBuffer(full_path);
     auto decoder = Create16BitPNGDecoder();

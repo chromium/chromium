@@ -15,10 +15,9 @@ namespace blink {
 class PLATFORM_EXPORT SkiaPngRustImageDecoder final
     : public SkiaImageDecoderBase {
  public:
-  SkiaPngRustImageDecoder(AlphaOption,
-                          ColorBehavior,
-                          wtf_size_t max_decoded_bytes,
-                          wtf_size_t offset);
+  // Exposing the same constructor as the base class:
+  using SkiaImageDecoderBase::SkiaImageDecoderBase;
+
   SkiaPngRustImageDecoder(const SkiaPngRustImageDecoder&) = delete;
   SkiaPngRustImageDecoder& operator=(const SkiaPngRustImageDecoder&) = delete;
   ~SkiaPngRustImageDecoder() override;

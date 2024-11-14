@@ -25,7 +25,10 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   SkiaImageDecoderBase(AlphaOption,
                        ColorBehavior,
                        wtf_size_t max_decoded_bytes,
-                       wtf_size_t reading_offset = kNoReadingOffset);
+                       wtf_size_t reading_offset = kNoReadingOffset,
+                       HighBitDepthDecodingOption bit_depth_option =
+                           HighBitDepthDecodingOption::kDefaultBitDepth);
+
   SkiaImageDecoderBase(const SkiaImageDecoderBase&) = delete;
   SkiaImageDecoderBase& operator=(const SkiaImageDecoderBase&) = delete;
   ~SkiaImageDecoderBase() override;
