@@ -10884,6 +10884,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5188" label="DocumentIsolationPolicyCredentialless"/>
   <int value="5189" label="ClipPathGeometryBox"/>
   <int value="5190" label="ActiveViewTransitionPseudo"/>
+  <int value="5191" label="ScrollFunctionTimeline"/>
+  <int value="5192" label="ViewFunctionTimeline"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33958,6 +33960,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="227" label="V8SetMethods"/>
   <int value="228" label="ScrollSnapEvent"/>
   <int value="229" label="MoveBeforeAPI"/>
+  <int value="230" label="ScrollDrivenAnimations"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

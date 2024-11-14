@@ -4562,6 +4562,8 @@ enum WebFeature {
   kDocumentIsolationPolicyCredentialless = 5188,
   kClipPathGeometryBox = 5189,
   kActiveViewTransitionPseudo = 5190,
+  kScrollFunctionTimeline = 5191,
+  kViewFunctionTimeline = 5192,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

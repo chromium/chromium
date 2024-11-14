@@ -1389,6 +1389,8 @@ ScrollTimeline* ComputeScrollFunctionTimeline(
     const StyleTimeline::ScrollData& scroll_data,
     AnimationTimeline* existing_timeline) {
   Document& document = element->GetDocument();
+  UseCounter::Count(element->GetDocument(),
+                    WebFeature::kScrollFunctionTimeline);
   CSSScrollTimelineOptions options(document, scroll_data.GetScroller(),
                                    /* reference_element */ element,
                                    scroll_data.GetAxis());
@@ -1406,6 +1408,7 @@ AnimationTimeline* ComputeViewFunctionTimeline(
     Element* element,
     const StyleTimeline::ViewData& view_data,
     AnimationTimeline* existing_timeline) {
+  UseCounter::Count(element->GetDocument(), WebFeature::kViewFunctionTimeline);
   TimelineAxis axis = view_data.GetAxis();
   const TimelineInset& inset = view_data.GetInset();
   CSSViewTimelineOptions options(element, axis, inset);

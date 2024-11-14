@@ -544,6 +544,14 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kActiveViewTransitionPseudo,
            WebDXFeature::kActiveViewTransition},
           {WebFeature::kSnapEvent, WebDXFeature::kScrollSnapEvent},
+          {WebFeature::kScrollTimelineConstructor,
+           WebDXFeature::kScrollDrivenAnimations},
+          {WebFeature::kViewTimelineConstructor,
+           WebDXFeature::kScrollDrivenAnimations},
+          {WebFeature::kScrollFunctionTimeline,
+           WebDXFeature::kScrollDrivenAnimations},
+          {WebFeature::kViewFunctionTimeline,
+           WebDXFeature::kScrollDrivenAnimations},
       }};
 
   return *kMap;
@@ -665,6 +673,12 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kClipPath, WebDXFeature::kClipPath},
           {CSSSampleId::kBoxDecorationBreak, WebDXFeature::kBoxDecorationBreak},
           {CSSSampleId::kPageOrientation, WebDXFeature::kPageOrientation},
+          {CSSSampleId::kScrollTimeline, WebDXFeature::kScrollDrivenAnimations},
+          {CSSSampleId::kScrollTimelineName,
+           WebDXFeature::kScrollDrivenAnimations},
+          {CSSSampleId::kViewTimeline, WebDXFeature::kScrollDrivenAnimations},
+          {CSSSampleId::kViewTimelineName,
+           WebDXFeature::kScrollDrivenAnimations},
       }};
 
   return *kMap;
