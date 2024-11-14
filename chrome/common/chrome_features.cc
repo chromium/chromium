@@ -473,27 +473,6 @@ const base::FeatureParam<base::TimeDelta>
         &kHappinessTrackingSurveysForDesktopWhatsNew, "whats-new-time",
         base::Seconds(20)};
 
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopM1TopicsSubpage,
-             "HappinessTrackingSurveysForDesktopM1TopicsSubpage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopM1TopicsSubpageTime{
-        &kHappinessTrackingSurveysForDesktopM1TopicsSubpage, "settings-time",
-        base::Seconds(20)};
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopM1FledgeSubpage,
-             "HappinessTrackingSurveysForDesktopM1FledgeSubpage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopM1FledgeSubpageTime{
-        &kHappinessTrackingSurveysForDesktopM1FledgeSubpage, "settings-time",
-        base::Seconds(20)};
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpage,
-             "HappinessTrackingSurveysForDesktopM1AdMeasurementSubpage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpageTime{
-        &kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpage,
-        "settings-time", base::Seconds(20)};
 
 // Enables or disables the Happiness Tracking System for Chrome security page.
 BASE_FEATURE(kHappinessTrackingSurveysForSecurityPage,

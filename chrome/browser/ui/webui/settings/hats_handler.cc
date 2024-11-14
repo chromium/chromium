@@ -39,25 +39,6 @@ SurveyBitsData GetPrivacySettingsProductSpecificBitsData(Profile* profile) {
   return {{"3P cookies blocked", third_party_cookies_blocked}};
 }
 
-// Generate the Product Specific bits data which accompanies M1 Ad Privacy
-// survey responses from |profile|.
-SurveyBitsData GetAdPrivacyProductSpecificBitsData(Profile* profile) {
-  const bool third_party_cookies_blocked =
-      static_cast<content_settings::CookieControlsMode>(
-          profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
-      content_settings::CookieControlsMode::kBlockThirdParty;
-
-  return {
-      {"3P cookies blocked", third_party_cookies_blocked},
-      {"Topics enabled",
-       profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)},
-      {"Fledge enabled",
-       profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled)},
-      {"Ad Measurement enabled",
-       profile->GetPrefs()->GetBoolean(
-           prefs::kPrivacySandboxM1AdMeasurementEnabled)},
-  };
-}
 }  // namespace
 
 namespace settings {
@@ -288,40 +269,6 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
               .InMilliseconds();
       navigation_behaviour =
           HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      break;
-    }
-    case TrustSafetyInteraction::OPENED_AD_PRIVACY:
-      [[fallthrough]];
-    case TrustSafetyInteraction::OPENED_TOPICS_SUBPAGE: {
-      trigger = kHatsSurveyTriggerM1TopicsSubpage;
-      timeout_ms =
-          features::kHappinessTrackingSurveysForDesktopM1TopicsSubpageTime.Get()
-              .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
-      break;
-    }
-    case TrustSafetyInteraction::OPENED_FLEDGE_SUBPAGE: {
-      trigger = kHatsSurveyTriggerM1FledgeSubpage;
-      timeout_ms =
-          features::kHappinessTrackingSurveysForDesktopM1FledgeSubpageTime.Get()
-              .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
-      break;
-    }
-    case TrustSafetyInteraction::OPENED_AD_MEASUREMENT_SUBPAGE: {
-      trigger = kHatsSurveyTriggerM1AdMeasurementSubpage;
-      timeout_ms =
-          features::
-              kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpageTime
-                  .Get()
-                  .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
       break;
     }
     case TrustSafetyInteraction::OPENED_PASSWORD_MANAGER:

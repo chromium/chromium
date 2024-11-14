@@ -9,19 +9,17 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {CrExpandButtonElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxManageTopicsSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {SettingsPrivacySandboxFledgeSubpageElement} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, CrLinkRowElement, FirstLevelTopicsState, SettingsPrefsElement, TopicsState} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isChildVisible, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
-import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacySandboxBrowserProxy} from './test_privacy_sandbox_browser_proxy.js';
 
 suite('PrivacySandboxPage', function() {
   let page: SettingsPrivacySandboxPageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let hatsBrowserProxy: TestHatsBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
@@ -35,14 +33,11 @@ suite('PrivacySandboxPage', function() {
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    hatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.setInstance(hatsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
     page = document.createElement('settings-privacy-sandbox-page');
     page.prefs = settingsPrefs.prefs!;
-    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -211,7 +206,6 @@ suite('FledgeSubpage', function() {
     document.body.appendChild(settingsPrefs);
     page = document.createElement('settings-privacy-sandbox-fledge-subpage');
     page.prefs = settingsPrefs.prefs!;
-    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_FLEDGE);
     document.body.appendChild(page);
     await testPrivacySandboxBrowserProxy.whenCalled('getFledgeState');
     return flushTasks();
@@ -255,7 +249,6 @@ suite('TopicsSubpage', function() {
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
-  let hatsBrowserProxy: TestHatsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -271,8 +264,6 @@ suite('TopicsSubpage', function() {
     testPrivacySandboxBrowserProxy.setTestTopicState(getTestTopicsState());
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    hatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.setInstance(hatsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
@@ -319,12 +310,6 @@ suite('TopicsSubpage', function() {
       }],
     };
   }
-
-  test('hatsSurveyRequested', async function() {
-    const result =
-        await hatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
-    assertEquals(TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE, result);
-  });
 
   // When prefs.privacy_sandbox.m1.topics_enabled value is false
   // and Proactive Topic Blocking feature is turned on,
@@ -1724,7 +1709,6 @@ suite('FledgeSubpageSeeAllSites', function() {
 suite('AdMeasurementSubpage', function() {
   let page: SettingsPrivacySandboxAdMeasurementSubpageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let hatsBrowserProxy: TestHatsBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
@@ -1738,27 +1722,18 @@ suite('AdMeasurementSubpage', function() {
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    hatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.setInstance(hatsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
     page = document.createElement(
         'settings-privacy-sandbox-ad-measurement-subpage');
     page.prefs = settingsPrefs.prefs!;
-    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
     document.body.appendChild(page);
     return flushTasks();
   });
 
   teardown(function() {
     Router.getInstance().resetRouteForTesting();
-  });
-
-  test('hatsSurveyRequested', async function() {
-    const result =
-        await hatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
-    assertEquals(TrustSafetyInteraction.OPENED_AD_MEASUREMENT_SUBPAGE, result);
   });
 
   test('enableAdMeasurementToggle', async function() {
