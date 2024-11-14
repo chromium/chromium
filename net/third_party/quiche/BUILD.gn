@@ -59,8 +59,6 @@ component("quiche") {
               "overrides/quiche_platform_impl/quiche_export_impl.h",
               "overrides/quiche_platform_impl/quiche_iovec_impl.h",
               "overrides/quiche_platform_impl/quiche_logging_impl.h",
-              "overrides/quiche_platform_impl/quiche_mutex_impl.cc",
-              "overrides/quiche_platform_impl/quiche_mutex_impl.h",
               "overrides/quiche_platform_impl/quiche_reference_counted_impl.h",
               "overrides/quiche_platform_impl/quiche_server_stats_impl.h",
               "overrides/quiche_platform_impl/quiche_stack_trace_impl.cc",
@@ -71,6 +69,8 @@ component("quiche") {
               "overrides/quiche_platform_impl/quiche_url_utils_impl.h",
               "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.cc",
               "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.h",
+              "src/quiche/common/platform/default/quiche_platform_impl/quiche_mutex_impl.cc",
+              "src/quiche/common/platform/default/quiche_platform_impl/quiche_mutex_impl.h",
               "src/quiche/common/platform/default/quiche_platform_impl/quiche_prefetch_impl.h",
               "src/quiche/http2/hpack/hpack_static_table_entries.inc",
             ] + quiche_core_hdrs + quiche_core_srcs + binary_http_srcs +
