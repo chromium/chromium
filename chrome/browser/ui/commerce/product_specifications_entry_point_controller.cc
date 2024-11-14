@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,6 +27,9 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -73,6 +77,39 @@ bool IsNavigationEligibleForEntryPoint(
   return CheckWindowContainsEntryPointURLs(
       tab_strip_model, entry_point_info,
       kEligibleWindowUrlCountForNavigationTriggering);
+}
+
+void LogClusterUKM(const TabStripModel* tab_strip_model,
+                   std::vector<GURL> urls,
+                   std::optional<commerce::EntryPointInfo> entry_point_info) {
+  // If there's no active index, it's likely that the tabstrip is in startup or
+  // shutdown.
+  if (!tab_strip_model ||
+      tab_strip_model->active_index() == TabStripModel::kNoTab) {
+    return;
+  }
+  // Create an event id to tie the UKM rows together.
+  base::Time event_time = base::Time::Now();
+  int64_t tab_strip_event_id =
+      event_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+
+  for (int tab_index = 0; tab_index < tab_strip_model->count(); tab_index++) {
+    content::WebContents* contents =
+        tab_strip_model->GetWebContentsAt(tab_index);
+    const GURL& current_url = contents->GetLastCommittedURL();
+    if (!base::Contains(urls, current_url)) {
+      continue;
+    }
+    bool comparable_by_server =
+        entry_point_info.has_value() &&
+        base::Contains(entry_point_info->similar_candidate_products,
+                       current_url);
+    ukm::builders::Shopping_Compare_ClusterIdenfitiedByClient(
+        contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
+        .SetCompareEventID(tab_strip_event_id)
+        .SetComparableByServer(comparable_by_server)
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 }  // namespace
@@ -289,6 +326,8 @@ void ProductSpecificationsEntryPointController::
         const GURL old_url,
         const GURL new_url,
         std::optional<EntryPointInfo> entry_point_info) {
+  LogClusterUKM(browser_->GetTabStripModel(), {old_url, new_url},
+                entry_point_info);
   if (!entry_point_info.has_value()) {
     base::RecordAction(
         base::UserMetricsAction("Commerce.Compare.CandidateClusterRejected"));
@@ -323,11 +362,15 @@ void ProductSpecificationsEntryPointController::
   if (kProductSpecificationsUseServerClustering.Get()) {
     // TODO(qinmin): we should check whether tabstrips have changed while
     // waiting for the callback.
+    std::vector<GURL> cluster_urls;
+    for (const auto& pair : entry_point_info->similar_candidate_products) {
+      cluster_urls.push_back(pair.first);
+    }
     cluster_manager_->GetComparableProducts(
         entry_point_info.value(),
         base::BindOnce(&ProductSpecificationsEntryPointController::
                            ShowEntryPointWithTitleForNavigation,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), cluster_urls));
   } else {
     ShowEntryPointWithTitle(std::move(entry_point_info));
   }
@@ -335,7 +378,9 @@ void ProductSpecificationsEntryPointController::
 
 void ProductSpecificationsEntryPointController::
     ShowEntryPointWithTitleForNavigation(
+        std::vector<GURL> urls,
         std::optional<EntryPointInfo> entry_point_info) {
+  LogClusterUKM(browser_->GetTabStripModel(), urls, entry_point_info);
   if (!entry_point_info.has_value()) {
     base::RecordAction(
         base::UserMetricsAction("Commerce.Compare.CandidateClusterRejected"));
