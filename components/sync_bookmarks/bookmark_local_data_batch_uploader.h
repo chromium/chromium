@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_LOCAL_DATA_BATCH_UPLOADER_H_
 #define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_LOCAL_DATA_BATCH_UPLOADER_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
 
 namespace bookmarks {
@@ -14,8 +13,6 @@ class BookmarkModel;
 }  // namespace bookmarks
 
 namespace sync_bookmarks {
-
-class BookmarkModelView;
 
 class BookmarkLocalDataBatchUploader
     : public syncer::DataTypeLocalDataBatchUploader {
@@ -39,9 +36,7 @@ class BookmarkLocalDataBatchUploader
  private:
   bool CanUpload() const;
 
-  const std::unique_ptr<BookmarkModelView>
-      local_or_syncable_bookmark_model_view_;
-  const std::unique_ptr<BookmarkModelView> account_bookmark_model_view_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 }  // namespace sync_bookmarks
