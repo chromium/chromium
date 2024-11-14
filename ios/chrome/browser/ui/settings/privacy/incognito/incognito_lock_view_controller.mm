@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -18,11 +19,13 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/incognito/incognito_lock_mutator.h"
 #import "ios/chrome/browser/ui/settings/privacy/incognito/incognito_lock_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -65,6 +68,16 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
 
 @implementation IncognitoLockViewController {
   IncognitoLockState _selectedState;
+  id<ReauthenticationProtocol> _reauthModule;
+}
+
+- (instancetype)initWithReauthModule:
+    (id<ReauthenticationProtocol>)reauthModule {
+  self = [super initWithStyle:ChromeTableViewStyle()];
+  if (self) {
+    _reauthModule = reauthModule;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -87,7 +100,7 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
   header.text = l10n_util::GetNSString(IDS_IOS_INCOGNITO_LOCK_HEADER);
   [model setHeader:header forSectionWithIdentifier:kLockStates];
 
-  TableViewItem* hideWithReauthItem = [self deviceSupportsAuthentication]
+  TableViewItem* hideWithReauthItem = [_reauthModule canAttemptReauth]
                                           ? self.hideWithReauthItem
                                           : self.hideWithReauthDisabledItem;
   [model addItem:hideWithReauthItem toSectionWithIdentifier:kLockStates];
@@ -136,7 +149,30 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
   ItemIdentifier itemIdentifier =
       static_cast<ItemIdentifier>(selectedItem.type);
 
-  if (itemIdentifier != kHideWithReauthDisabled) {
+  if (itemIdentifier == kHideWithReauthDisabled ||
+      StateWithItemIdentifier(itemIdentifier) == _selectedState) {
+    // Do nothing on disabled reauth item clicks or item clicks where the state
+    // is the same as the currently selected item.
+  } else if (itemIdentifier == kHideWithReauth ||
+             _selectedState == IncognitoLockState::kReauth) {
+    // Require authentication on transitions to/from the reauth state.
+    id<IncognitoLockMutator> mutator = _mutator;
+    [_reauthModule
+        attemptReauthWithLocalizedReason:
+            l10n_util::GetNSString(
+                IDS_IOS_INCOGNITO_REAUTH_SET_UP_SYSTEM_DIALOG_REASON)
+                    canReusePreviousAuth:false
+                                 handler:^(ReauthenticationResult result) {
+                                   if (result ==
+                                       ReauthenticationResult::kSuccess) {
+                                     // Only update the state if the
+                                     // authentication is successful.
+                                     [mutator updateIncognitoLockState:
+                                                  StateWithItemIdentifier(
+                                                      itemIdentifier)];
+                                   }
+                                 }];
+  } else {
     [_mutator updateIncognitoLockState:StateWithItemIdentifier(itemIdentifier)];
   }
 
@@ -271,13 +307,6 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
       UIPopoverArrowDirectionAny;
 
   [self presentViewController:popover animated:YES completion:nil];
-}
-
-// Checks if the device has Passcode, Face ID, or Touch ID set up.
-- (BOOL)deviceSupportsAuthentication {
-  LAContext* context = [[LAContext alloc] init];
-  return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication
-                              error:nil];
 }
 
 @end
