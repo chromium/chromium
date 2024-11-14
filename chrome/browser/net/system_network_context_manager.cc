@@ -302,6 +302,18 @@ NetworkSandboxState IsNetworkSandboxEnabledInternal() {
              : NetworkSandboxState::kDisabledByPlatform;
 }
 
+network::mojom::CTLogInfo::LogType GetCTLogType(
+    certificate_transparency::LogType log_type) {
+  switch (log_type) {
+    case certificate_transparency::LogType::kUnspecified:
+      return network::mojom::CTLogInfo::LogType::kUnspecified;
+    case certificate_transparency::LogType::kRFC6962:
+      return network::mojom::CTLogInfo::LogType::kRFC6962;
+    case certificate_transparency::LogType::kStaticCTAPI:
+      return network::mojom::CTLogInfo::LogType::kStaticCTAPI;
+  }
+}
+
 std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
   std::vector<std::pair<std::string, base::Time>> disqualified_logs =
       certificate_transparency::GetDisqualifiedLogs();
@@ -311,6 +323,7 @@ std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
     log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
     log_info->id = crypto::SHA256HashString(log_info->public_key);
     log_info->name = ct_log.log_name;
+    log_info->log_type = GetCTLogType(ct_log.log_type);
     log_info->current_operator = ct_log.current_operator;
 
     auto it = std::lower_bound(
