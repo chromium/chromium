@@ -57,14 +57,16 @@ namespace blink {
 
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                cc::PaintFlags::FilterQuality filter_quality,
-                               const SkColorInfo& info)
+                               SkColorType sk_color_type,
+                               SkAlphaType sk_alpha_type,
+                               sk_sp<SkColorSpace> sk_color_space)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
       provider_(std::move(provider)),
-      sk_color_type_(info.colorType()),
-      sk_alpha_type_(info.alphaType()),
-      sk_color_space_(info.refColorSpace()),
+      sk_color_type_(sk_color_type),
+      sk_alpha_type_(sk_alpha_type),
+      sk_color_space_(std::move(sk_color_space)),
       filter_quality_(filter_quality) {}
 
 CanvasResource::~CanvasResource() {}
@@ -259,7 +261,11 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider,
     cc::PaintFlags::FilterQuality filter_quality)
-    : CanvasResource(std::move(provider), filter_quality, info.colorInfo()),
+    : CanvasResource(std::move(provider),
+                     filter_quality,
+                     info.colorInfo().colorType(),
+                     info.colorInfo().alphaType(),
+                     info.colorInfo().refColorSpace()),
       size_(info.width(), info.height()) {
   if (features::IsCanvasSharedBitmapConversionEnabled()) {
     if (!shared_image_interface_provider) {
@@ -427,7 +433,11 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     cc::PaintFlags::FilterQuality filter_quality,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
-    : CanvasResource(std::move(provider), filter_quality, info.colorInfo()),
+    : CanvasResource(std::move(provider),
+                     filter_quality,
+                     info.colorInfo().colorType(),
+                     info.colorInfo().alphaType(),
+                     info.colorInfo().refColorSpace()),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(info.width(), info.height()),
       is_accelerated_(is_accelerated),
@@ -952,13 +962,12 @@ ExternalCanvasResource::ExternalCanvasResource(
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
     bool is_origin_top_left)
-    : CanvasResource(
-          std::move(provider),
-          filter_quality,
-          SkColorInfo(viz::ToClosestSkColorType(/*gpu_compositing=*/true,
-                                                transferable_resource.format),
-                      kPremul_SkAlphaType,
-                      transferable_resource.color_space.ToSkColorSpace())),
+    : CanvasResource(std::move(provider),
+                     filter_quality,
+                     viz::ToClosestSkColorType(/*gpu_compositing=*/true,
+                                               transferable_resource.format),
+                     kPremul_SkAlphaType,
+                     transferable_resource.color_space.ToSkColorSpace()),
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       transferable_resource_(transferable_resource),
@@ -1112,7 +1121,11 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality)
-    : CanvasResource(std::move(provider), filter_quality, info.colorInfo()),
+    : CanvasResource(std::move(provider),
+                     filter_quality,
+                     info.colorInfo().colorType(),
+                     info.colorInfo().alphaType(),
+                     info.colorInfo().refColorSpace()),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(info.width(), info.height()),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()

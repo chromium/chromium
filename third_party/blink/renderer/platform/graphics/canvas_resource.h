@@ -199,7 +199,9 @@ class PLATFORM_EXPORT CanvasResource
  protected:
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
                  cc::PaintFlags::FilterQuality,
-                 const SkColorInfo&);
+                 SkColorType sk_color_type,
+                 SkAlphaType sk_alpha_type,
+                 sk_sp<SkColorSpace> sk_color_space);
 
   // Returns true if the resource is backed by memory such that it can be used
   // for direct scanout by the display.
