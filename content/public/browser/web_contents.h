@@ -88,8 +88,9 @@ class WakeLockContext;
 }  // namespace device
 
 namespace net {
+class HttpNoVarySearchData;
 struct LoadStateWithParam;
-}
+}  // namespace net
 
 namespace service_manager {
 class InterfaceProvider;
@@ -1579,6 +1580,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       ui::PageTransition page_transition,
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,

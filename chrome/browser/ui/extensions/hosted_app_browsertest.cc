@@ -619,6 +619,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering, EffectiveUrlOnTrigger) {
       GetAppWebContents()->StartPrerendering(
           prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
+          /*no_vary_search_expected=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*should_warm_up_compositor=*/false,

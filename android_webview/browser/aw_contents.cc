@@ -37,6 +37,7 @@
 #include "android_webview/browser/permission/permission_callback.h"
 #include "android_webview/browser/permission/permission_request_handler.h"
 #include "android_webview/browser/permission/simple_permission_request.h"
+#include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/browser/state_serializer.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
@@ -1514,8 +1515,10 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
       static_cast<NotRestoredReason>(reason));
 }
 
-void AwContents::StartPrerendering(JNIEnv* env,
-                                   const std::string& prerendering_url) {
+void AwContents::StartPrerendering(
+    JNIEnv* env,
+    const std::string& prerendering_url,
+    const base::android::JavaParamRef<jobject>& prefetch_params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Cancel existing prerendering before starting a new one to avoid hitting the
@@ -1524,18 +1527,24 @@ void AwContents::StartPrerendering(JNIEnv* env,
   // sequentially.
   prerender_handle_.reset();
 
+  // TODO(https://crbug.com/41490450): Set the additional headers in a
+  // prerendering navigation request.
+  net::HttpRequestHeaders additional_headers =
+      GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
+
+  std::optional<net::HttpNoVarySearchData> no_vary_search_expected =
+      GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
+
   // This is the same as the page transition of WebView.loadUrl().
   auto page_transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_API);
 
   // TODO(https://crbug.com/41490450): Do the following:
   // - Pass a valid PreloadingAttempt.
-  // - Support No-Vary-Search hint.
   // - Pass a valid navigation handle callback.
-  // - Support additional request headers.
   prerender_handle_ = web_contents_->StartPrerendering(
       GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
-      "WebView", page_transition,
+      "WebView", std::move(no_vary_search_expected), page_transition,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified,

@@ -25,6 +25,8 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwFeatureMap;
+import org.chromium.android_webview.AwNoVarySearchData;
+import org.chromium.android_webview.AwPrefetchParameters;
 import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.settings.SpeculativeLoadingAllowedFlags;
@@ -214,11 +216,19 @@ public class AwPrerenderTest extends AwParameterizedTest {
     }
 
     // Triggers prerendering for `url`.
-    private void startPrerenderingAndWait(String url) throws Exception {
+    private void startPrerendering(String url, AwPrefetchParameters prefetchParameters)
+            throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAwContents.startPrerendering(url);
+                    mAwContents.startPrerendering(url, prefetchParameters);
                 });
+    }
+
+    // Triggers prerendering for `url` and then waits until a prerendered page starts running
+    // JavaScript.
+    private void startPrerenderingAndWait(String url, AwPrefetchParameters prefetchParameters)
+            throws Exception {
+        startPrerendering(url, prefetchParameters);
 
         // Wait until the prerendered page starts running JavaScript.
         TestWebMessageListener.Data data =
@@ -303,6 +313,14 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(uriFromServer.getPort(), origin.getPort());
     }
 
+    private static HistogramWatcher createFinalStatusHistogramWatcher(int expectedStatus) {
+        return HistogramWatcher.newBuilder()
+                .expectIntRecord(
+                        "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView",
+                        expectedStatus)
+                .build();
+    }
+
     // Tests basic end-to-end behavior of speculation rules prerendering on WebView with
     // renderer-initiated activation.
     @Test
@@ -353,14 +371,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView",
-                                /*kActivated*/ 0)
-                        .build();
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
 
-        startPrerenderingAndWait(mPrerenderingUrl);
+        startPrerenderingAndWait(mPrerenderingUrl, null);
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
@@ -464,6 +477,47 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Wait until prerendering is canceled for navigation to the URL whose search param is
         // unignorable.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests WebView prerendering trigger with No-Vary-Search hint and header.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testNoVarySearchHintAndHeader() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        // Start prerendering `prerender.html`. This response will have
+        // `No-Vary-Search: params=("a")` header, so specify a corresponding No-Vary-Search hint.
+        String[] ignoredQueryParameters = {"a"};
+        AwNoVarySearchData noVarySearchData =
+                new AwNoVarySearchData(true, true, ignoredQueryParameters, null);
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(
+                        /* additionalHeaders= */ null,
+                        noVarySearchData, /*isJavascriptEnabled*/
+                        true);
+        startPrerendering(mPrerenderingUrl, prefetchParameters);
+
+        // Navigate to `prerender.html?a=42` without waiting for completion of prerendering so that
+        // activation match is conducted based on the No-Vary-Search hint (not the No-Vary-Search
+        // header).
+        //
+        // Actually this test is not stable. The WebView may receive the No-Vary-Search header
+        // before starting prerendering. To test the hint in a more reliable manner, this test
+        // should suspend prerendering navigation before the header is sent, start prerendering,
+        // confirm activation match is done with the hint, and then resume prerendering. Currently,
+        // the infra to suspend prerendering is not available.
+        // TODO(crbug.com/41490450): Implement the test infra to suspend prerendering and test the
+        // No-Vary-Search hint using that.
+        String url = mTestServer.getURL(PRERENDER_URL.concat("?a=42"));
+        activatePage(url, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 

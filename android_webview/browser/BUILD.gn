@@ -205,6 +205,8 @@ source_set("browser") {
     "popup_touch_handle_drawable.h",
     "prefetch/aw_prefetch_service_delegate.cc",
     "prefetch/aw_prefetch_service_delegate.h",
+    "prefetch/aw_preloading_utils.cc",
+    "prefetch/aw_preloading_utils.h",
     "renderer_host/auto_login_parser.cc",
     "renderer_host/auto_login_parser.h",
     "renderer_host/aw_render_view_host_ext.cc",

@@ -203,12 +203,6 @@ class AwBrowserContext : public content::BrowserContext,
       const base::android::ScopedJavaGlobalRef<jobject> callback,
       const base::android::ScopedJavaGlobalRef<jobject> callback_executor,
       const content::PrefetchStartResultCode result_code);
-  net::HttpRequestHeaders GetPrefetchAdditionalHeaders(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& prefetch_params);
-  std::optional<net::HttpNoVarySearchData> GetPrefetchExpectedNoVarySearch(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& prefetch_params);
 
   const std::string name_;
   const base::FilePath relative_path_;

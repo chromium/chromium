@@ -200,7 +200,10 @@ class AwContents : public FindHelper::Listener,
 
   void FlushBackForwardCache(JNIEnv* env, jint reason);
 
-  void StartPrerendering(JNIEnv* env, const std::string& prerendering_url);
+  void StartPrerendering(
+      JNIEnv* env,
+      const std::string& prerendering_url,
+      const base::android::JavaParamRef<jobject>& prefetch_params);
   void CancelAllPrerendering(JNIEnv* env);
 
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }

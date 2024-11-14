@@ -11322,6 +11322,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     const GURL& prerendering_url,
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
     ui::PageTransition page_transition,
     bool should_warm_up_compositor,
     bool should_prepare_paint_tree,
@@ -11335,8 +11336,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*target_hint=*/std::nullopt, content::Referrer(),
-      /*eagerness=*/std::nullopt,
-      /*no_vary_search_expected=*/std::nullopt,
+      /*eagerness=*/std::nullopt, std::move(no_vary_search_expected),
       /*initiato_render_frame_host=*/nullptr, GetWeakPtr(), page_transition,
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
