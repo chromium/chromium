@@ -322,6 +322,7 @@ static_library("ui") {
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
+    "//build/config/linux/dbus:buildflags",
     "//cc/paint",
     "//chrome:resources",
     "//chrome:strings",
@@ -3614,7 +3615,6 @@ static_library("ui") {
         "views/status_icons/status_icon_linux_dbus.cc",
         "views/status_icons/status_icon_linux_dbus.h",
       ]
-      defines += [ "USE_DBUS" ]
       deps += [
         "//components/dbus/menu",
         "//components/dbus/thread_linux",

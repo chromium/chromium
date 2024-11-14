@@ -13,18 +13,19 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "ui/display/display_list.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/linux/device_scale_factor_observer.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/public/platform_screen.h"
-#include "base/scoped_observation.h"
-#include "ui/linux/device_scale_factor_observer.h"
-#include "ui/linux/linux_ui.h"
 
 namespace gfx {
 class Rect;
@@ -34,7 +35,7 @@ namespace ui {
 
 class WaylandConnection;
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 class OrgGnomeMutterIdleMonitor;
 #endif
 
@@ -130,7 +131,7 @@ class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
   std::optional<gfx::BufferFormat> image_format_no_alpha_;
   std::optional<gfx::BufferFormat> image_format_hdr_;
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   mutable std::unique_ptr<OrgGnomeMutterIdleMonitor>
       org_gnome_mutter_idle_monitor_;
 #endif

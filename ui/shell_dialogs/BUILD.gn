@@ -33,6 +33,7 @@ component("shell_dialogs") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build/config/linux/dbus:buildflags",
     "//skia",
     "//ui/base",
     "//ui/strings",
@@ -54,7 +55,6 @@ component("shell_dialogs") {
     ]
     deps += [ "//ui/linux:linux_ui" ]
     if (use_dbus) {
-      defines += [ "USE_DBUS" ]
       sources += [
         "select_file_dialog_linux_portal.cc",
         "select_file_dialog_linux_portal.h",

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/status_icons/desktop_notification_balloon.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "ui/gfx/image/image_skia.h"
@@ -59,7 +60,7 @@ class StatusIconLinuxWrapper : public StatusIcon,
 
  private:
   enum StatusIconType {
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
     kTypeDbus,
 #endif
     kTypeWindowed,
@@ -72,7 +73,7 @@ class StatusIconLinuxWrapper : public StatusIcon,
                          StatusIconType status_icon_type,
                          const gfx::ImageSkia& image,
                          const std::u16string& tool_tip);
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   StatusIconLinuxWrapper(scoped_refptr<StatusIconLinuxDbus> status_icon,
                          const gfx::ImageSkia& image,
                          const std::u16string& tool_tip);
@@ -89,7 +90,7 @@ class StatusIconLinuxWrapper : public StatusIcon,
 
   // The status icon may be ref-counted (via |status_icon_dbus_|) or owned by
   // |this| (via |status_icon_linux_|).
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   scoped_refptr<StatusIconLinuxDbus> status_icon_dbus_;
 #endif
   std::unique_ptr<ui::StatusIconLinux> status_icon_linux_;

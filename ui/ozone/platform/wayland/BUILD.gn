@@ -242,6 +242,7 @@ source_set("wayland") {
     ":common",
     "//base",
     "//build:chromeos_buildflags",
+    "//build/config/linux/dbus:buildflags",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
     "//components/device_event_log",
@@ -341,7 +342,6 @@ source_set("wayland") {
       "host/org_gnome_mutter_idle_monitor.h",
     ]
     deps += [ "//dbus" ]
-    defines += [ "USE_DBUS" ]
   }
 
   if (is_chromeos_lacros) {

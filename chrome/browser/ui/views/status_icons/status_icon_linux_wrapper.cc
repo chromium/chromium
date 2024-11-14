@@ -15,7 +15,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 #include "chrome/browser/ui/views/status_icons/status_icon_linux_dbus.h"
 #endif
 
@@ -49,7 +49,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(ui::StatusIconLinux* status_icon,
   status_icon->SetDelegate(this);
 }
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 StatusIconLinuxWrapper::StatusIconLinuxWrapper(
     scoped_refptr<StatusIconLinuxDbus> status_icon,
     const gfx::ImageSkia& image,
@@ -119,7 +119,7 @@ ui::MenuModel* StatusIconLinuxWrapper::GetMenuModel() const {
 
 void StatusIconLinuxWrapper::OnImplInitializationFailed() {
   switch (status_icon_type_) {
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
     case kTypeDbus:
       status_icon_dbus_.reset();
       status_icon_linux_ = std::make_unique<StatusIconButtonLinux>();
@@ -148,7 +148,7 @@ std::unique_ptr<StatusIconLinuxWrapper>
 StatusIconLinuxWrapper::CreateWrappedStatusIcon(
     const gfx::ImageSkia& image,
     const std::u16string& tool_tip) {
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   return base::WrapUnique(new StatusIconLinuxWrapper(
       base::MakeRefCounted<StatusIconLinuxDbus>(), image, tool_tip));
 #else
@@ -176,7 +176,7 @@ void StatusIconLinuxWrapper::UpdatePlatformContextMenu(
 
 ui::StatusIconLinux* StatusIconLinuxWrapper::GetStatusIcon() {
   switch (status_icon_type_) {
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
     case kTypeDbus:
       return status_icon_dbus_.get();
 #endif

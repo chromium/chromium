@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/chrome_browser_main_posix.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -34,7 +35,7 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   void PostMainMessageLoopRun() override;
 #endif
   void PreProfileInit() override;
-#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
   // Only needed for native Linux, to set up the low-memory-monitor-based memory
   // monitoring (which depends on D-Bus).
   void PostBrowserStart() override;

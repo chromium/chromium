@@ -1836,6 +1836,7 @@ static_library("browser") {
     "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//build/config/compiler:compiler_buildflags",
+    "//build/config/linux/dbus:buildflags",
     "//cc",
     "//chrome:extra_resources",
     "//chrome:resources",
@@ -6952,7 +6953,6 @@ static_library("browser") {
     ]
     if (use_dbus) {
       deps += [ "//dbus" ]
-      defines += [ "USE_DBUS" ]
     }
 
     # device_info_fetcher uses a "defined(USE_GIO)" macro, so if it's refactored
