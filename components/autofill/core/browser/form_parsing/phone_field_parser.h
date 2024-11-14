@@ -20,7 +20,6 @@
 
 namespace autofill {
 
-class AutofillField;
 class AutofillScanner;
 
 // A phone number in one of the following formats:
@@ -71,7 +70,8 @@ class PhoneFieldParser : public FormFieldParser {
     FIELD_EXTENSION,
     FIELD_MAX,
   };
-  using ParsedPhoneFields = std::array<raw_ptr<AutofillField>, FIELD_MAX>;
+  using ParsedPhoneFields =
+      std::array<std::optional<FieldAndMatchInfo>, FIELD_MAX>;
 
   explicit PhoneFieldParser(ParsedPhoneFields fields);
 
@@ -92,7 +92,7 @@ class PhoneFieldParser : public FormFieldParser {
   // Convenient wrapper for ParseField().
   static bool ParsePhoneField(ParsingContext& context,
                               AutofillScanner* scanner,
-                              raw_ptr<AutofillField>* field,
+                              std::optional<FieldAndMatchInfo>* match,
                               const bool is_country_code_field,
                               const std::string& json_field_type);
 
@@ -107,11 +107,11 @@ class PhoneFieldParser : public FormFieldParser {
   // phone country code by looking at its option contents.
   // "Augmented" refers to the fact that we are looking for select options that
   // contain not only a country code but also further text like "Germany (+49)".
-  static bool LikelyAugmentedPhoneCountryCode(AutofillScanner* scanner,
-                                              raw_ptr<AutofillField>* match);
+  static bool LikelyAugmentedPhoneCountryCode(
+      AutofillScanner* scanner,
+      std::optional<FieldAndMatchInfo>* match);
 
-  // FIELD_PHONE is always present; holds suffix if prefix is present.
-  // The rest could be NULL.
+  // FIELD_PHONE is always present if a match is found. The rest may be nullopt.
   ParsedPhoneFields parsed_phone_fields_;
 };
 

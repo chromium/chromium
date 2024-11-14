@@ -15,21 +15,21 @@ namespace autofill {
 std::unique_ptr<FormFieldParser> SearchFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  raw_ptr<AutofillField> field;
+  std::optional<FieldAndMatchInfo> match;
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
       SEARCH_TERM, context.page_language, context.pattern_file);
-  if (ParseField(context, scanner, patterns, &field, "SEARCH_TERM")) {
-    return std::make_unique<SearchFieldParser>(field);
+  if (ParseField(context, scanner, patterns, &match, "SEARCH_TERM")) {
+    return std::make_unique<SearchFieldParser>(std::move(*match));
   }
   return nullptr;
 }
 
-SearchFieldParser::SearchFieldParser(const AutofillField* field)
-    : field_(field) {}
+SearchFieldParser::SearchFieldParser(FieldAndMatchInfo match)
+    : match_(std::move(match)) {}
 
 void SearchFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(field_, SEARCH_TERM, kBaseSearchParserScore,
+  AddClassification(match_, SEARCH_TERM, kBaseSearchParserScore,
                     field_candidates);
 }
 

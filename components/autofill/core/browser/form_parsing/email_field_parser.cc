@@ -18,34 +18,35 @@ namespace autofill {
 std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  raw_ptr<AutofillField> field;
+  std::optional<FieldAndMatchInfo> match;
 
   base::span<const MatchPatternRef> email_patterns = GetMatchPatterns(
       "EMAIL_ADDRESS", context.page_language, context.pattern_file);
-  if (ParseField(context, scanner, email_patterns, &field, "EMAIL_ADDRESS")) {
-    return std::make_unique<EmailFieldParser>(field);
+  if (ParseField(context, scanner, email_patterns, &match, "EMAIL_ADDRESS")) {
+    return std::make_unique<EmailFieldParser>(std::move(*match));
   }
 
   // TODO(crbug.com/361560365): Consider moving this into the JSON files once
   // this is launched and they support placeholders.
-  field = scanner->Cursor();
+  const AutofillField* field = scanner->Cursor();
   if ((IsValidEmailAddress(field->placeholder()) ||
        IsValidEmailAddress(field->label())) &&
       base::FeatureList::IsEnabled(
           features::kAutofillParseEmailLabelAndPlaceholder)) {
     scanner->Advance();
-    return std::make_unique<EmailFieldParser>(field);
+    return std::make_unique<EmailFieldParser>(FieldAndMatchInfo{
+        field, {.matched_attribute = MatchAttribute::kLabel}});
   }
 
   return nullptr;
 }
 
-EmailFieldParser::EmailFieldParser(const AutofillField* field)
-    : field_(field) {}
+EmailFieldParser::EmailFieldParser(FieldAndMatchInfo match)
+    : match_(std::move(match)) {}
 
 void EmailFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(field_, EMAIL_ADDRESS, kBaseEmailParserScore,
+  AddClassification(match_, EMAIL_ADDRESS, kBaseEmailParserScore,
                     field_candidates);
 }
 

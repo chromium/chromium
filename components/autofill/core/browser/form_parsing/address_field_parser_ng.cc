@@ -347,8 +347,11 @@ void AddressFieldParserNG::AddClassifications(
     if (!field_ptr) {
       continue;
     }
-    AddClassification(field_ptr, field_type, kBaseAddressParserScore,
-                      field_candidates);
+    // TODO(crbug.com/320965828): Support MatchInfo.
+    AddClassification(
+        FieldAndMatchInfo{field_ptr,
+                          {.matched_attribute = MatchAttribute::kLabel}},
+        field_type, kBaseAddressParserScore, field_candidates);
   }
 }
 

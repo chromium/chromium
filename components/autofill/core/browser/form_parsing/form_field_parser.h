@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
@@ -124,9 +125,13 @@ struct ParsingContext {
 class FormFieldParser {
  public:
   struct MatchInfo {
-    MatchAttribute matched_attribute;
+    MatchAttribute matched_attribute = internal::IsRequired();
     // TODO(crbug.com/320965828): Add other details such as the regex that
     // matched or how well the regex matched to improve match prioritisation.
+  };
+  struct FieldAndMatchInfo {
+    raw_ptr<const AutofillField> field = internal::IsRequired();
+    MatchInfo match_info = internal::IsRequired();
   };
 
   FormFieldParser(const FormFieldParser&) = delete;
@@ -236,14 +241,14 @@ class FormFieldParser {
       std::vector<std::u16string>* groups = nullptr);
 
   // Attempts to parse a form field with the given pattern.  Returns true on
-  // success and fills `match` with a pointer to the field.
+  // success and populates `match`.
   // If a `match_pattern_projection` is defined, it is applied to the pattern's
   // MatchParams after dereferencing the `MatchPatternRef`s.
   static bool ParseField(
       ParsingContext& context,
       AutofillScanner* scanner,
       base::span<const MatchPatternRef> patterns,
-      raw_ptr<AutofillField>* match,
+      std::optional<FieldAndMatchInfo>* match,
       const char* regex_name = "",
       MatchParams (*match_pattern_projection)(const MatchParams&) = nullptr);
 
@@ -251,7 +256,7 @@ class FormFieldParser {
   // on success and fills |match| with a pointer to the field.
   static bool ParseEmptyLabel(ParsingContext& context,
                               AutofillScanner* scanner,
-                              raw_ptr<AutofillField>* match);
+                              std::optional<FieldAndMatchInfo>* match);
 
   // Attempts to parse several fields using the specified parsing functions in
   // arbitrary order. This is useful e.g. when parsing dates, where both dd/mm
@@ -266,12 +271,14 @@ class FormFieldParser {
           std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
           fields_and_parsers);
 
-  // Adds an association between a |field| and a |type| into |field_candidates|.
-  // This association is weighted by |score|, the higher the stronger the
+  // Adds an association between a `match` and a `type` into `field_candidates`.
+  // This association is weighted by `parser_score`, the higher the stronger the
   // association.
-  static void AddClassification(const AutofillField* field,
+  // TODO(crbug.com/320965828): Don't just weight classifications based on a
+  // `parser_score`, but also using `match.match_info`.
+  static void AddClassification(const std::optional<FieldAndMatchInfo>& match,
                                 FieldType type,
-                                float score,
+                                float parser_score,
                                 FieldCandidatesMap& field_candidates);
 
   // Returns true iff `type` matches `match_type`.

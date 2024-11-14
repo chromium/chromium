@@ -34,13 +34,6 @@ base::span<const MatchPatternRef> GetMatchPatterns(FieldType type,
   return GetMatchPatterns(type, context.page_language, context.pattern_file);
 }
 
-bool SetFieldAndAdvanceCursor(AutofillScanner* scanner,
-                              raw_ptr<AutofillField>* field) {
-  *field = scanner->Cursor();
-  scanner->Advance();
-  return true;
-}
-
 // Removes a MatchAttribute from MatchParams.
 MatchParams WithoutAttribute(MatchParams p, MatchAttribute attribute) {
   p.attributes.erase(attribute);
@@ -182,6 +175,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::ParseStandaloneZip(
 }
 
 AddressFieldParser::AddressFieldParser() = default;
+AddressFieldParser::~AddressFieldParser() = default;
 
 void AddressFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
@@ -305,19 +299,24 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   base::span<const MatchPatternRef> between_streets_line_2_patterns =
       GetMatchPatterns("BETWEEN_STREETS_LINE_2", context);
 
-  AutofillField* old_street_location = street_location_;
-  AutofillField* old_street_name = street_name_;
-  AutofillField* old_overflow = overflow_;
-  AutofillField* old_between_streets_or_landmark = between_streets_or_landmark_;
-  AutofillField* old_overflow_and_landmark = overflow_and_landmark_;
-  AutofillField* old_between_streets = between_streets_;
-  AutofillField* old_between_streets_line_1 = between_streets_line_1_;
-  AutofillField* old_between_streets_line_2 = between_streets_line_2_;
-  AutofillField* old_house_number = house_number_;
-  AutofillField* old_zip = zip_;
-  AutofillField* old_zip4 = zip4_;
-  AutofillField* old_apartment_number = apartment_number_;
-  AutofillField* old_house_number_and_apt_ = house_number_and_apt_;
+  std::optional<FieldAndMatchInfo> old_street_location = street_location_;
+  std::optional<FieldAndMatchInfo> old_street_name = street_name_;
+  std::optional<FieldAndMatchInfo> old_overflow = overflow_;
+  std::optional<FieldAndMatchInfo> old_between_streets_or_landmark =
+      between_streets_or_landmark_;
+  std::optional<FieldAndMatchInfo> old_overflow_and_landmark =
+      overflow_and_landmark_;
+  std::optional<FieldAndMatchInfo> old_between_streets = between_streets_;
+  std::optional<FieldAndMatchInfo> old_between_streets_line_1 =
+      between_streets_line_1_;
+  std::optional<FieldAndMatchInfo> old_between_streets_line_2 =
+      between_streets_line_2_;
+  std::optional<FieldAndMatchInfo> old_house_number = house_number_;
+  std::optional<FieldAndMatchInfo> old_zip = zip_;
+  std::optional<FieldAndMatchInfo> old_zip4 = zip4_;
+  std::optional<FieldAndMatchInfo> old_apartment_number = apartment_number_;
+  std::optional<FieldAndMatchInfo> old_house_number_and_apt_ =
+      house_number_and_apt_;
 
   AddressCountryCode country_code(context.client_country.value());
 
@@ -581,12 +580,12 @@ AddressFieldParser::ParseNameAndLabelSeparately(
     ParsingContext& context,
     AutofillScanner* scanner,
     base::span<const MatchPatternRef> patterns,
-    raw_ptr<AutofillField>* match,
+    std::optional<FieldAndMatchInfo>* match,
     const char* regex_name) {
   if (scanner->IsEnd())
     return RESULT_MATCH_NONE;
 
-  raw_ptr<AutofillField> cur_match = nullptr;
+  std::optional<FieldAndMatchInfo> cur_match;
   size_t saved_cursor = scanner->SaveCursor();
   bool parsed_name =
       ParseField(context, scanner, patterns, &cur_match, regex_name,
@@ -600,8 +599,9 @@ AddressFieldParser::ParseNameAndLabelSeparately(
                    return WithoutAttribute(p, MatchAttribute::kName);
                  });
   if (parsed_name && parsed_label) {
-    if (match)
-      *match = cur_match;
+    if (match) {
+      *match = std::move(cur_match);
+    }
     return RESULT_MATCH_NAME_LABEL;
   }
 
@@ -695,38 +695,46 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
   // Check if there is only one potential match.
   if (num_of_matches == 1) {
     if (dependent_locality_result != RESULT_MATCH_NONE)
-      return SetFieldAndAdvanceCursor(scanner, &dependent_locality_);
+      return SetFieldAndAdvanceCursor(scanner, dependent_locality_result,
+                                      &dependent_locality_);
     if (city_result != RESULT_MATCH_NONE)
-      return SetFieldAndAdvanceCursor(scanner, &city_);
+      return SetFieldAndAdvanceCursor(scanner, city_result, &city_);
     if (state_result != RESULT_MATCH_NONE)
-      return SetFieldAndAdvanceCursor(scanner, &state_);
+      return SetFieldAndAdvanceCursor(scanner, state_result, &state_);
     if (country_result != RESULT_MATCH_NONE)
-      return SetFieldAndAdvanceCursor(scanner, &country_);
+      return SetFieldAndAdvanceCursor(scanner, country_result, &country_);
     if (between_streets_or_landmark_result != RESULT_MATCH_NONE) {
-      return SetFieldAndAdvanceCursor(scanner, &between_streets_or_landmark_);
+      return SetFieldAndAdvanceCursor(scanner,
+                                      between_streets_or_landmark_result,
+                                      &between_streets_or_landmark_);
     }
     if (overflow_and_landmark_result != RESULT_MATCH_NONE) {
-      return SetFieldAndAdvanceCursor(scanner, &overflow_and_landmark_);
+      return SetFieldAndAdvanceCursor(scanner, overflow_and_landmark_result,
+                                      &overflow_and_landmark_);
     }
     if (overflow_result != RESULT_MATCH_NONE) {
-      return SetFieldAndAdvanceCursor(scanner, &overflow_);
+      return SetFieldAndAdvanceCursor(scanner, overflow_result, &overflow_);
     }
     if (landmark_result != RESULT_MATCH_NONE) {
-      return SetFieldAndAdvanceCursor(scanner, &landmark_);
+      return SetFieldAndAdvanceCursor(scanner, landmark_result, &landmark_);
     }
     if (between_streets_result != RESULT_MATCH_NONE) {
-      return SetFieldAndAdvanceCursor(scanner, &between_streets_);
+      return SetFieldAndAdvanceCursor(scanner, between_streets_result,
+                                      &between_streets_);
     }
     if (between_street_lines12_result != RESULT_MATCH_NONE &&
         !between_streets_line_1_) {
-      return SetFieldAndAdvanceCursor(scanner, &between_streets_line_1_);
+      return SetFieldAndAdvanceCursor(scanner, between_street_lines12_result,
+                                      &between_streets_line_1_);
     }
     if (between_street_lines12_result != RESULT_MATCH_NONE &&
         !between_streets_line_2_) {
-      return SetFieldAndAdvanceCursor(scanner, &between_streets_line_2_);
+      return SetFieldAndAdvanceCursor(scanner, between_street_lines12_result,
+                                      &between_streets_line_2_);
     }
     if (admin_level2_result != RESULT_MATCH_NONE) {
-      return SetFieldAndAdvanceCursor(scanner, &admin_level2_);
+      return SetFieldAndAdvanceCursor(scanner, admin_level2_result,
+                                      &admin_level2_);
     }
     if (zip_result != RESULT_MATCH_NONE)
       return ParseZipCode(context, scanner);
@@ -736,7 +744,7 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
   // the field to the country.
   if (num_of_matches == 2 && state_result != RESULT_MATCH_NONE &&
       country_result != RESULT_MATCH_NONE)
-    return SetFieldAndAdvanceCursor(scanner, &country_);
+    return SetFieldAndAdvanceCursor(scanner, country_result, &country_);
 
   // By default give the name priority over the label.
   ParseNameLabelResult results_to_match[] = {RESULT_MATCH_NAME,
@@ -762,36 +770,44 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
 
   for (const auto result : results_to_match) {
     if (dependent_locality_result == result)
-      return SetFieldAndAdvanceCursor(scanner, &dependent_locality_);
+      return SetFieldAndAdvanceCursor(scanner, dependent_locality_result,
+                                      &dependent_locality_);
     if (city_result == result)
-      return SetFieldAndAdvanceCursor(scanner, &city_);
+      return SetFieldAndAdvanceCursor(scanner, city_result, &city_);
     if (state_result == result)
-      return SetFieldAndAdvanceCursor(scanner, &state_);
+      return SetFieldAndAdvanceCursor(scanner, state_result, &state_);
     if (country_result == result)
-      return SetFieldAndAdvanceCursor(scanner, &country_);
+      return SetFieldAndAdvanceCursor(scanner, country_result, &country_);
     if (between_streets_or_landmark_result == result) {
-      return SetFieldAndAdvanceCursor(scanner, &between_streets_or_landmark_);
+      return SetFieldAndAdvanceCursor(scanner,
+                                      between_streets_or_landmark_result,
+                                      &between_streets_or_landmark_);
     }
     if (overflow_and_landmark_result == result) {
-      return SetFieldAndAdvanceCursor(scanner, &overflow_and_landmark_);
+      return SetFieldAndAdvanceCursor(scanner, overflow_and_landmark_result,
+                                      &overflow_and_landmark_);
     }
     if (overflow_result == result) {
-      return SetFieldAndAdvanceCursor(scanner, &overflow_);
+      return SetFieldAndAdvanceCursor(scanner, overflow_result, &overflow_);
     }
     if (landmark_result == result) {
-      return SetFieldAndAdvanceCursor(scanner, &landmark_);
+      return SetFieldAndAdvanceCursor(scanner, landmark_result, &landmark_);
     }
     if (between_streets_result == result) {
-      return SetFieldAndAdvanceCursor(scanner, &between_streets_);
+      return SetFieldAndAdvanceCursor(scanner, between_streets_result,
+                                      &between_streets_);
     }
     if (between_street_lines12_result == result && !between_streets_line_1_) {
-      return SetFieldAndAdvanceCursor(scanner, &between_streets_line_1_);
+      return SetFieldAndAdvanceCursor(scanner, between_street_lines12_result,
+                                      &between_streets_line_1_);
     }
     if (between_street_lines12_result == result && !between_streets_line_2_) {
-      return SetFieldAndAdvanceCursor(scanner, &between_streets_line_2_);
+      return SetFieldAndAdvanceCursor(scanner, between_street_lines12_result,
+                                      &between_streets_line_2_);
     }
     if (admin_level2_result == result) {
-      return SetFieldAndAdvanceCursor(scanner, &admin_level2_);
+      return SetFieldAndAdvanceCursor(scanner, admin_level2_result,
+                                      &admin_level2_);
     }
     if (zip_result == result)
       return ParseZipCode(context, scanner);
@@ -819,13 +835,15 @@ AddressFieldParser::ParseNameAndLabelForZipCode(ParsingContext& context,
 
   size_t saved_cursor = scanner->SaveCursor();
   bool found_non_zip4 = ParseCity(context, scanner);
-  if (found_non_zip4)
-    city_ = nullptr;
+  if (found_non_zip4) {
+    city_.reset();
+  }
   scanner->RewindTo(saved_cursor);
   if (!found_non_zip4) {
     found_non_zip4 = ParseState(context, scanner);
-    if (found_non_zip4)
-      state_ = nullptr;
+    if (found_non_zip4) {
+      state_.reset();
+    }
     scanner->RewindTo(saved_cursor);
   }
 
@@ -1037,6 +1055,29 @@ AddressFieldParser::ParseNameAndLabelForAdminLevel2(ParsingContext& context,
       GetMatchPatterns("ADMIN_LEVEL_2", context);
   return ParseNameAndLabelSeparately(context, scanner, admin_level2_patterns,
                                      &admin_level2_, "ADMIN_LEVEL_2");
+}
+
+bool AddressFieldParser::SetFieldAndAdvanceCursor(
+    AutofillScanner* scanner,
+    ParseNameLabelResult parse_result,
+    std::optional<FormFieldParser::FieldAndMatchInfo>* match) {
+  auto match_attribute_of = [](ParseNameLabelResult parse_result) {
+    switch (parse_result) {
+      case RESULT_MATCH_NONE:
+        NOTREACHED();
+      case RESULT_MATCH_LABEL:
+      // Since the parser matches against the label first, interpret
+      // RESULT_MATCH_NAME_LABEL as a label match.
+      case RESULT_MATCH_NAME_LABEL:
+        return MatchAttribute::kLabel;
+      case RESULT_MATCH_NAME:
+        return MatchAttribute::kName;
+    }
+  };
+  *match = {scanner->Cursor(),
+            {.matched_attribute = match_attribute_of(parse_result)}};
+  scanner->Advance();
+  return true;
 }
 
 bool AddressFieldParser::ParseFieldSpecificsForHouseNumberAndApt(

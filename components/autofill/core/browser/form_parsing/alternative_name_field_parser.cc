@@ -28,7 +28,7 @@ class AlternativeFullNameField : public AlternativeNameFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  raw_ptr<AutofillField> alternative_full_name_{nullptr};
+  std::optional<FieldAndMatchInfo> alternative_full_name_;
 };
 
 // static
@@ -91,8 +91,8 @@ class AlternativeFamilyAndGivenNameField : public AlternativeNameFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  raw_ptr<AutofillField> alternative_given_name_{nullptr};
-  raw_ptr<AutofillField> alternative_family_name_{nullptr};
+  std::optional<FieldAndMatchInfo> alternative_given_name_;
+  std::optional<FieldAndMatchInfo> alternative_family_name_;
 };
 
 // static

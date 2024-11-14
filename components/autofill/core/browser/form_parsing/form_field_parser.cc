@@ -467,17 +467,17 @@ bool FormFieldParser::ParseField(
     ParsingContext& context,
     AutofillScanner* scanner,
     base::span<const MatchPatternRef> patterns,
-    raw_ptr<AutofillField>* match,
+    std::optional<FieldAndMatchInfo>* match,
     const char* regex_name,
     MatchParams (*projection)(const MatchParams&)) {
   if (scanner->IsEnd()) {
     return false;
   }
   AutofillField* field = scanner->Cursor();
-  if (FieldMatchesMatchPatternRef(context, patterns, *field, regex_name,
-                                  {projection})) {
+  if (std::optional<MatchInfo> match_info = FieldMatchesMatchPatternRef(
+          context, patterns, *field, regex_name, {projection})) {
     if (match) {
-      *match = field;
+      *match = {.field = field, .match_info = *match_info};
     }
     scanner->Advance();
     return true;
@@ -528,7 +528,7 @@ bool FormFieldParser::ParseInAnyOrder(
 // static
 bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
                                       AutofillScanner* scanner,
-                                      raw_ptr<AutofillField>* match) {
+                                      std::optional<FieldAndMatchInfo>* match) {
   if (scanner->IsEnd()) {
     return false;
   }
@@ -547,7 +547,7 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
   if (Match(context, field, kEmptyLabelRegex, {MatchAttribute::kLabel},
             "kEmptyLabelRegex")) {
     if (match) {
-      *match = field;
+      *match = {field, MatchInfo{.matched_attribute = MatchAttribute::kLabel}};
     }
     scanner->Advance();
     return true;
@@ -556,17 +556,18 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
 }
 
 // static
-void FormFieldParser::AddClassification(const AutofillField* field,
-                                        FieldType type,
-                                        float score,
-                                        FieldCandidatesMap& field_candidates) {
+void FormFieldParser::AddClassification(
+    const std::optional<FieldAndMatchInfo>& match,
+    FieldType type,
+    float parser_score,
+    FieldCandidatesMap& field_candidates) {
   // Several fields are optional.
-  if (field == nullptr) {
+  if (!match.has_value()) {
     return;
   }
 
-  FieldCandidates& candidates = field_candidates[field->global_id()];
-  candidates.AddFieldCandidate(type, score);
+  FieldCandidates& candidates = field_candidates[match->field->global_id()];
+  candidates.AddFieldCandidate(type, parser_score);
 }
 
 // static

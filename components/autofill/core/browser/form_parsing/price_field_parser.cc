@@ -15,21 +15,21 @@ namespace autofill {
 std::unique_ptr<FormFieldParser> PriceFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  raw_ptr<AutofillField> field;
+  std::optional<FieldAndMatchInfo> match;
   base::span<const MatchPatternRef> price_patterns =
       GetMatchPatterns("PRICE", context.page_language, context.pattern_file);
-  if (ParseField(context, scanner, price_patterns, &field, "PRICE")) {
-    return std::make_unique<PriceFieldParser>(field);
+  if (ParseField(context, scanner, price_patterns, &match, "PRICE")) {
+    return std::make_unique<PriceFieldParser>(std::move(*match));
   }
   return nullptr;
 }
 
-PriceFieldParser::PriceFieldParser(const AutofillField* field)
-    : field_(field) {}
+PriceFieldParser::PriceFieldParser(FieldAndMatchInfo match)
+    : match_(std::move(match)) {}
 
 void PriceFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(field_, PRICE, kBasePriceParserScore, field_candidates);
+  AddClassification(match_, PRICE, kBasePriceParserScore, field_candidates);
 }
 
 }  // namespace autofill

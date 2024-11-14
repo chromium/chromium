@@ -20,6 +20,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
 }
 }  // namespace
 
+TravelFieldParser::TravelFieldParser() = default;
 TravelFieldParser::~TravelFieldParser() = default;
 
 // static
