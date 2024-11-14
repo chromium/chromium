@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/scanner/scanner_text.h"
+#include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -24,7 +25,7 @@ namespace ash {
 
 namespace {
 
-class CaptureRegionOverlayControllerTest : public testing::Test {
+class CaptureRegionOverlayControllerTest : public AshTestBase {
  public:
   CaptureRegionOverlayControllerTest() = default;
   CaptureRegionOverlayControllerTest(

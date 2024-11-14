@@ -54,7 +54,7 @@ gfx::Rect GetRectCenteredAtOrigin(const gfx::Size& size) {
 }  // namespace
 
 CaptureRegionOverlayController::CaptureRegionOverlayController() {
-  DCHECK(CanStartSunfishSession());
+  DCHECK(IsSunfishAllowedAndEnabled());
 }
 
 CaptureRegionOverlayController::~CaptureRegionOverlayController() = default;

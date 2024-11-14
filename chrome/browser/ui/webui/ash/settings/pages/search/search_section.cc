@@ -430,7 +430,7 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           IsLobsterSettingsToggleVisible(profile()));
 
   html_source->AddBoolean("isSunfishSettingsToggleVisible",
-                          ash::CanStartSunfishSession());
+                          ash::IsSunfishOrScannerEnabled());
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);

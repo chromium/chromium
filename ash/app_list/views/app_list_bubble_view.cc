@@ -283,7 +283,7 @@ void AppListBubbleView::InitContentsView() {
 
   // Skip the assistant button on arrow up/down in app list.
   button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>();
-  if (CanStartSunfishSession()) {
+  if (IsSunfishAllowedAndEnabled()) {
     button_focus_skipper_->AddButton(search_box_view_->sunfish_button());
   }
   button_focus_skipper_->AddButton(search_box_view_->assistant_button());

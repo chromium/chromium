@@ -433,15 +433,6 @@ void EmitServiceRecordingStatus(recording::mojom::RecordingStatus status) {
   }
 }
 
-PrefService* GetActiveUserPrefService() {
-  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
-
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  DCHECK(pref_service);
-  return pref_service;
-}
-
 base::FilePath GetTempDir() {
   base::FilePath temp_dir;
   if (!base::GetTempDir(&temp_dir))
@@ -527,7 +518,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
     case CaptureModeEntryType::kGameDashboard:
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      DCHECK(CanStartSunfishSession());
+      DCHECK(IsSunfishAllowedAndEnabled());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
@@ -681,16 +672,6 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-bool CaptureModeController::IsSunfishAllowedAndEnabled() {
-  return CanStartSunfishSession() &&
-         // When `AppListControllerImpl` is initialised and indirectly calls
-         // this function, the active user session has not been started yet.
-         // Gracefully handle this case.
-         Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
-         GetActiveUserPrefService()->GetBoolean(prefs::kSunfishEnabled);
-}
-
-// static
 void CaptureModeController::ShowTextCopiedToast() {
   // TODO(crbug.com/375967525): Finalize and translate the toast string.
   ToastManager::Get()->Show(ToastData(kCaptureModeTextCopiedToastId,
@@ -707,7 +688,7 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
 
 void CaptureModeController::MaybeShowDisclaimer(
     base::RepeatingClosure accept_callback) {
-  if (GetActiveUserPrefService()->GetBoolean(
+  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
           kSunfishConsentDisclaimerAccepted)) {
     if (accept_callback) {
       std::move(accept_callback).Run();
@@ -909,8 +890,9 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 void CaptureModeController::StartSunfishSession() {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut);
-  DCHECK(CanStartSunfishSession());
-  if (!GetActiveUserPrefService()->GetBoolean(prefs::kSunfishEnabled)) {
+  DCHECK(IsSunfishAllowedAndEnabled());
+  if (!capture_mode_util::GetActiveUserPrefService()->GetBoolean(
+          prefs::kSunfishEnabled)) {
     return;
   }
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
@@ -969,13 +951,14 @@ bool CaptureModeController::CanShowUserNudge() const {
 }
 
 void CaptureModeController::DisableUserNudgeForever() {
-  GetActiveUserPrefService()->SetBoolean(kCanShowDemoToolsNudge, false);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      kCanShowDemoToolsNudge, false);
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
   DCHECK(!IsCustomFolderManagedByPolicy());
-  GetActiveUserPrefService()->SetBoolean(kUsesDefaultCapturePathPrefName,
-                                         value);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      kUsesDefaultCapturePathPrefName, value);
 
   if (IsActive())
     capture_mode_session_->OnDefaultCaptureFolderSelectionChanged();
@@ -983,7 +966,7 @@ void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
 
 void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
   DCHECK(!IsCustomFolderManagedByPolicy());
-  auto* pref_service = GetActiveUserPrefService();
+  auto* pref_service = capture_mode_util::GetActiveUserPrefService();
   pref_service->SetFilePath(kCustomCapturePathPrefName, path);
 
   // When this function is called, it means the user is switching back to the
@@ -997,7 +980,8 @@ void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
 
 base::FilePath CaptureModeController::GetCustomCaptureFolder() const {
   base::FilePath custom_path =
-      GetActiveUserPrefService()->GetFilePath(kCustomCapturePathPrefName);
+      capture_mode_util::GetActiveUserPrefService()->GetFilePath(
+          kCustomCapturePathPrefName);
   const auto policy_path = delegate_->GetPolicyCapturePath();
   // If admin forced or recommended and there is no user chosen value - use it.
   if (policy_path.enforcement ==
@@ -2005,8 +1989,8 @@ void CaptureModeController::OnDisclaimerAccepted(
     base::RepeatingClosure callback) {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerAccepted);
-  GetActiveUserPrefService()->SetBoolean(kSunfishConsentDisclaimerAccepted,
-                                         true);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, true);
 
   disclaimer_.reset();
   if (callback) {

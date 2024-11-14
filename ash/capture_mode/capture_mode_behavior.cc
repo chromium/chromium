@@ -101,7 +101,7 @@ class DefaultBehavior : public CaptureModeBehavior {
     // TODO(crbug.com/376103983): Verify `CaptureRegionOverlayController` works
     // correctly. It is always created in Sunfish session to paint the region
     // selection UI, but should only support text overlay if Scanner is enabled.
-    return CanStartSunfishSession();
+    return IsSunfishAllowedAndEnabled();
   }
   bool CanPaintRegionOverlay() const override {
     auto* controller = CaptureModeController::Get();
@@ -349,7 +349,7 @@ class SunfishBehavior : public CaptureModeBehavior {
     }
   }
   bool ShouldRegionOverlayBeAllowed() const override {
-    return CanStartSunfishSession();
+    return IsSunfishAllowedAndEnabled();
   }
   bool CanPaintRegionOverlay() const override { return true; }
   bool ShouldShowUserNudge() const override { return false; }
@@ -533,7 +533,7 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
 
 bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
     const {
-  if (!CaptureModeController::IsSunfishAllowedAndEnabled()) {
+  if (!IsSunfishAllowedAndEnabled()) {
     return false;
   }
   auto* controller = CaptureModeController::Get();

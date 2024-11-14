@@ -29,7 +29,6 @@
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/assistant/util/deep_link_util.h"
-#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -40,6 +39,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/feature_discovery_metric_util.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -1775,8 +1775,7 @@ SearchModel* AppListControllerImpl::GetSearchModel() {
 void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
   SearchBoxModel* search_box_model = GetSearchModel()->search_box();
   search_box_model->SetShowAssistantButton(IsAssistantAllowedAndEnabled());
-  search_box_model->SetShowSunfishButton(
-      CaptureModeController::IsSunfishAllowedAndEnabled());
+  search_box_model->SetShowSunfishButton(IsSunfishAllowedAndEnabled());
 
   if (!client_) {
     return;

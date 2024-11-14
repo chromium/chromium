@@ -18,6 +18,8 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/highlight_border.h"
 
+class PrefService;
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -50,6 +52,8 @@ namespace ash {
 class StopRecordingButtonTray;
 
 namespace capture_mode_util {
+
+ASH_EXPORT PrefService* GetActiveUserPrefService();
 
 // Returns true if the capture mode feature is enabled and capture mode is
 // active. This method allows callers to avoid including the full header for

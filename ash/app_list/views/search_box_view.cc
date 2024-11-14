@@ -556,7 +556,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
 
   CreateEndButtonContainer();
 
-  if (CanStartSunfishSession()) {
+  if (IsSunfishAllowedAndEnabled()) {
     views::ImageButton* sunfish_button =
         CreateSunfishButton(base::BindRepeating(
             &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
@@ -812,7 +812,7 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
-  if (CanStartSunfishSession()) {
+  if (IsSunfishAllowedAndEnabled()) {
     sunfish_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(

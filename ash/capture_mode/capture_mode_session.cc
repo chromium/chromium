@@ -3270,7 +3270,7 @@ void CaptureModeSession::RemoveAllActionButtons() {
 }
 
 void CaptureModeSession::UpdateFeedbackButtonWidget() {
-  if (!CanStartSunfishSession()) {
+  if (!IsSunfishAllowedAndEnabled()) {
     return;
   }
 
@@ -3327,7 +3327,7 @@ bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
 }
 
 bool CaptureModeSession::ShouldShowActionContainerWidget() const {
-  if (!CaptureModeController::IsSunfishAllowedAndEnabled()) {
+  if (!IsSunfishAllowedAndEnabled()) {
     return false;
   }
 
