@@ -119,6 +119,8 @@ class ModelExecutionManagerTest : public testing::Test {
   }
   ~ModelExecutionManagerTest() override = default;
 
+  // Sets up most of the fields except `model_execution_manager_` and
+  // `component_manager_`, which are left to the test cases to set up.
   void SetUp() override {
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -126,24 +128,26 @@ class ModelExecutionManagerTest : public testing::Test {
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     model_execution::prefs::RegisterLocalStatePrefs(local_state_->registry());
     service_controller_ = base::MakeRefCounted<FakeServiceController>();
-    CreateModelExecutionManager();
   }
 
   void CreateModelExecutionManager() {
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
         url_loader_factory_, local_state_.get(),
         identity_test_env_.identity_manager(), service_controller_,
-        &model_provider_, /*on_device_component_state_manager=*/nullptr,
+        &model_provider_,
+        component_manager_ ? component_manager_->get()->GetWeakPtr() : nullptr,
         &optimization_guide_logger_, nullptr);
   }
 
-  void CreateAndObserveComponentManager() {
+  void CreateComponentManager(bool should_observe) {
     component_manager_ =
         std::make_unique<TestOnDeviceModelComponentStateManager>(
             local_state_.get());
     component_manager_->get()->OnStartup();
     task_environment_.FastForwardBy(base::Seconds(1));
-    component_manager_->get()->AddObserver(model_execution_manager_.get());
+    if (should_observe) {
+      component_manager_->get()->AddObserver(model_execution_manager_.get());
+    }
   }
 
   bool SimulateResponse(const std::string& content,
@@ -189,11 +193,6 @@ class ModelExecutionManagerTest : public testing::Test {
     component_manager_->SetReady(base::FilePath());
   }
 
-  bool IsModelComponentReady() {
-    return component_manager_->get()->GetOnDeviceModelStatus() ==
-           optimization_guide::OnDeviceModelStatus::kReady;
-  }
-
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -220,6 +219,7 @@ class ModelExecutionManagerTest : public testing::Test {
 };
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   model_execution_manager()->ExecuteModel(
@@ -245,6 +245,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -284,6 +285,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
   base::RunLoop run_loop;
@@ -324,6 +326,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
 
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithServerErrorAllowedForLogging) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
   base::RunLoop run_loop;
@@ -373,6 +376,7 @@ TEST_F(ModelExecutionManagerTest,
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetOnDeviceOnly) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
   base::RunLoop run_loop;
@@ -393,6 +397,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetOnDeviceOnly) {
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetToServerOnly) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
   base::RunLoop run_loop;
@@ -443,6 +448,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetToServerOnly) {
 
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelExecutionModeExplicitlySetToDefault) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
   base::RunLoop run_loop;
@@ -492,6 +498,7 @@ TEST_F(ModelExecutionManagerTest,
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
   base::RunLoop run_loop;
@@ -535,6 +542,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
 }
 
 TEST_F(ModelExecutionManagerTest, LogsContextToExecutionTimeHistogram) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
@@ -588,6 +596,7 @@ TEST_F(ModelExecutionManagerTest,
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
+  CreateModelExecutionManager();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   // Message is added through AddContext().
@@ -613,6 +622,7 @@ TEST_F(ModelExecutionManagerTest,
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
+  CreateModelExecutionManager();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   session->AddContext(UserInputRequest("first test"));
@@ -638,6 +648,7 @@ TEST_F(ModelExecutionManagerTest,
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
+  CreateModelExecutionManager();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   // First message is added through AddContext().
@@ -659,6 +670,7 @@ TEST_F(ModelExecutionManagerTest,
 }
 
 TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop_old, run_loop_new;
 
@@ -723,6 +735,7 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
 }
 
 TEST_F(ModelExecutionManagerTest, DoesNotRegisterTextSafetyIfNotEnabled) {
+  CreateModelExecutionManager();
   EXPECT_FALSE(model_provider()->was_registered());
 }
 
@@ -739,28 +752,39 @@ class ModelExecutionManagerSafetyEnabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(ModelExecutionManagerSafetyEnabledTest,
+       RegistersTextSafetyModelWithOverrideModel) {
+  // Effectively, when an override is set, the model component will be ready
+  // before ModelExecutionManager can be added as an observer. Here we simulate
+  // that by simply setting up the component without adding
+  // ModelExecutionManager as an observer.
+  CreateComponentManager(/*should_observe=*/false);
+  SetModelComponentReady();
+  CreateModelExecutionManager();
+
+  EXPECT_TRUE(model_provider()->was_registered());
+}
+
 TEST_F(ModelExecutionManagerSafetyEnabledTest,
        RegistersTextSafetyModelIfEnabled) {
+  CreateModelExecutionManager();
   EXPECT_FALSE(model_provider()->was_registered());
 
   // Text safety model should only be registered after the base model is ready.
   local_state()->SetInteger(
       model_execution::prefs::localstate::kOnDevicePerformanceClass,
       base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
-  CreateAndObserveComponentManager();
+  CreateComponentManager(/*should_observe=*/true);
   SetModelComponentReady();
 
-  // Some test devices may still be blocked by OS, or device restrictions,
-  // and not be in the "ready" state.
-  if (IsModelComponentReady()) {
-    EXPECT_TRUE(model_provider()->was_registered());
-  } else {
-    EXPECT_FALSE(model_provider()->was_registered());
-  }
+  EXPECT_TRUE(model_provider()->was_registered());
 }
+#endif
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest,
        DoesNotNotifyServiceControllerWrongTarget) {
+  CreateModelExecutionManager();
   std::unique_ptr<ModelInfo> model_info =
       TestModelInfoBuilder().SetVersion(123).Build();
   model_execution_manager()->OnModelUpdated(
@@ -770,6 +794,7 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest,
 }
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest, NotifiesServiceController) {
+  CreateModelExecutionManager();
   std::unique_ptr<ModelInfo> model_info =
       TestModelInfoBuilder().SetVersion(123).Build();
   model_execution_manager()->OnModelUpdated(
@@ -779,6 +804,7 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest, NotifiesServiceController) {
 }
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest, UpdateLanguageDetection) {
+  CreateModelExecutionManager();
   const base::FilePath kTestPath{FILE_PATH_LITERAL("foo")};
   std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder()
                                               .SetVersion(123)
@@ -791,6 +817,7 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest, UpdateLanguageDetection) {
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest,
        NotRegisteredWhenDisabledByEnterprisePolicy) {
+  CreateModelExecutionManager();
   model_provider()->Reset();
   local_state()->SetInteger(
       model_execution::prefs::localstate::

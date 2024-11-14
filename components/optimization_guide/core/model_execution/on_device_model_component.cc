@@ -227,6 +227,11 @@ void OnDeviceModelComponentStateManager::InstallerRegistered() {
       state_ != nullptr);
 }
 
+bool OnDeviceModelComponentStateManager::IsInstallerRegistered() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return state_ != nullptr;
+}
+
 void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (switches::GetOnDeviceModelExecutionOverride()) {

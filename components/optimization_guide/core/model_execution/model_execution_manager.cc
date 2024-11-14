@@ -185,6 +185,11 @@ ModelExecutionManager::ModelExecutionManager(
           GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed) {
     return;
   }
+
+  if (on_device_component_state_manager &&
+      on_device_component_state_manager->IsInstallerRegistered()) {
+    RegisterTextSafetyAndLanguageModels();
+  }
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
@@ -444,6 +449,18 @@ void ModelExecutionManager::OnModelExecuteResponse(
                           std::move(log_entry));
 }
 
+void ModelExecutionManager::RegisterTextSafetyAndLanguageModels() {
+  if (!did_register_for_supplementary_on_device_models_) {
+    did_register_for_supplementary_on_device_models_ = true;
+    model_provider_->AddObserverForOptimizationTargetModel(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
+        /*model_metadata=*/std::nullopt, this);
+    model_provider_->AddObserverForOptimizationTargetModel(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+        /*model_metadata=*/std::nullopt, this);
+  }
+}
+
 void ModelExecutionManager::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     base::optional_ref<const ModelInfo> model_info) {
@@ -469,13 +486,7 @@ void ModelExecutionManager::OnModelUpdated(
 void ModelExecutionManager::StateChanged(
     const OnDeviceModelComponentState* state) {
   if (state) {
-    did_register_for_supplementary_on_device_models_ = true;
-    model_provider_->AddObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
-        /*model_metadata=*/std::nullopt, this);
-    model_provider_->AddObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-        /*model_metadata=*/std::nullopt, this);
+    RegisterTextSafetyAndLanguageModels();
   }
 }
 
