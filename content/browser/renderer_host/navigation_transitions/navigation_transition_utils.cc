@@ -138,7 +138,9 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
                << entry->GetURL();
     if (entry) {
       entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-          CacheHitOrMissReason::kCapturedEmptyBitmap);
+          is_copied_from_embedder
+              ? CacheHitOrMissReason::kCapturedEmptyBitmapFromEmbedder
+              : CacheHitOrMissReason::kCapturedEmptyBitmapFromWebPage);
     }
     return;
   }
