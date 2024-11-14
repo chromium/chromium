@@ -557,7 +557,8 @@ chromium-metrics-reviews@google.com.
   <int value="100196" label="DynamicColorColorScheme"/>
   <int value="100197" label="DynamicColorSeedColor"/>
   <int value="100198" label="LongPressDiacritics"/>
-  <int value="100199" label="SidePanelCompanionEntryPinnedToToolbar"/>
+  <int value="100199"
+      label="(Obsolete) SidePanelCompanionEntryPinnedToToolbar"/>
   <int value="100200" label="AccessibilityColorCorrectionEnabled"/>
   <int value="100201" label="AccessibilityColorVisionCorrectionAmount"/>
   <int value="100202" label="AccessibilityColorVisionCorrectionType"/>

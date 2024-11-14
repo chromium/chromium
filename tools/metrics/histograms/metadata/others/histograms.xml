@@ -191,7 +191,6 @@ chromium-metrics-reviews@google.com.
 <variants name="TopChromeWebUIName">
   <variant name=""/>
   <variant name=".BookmarksSidePanel"/>
-  <variant name=".CompanionSidePanelUntrusted"/>
   <variant name=".Compose"/>
   <variant name=".CustomizeChrome"/>
   <variant name=".DataSharingBubble"/>
@@ -10724,7 +10723,6 @@ regressions. -->
     <variant name="ShowPerformanceSettings"/>
     <variant name="ShowReadingModeSidePanel"/>
     <variant name="ShowSavedTabGroups"/>
-    <variant name="ShowSearchCompanion"/>
     <variant name="ShowSigninWhenPaused"/>
     <variant name="ShowSyncSettings"/>
     <variant name="ShowTranslate"/>

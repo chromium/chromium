@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="iOS Spotlight (Camera)"/>
   <int value="11" label="Plus Button (Camera)"/>
   <int value="12" label="Web Search Bar (Camera)"/>
-  <int value="13" label="Companion (Region)"/>
+  <int value="13" label="(Obsolete) Companion (Region) Deprecated 11/2024."/>
   <int value="14" label="Translate Onebox (Camera)"/>
   <int value="15" label="iOS Shortcuts App (Camera)"/>
   <int value="16" label="Web Images Search Bar (Camera)"/>

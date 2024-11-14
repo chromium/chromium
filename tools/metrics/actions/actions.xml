@@ -36806,6 +36806,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SidePanel.Companion.Pinned.BySidePanelHeaderButton">
+  <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
@@ -36815,6 +36816,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SidePanel.Companion.Shown">
+  <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
@@ -36823,6 +36825,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SidePanel.Companion.Unpinned.ByPinnedButtonContextMenu">
+  <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
@@ -36832,6 +36835,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SidePanel.Companion.Unpinned.BySidePanelHeaderButton">
+  <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
@@ -37871,6 +37875,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromSearchCompanion">
+  <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>shaktisahu@google.com</owner>
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
@@ -38713,6 +38718,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromSearchCompanion">
+  <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>shaktisahu@google.com</owner>
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
