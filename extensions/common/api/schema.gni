@@ -92,7 +92,6 @@ if (enable_extensions) {
   if (is_chromeos_ash) {
     extensions_api_schema_files_ += [
       "diagnostics.idl",
-      "lock_screen_data.idl",
       "media_perception_private.idl",
     ]
   }

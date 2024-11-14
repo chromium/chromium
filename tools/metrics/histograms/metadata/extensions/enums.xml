@@ -3109,7 +3109,7 @@ Called by update_extension_permission.py.-->
   <int value="202" label="kVirtualKeyboard"/>
   <int value="203" label="kDeleted_NetworkingCastPrivate"/>
   <int value="204" label="kMediaPerceptionPrivate"/>
-  <int value="205" label="kLockScreen"/>
+  <int value="205" label="kDeleted_LockScreen"/>
   <int value="206" label="kNewTabPageOverride"/>
   <int value="207" label="kDeclarativeNetRequest"/>
   <int value="208" label="kLockWindowFullscreenPrivate"/>

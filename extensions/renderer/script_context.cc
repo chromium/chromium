@@ -75,8 +75,6 @@ std::string GetContextTypeDescriptionString(mojom::ContextType context_type) {
       return "WEBUI";
     case mojom::ContextType::kUntrustedWebUi:
       return "WEBUI_UNTRUSTED";
-    case mojom::ContextType::kLockscreenExtension:
-      return "LOCK_SCREEN_EXTENSION";
     case mojom::ContextType::kOffscreenExtension:
       return "OFFSCREEN_EXTENSION_CONTEXT";
     case mojom::ContextType::kUserScript:

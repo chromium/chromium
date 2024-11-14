@@ -202,7 +202,6 @@ AppWindow::CreateParams::CreateParams()
       focused(true),
       always_on_top(false),
       visible_on_all_workspaces(false),
-      show_on_lock_screen(false),
       show_in_shelf(false) {}
 
 AppWindow::CreateParams::CreateParams(const CreateParams& other) = default;
@@ -321,7 +320,6 @@ void AppWindow::Init(const GURL& url,
 
   requested_alpha_enabled_ = new_params.alpha_enabled;
   is_ime_window_ = params.is_ime_window;
-  show_on_lock_screen_ = params.show_on_lock_screen;
   show_in_shelf_ = params.show_in_shelf;
 
   AppWindowClient* app_window_client = AppWindowClient::Get();

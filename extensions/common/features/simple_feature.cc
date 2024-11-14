@@ -127,8 +127,6 @@ std::string GetDisplayName(mojom::ContextType context) {
       return "webui";
     case mojom::ContextType::kUntrustedWebUi:
       return "webui untrusted";
-    case mojom::ContextType::kLockscreenExtension:
-      return "lock screen app";
     case mojom::ContextType::kOffscreenExtension:
       return "offscreen document";
     case mojom::ContextType::kUserScript:

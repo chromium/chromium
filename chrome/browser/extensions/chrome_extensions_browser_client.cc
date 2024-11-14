@@ -690,12 +690,6 @@ KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
   return kiosk_delegate_.get();
 }
 
-bool ChromeExtensionsBrowserClient::IsLockScreenContext(
-    content::BrowserContext* context) {
-  // TODO(crbug.com/376354347): Remove this method.
-  return false;
-}
-
 std::string ChromeExtensionsBrowserClient::GetApplicationLocale() {
   return g_browser_process->GetApplicationLocale();
 }

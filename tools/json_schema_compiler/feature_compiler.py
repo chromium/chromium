@@ -178,8 +178,6 @@ FEATURE_GRAMMAR = ({
                 'mojom::ContextType::kPrivilegedWebPage',
                 'content_script':
                 'mojom::ContextType::kContentScript',
-                'lock_screen_extension':
-                'mojom::ContextType::kLockscreenExtension',
                 'offscreen_extension':
                 'mojom::ContextType::kOffscreenExtension',
                 'user_script':

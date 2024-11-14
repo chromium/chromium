@@ -229,7 +229,7 @@ enum APIPermissionID {
   kVirtualKeyboard = 202,
   kDeleted_NetworkingCastPrivate = 203,
   kMediaPerceptionPrivate = 204,
-  kLockScreen = 205,
+  kDeleted_LockScreen = 205,
   kNewTabPageOverride = 206,
   kDeclarativeNetRequest = 207,
   kLockWindowFullscreenPrivate = 208,

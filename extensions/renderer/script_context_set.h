@@ -110,10 +110,6 @@ class ScriptContextSet : public ScriptContextSetIterable {
   // Cleans up contexts belonging to an unloaded extension.
   void OnExtensionUnloaded(const ExtensionId& extension_id);
 
-  void set_is_lock_screen_context(bool is_lock_screen_context) {
-    is_lock_screen_context_ = is_lock_screen_context;
-  }
-
   // Adds the given |context| for testing purposes.
   void AddForTesting(std::unique_ptr<ScriptContext> context);
 
@@ -141,10 +137,6 @@ class ScriptContextSet : public ScriptContextSetIterable {
 
   // The set of all ScriptContexts we own.
   std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_;
-
-  // Whether the script context set is associated with the renderer active on
-  // the Chrome OS lock screen.
-  bool is_lock_screen_context_ = false;
 };
 
 }  // namespace extensions

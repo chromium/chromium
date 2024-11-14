@@ -305,11 +305,6 @@ TestExtensionsBrowserClient::CreateUpdateClient(
              : base::WrapRefCounted(update_client_factory_.Run());
 }
 
-bool TestExtensionsBrowserClient::IsLockScreenContext(
-    content::BrowserContext* context) {
-  return lock_screen_context_ && context == lock_screen_context_;
-}
-
 std::string TestExtensionsBrowserClient::GetApplicationLocale() {
   return l10n_util::GetApplicationLocale(std::string());
 }

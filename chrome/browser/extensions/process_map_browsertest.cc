@@ -507,7 +507,6 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
         mojom::ContextType::kPrivilegedWebPage,
         mojom::ContextType::kWebUi,
         mojom::ContextType::kUntrustedWebUi,
-        mojom::ContextType::kLockscreenExtension,
         mojom::ContextType::kOffscreenExtension,
         mojom::ContextType::kUserScript,
     };

@@ -81,7 +81,6 @@ group("api_implementations") {
       public_deps += [
         "//extensions/browser/api/cec_private",
         "//extensions/browser/api/diagnostics",
-        "//extensions/browser/api/lock_screen_data",
         "//extensions/browser/api/media_perception_private",
         "//extensions/browser/api/virtual_keyboard",
         "//extensions/browser/api/webcam_private",

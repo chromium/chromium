@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/account_id",
-  "+components/user_manager",
-]

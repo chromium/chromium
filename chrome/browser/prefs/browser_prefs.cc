@@ -456,7 +456,6 @@
 #include "components/onc/onc_pref_names.h"  // nogncheck
 #include "components/quirks/quirks_manager.h"
 #include "components/user_manager/user_manager_impl.h"
-#include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
@@ -1108,6 +1107,7 @@ constexpr char kNoteTakingAppsLockScreenToastShown[] =
     "settings.note_taking_apps_lock_screen_toast_shown";
 constexpr char kRestoreLastLockScreenNote[] =
     "settings.restore_last_lock_screen_note";
+constexpr char kLockScreenDataPrefKey[] = "lockScreenDataItems";
 #endif
 
 // Deprecated 11/2024
@@ -1223,6 +1223,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 10/2024.
   registry->RegisterBooleanPref(kBeforeunloadEventCancelByPreventDefaultEnabled,
                                 true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 11/2024.
+  registry->RegisterDictionaryPref(kLockScreenDataPrefKey);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1774,8 +1779,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::CryptAuthDeviceIdProviderImpl::RegisterLocalPrefs(registry);
   extensions::ExtensionAssetsManagerChromeOS::RegisterPrefs(registry);
   extensions::ExtensionsPermissionsTracker::RegisterLocalStatePrefs(registry);
-  extensions::lock_screen_data::LockScreenItemStorage::RegisterLocalState(
-      registry);
   extensions::login_api::RegisterLocalStatePrefs(registry);
   ::onc::RegisterPrefs(registry);
   policy::AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(registry);
@@ -2481,6 +2484,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 10/2024.
   local_state->ClearPref(kBeforeunloadEventCancelByPreventDefaultEnabled);
+
+  // Added 11/2024
+#if BUILDFLAG(IS_CHROMEOS)
+  local_state->ClearPref(kLockScreenDataPrefKey);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

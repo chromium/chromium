@@ -215,14 +215,6 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
     }
   }
 
-  // Resizable lock screen apps will end up maximized by ash. Do it now to
-  // save back-and-forth communication with the window manager. Right now all
-  // lock screen apps either end up maximized (e.g. Keep) or are not resizable.
-  if (create_params.show_on_lock_screen && create_params.resizable) {
-    DCHECK_EQ(ui::mojom::WindowShowState::kDefault, init_params->show_state);
-    init_params->show_state = ui::mojom::WindowShowState::kMaximized;
-  }
-
   const int32_t restore_window_id =
       app_restore::FetchRestoreWindowId(app_window()->extension_id());
   init_params->init_properties_container.SetProperty(

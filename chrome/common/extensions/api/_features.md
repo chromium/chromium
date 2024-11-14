@@ -217,8 +217,7 @@ property.
 
 Accepted values are a list of strings from `privileged_extension`,
 `privileged_web_page`, `content_script`, `extension_service_worker`,
-`lock_screen_extension`, `web_page`, `webui`, `webui_untrusted`, and
-`unprivileged_extension`.
+`web_page`, `webui`, `webui_untrusted`, and `unprivileged_extension`.
 
 The `lock_screen_extension` context is used instead of `privileged_extension`
 context for extensions on the Chrome OS lock screen. Other extensions related

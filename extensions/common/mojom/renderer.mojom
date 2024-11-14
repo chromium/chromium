@@ -103,11 +103,9 @@ interface Renderer {
   SetDeveloperMode(bool developer_mode_only);
 
   // Informs the renderer what channel (dev, beta, stable, etc) and user session
-  // type is running. |is_lock_screen_context| represents whether the browser
-  // context is associated with Chrome OS lock screen.
+  // type is running.
   SetSessionInfo(Channel channel,
-                 FeatureSessionType session,
-                 bool is_lock_screen_context);
+                 FeatureSessionType session);
 
   // Tells the renderer process the platform's system font.
   SetSystemFont(string font_family, string font_size);

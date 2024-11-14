@@ -302,11 +302,6 @@ KioskDelegate* DesktopAndroidExtensionsBrowserClient::GetKioskDelegate() {
   return kiosk_delegate_.get();
 }
 
-bool DesktopAndroidExtensionsBrowserClient::IsLockScreenContext(
-    content::BrowserContext* context) {
-  return false;
-}
-
 std::string DesktopAndroidExtensionsBrowserClient::GetApplicationLocale() {
   return "en-US";
 }

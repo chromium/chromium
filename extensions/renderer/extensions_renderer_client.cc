@@ -149,7 +149,6 @@ bool ExtensionsRendererClient::AllowPopup() {
     case mojom::ContextType::kUntrustedWebUi:
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUserScript:
-    case mojom::ContextType::kLockscreenExtension:
       return false;
     case mojom::ContextType::kPrivilegedExtension:
       return !current_context->IsForServiceWorker();
@@ -173,7 +172,6 @@ ExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
   switch (current_context->context_type()) {
     case mojom::ContextType::kPrivilegedWebPage:
     case mojom::ContextType::kContentScript:
-    case mojom::ContextType::kLockscreenExtension:
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUnprivilegedExtension:
     case mojom::ContextType::kUnspecified:

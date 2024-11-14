@@ -428,27 +428,6 @@ TEST_F(SimpleFeatureTest, Context) {
                                       kUnspecifiedContextId, TestContextData())
                 .result());
 
-  {
-    Feature::Availability availability = feature.IsAvailableToContext(
-        extension.get(), mojom::ContextType::kLockscreenExtension,
-        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId, TestContextData());
-    EXPECT_EQ(Feature::INVALID_CONTEXT, availability.result());
-    EXPECT_EQ(
-        "'somefeature' is only allowed to run in privileged pages, "
-        "but this is a lock screen app",
-        availability.message());
-  }
-
-  feature.set_contexts({mojom::ContextType::kLockscreenExtension});
-
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature
-                .IsAvailableToContext(extension.get(),
-                                      mojom::ContextType::kLockscreenExtension,
-                                      Feature::CHROMEOS_PLATFORM,
-                                      kUnspecifiedContextId, TestContextData())
-                .result());
-
   feature.set_min_manifest_version(22);
   EXPECT_EQ(Feature::INVALID_MIN_MANIFEST_VERSION,
             feature

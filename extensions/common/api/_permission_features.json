@@ -329,15 +329,6 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
-  "lockScreen": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist":  [
-      "6F9C741B8E0E546652134F1138DF0284A7C9B21E",  // http://crbug.com/728309
-      "47448626CB266C60AA2404E4EB426E025DF497DF"   // http://crbug.com/728309
-    ]
-  },
   "mediaPerceptionPrivate": [{
     "channel": "stable",
     "extension_types": ["platform_app"],

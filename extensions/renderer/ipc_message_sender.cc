@@ -184,7 +184,6 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
           switch (script_context->context_type()) {
             case mojom::ContextType::kPrivilegedExtension:
             case mojom::ContextType::kUnprivilegedExtension:
-            case mojom::ContextType::kLockscreenExtension:
             case mojom::ContextType::kOffscreenExtension:
               info->source_endpoint =
                   MessagingEndpoint::ForExtension(extension->id());

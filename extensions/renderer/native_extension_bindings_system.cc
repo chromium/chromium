@@ -232,7 +232,6 @@ bool ArePromisesAllowed(v8::Local<v8::Context> context) {
     case mojom::ContextType::kUnspecified:
     case mojom::ContextType::kPrivilegedWebPage:
     case mojom::ContextType::kPrivilegedExtension:
-    case mojom::ContextType::kLockscreenExtension:
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUnprivilegedExtension:
     case mojom::ContextType::kUserScript:
@@ -575,7 +574,6 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       is_webpage = true;
       break;
     case mojom::ContextType::kPrivilegedExtension:
-    case mojom::ContextType::kLockscreenExtension:
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUnprivilegedExtension:
     case mojom::ContextType::kUserScript:

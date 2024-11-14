@@ -315,11 +315,6 @@ KioskDelegate* ShellExtensionsBrowserClient::GetKioskDelegate() {
   return kiosk_delegate_.get();
 }
 
-bool ShellExtensionsBrowserClient::IsLockScreenContext(
-    content::BrowserContext* context) {
-  return false;
-}
-
 std::string ShellExtensionsBrowserClient::GetApplicationLocale() {
   // TODO(michaelpg): Use system locale.
   return "en-US";
