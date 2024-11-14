@@ -784,7 +784,8 @@ TEST_F(SunfishTest, AddActionButton) {
   // Attempt to add a new action button using the API.
   capture_mode_util::AddActionButton(
       views::Button::PressedCallback(), u"Do not show", &kCaptureModeImageIcon,
-      ActionButtonRank(ActionButtonType::kOther, 0));
+      ActionButtonRank(ActionButtonType::kOther, 0),
+      ActionButtonViewID::kScannerButton);
 
   // The region has not been selected yet, so attempting to add a button should
   // do nothing.
@@ -802,7 +803,8 @@ TEST_F(SunfishTest, AddActionButton) {
   bool pressed = false;
   capture_mode_util::AddActionButton(
       base::BindLambdaForTesting([&]() { pressed = true; }), u"Test",
-      &kCaptureModeImageIcon, ActionButtonRank(ActionButtonType::kOther, 0));
+      &kCaptureModeImageIcon, ActionButtonRank(ActionButtonType::kOther, 0),
+      ActionButtonViewID::kScannerButton);
 
   // There should only be one valid button in the session.
   const std::vector<ActionButtonView*> action_buttons =
@@ -836,13 +838,15 @@ TEST_F(SunfishTest, ActionButtonRank) {
   // Add a default action button.
   capture_mode_util::AddActionButton(
       views::Button::PressedCallback(), u"Default 1", &kCaptureModeImageIcon,
-      ActionButtonRank(ActionButtonType::kOther, 1));
+      ActionButtonRank(ActionButtonType::kOther, 1),
+      ActionButtonViewID::kScannerButton);
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
 
   // Add a sunfish action button, which should appear in the rightmost position.
   capture_mode_util::AddActionButton(
       views::Button::PressedCallback(), u"Sunfish", &kCaptureModeImageIcon,
-      ActionButtonRank(ActionButtonType::kSunfish, 0));
+      ActionButtonRank(ActionButtonType::kSunfish, 0),
+      ActionButtonViewID::kSearchButton);
   auto action_buttons = session_test_api.GetActionButtons();
   EXPECT_EQ(action_buttons.size(), 2u);
   EXPECT_EQ(action_buttons[1]->label_for_testing()->GetText(), u"Sunfish");
@@ -851,7 +855,8 @@ TEST_F(SunfishTest, ActionButtonRank) {
   // position.
   capture_mode_util::AddActionButton(
       views::Button::PressedCallback(), u"Default 2", &kCaptureModeImageIcon,
-      ActionButtonRank(ActionButtonType::kOther, 0));
+      ActionButtonRank(ActionButtonType::kOther, 0),
+      ActionButtonViewID::kScannerButton);
   action_buttons = session_test_api.GetActionButtons();
   EXPECT_EQ(action_buttons.size(), 3u);
   EXPECT_EQ(action_buttons[0]->label_for_testing()->GetText(), u"Default 2");
@@ -862,7 +867,8 @@ TEST_F(SunfishTest, ActionButtonRank) {
   // the Sunfish action button.
   capture_mode_util::AddActionButton(
       views::Button::PressedCallback(), u"Scanner", &kCaptureModeImageIcon,
-      ActionButtonRank(ActionButtonType::kScanner, 0));
+      ActionButtonRank(ActionButtonType::kScanner, 0),
+      ActionButtonViewID::kScannerButton);
   action_buttons = session_test_api.GetActionButtons();
   EXPECT_EQ(action_buttons.size(), 4u);
   EXPECT_EQ(action_buttons[0]->label_for_testing()->GetText(), u"Default 2");
@@ -917,7 +923,8 @@ TEST_F(SunfishTest, ActionContainerWidgetOpacity) {
   // opacity should not change.
   capture_mode_util::AddActionButton(
       views::Button::PressedCallback(), u"Do not show", &kCaptureModeImageIcon,
-      ActionButtonRank(ActionButtonType::kOther, 0));
+      ActionButtonRank(ActionButtonType::kOther, 0),
+      ActionButtonViewID::kScannerButton);
   ASSERT_FALSE(session_test_api.GetActionContainerWidget());
 
   // Select a new capture region that does not overlap with the search results
@@ -962,6 +969,8 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   auto* container_widget = session_test_api.GetActionContainerWidget();
   ASSERT_TRUE(container_widget->IsVisible());
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  EXPECT_TRUE(
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
 
   // Set the type to `kVideo`. Test the buttons are hidden.
   controller->SetType(CaptureModeType::kVideo);
@@ -974,6 +983,8 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
                           /*release_mouse=*/true, /*verify_region=*/true);
   EXPECT_TRUE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  EXPECT_TRUE(
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
 
   // Set the source to `kFullscreen`. Test the buttons are hidden.
   controller->SetSource(CaptureModeSource::kFullscreen);
@@ -986,6 +997,8 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
                           /*release_mouse=*/true, /*verify_region=*/true);
   EXPECT_TRUE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  EXPECT_TRUE(
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
 
   // Set the source to `kWindow`. Test the buttons are hidden.
   controller->SetSource(CaptureModeSource::kWindow);
@@ -1066,6 +1079,8 @@ TEST_F(SunfishTest, SearchActionButton) {
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  EXPECT_TRUE(
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
 
   // Click on the "Search" button. Test we end capture mode.
   LeftClickOn(session_test_api.GetActionButtons()[0]);
@@ -1326,7 +1341,8 @@ TEST_F(SunfishTest, RecordSearchButtonShownAndPressed) {
   histogram_tester.ExpectBucketCount(kSearchButtonPressedHistogram, true, 0);
 
   // Click on the search button.
-  LeftClickOn(session_test_api.GetActionButtons()[0]);
+  LeftClickOn(
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   EXPECT_TRUE(controller->search_results_panel_widget());
 
@@ -1374,7 +1390,8 @@ TEST_F(SunfishTest, RecordSearchResultsPanelEntryType) {
 
   // Click on the search button to perform an image search and open
   // the search results panel.
-  LeftClickOn(session_test_api.GetActionButtons()[0]);
+  LeftClickOn(
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   ASSERT_TRUE(controller->search_results_panel_widget());
 

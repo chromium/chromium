@@ -1964,7 +1964,8 @@ void CaptureModeController::OnTextDetectionComplete(
                      weak_ptr_factory_.GetWeakPtr(),
                      base::UTF8ToUTF16(detected_text)),
       u"Copy text", &vector_icons::kContentCopyIcon,
-      ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0});
+      ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
+      ActionButtonViewID::kCopyTextButton);
 
   capture_mode_session_->OnTextDetected();
 }

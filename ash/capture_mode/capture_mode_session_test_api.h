@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_TEST_API_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_TEST_API_H_
 
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/memory/raw_ptr.h"
 
@@ -85,6 +86,9 @@ class CaptureModeSessionTestApi {
   // session. The returned vector will be empty if there are no buttons or there
   // is no selected region.
   std::vector<ActionButtonView*> GetActionButtons() const;
+
+  // Returns the action button with view ID `id`, or nullptr if there is none.
+  ActionButtonView* GetButtonWithViewID(ActionButtonViewID id) const;
 
   CaptureRegionOverlayController* GetCaptureRegionOverlayController() const;
 

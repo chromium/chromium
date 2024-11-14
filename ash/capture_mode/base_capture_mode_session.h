@@ -184,7 +184,8 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
       views::Button::PressedCallback callback,
       std::u16string text,
       const gfx::VectorIcon* icon,
-      ActionButtonRank rank) = 0;
+      ActionButtonRank rank,
+      ActionButtonViewID id) = 0;
 
   // Adds all Scanner action buttons provided below the selected region for this
   // session. These will automatically be assigned a rank depending on the order

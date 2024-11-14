@@ -158,6 +158,16 @@ struct ActionButtonRank {
   int weight;
 };
 
+// View IDs for the `ActionButtonView`s. Note these are not 1:1 to
+// `ActionButtonType`s.
+enum ActionButtonViewID {
+  kSmartActionsButton = 1,
+  kCopyTextButton = 2,
+  kSearchButton = 3,
+  kScannerButton = 4,  // Placeholder view ID for unknown Scanner buttons.
+                       // Replace with explicit buttons as they are known.
+};
+
 }  // namespace ash
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_TYPES_H_

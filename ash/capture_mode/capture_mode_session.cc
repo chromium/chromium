@@ -1362,7 +1362,8 @@ ActionButtonView* CaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,
     const gfx::VectorIcon* icon,
-    ActionButtonRank rank) {
+    ActionButtonRank rank,
+    ActionButtonViewID id) {
   // This function is called asynchronously, and the conditions may have changed
   // since the action widget was updated.
   UpdateActionContainerWidget();
@@ -1395,6 +1396,7 @@ ActionButtonView* CaptureModeSession::AddActionButton(
   // Add the new action button to the vector so it can also be sorted.
   auto new_action_button =
       std::make_unique<ActionButtonView>(std::move(callback), text, icon, rank);
+  new_action_button->SetID(id);
   ActionButtonView* new_action_button_ptr = new_action_button.get();
   action_buttons.push_back(std::move(new_action_button));
 
@@ -1428,7 +1430,8 @@ void CaptureModeSession::OnTextDetected() {
                 &CaptureModeSession::OnSmartActionsButtonPressed,
                 weak_ptr_factory_.GetWeakPtr()),
             u"Smart actions", &kCaptureModeSmartActionsIcon,
-            ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0})) {
+            ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
+            ActionButtonViewID::kCopyTextButton)) {
       action_button->CollapseToIconButton();
     }
   }
@@ -1451,7 +1454,8 @@ void CaptureModeSession::AddScannerActionButtons(
 
     if (ActionButtonView* action_button =
             AddActionButton(std::move(pressed_callback), std::move(text), &icon,
-                            ActionButtonRank{ActionButtonType::kScanner, i})) {
+                            ActionButtonRank{ActionButtonType::kScanner, i},
+                            ActionButtonViewID::kScannerButton)) {
       action_button->set_show_throbber_when_pressed(true);
     }
   }
@@ -2604,7 +2608,8 @@ void CaptureModeSession::OnLocatedEventReleased(
           base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()),
           u"Search with Lens", &kLensIcon,
-          ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1));
+          ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
+          ActionButtonViewID::kSearchButton);
     }
   }
 

@@ -128,7 +128,8 @@ ActionButtonView* NullCaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,
     const gfx::VectorIcon* icon,
-    const ActionButtonRank rank) {
+    const ActionButtonRank rank,
+    ActionButtonViewID id) {
   return nullptr;
 }
 

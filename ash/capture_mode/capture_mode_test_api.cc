@@ -208,7 +208,7 @@ aura::Window* CaptureModeTestApi::GetFolderSelectionDialogWindow() {
 
 void CaptureModeTestApi::SetForceUseGpuMemoryBufferForCameraFrames(bool value) {
   DCHECK(controller_->camera_controller());
-  capture_mode::CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(
+  ::capture_mode::CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(
       value);
 }
 

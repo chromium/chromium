@@ -248,7 +248,8 @@ gfx::Rect GetEffectivePartialRegionBounds(
 ASH_EXPORT void AddActionButton(views::Button::PressedCallback callback,
                                 std::u16string text,
                                 const gfx::VectorIcon* icon,
-                                const ActionButtonRank rank);
+                                const ActionButtonRank rank,
+                                ActionButtonViewID id);
 
 ASH_EXPORT void AnimateToOpacity(
     ui::Layer* layer,
