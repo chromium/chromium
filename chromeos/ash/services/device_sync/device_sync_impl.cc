@@ -455,8 +455,6 @@ void DeviceSyncImpl::ForceSyncNow(ForceSyncNowCallback callback) {
 
 void DeviceSyncImpl::GetGroupPrivateKeyStatus(
     GetGroupPrivateKeyStatusCallback callback) {
-  DCHECK(features::ShouldUseV2DeviceSync);
-
   if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::GetGroupPrivateKeyStatus() invoked "
                        "before initialization was complete. Cannot return "
@@ -473,8 +471,6 @@ void DeviceSyncImpl::GetGroupPrivateKeyStatus(
 
 void DeviceSyncImpl::GetBetterTogetherMetadataStatus(
     GetBetterTogetherMetadataStatusCallback callback) {
-  DCHECK(features::ShouldUseV2DeviceSync);
-
   if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING)
         << "DeviceSyncImpl::GetBetterTogetherMetadataStatus() invoked "
@@ -531,7 +527,6 @@ void DeviceSyncImpl::SetFeatureStatus(const std::string& device_instance_id,
                                       multidevice::SoftwareFeature feature,
                                       FeatureStatusChange status_change,
                                       SetFeatureStatusCallback callback) {
-  DCHECK(features::ShouldUseV2DeviceSync);
   DCHECK(!device_instance_id.empty());
 
   if (status_ != InitializationStatus::kReady) {
@@ -570,8 +565,6 @@ void DeviceSyncImpl::NotifyDevices(
     cryptauthv2::TargetService target_service,
     multidevice::SoftwareFeature feature,
     NotifyDevicesCallback callback) {
-  DCHECK(features::ShouldUseV2DeviceSync);
-
   if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::NotifyDevices() invoked before "
                     << "initialization was complete. Cannot notify devices.";
@@ -1011,8 +1004,6 @@ DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
 }
 
 void DeviceSyncImpl::OnSetFeatureStatusSuccess() {
-  DCHECK(features::ShouldUseV2DeviceSync());
-
   PA_LOG(VERBOSE) << "DeviceSyncImpl::OnSetFeatureStatusSuccess(): "
                   << "Successfully completed SetFeatureStatus() call; "
                   << "requesting force sync.";
@@ -1025,8 +1016,6 @@ void DeviceSyncImpl::OnSetFeatureStatusSuccess() {
 void DeviceSyncImpl::OnSetFeatureStatusError(
     const base::UnguessableToken& request_id,
     NetworkRequestError error) {
-  DCHECK(features::ShouldUseV2DeviceSync());
-
   auto it = id_to_pending_set_feature_status_request_map_.find(request_id);
   if (it == id_to_pending_set_feature_status_request_map_.end()) {
     NOTREACHED() << "DeviceSyncImpl::OnSetFeatureStatusError(): "
@@ -1040,8 +1029,6 @@ void DeviceSyncImpl::OnSetFeatureStatusError(
 
 void DeviceSyncImpl::OnNotifyDevicesSuccess(
     const base::UnguessableToken& request_id) {
-  DCHECK(features::ShouldUseV2DeviceSync());
-
   auto it = pending_notify_devices_callbacks_.find(request_id);
   if (it == pending_notify_devices_callbacks_.end()) {
     NOTREACHED() << "DeviceSyncImpl::OnNotifyDevicesSuccess(): "
@@ -1055,8 +1042,6 @@ void DeviceSyncImpl::OnNotifyDevicesSuccess(
 void DeviceSyncImpl::OnNotifyDevicesError(
     const base::UnguessableToken& request_id,
     NetworkRequestError error) {
-  DCHECK(features::ShouldUseV2DeviceSync());
-
   auto it = pending_notify_devices_callbacks_.find(request_id);
   if (it == pending_notify_devices_callbacks_.end()) {
     NOTREACHED() << "DeviceSyncImpl::OnNotifyDevicesError(): "
@@ -1072,8 +1057,6 @@ void DeviceSyncImpl::OnGetDevicesActivityStatusFinished(
     const base::UnguessableToken& request_id,
     CryptAuthDeviceActivityGetter::DeviceActivityStatusResult
         device_activity_status_result) {
-  DCHECK(features::ShouldUseV2DeviceSync());
-
   auto iter = get_devices_activity_status_callbacks_.find(request_id);
   DCHECK(iter != get_devices_activity_status_callbacks_.end());
   std::move(iter->second)
@@ -1085,8 +1068,6 @@ void DeviceSyncImpl::OnGetDevicesActivityStatusFinished(
 void DeviceSyncImpl::OnGetDevicesActivityStatusError(
     const base::UnguessableToken& request_id,
     NetworkRequestError error) {
-  DCHECK(features::ShouldUseV2DeviceSync());
-
   auto iter = get_devices_activity_status_callbacks_.find(request_id);
   DCHECK(iter != get_devices_activity_status_callbacks_.end());
   std::move(iter->second)

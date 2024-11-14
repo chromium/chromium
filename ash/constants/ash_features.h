@@ -1455,8 +1455,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFeatureAwareDeviceDemoModeEnabled();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV1DeviceSync();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool UseMixedFileLauncherContinueSection();
 
 // Keep alphabetized.

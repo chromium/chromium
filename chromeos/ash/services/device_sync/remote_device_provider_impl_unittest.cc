@@ -250,8 +250,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   // Set the v2 device manager's synced devices to correspond to the first
   // |num_devices| of GetV2RemoteDevices().
   void SetV2ManagerDevices(size_t num_devices) {
-    ASSERT_TRUE(features::ShouldUseV2DeviceSync());
-
     DCHECK_EQ(5u, GetV2RemoteDevices().size());
     static const CryptAuthDeviceRegistry::InstanceIdToDeviceMap
         cryptauth_devices{
@@ -292,8 +290,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   }
 
   void NotifyV2SyncFinished(bool success, bool did_devices_change) {
-    ASSERT_TRUE(features::ShouldUseV2DeviceSync());
-
     fake_v2_device_manager_->NotifyDeviceSyncFinished(CryptAuthDeviceSyncResult(
         success ? CryptAuthDeviceSyncResult::ResultCode::kSuccess
                 : CryptAuthDeviceSyncResult::ResultCode::
@@ -310,8 +306,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   }
 
   void RunV2RemoteDeviceLoader() {
-    ASSERT_TRUE(features::ShouldUseV2DeviceSync());
-
     FakeRemoteDeviceV2Loader* loader =
         fake_remote_device_v2_loader_factory_->instances().back();
     EXPECT_TRUE(loader->id_to_device_map());

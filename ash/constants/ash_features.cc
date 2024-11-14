@@ -4810,14 +4810,6 @@ bool ShouldUseKcerClientCertStore() {
   return base::FeatureList::IsEnabled(kUseKcerClientCertStore);
 }
 
-bool ShouldUseV1DeviceSync() {
-  return false;
-}
-
-bool ShouldUseV2DeviceSync() {
-  return true;
-}
-
 bool IsUseAuthPanelInSessionEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthPanelInSession);
 }

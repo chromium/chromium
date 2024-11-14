@@ -278,7 +278,6 @@ class FakeCryptAuthDeviceRegistryFactory
   // CryptAuthDeviceRegistryImpl::Factory:
   std::unique_ptr<CryptAuthDeviceRegistry> CreateInstance(
       PrefService* pref_service) override {
-    EXPECT_TRUE(features::ShouldUseV2DeviceSync());
     EXPECT_EQ(test_pref_service_, pref_service);
 
     // Only one instance is expected to be created per test.
@@ -396,7 +395,6 @@ class FakeCryptAuthV2DeviceManagerFactory
       PrefService* pref_service,
       AttestationCertificatesSyncer::GetAttestationCertificatesFunction
           get_attestation_certificates_function) override {
-    EXPECT_TRUE(features::ShouldUseV2DeviceSync());
     EXPECT_EQ(client_app_metadata_.SerializeAsString(),
               client_app_metadata.SerializeAsString());
     EXPECT_EQ(fake_device_registry_factory_->instance(), device_registry);
@@ -797,11 +795,9 @@ class DeviceSyncServiceTest : public ::testing::Test {
   void VerifyInitializationStatus(bool expected_to_be_initialized) {
     // CryptAuthV2DeviceManager::Start() is called as the last step of the
     // initialization flow.
-    if (features::ShouldUseV2DeviceSync()) {
-      EXPECT_EQ(
-          expected_to_be_initialized,
-          fake_cryptauth_v2_device_manager_factory_->instance()->has_started());
-    }
+    EXPECT_EQ(
+        expected_to_be_initialized,
+        fake_cryptauth_v2_device_manager_factory_->instance()->has_started());
   }
 
   // Simulates an enrollment with success == |success|. If enrollment was not
@@ -840,16 +836,14 @@ class DeviceSyncServiceTest : public ::testing::Test {
     FakeRemoteDeviceProvider* remote_device_provider =
         fake_remote_device_provider_factory_->instance();
 
-    if (features::ShouldUseV2DeviceSync()) {
-      EXPECT_TRUE(v2_device_manager->IsDeviceSyncInProgress());
-      v2_device_manager->FinishNextForcedDeviceSync(
-          CryptAuthDeviceSyncResult(
-              success ? CryptAuthDeviceSyncResult::ResultCode::kSuccess
-                      : CryptAuthDeviceSyncResult::ResultCode::
-                            kErrorSyncMetadataApiCallBadRequest,
-              !updated_devices.empty(), std::nullopt /* client_directive */),
-          base::Time::Now());
-    }
+    EXPECT_TRUE(v2_device_manager->IsDeviceSyncInProgress());
+    v2_device_manager->FinishNextForcedDeviceSync(
+        CryptAuthDeviceSyncResult(
+            success ? CryptAuthDeviceSyncResult::ResultCode::kSuccess
+                    : CryptAuthDeviceSyncResult::ResultCode::
+                          kErrorSyncMetadataApiCallBadRequest,
+            !updated_devices.empty(), std::nullopt /* client_directive */),
+        base::Time::Now());
 
     if (!updated_devices.empty()) {
       remote_device_provider->set_synced_remote_devices(updated_devices);
@@ -973,28 +967,24 @@ class DeviceSyncServiceTest : public ::testing::Test {
                   kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
               CallGetBetterTogetherMetadataStatus());
 
-    if (features::ShouldUseV2DeviceSync()) {
-      // SetFeatureStatus() should return a struct with the special
-      // kErrorNotInitialized error code.
-      CallSetFeatureStatus(test_devices()[0].instance_id,
-                           multidevice::SoftwareFeature::kBetterTogetherHost,
-                           FeatureStatusChange::kEnableExclusively);
-      EXPECT_EQ(1u, set_feature_status_results_.size());
-      EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
-                set_feature_status_results_[0]);
-    }
+    // SetFeatureStatus() should return a struct with the special
+    // kErrorNotInitialized error code.
+    CallSetFeatureStatus(test_devices()[0].instance_id,
+                         multidevice::SoftwareFeature::kBetterTogetherHost,
+                         FeatureStatusChange::kEnableExclusively);
+    EXPECT_EQ(1u, set_feature_status_results_.size());
+    EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
+              set_feature_status_results_[0]);
 
-    if (features::ShouldUseV2DeviceSync()) {
-      // NotifyDevices() should return a struct with the special
-      // kErrorNotInitialized error code.
-      CallNotifyDevices(
-          {test_devices()[0].instance_id, test_devices()[1].instance_id},
-          cryptauthv2::TargetService::DEVICE_SYNC,
-          multidevice::SoftwareFeature::kBetterTogetherHost);
-      EXPECT_EQ(1u, notify_devices_results_.size());
-      EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
-                notify_devices_results_[0]);
-    }
+    // NotifyDevices() should return a struct with the special
+    // kErrorNotInitialized error code.
+    CallNotifyDevices(
+        {test_devices()[0].instance_id, test_devices()[1].instance_id},
+        cryptauthv2::TargetService::DEVICE_SYNC,
+        multidevice::SoftwareFeature::kBetterTogetherHost);
+    EXPECT_EQ(1u, notify_devices_results_.size());
+    EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
+              notify_devices_results_[0]);
 
     // GetDebugInfo() returns a null DebugInfo before initialization.
     EXPECT_FALSE(CallGetDebugInfo());
@@ -1839,20 +1829,17 @@ TEST_F(DeviceSyncServiceTest, GetDebugInfo) {
   fake_cryptauth_enrollment_manager()->set_is_recovering_from_failure(false);
   fake_cryptauth_enrollment_manager()->set_is_enrollment_in_progress(true);
 
-  if (features::ShouldUseV2DeviceSync()) {
-    fake_cryptauth_v2_device_manager()->ForceDeviceSyncNow(
-        cryptauthv2::ClientMetadata::MANUAL /* invocation_reason */,
-        std::nullopt /* session_id */);
-    fake_cryptauth_v2_device_manager()->FinishNextForcedDeviceSync(
-        CryptAuthDeviceSyncResult(
-            CryptAuthDeviceSyncResult::ResultCode::kSuccess,
-            true /* did_device_registry_change */,
-            std::nullopt /* client_directive */),
-        base::Time::FromDeltaSinceWindowsEpoch(
-            kTimeBetweenEpochAndLastSync) /* device_sync_finish_time */);
-    fake_cryptauth_v2_device_manager()->set_time_to_next_attempt(
-        kTimeUntilNextSync);
-  }
+  fake_cryptauth_v2_device_manager()->ForceDeviceSyncNow(
+      cryptauthv2::ClientMetadata::MANUAL /* invocation_reason */,
+      std::nullopt /* session_id */);
+  fake_cryptauth_v2_device_manager()->FinishNextForcedDeviceSync(
+      CryptAuthDeviceSyncResult(CryptAuthDeviceSyncResult::ResultCode::kSuccess,
+                                true /* did_device_registry_change */,
+                                std::nullopt /* client_directive */),
+      base::Time::FromDeltaSinceWindowsEpoch(
+          kTimeBetweenEpochAndLastSync) /* device_sync_finish_time */);
+  fake_cryptauth_v2_device_manager()->set_time_to_next_attempt(
+      kTimeUntilNextSync);
 
   const auto& result = CallGetDebugInfo();
   EXPECT_TRUE(result);

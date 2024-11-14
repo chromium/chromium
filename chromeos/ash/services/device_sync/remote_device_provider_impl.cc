@@ -61,8 +61,6 @@ RemoteDeviceProviderImpl::~RemoteDeviceProviderImpl() {
 
 void RemoteDeviceProviderImpl::OnDeviceSyncFinished(
     const CryptAuthDeviceSyncResult& device_sync_result) {
-  DCHECK(features::ShouldUseV2DeviceSync());
-
   if (device_sync_result.IsSuccess() &&
       device_sync_result.did_device_registry_change()) {
     LoadV2RemoteDevices();
