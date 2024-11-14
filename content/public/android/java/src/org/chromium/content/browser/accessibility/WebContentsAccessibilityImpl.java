@@ -1993,7 +1993,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     @SuppressLint("WrongConstant")
-    protected void handleDialogModalOpened(int virtualViewId) {
+    protected void handlePaneOpened(int virtualViewId) {
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);

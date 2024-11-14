@@ -72,6 +72,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsSlider() const;
   bool IsTableHeader() const;
   bool IsVisibleToUser() const;
+  bool ShouldUsePaneTitle() const;
 
   // This returns true for all nodes that we should navigate to.
   // Nodes that have a generic role, no accessible name, and aren't
@@ -135,6 +136,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::u16string GetHint() const;
 
   std::string GetRoleString() const;
+
+  std::u16string GetPaneTitle() const;
 
   std::u16string GetDialogModalMessageText() const;
 

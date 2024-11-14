@@ -365,6 +365,12 @@ bool BrowserAccessibilityAndroid::IsVisibleToUser() const {
   return !IsInvisibleOrIgnored();
 }
 
+bool BrowserAccessibilityAndroid::ShouldUsePaneTitle() const {
+  // Dialogs should use paneTitles, as well as comboboxes but only when the
+  // combobox is expanded.
+  return ui::IsDialog(GetRole()) || (ui::IsComboBox(GetRole()) && IsExpanded());
+}
+
 bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // The root is not interesting if it doesn't have a title, even
   // though it's focusable.
@@ -880,6 +886,16 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
   }
 
   return base::JoinString(strings, u" ");
+}
+
+std::u16string BrowserAccessibilityAndroid::GetPaneTitle() const {
+  if (ui::IsDialog(GetRole())) {
+    return GetDialogModalMessageText();
+  } else if (ui::IsComboBox(GetRole()) && IsExpanded()) {
+    return GetComboboxExpandedText();
+  } else {
+    NOTREACHED();
+  }
 }
 
 std::u16string BrowserAccessibilityAndroid::GetDialogModalMessageText() const {
