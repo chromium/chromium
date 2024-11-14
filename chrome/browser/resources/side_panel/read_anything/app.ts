@@ -872,19 +872,6 @@ export class AppElement extends AppElementBase {
     }
 
     const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    // If the previous status is the same as the new status, no need to update
-    // any state. Updating to an installed state will cause a language to be
-    // automatically enabled because we want the newly downloaded language to be
-    // available in the voice menu. Thus we only want to mark it installed if
-    // it's newly installed, otherwise we may enable a language that was
-    // previously installed but disabled. If the status is not installed, then
-    // we do want to update again, in case we want to request an install now.
-    if ((newVoicePackStatus.code !==
-         VoicePackServerStatusSuccessCode.NOT_INSTALLED) &&
-        (this.getVoicePackServerStatus_(lang)?.code ===
-         newVoicePackStatus.code)) {
-      return;
-    }
 
     // Keep the server responses
     this.setVoicePackServerStatus_(lang, newVoicePackStatus);
@@ -2431,26 +2418,27 @@ export class AppElement extends AppElementBase {
       return;
     }
 
-    // Only enable Google TTS supported locales for this language if they exist.
-    let localesToEnable: string[] = [];
-    const voicePackLocale =
+    // Enable the preferred locale for this lang if one exists. Otherwise,
+    // enable a Google TTS supported locale for this language if one exists.
+    const preferredVoice = chrome.readingMode.getStoredVoice();
+    const preferredVoiceLang =
+        this.getVoices_().find(voice => voice.name === preferredVoice)?.lang;
+    let localeToEnable: string|undefined = preferredVoiceLang ?
+        preferredVoiceLang :
         convertLangOrLocaleToExactVoicePackLocale(availableLang);
-    if (voicePackLocale) {
-      localesToEnable.push(voicePackLocale);
-    } else {
-      // If there are no Google TTS locales for this language then enable any
-      // available locale for this language.
-      localesToEnable =
-          this.availableLangs_.filter(l => l.startsWith(availableLang));
+
+    // If there are no Google TTS locales for this language then enable the
+    // first available locale for this language.
+    if (!localeToEnable) {
+      localeToEnable =
+          this.availableLangs_.find(l => l.startsWith(availableLang));
     }
 
     // Enable the locales so we can select a voice for the given language and
     // show it in the voice menu.
-    localesToEnable.forEach(langToEnable => {
-      if (!this.enabledLangs.includes(langToEnable)) {
-        this.enabledLangs = [...this.enabledLangs, langToEnable];
-      }
-    });
+    if (localeToEnable && !this.enabledLangs.includes(localeToEnable)) {
+      this.enabledLangs = [...this.enabledLangs, localeToEnable.toLowerCase()];
+    }
     this.selectPreferredVoice();
   }
 
