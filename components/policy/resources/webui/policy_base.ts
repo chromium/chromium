@@ -68,15 +68,27 @@ export class Page {
       if (!shouldShowPromo) {
         return;
       }
-      const promotionSection = document.createElement('promotion-banner-section-container') as HTMLElement;
-      policyElement.insertBefore(promotionSection, getRequiredElement('status-section'));
+      const promotionSection =
+          document.createElement('promotion-banner-section-container') as
+          HTMLElement;
+      policyElement.insertBefore(
+          promotionSection, getRequiredElement('status-section'));
 
       const promotionDismissButton =
-      promotionSection.shadowRoot!.getElementById('promotion-dismiss-button');
+          promotionSection.shadowRoot!.getElementById(
+              'promotion-dismiss-button');
 
-      promotionDismissButton?.addEventListener('click' ,() => {
+      promotionDismissButton?.addEventListener('click', () => {
         chrome.send('setBannerDismissed');
         promotionSection.remove();
+      });
+
+      const promotionRedirectButton =
+          promotionSection.shadowRoot!.getElementById(
+              'promotion-redirect-button');
+
+      promotionRedirectButton?.addEventListener('click', () => {
+        chrome.send('recordBannerRedirected');
       });
     });
 
@@ -218,8 +230,10 @@ export class Page {
 
     // <if expr="not is_chromeos">
     this.updateReportButton(
-      !!policyValues['chrome']?.policies['CloudReportingEnabled']?.value ||
-      !!policyValues['chrome']?.policies['CloudProfileReportingEnabled']?.value,
+        !!policyValues['chrome']?.policies['CloudReportingEnabled']?.value ||
+            !!policyValues['chrome']
+                  ?.policies['CloudProfileReportingEnabled']
+                  ?.value,
     );
     // </if>
     this.reloadPoliciesDone();

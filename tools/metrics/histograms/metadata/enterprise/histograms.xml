@@ -2737,6 +2737,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.PolicyPromotionBannerAction"
+    enum="PromotionBannerAction" expires_after="2025-05-31">
+  <owner>austinzzr@chromium.org</owner>
+  <owner>esalma@google.com</owner>
+  <summary>
+    Record the action the user takes when the promotion banner is shown on the
+    chrome://policy page. The action can be to either dismiss the page or click
+    on a button.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyPromotionBannerDisplayed" enum="Boolean"
+    expires_after="2025-05-31">
+  <owner>austinzzr@chromium.org</owner>
+  <owner>esalma@google.com</owner>
+  <summary>
+    Records the number of times the promotion banner on chrome://policy is
+    visited and displayed or visited but not displayed.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"
     expires_after="2025-06-01">
   <owner>asumaneev@google.com</owner>

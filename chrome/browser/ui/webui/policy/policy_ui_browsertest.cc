@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
@@ -37,6 +38,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -99,8 +101,9 @@ class PolicySchemaAvailableWaiter : public policy::SchemaRegistry::Observer {
   // |policy_namespace_| that has been passed to the constructor. Returns
   // immediately if the policy schema is already available.
   void Wait() {
-    if (RegistryHasSchemaForNamespace())
+    if (RegistryHasSchemaForNamespace()) {
       return;
+    }
     registry_->AddObserver(this);
     run_loop_.Run();
   }
@@ -109,15 +112,17 @@ class PolicySchemaAvailableWaiter : public policy::SchemaRegistry::Observer {
   bool RegistryHasSchemaForNamespace() {
     const policy::ComponentMap* map =
         registry_->schema_map()->GetComponents(policy_namespace_.domain);
-    if (!map)
+    if (!map) {
       return false;
+    }
     return map->find(policy_namespace_.component_id) != map->end();
   }
 
   // policy::SchemaRegistry::Observer:
   void OnSchemaRegistryUpdated(bool has_new_schemas) override {
-    if (RegistryHasSchemaForNamespace())
+    if (RegistryHasSchemaForNamespace()) {
       run_loop_.Quit();
+    }
   }
 
   const raw_ptr<policy::SchemaRegistry> registry_;
@@ -163,12 +168,13 @@ std::vector<std::string> PopulateExpectedPolicy(
   }
 
   // Populate expected status.
-  if (unknown)
+  if (unknown) {
     expected_policy.push_back(l10n_util::GetStringUTF8(IDS_POLICY_LABEL_ERROR));
-  else if (!policy_map_entry)
+  } else if (!policy_map_entry) {
     expected_policy.push_back(l10n_util::GetStringUTF8(IDS_POLICY_UNSET));
-  else
+  } else {
     expected_policy.push_back(l10n_util::GetStringUTF8(IDS_POLICY_OK));
+  }
   return expected_policy;
 }
 }  // namespace
@@ -260,8 +266,9 @@ void PolicyUITest::VerifyPolicies(
     for (size_t j = 0; j < expected_policy.size(); ++j) {
       const std::string* value = actual_policy[j].GetIfString();
       ASSERT_TRUE(value);
-      if (expected_policy[j] != *value)
+      if (expected_policy[j] != *value) {
         EXPECT_EQ(expected_policy[j], *value);
+      }
     }
   }
 }
@@ -347,8 +354,9 @@ bool PolicyUIStatusTest::ReadStatusFor(
       chrome_test_utils::GetActiveWebContents(this);
   std::string json = content::EvalJs(contents, javascript).ExtractString();
   std::optional<base::Value> statuses = base::JSONReader::Read(json);
-  if (!statuses.has_value() || !statuses->is_dict())
+  if (!statuses.has_value() || !statuses->is_dict()) {
     return false;
+  }
   const base::Value::Dict& status_dict = statuses->GetDict();
   const base::Value::Dict* actual_entries = status_dict.FindDict(policy_legend);
   if (!actual_entries) {
@@ -1031,6 +1039,20 @@ class PolicyUIManagedStatusTest : public PolicyUITest,
     }
   )";
 
+  static constexpr std::string_view kPromotionBannerRedirectJavaScript = R"(
+    const promotionContainer =
+      document.getElementsByTagName('promotion-banner-section-container')[0];
+    if (promotionContainer){
+      const redirectButton =
+        promotionContainer.shadowRoot.getElementById(
+          'promotion-redirect-button'
+        );
+      if (redirectButton){
+        redirectButton.click();
+      }
+    }
+  )";
+
   static constexpr std::string_view kBannerVisible = "visible";
   static constexpr std::string_view kBannerHidden = "hidden";
 
@@ -1041,11 +1063,12 @@ class PolicyUIManagedStatusTest : public PolicyUITest,
  protected:
   void SetPromotionBannerDismissedPref(bool is_dismissed) {
     auto* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner,
-                      is_dismissed);
+    prefs->SetBoolean(
+        policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner,
+        is_dismissed);
   }
 
-  void SetBrowserLocale(std::string_view locale){
+  void SetBrowserLocale(std::string_view locale) {
     g_browser_process->SetApplicationLocale(std::string(locale));
   }
 
@@ -1153,7 +1176,101 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, HandleLocaleNotEnUSHidden) {
   EXPECT_EQ(result, kBannerHidden);
 }
 
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       HistogramRecordedWhenBannerDisplayed) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  SetBrowserLocale(kValidLocale);
+
+  SetPromotionBannerDismissedPref(false);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+
+  const bool expected_bucket = isFeatureEnabled() ? true : false;
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.PolicyPromotionBannerDisplayed", expected_bucket, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       HistogramRecordedWhenBannerDismissedNotDisplayed) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  SetBrowserLocale(kValidLocale);
+
+  // Banner will not be displayed if it has been dismissed
+  SetPromotionBannerDismissedPref(true);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.PolicyPromotionBannerDisplayed", false, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       HistogramRecordedWhenBannerDismissed) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  if (!isFeatureEnabled()) {
+    GTEST_SKIP() << "Test only relevant when feature is enabled";
+  }
+
+  SetBrowserLocale(kValidLocale);
+
+  SetPromotionBannerDismissedPref(false);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+
+  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                     kPromotionBannerDismissJavaScript));
+
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.PolicyPromotionBannerAction",
+      policy::PolicyPromotionBannerAction::kBannerDismissed, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       HistoramRecordedWhenBannerRedirected) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  if (!isFeatureEnabled()) {
+    GTEST_SKIP() << "Test only relevant when feature is enabled";
+  }
+
+  SetBrowserLocale(kValidLocale);
+
+  SetPromotionBannerDismissedPref(false);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+
+  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                     kPromotionBannerRedirectJavaScript));
+
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.PolicyPromotionBannerAction",
+      policy::PolicyPromotionBannerAction::kBannerRedirected, 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,
                          PolicyUIManagedStatusTest,
                          ::testing::Values(false, true));
-#endif // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

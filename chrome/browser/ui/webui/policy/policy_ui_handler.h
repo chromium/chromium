@@ -64,6 +64,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void HandleGetAppliedTestPolicies(const base::Value::List& args);
   void HandleShouldShowPromotion(const base::Value::List& args);
   void HandleSetBannerDismissed(const base::Value::List& args);
+  void HandleRecordBannerRedirected(const base::Value::List& args);
 #if !BUILDFLAG(IS_CHROMEOS)
   void HandleUploadReport(const base::Value::List& args);
 #endif

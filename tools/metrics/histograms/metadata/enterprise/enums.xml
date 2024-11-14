@@ -2524,6 +2524,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Normal print: Open PDF in Preview"/>
 </enum>
 
+<enum name="PromotionBannerAction">
+  <int value="0" label="Promotion banner dismissed">
+    The promotion banner was dismissed by the user.
+  </int>
+  <int value="1" label="Promotion banner redirected">
+    The promotion banner was redirected to a different page.
+  </int>
+</enum>
+
 <enum name="PsmResult">
   <int value="0" label="Successful Determination"/>
   <int value="1" label="Create RLWE client library Error"/>
