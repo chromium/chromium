@@ -11,6 +11,6 @@ per-file BUILD.gn=file://ui/android/java/res/LAYOUT_OWNERS
 boliu@chromium.org
 jinsukkim@chromium.org
 
-# for inset related files
-per-file *Inset*=wenyufu@chromium.org
-per-file *Inset*=pnoland@chromium.org
+# for window / keyboard insets
+wenyufu@chromium.org
+pnoland@chromium.org
