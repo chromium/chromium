@@ -8722,14 +8722,6 @@
     "expiry_milestone" : 135
   },
   {
-    "name": "top-chrome-toasts",
-    "owners": [
-      "agale@google.com",
-      "chrome-performance-ui-team@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "top-chrome-touch-ui",
     "owners": [ "pbos@chromium.org", "chrome-desktop-ui-sea@google.com" ],
     // This flag is used to easily swap into touch-mode for UI development where
