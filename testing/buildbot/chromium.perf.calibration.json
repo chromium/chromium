@@ -6,6 +6,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf-calibration_map.json",

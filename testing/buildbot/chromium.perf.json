@@ -88,6 +88,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-trichrome-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-go-wembley-perf_map.json",
@@ -130,6 +131,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=android-webview-google",
           "--upload-results",
@@ -174,6 +176,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-new-pixel-perf_map.json",
@@ -211,6 +214,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
@@ -250,6 +254,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-new-pixel-pro-perf_map.json",
@@ -288,6 +293,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-new-pixel-pro-perf-pgo_map.json",
@@ -325,6 +331,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
@@ -369,6 +376,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel-tangor-perf_map.json",
@@ -411,6 +419,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
@@ -456,6 +465,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel4-perf-pgo_map.json",
@@ -499,6 +509,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=android-webview-trichrome-google-bundle",
           "--upload-results",
@@ -544,6 +555,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-webview-trichrome-google-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel4_webview-perf-pgo_map.json",
@@ -587,6 +599,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
@@ -632,6 +645,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel6-perf-pgo_map.json",
@@ -676,6 +690,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel6-pro-perf_map.json",
@@ -719,6 +734,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
@@ -876,6 +892,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf_map.json",
@@ -924,6 +941,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf-pgo_map.json",
@@ -967,6 +985,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1019,6 +1038,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1125,6 +1145,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-intel-perf_map.json",
@@ -1169,6 +1190,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1218,6 +1240,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1272,6 +1295,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-laptop_low_end-perf_map.json",
@@ -1320,6 +1344,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1374,6 +1399,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-m1-pro-perf_map.json",
@@ -1417,6 +1443,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1462,6 +1489,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-m1_mini_2020-perf_map.json",
@@ -1505,6 +1533,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1550,6 +1579,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-m2-pro-perf_map.json",
@@ -1594,6 +1624,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1641,6 +1672,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1693,6 +1725,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10_amd_laptop-perf_map.json",
@@ -1737,6 +1770,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10_amd_laptop-perf-pgo_map.json",
@@ -1780,6 +1814,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1828,6 +1863,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -1880,6 +1916,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-11-perf_map.json",
@@ -1927,6 +1964,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",

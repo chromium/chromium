@@ -1716,6 +1716,7 @@ def generate_telemetry_args(tester_config, platform):
     browser_name = 'builder'  # crbug.com/377748127
   test_args = [
       '-v',
+      '-v',
       '--browser=%s' % browser_name,
       '--upload-results',
       '--test-shard-map-filename=%s' % platform.shards_map_file_name,

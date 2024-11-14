@@ -31,6 +31,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=cros-chrome",
           "--upload-results",
           "--test-shard-map-filename=chromeos-kevin-perf-fyi_map.json",
@@ -82,6 +83,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=web-engine-shell",
           "--upload-results",
@@ -139,6 +141,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=web-engine-shell",
           "--upload-results",
           "--test-shard-map-filename=fuchsia-perf-shk_map.json",
@@ -195,6 +198,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf-fyi_map.json",
@@ -238,6 +242,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
@@ -285,6 +290,7 @@
       {
         "args": [
           "-v",
+          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-arm64-snapdragon-elite-perf_map.json",
@@ -328,6 +334,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "-v",
           "-v",
           "--browser=builder",
           "--upload-results",
