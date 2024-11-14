@@ -91,13 +91,6 @@ using content::NavigationController;
 using content::WebContents;
 using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
-class BrowserNavigatorWebContentsAdoption {
- public:
-  static void AttachTabHelpers(content::WebContents* contents) {
-    TabHelpers::AttachTabHelpers(contents);
-  }
-};
-
 namespace {
 
 // Returns true if |params.browser| exists and can open a new tab for
@@ -554,22 +547,7 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
   }
 #endif
 
-  std::unique_ptr<WebContents> target_contents =
-      WebContents::Create(create_params);
-
-  // New tabs can have WebUI URLs that will make calls back to arbitrary
-  // tab helpers, so the entire set of tab helpers needs to be set up
-  // immediately.
-  BrowserNavigatorWebContentsAdoption::AttachTabHelpers(target_contents.get());
-  apps::SetAppIdForWebContents(params.browser->profile(), target_contents.get(),
-                               params.app_id);
-
-#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
-  captive_portal::CaptivePortalTabHelper::FromWebContents(target_contents.get())
-      ->set_window_type(params.captive_portal_window_type);
-#endif
-
-  return target_contents;
+  return WebContents::Create(create_params);
 }
 
 bool IsHostAllowedInIncognito(const GURL& url) {
@@ -898,6 +876,15 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
           CreateTargetContents(*params, params->url),
           params->browser->tab_strip_model());
       contents_to_navigate_or_insert = tab_to_insert->GetContents();
+
+      apps::SetAppIdForWebContents(params->browser->profile(),
+                                   contents_to_navigate_or_insert,
+                                   params->app_id);
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+      captive_portal::CaptivePortalTabHelper::FromWebContents(
+          contents_to_navigate_or_insert)
+          ->set_window_type(params->captive_portal_window_type);
+#endif
     } else {
       // ... otherwise if we're loading in the current tab, the target is the
       // same as the source.
