@@ -54,6 +54,7 @@ class FakePlusAddressService : public PlusAddressService {
       autofill::SuggestionType suggestion_type) override;
   void DidFillPlusAddress(bool did_show_email_suggestion,
                           bool is_manual_fallback) override;
+  void DidChooseEmailOverPlusAddress() override;
   void OnClickedRefreshInlineSuggestion(
       const url::Origin& last_committed_primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,
@@ -167,6 +168,10 @@ class FakePlusAddressService : public PlusAddressService {
     return did_fill_plus_address_suggestion_;
   }
 
+  bool was_email_chosen_over_plus_address() {
+    return was_email_chosen_over_plus_address_;
+  }
+
   std::optional<hats::SurveyType> get_triggered_survey_type() {
     return triggered_survey_;
   }
@@ -188,6 +193,7 @@ class FakePlusAddressService : public PlusAddressService {
   bool should_return_quota_error_ = false;
   bool should_return_timeout_error_ = false;
   bool did_fill_plus_address_suggestion_ = false;
+  bool was_email_chosen_over_plus_address_ = false;
 };
 
 }  // namespace plus_addresses

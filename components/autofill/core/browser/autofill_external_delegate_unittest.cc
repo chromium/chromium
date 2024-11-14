@@ -2286,6 +2286,53 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
                                           SuggestionPosition{.row = 0});
 }
 
+// Tests the scenario when the user chooses an email suggestion over the plus
+// address suggestion.
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       EmailSuggestionIsFilledWhenPlusAddressIsSuggested) {
+  // Trigger the popup on an email field.
+  IssueOnQuery(kDefaultTriggerSource, EMAIL_ADDRESS, "email");
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(client(), ShowAutofillSuggestions(
+                            PopupOpenArgsAre(SuggestionVectorIdsAre(
+                                SuggestionType::kAddressEntry,
+                                SuggestionType::kFillExistingPlusAddress)),
+                            _));
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().address_data_manager().AddProfile(profile);
+  const std::u16string email = u"example@gmail.com";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/email, SuggestionType::kAddressEntry);
+  suggestions[0].payload =
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));
+  suggestions.emplace_back(/*main_text=*/u"test+plus@test.example",
+                           SuggestionType::kFillExistingPlusAddress);
+  // This function tests the filling of existing plus addresses, which is why
+  // `OfferPlusAddressCreation` need not be mocked.
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
+  EXPECT_CALL(manager(), FillOrPreviewProfileForm(
+                             mojom::ActionPersistence::kPreview,
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
+  external_delegate().DidSelectSuggestion(suggestions[0]);
+  EXPECT_CALL(client(), HideAutofillSuggestions(
+                            SuggestionHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(plus_address_delegate(),
+              RecordAutofillSuggestionEvent(
+                  MockAutofillPlusAddressDelegate::SuggestionEvent::
+                      kExistingPlusAddressChosen))
+      .Times(0);
+  EXPECT_CALL(plus_address_delegate(), DidChooseEmailOverPlusAddress());
+  EXPECT_CALL(manager(), FillOrPreviewProfileForm(
+                             mojom::ActionPersistence::kFill,
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
+  external_delegate().DidAcceptSuggestion(suggestions[0],
+                                          SuggestionPosition{.row = 0});
+}
+
 // Tests the scenario when the user triggers plus address suggestions manually
 // from the context menu and no email suggestions are shown.
 TEST_F(AutofillExternalDelegatePlusAddressUnitTest,

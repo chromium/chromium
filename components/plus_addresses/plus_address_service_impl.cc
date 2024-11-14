@@ -640,6 +640,10 @@ void PlusAddressServiceImpl::DidFillPlusAddress(bool did_show_email_suggestion,
   }
 }
 
+void PlusAddressServiceImpl::DidChooseEmailOverPlusAddress() {
+  TriggerUserPerceptionSurvey(hats::SurveyType::kDidChooseEmailOverPlusAddress);
+}
+
 void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(
     const url::Origin& last_committed_primary_main_frame_origin,
     base::span<const autofill::Suggestion> current_suggestions,

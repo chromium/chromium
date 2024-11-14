@@ -77,6 +77,15 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
       survey_trigger =
           kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey;
       break;
+    case plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress:
+      if (!base::FeatureList::IsEnabled(
+              plus_addresses::features::
+                  kPlusAddressUserDidChooseEmailOverPlusAddress)) {
+        return;
+      }
+      survey_trigger =
+          kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey;
+      break;
     case plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack:
       if (!base::FeatureList::IsEnabled(
               plus_addresses::features::

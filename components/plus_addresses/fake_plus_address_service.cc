@@ -102,6 +102,10 @@ void FakePlusAddressService::DidFillPlusAddress(bool did_show_email_suggestion,
   did_fill_plus_address_suggestion_ = true;
 }
 
+void FakePlusAddressService::DidChooseEmailOverPlusAddress() {
+  was_email_chosen_over_plus_address_ = true;
+}
+
 void FakePlusAddressService::OnClickedRefreshInlineSuggestion(
     const url::Origin& last_committed_primary_main_frame_origin,
     base::span<const autofill::Suggestion> current_suggestions,

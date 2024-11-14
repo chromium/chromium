@@ -33,6 +33,9 @@ enum class SurveyType {
   // The user was shown both an email and a plus address suggestion. The user
   // accepted the plus address suggestion.
   kDidChoosePlusAddressOverEmail = 5,
+  // The user was shown both an email and a plus address suggestion. The user
+  // accepted the email suggestion.
+  kDidChooseEmailOverPlusAddress = 6,
   // The user triggered plus address manual fallback from the Chrome context
   // menu on Desktop or from the keyboard accessory and filled a plus address
   // into a web input field.

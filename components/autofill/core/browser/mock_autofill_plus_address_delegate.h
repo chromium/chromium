@@ -55,6 +55,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                SuggestionType),
               (override));
   MOCK_METHOD(void, DidFillPlusAddress, (bool, bool), (override));
+  MOCK_METHOD(void, DidChooseEmailOverPlusAddress, (), (override));
   MOCK_METHOD(void,
               OnClickedRefreshInlineSuggestion,
               (const url::Origin&,

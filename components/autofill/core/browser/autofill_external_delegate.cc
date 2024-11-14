@@ -1556,12 +1556,30 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       "Autofill.Suggestion.AcceptanceFieldValueLength.Address",
       query_field_.value().size());
   switch (suggestion.type) {
-    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntry: {
       autofill_metrics::LogSuggestionAcceptedIndex(
           metadata.row,
           GetFillingProductFromSuggestionType(SuggestionType::kAddressEntry),
           manager_->client().IsOffTheRecord());
+      const bool email_and_plus_address_shown = [this]() {
+        const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
+        const bool triggered_on_email_field =
+            autofill_trigger_field &&
+            autofill_trigger_field->Type().group() == FieldTypeGroup::kEmail;
+        // Email suggestions don't have a separate suggestion type. Check that
+        // the suggestions are triggered on an email field and that the popup
+        // contains a plus address filling suggestion as well.
+        return triggered_on_email_field &&
+               base::Contains(shown_suggestion_types_,
+                              SuggestionType::kFillExistingPlusAddress);
+      }();
+      if (AutofillPlusAddressDelegate* plus_address_delegate =
+              manager_->client().GetPlusAddressDelegate();
+          plus_address_delegate && email_and_plus_address_shown) {
+        plus_address_delegate->DidChooseEmailOverPlusAddress();
+      }
       ABSL_FALLTHROUGH_INTENDED;
+    }
     case SuggestionType::kFillEverythingFromAddressProfile:
       autofill_metrics::LogFillingMethodUsed(
           FillingMethod::kFullForm, FillingProduct::kAddress,

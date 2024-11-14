@@ -145,6 +145,10 @@ class AutofillPlusAddressDelegate {
   virtual void DidFillPlusAddress(bool did_show_email_suggestion,
                                   bool is_manual_fallback) = 0;
 
+  // Called when the user accepts an email suggestion given that a plus address
+  // suggestion was shown as well.
+  virtual void DidChooseEmailOverPlusAddress() = 0;
+
   using UpdateSuggestionsCallback =
       base::OnceCallback<void(std::vector<Suggestion>,
                               AutofillSuggestionTriggerSource)>;
