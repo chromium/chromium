@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
@@ -222,6 +223,7 @@ public class MismatchNotificationControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, crbug.com/379146046")
     public void testDismissalByClosingCct() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -273,6 +275,7 @@ public class MismatchNotificationControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, crbug.com/379146046")
     public void testDismissalByClosingCct_whileStackedBehind2() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
