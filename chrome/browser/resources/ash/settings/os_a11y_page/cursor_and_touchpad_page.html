@@ -168,7 +168,7 @@
     $i18n{cursorColorOptionsLabel}
   </div>
   <settings-dropdown-menu id="cursorColorDropdown"
-      aria-labeledby="cursorColorOptionsLabel"
+      aria-labelledby="cursorColorOptionsLabel"
       pref="{{prefs.settings.a11y.cursor_color}}"
       menu-options="[[cursorColorOptions_]]"
       on-settings-control-change="onA11yCursorColorChange_"
@@ -202,7 +202,7 @@
       </template>
     </div>
     <settings-dropdown-menu id="disableInternalTouchpadDropdown"
-          aria-labeledby="disableInternalTouchpadLabel"
+          aria-labelledby="disableInternalTouchpadLabel"
           pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
           menu-options="[[disableTouchpadOptions_]]"
           deep-link-focus-id$="[[Setting.kAccessibilityDisableTrackpad]]"
