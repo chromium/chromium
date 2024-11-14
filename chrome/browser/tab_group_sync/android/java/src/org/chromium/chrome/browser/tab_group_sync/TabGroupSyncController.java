@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -66,7 +65,6 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
     private final Supplier<Boolean> mIsActiveWindowSupplier;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final NavigationTracker mNavigationTracker;
-    private final TabCreatorManager mTabCreatorManager;
     private final TabCreationDelegate mTabCreationDelegate;
     private final LocalTabGroupMutationHelper mLocalMutationHelper;
     private final RemoteTabGroupMutationHelper mRemoteMutationHelper;
@@ -106,23 +104,22 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
     /** Constructor. */
     public TabGroupSyncController(
             TabModelSelector tabModelSelector,
-            TabCreatorManager tabCreatorManager,
             TabGroupSyncService tabGroupSyncService,
             PrefService prefService,
             Supplier<Boolean> isActiveWindowSupplier) {
         mTabModelSelector = tabModelSelector;
-        mTabCreatorManager = tabCreatorManager;
         mTabGroupSyncService = tabGroupSyncService;
         mPrefService = prefService;
         mIsActiveWindowSupplier = isActiveWindowSupplier;
 
         mNavigationTracker = new NavigationTracker();
+        mTabGroupModelFilter =
+                tabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
         mTabCreationDelegate =
                 new TabCreationDelegateImpl(
-                        mTabCreatorManager.getTabCreator(/* incognito= */ false),
-                        mNavigationTracker);
-        mTabGroupModelFilter =
-                tabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+                        mTabGroupModelFilter.getTabModel().getTabCreator(), mNavigationTracker);
 
         mLocalMutationHelper =
                 new LocalTabGroupMutationHelper(

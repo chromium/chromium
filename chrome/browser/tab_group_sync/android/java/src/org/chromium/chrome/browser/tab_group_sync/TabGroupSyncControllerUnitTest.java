@@ -35,7 +35,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -56,7 +55,6 @@ public class TabGroupSyncControllerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock TabModelSelector mTabModelSelector;
-    private @Mock TabCreatorManager mTabCreatorManager;
     private @Mock TabCreator mTabCreator;
     private @Mock TabGroupSyncService mTabGroupSyncService;
     private @Mock Profile mProfile;
@@ -81,7 +79,7 @@ public class TabGroupSyncControllerUnitTest {
         when(tabGroupModelFilterProvider.getTabGroupModelFilter(false))
                 .thenReturn(mTabGroupModelFilter);
         doNothing().when(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
-        when(mTabCreatorManager.getTabCreator(false)).thenReturn(mTabCreator);
+        mTabModel.setTabCreatorForTesting(mTabCreator);
         doNothing()
                 .when(mTabGroupSyncService)
                 .addObserver(mTabGroupSyncServiceObserverCaptor.capture());
@@ -103,7 +101,6 @@ public class TabGroupSyncControllerUnitTest {
         mController =
                 new TabGroupSyncController(
                         mTabModelSelector,
-                        mTabCreatorManager,
                         mTabGroupSyncService,
                         mPrefService,
                         mIsActiveWindowSupplier);

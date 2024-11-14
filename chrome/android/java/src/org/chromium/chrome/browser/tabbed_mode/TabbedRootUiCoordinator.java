@@ -763,7 +763,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabGroupSyncController =
                     new TabGroupSyncController(
                             mTabModelSelectorSupplier.get(),
-                            mTabCreatorManagerSupplier.get(),
                             TabGroupSyncServiceFactory.getForProfile(originalProfile),
                             UserPrefs.get(originalProfile),
                             () -> {
