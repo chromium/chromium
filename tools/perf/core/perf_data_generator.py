@@ -225,6 +225,9 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests',
         },
     },
+    'win-arm64-builder-perf': {
+        'perf_trigger': False,
+    },
     'win-10_laptop_low_end-perf_HP-Candidate': {
         'tests': [
             {
@@ -251,6 +254,46 @@ FYI_BUILDERS = {
             'Windows-10',
             'synthetic_product_name':
             'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
+        },
+    },
+    'win-arm64-snapdragon-plus-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-11',
+            'cpu': 'arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU',
+            'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
+        },
+    },
+    'win-arm64-snapdragon-elite-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-11',
+            'cpu': 'arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU',
+            'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
         },
     },
     'chromeos-kevin-builder-perf-fyi': {
@@ -1662,6 +1705,7 @@ def generate_telemetry_args(tester_config, platform):
   elif tester_config['platform'] == 'lacros':
     browser_name = 'lacros-chrome'
   elif (tester_config['platform'] == 'win'
+        and not tester_config['dimension'].get('cpu', '').startswith('arm64')
         and tester_config['target_bits'] == 64):
     browser_name = 'release_x64'
   elif tester_config['platform'] == 'fuchsia-wes':

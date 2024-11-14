@@ -859,6 +859,24 @@ WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
                           'win',
                           executables=_WIN_11_EXECUTABLE_CONFIGS,
                           pinpoint_only=True)
+WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
+    'win-arm64-snapdragon-plus-perf',
+    'Windows Dell Snapdragon Plus',
+    _WIN_10_BENCHMARK_CONFIGS,
+    1,
+    'win',
+    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL,
+    is_fyi=True)
+WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
+    'win-arm64-snapdragon-elite-perf',
+    'Windows Dell Snapdragon Elite',
+    _WIN_10_BENCHMARK_CONFIGS,
+    1,
+    'win',
+    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL,
+    is_fyi=True)
 
 # Android
 ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',

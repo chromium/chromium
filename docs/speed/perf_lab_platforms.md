@@ -89,4 +89,6 @@
 ### Win
 
  * [win-10_laptop_low_end-perf_HP-Candidate](https://ci.chromium.org/p/chrome/builders/ci/win-10_laptop_low_end-perf_HP-Candidate): HP 15-BS121NR Laptop Candidate.
+ * [win-arm64-snapdragon-elite-perf](https://ci.chromium.org/p/chrome/builders/ci/win-arm64-snapdragon-elite-perf): Windows Dell Snapdragon Elite.
+ * [win-arm64-snapdragon-plus-perf](https://ci.chromium.org/p/chrome/builders/ci/win-arm64-snapdragon-plus-perf): Windows Dell Snapdragon Plus.
 
