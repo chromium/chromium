@@ -8,21 +8,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/base_paths.h"
 #include "base/base_switches.h"
-#include "base/command_line.h"
-#include "base/path_service.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
 
-ScopedInstallService::ScopedInstallService(
-    std::wstring_view service_name,
-    std::wstring_view display_name,
-    std::wstring_view description,
-    base::FilePath::StringPieceType exe_name,
-    std::string_view testing_switch,
-    const CLSID& clsid,
-    const IID& iid) {
+ScopedInstallService::ScopedInstallService(std::wstring_view service_name,
+                                           std::wstring_view display_name,
+                                           std::wstring_view description,
+                                           base::CommandLine service_command,
+                                           const CLSID& clsid,
+                                           const IID& iid) {
   const std::wstring name(service_name);
   const std::wstring display(display_name);
   const std::wstring description_text(description);
@@ -36,14 +31,11 @@ ScopedInstallService::ScopedInstallService(
       switches::kV,
       switches::kVModule,
   };
-  base::CommandLine service_command(
-      base::PathService::CheckedGet(base::DIR_EXE).Append(exe_name));
-  service_command.AppendSwitch(testing_switch);
-  log_grabber_.AddLoggingSwitches(service_command);
   service_command.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                    kSwitchesToCopy);
   auto work_item = std::make_unique<installer::InstallServiceWorkItem>(
-      name, display, description_text, SERVICE_DEMAND_START, service_command,
+      name, display, description_text, SERVICE_DEMAND_START,
+      std::move(service_command),
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(), clsids, iids);
   if (work_item->Do()) {

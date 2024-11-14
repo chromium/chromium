@@ -11,6 +11,7 @@ source_set("test_support") {
     "scoped_log_grabber.h",
     "scoped_medium_integrity.h",
     "scoped_mock_context.h",
+    "service_environment.h",
   ]
   public_deps = [ "//base" ]
   sources = [
@@ -18,6 +19,7 @@ source_set("test_support") {
     "scoped_log_grabber.cc",
     "scoped_medium_integrity.cc",
     "scoped_mock_context.cc",
+    "service_environment.cc",
   ]
   deps = [
     "//chrome/install_static:install_static_util",

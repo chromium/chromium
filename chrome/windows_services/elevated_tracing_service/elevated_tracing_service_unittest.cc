@@ -23,8 +23,8 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "chrome/windows_services/elevated_tracing_service/system_tracing_session.h"
-#include "chrome/windows_services/service_program/test_support/scoped_install_service.h"
 #include "chrome/windows_services/service_program/test_support/scoped_medium_integrity.h"
+#include "chrome/windows_services/service_program/test_support/service_environment.h"
 #include "components/tracing/tracing_service_idl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -250,30 +250,32 @@ base::Process RunInChildDeElevated(std::string_view function_name) {
 }  // namespace
 
 // A test harness that installs the tracing service so that tests can call into
-// it.
+// it. The service's log output is redirected to the test process's stderr.
 class TracingServiceTest : public ::testing::Test {
  protected:
   static void SetUpTestSuite() {
     if (!::IsUserAnAdmin()) {
       GTEST_SKIP() << "Test requires admin rights";
     }
-    service_ = new ScopedInstallService(
-        L"TestTracingService", L"Test Tracing Service", L"Test Tracing Service",
+    service_environment_ = new ServiceEnvironment(
+        L"Test Tracing Service",
         FILE_PATH_LITERAL("elevated_tracing_service.exe"),
         elevated_tracing_service::switches::kSystemTracingClsIdForTestingSwitch,
         elevated_tracing_service::kTestSystemTracingSessionClsid,
-        IID_ISystemTraceSession);
-    ASSERT_TRUE(service_->is_valid());
+        __uuidof(ISystemTraceSession));
+    ASSERT_TRUE(service_environment_->is_valid());
   }
 
-  static void TearDownTestSuite() { delete std::exchange(service_, nullptr); }
+  static void TearDownTestSuite() {
+    delete std::exchange(service_environment_, nullptr);
+  }
 
  private:
-  static ScopedInstallService* service_;
+  static ServiceEnvironment* service_environment_;
 };
 
 // static
-ScopedInstallService* TracingServiceTest::service_ = nullptr;
+ServiceEnvironment* TracingServiceTest::service_environment_ = nullptr;
 
 // Tests calling into the service from the main test process itself after
 // dropping to medium integrity level.
