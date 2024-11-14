@@ -203,13 +203,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_THAT(GetAllTabGroups(),
+  std::vector<SavedTabGroup> service_groups = GetAllTabGroups();
+  ASSERT_THAT(service_groups,
               UnorderedElementsAre(HasSharedGroupMetadata(
                   "title", TabGroupColorId::kCyan, collaboration_id)));
+  const SavedTabGroup& group = service_groups.front();
+  EXPECT_FALSE(group.creation_time_windows_epoch_micros().is_null());
   EXPECT_THAT(
-      GetAllTabGroups().front().saved_tabs(),
+      group.saved_tabs(),
       UnorderedElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
                            HasTabMetadata("tab 2", "http://google.com/2")));
+  for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+    EXPECT_FALSE(tab.creation_time_windows_epoch_micros().is_null());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,

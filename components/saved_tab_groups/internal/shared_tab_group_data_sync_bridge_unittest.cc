@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -86,6 +87,10 @@ MATCHER_P3(HasGroupEntityData, title, color, collaboration_id, "") {
              CollaborationId(collaboration_id);
 }
 
+MATCHER_P(HasCreationTime, time, "") {
+  return arg.creation_time == time;
+}
+
 MATCHER_P(HasGroupEntityDataWithOriginatingGroup, originating_group_guid, "") {
   const sync_pb::SharedTabGroup& arg_tab_group =
       arg.specifics.shared_tab_group_data().tab_group();
@@ -112,6 +117,10 @@ MATCHER_P2(HasTabEntityDataWithPosition, title, unique_position, "") {
 
 std::string StorageKeyForTab(const SavedTabGroupTab& tab) {
   return tab.saved_tab_guid().AsLowercaseString();
+}
+
+std::string StorageKeyForGroup(const SavedTabGroup& group) {
+  return group.saved_guid().AsLowercaseString();
 }
 
 MATCHER_P(HasClientTagHashForTab, tab, "") {
@@ -209,28 +218,34 @@ sync_pb::SharedTabGroupDataSpecifics MakeTabSpecifics(
 
 syncer::EntityData CreateEntityData(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
-    const CollaborationId& collaboration_id) {
+    const CollaborationId& collaboration_id,
+    base::Time creation_time = base::Time::Now()) {
   syncer::EntityData entity_data;
   *entity_data.specifics.mutable_shared_tab_group_data() = specifics;
   entity_data.collaboration_id = collaboration_id.value();
   entity_data.name = specifics.guid();
+  entity_data.creation_time = creation_time;
   return entity_data;
 }
 
 std::unique_ptr<syncer::EntityChange> CreateAddEntityChange(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
-    const CollaborationId& collaboration_id) {
+    const CollaborationId& collaboration_id,
+    base::Time creation_time = base::Time::Now()) {
   const std::string& storage_key = specifics.guid();
   return syncer::EntityChange::CreateAdd(
-      storage_key, CreateEntityData(specifics, collaboration_id));
+      storage_key,
+      CreateEntityData(specifics, collaboration_id, creation_time));
 }
 
 std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
-    const CollaborationId& collaboration_id) {
+    const CollaborationId& collaboration_id,
+    base::Time creation_time = base::Time::Now()) {
   const std::string& storage_key = specifics.guid();
   return syncer::EntityChange::CreateUpdate(
-      storage_key, CreateEntityData(specifics, collaboration_id));
+      storage_key,
+      CreateEntityData(specifics, collaboration_id, creation_time));
 }
 
 std::unique_ptr<syncer::EntityChange> CreateDeleteEntityChange(
@@ -1667,6 +1682,58 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldStoreLocalIdOnRemoteUpdate) {
   // Verify that the local group ID is persisted.
   EXPECT_THAT(model()->saved_tab_groups(),
               UnorderedElementsAre(HasLocalGroupId(kLocalGroupId)));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldPropagateCreationTimeOnRemoteUpdate) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  const base::Time kCreationTime = base::Time::Now();
+
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::RED);
+  ApplySingleEntityChange(
+      CreateAddEntityChange(group_specifics, kCollaborationId, kCreationTime));
+
+  ApplySingleEntityChange(CreateAddEntityChange(
+      MakeTabSpecifics("title", GURL("http://url.com"),
+                       base::Uuid::ParseLowercase(group_specifics.guid()),
+                       GenerateRandomUniquePosition()),
+      kCollaborationId, kCreationTime));
+
+  ASSERT_THAT(model()->saved_tab_groups(), SizeIs(1));
+  const SavedTabGroup& group = model()->saved_tab_groups().front();
+  ASSERT_THAT(group.saved_tabs(), SizeIs(1));
+  const SavedTabGroupTab& tab = group.saved_tabs()[0];
+
+  EXPECT_EQ(group.creation_time_windows_epoch_micros(), kCreationTime);
+  EXPECT_EQ(tab.creation_time_windows_epoch_micros(), kCreationTime);
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldPopulateCreationTimeOnLocalCreation) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId.value());
+  SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
+  group.AddTabLocally(tab);
+
+  EXPECT_CALL(
+      mock_processor(),
+      Put(StorageKeyForTab(tab),
+          Pointee(HasCreationTime(tab.creation_time_windows_epoch_micros())),
+          _));
+  EXPECT_CALL(
+      mock_processor(),
+      Put(StorageKeyForGroup(group),
+          Pointee(HasCreationTime(group.creation_time_windows_epoch_micros())),
+          _));
+  model()->AddedLocally(group);
 }
 
 // The number of tabs to test the correct ordering of remote updates.

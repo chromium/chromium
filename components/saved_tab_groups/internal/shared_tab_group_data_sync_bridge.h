@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -120,6 +121,7 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   std::optional<syncer::ModelError> AddGroupToLocalStorage(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
       const CollaborationId& collaboration_id,
+      base::Time creation_time,
       syncer::MetadataChangeList* metadata_change_list,
       syncer::DataTypeStore::WriteBatch& write_batch);
   std::optional<syncer::ModelError> ApplyRemoteTabUpdate(
@@ -127,7 +129,8 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
       syncer::MetadataChangeList* metadata_change_list,
       syncer::DataTypeStore::WriteBatch& write_batch,
       const std::set<base::Uuid>& tab_ids_with_pending_model_update,
-      const CollaborationId& collaboration_id);
+      const CollaborationId& collaboration_id,
+      base::Time creation_time);
 
   // Removes all data assigned to `storage_key` from local storage
   // (SavedTabGroupModel, and DataTypeStore). If a group is removed, all its
@@ -139,6 +142,7 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // Inform the processor of a new or updated Shared Tab Group or Tab.
   void SendToSync(sync_pb::SharedTabGroupDataSpecifics specific,
                   const CollaborationId& collaboration_id,
+                  base::Time creation_time,
                   syncer::MetadataChangeList* metadata_change_list);
 
   // Process local tab changes (add, remove, update), excluding changing tab's
