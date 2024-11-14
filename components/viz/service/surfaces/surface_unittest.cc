@@ -166,8 +166,8 @@ TEST_F(SurfaceTest, CopyRequestLifetime) {
   EXPECT_TRUE(surface_manager->GetSurfaceForId(surface_id));
   EXPECT_FALSE(copy_called);
 
-  int max_frame = 3, start_id = 200;
-  for (int i = 0; i < max_frame; ++i) {
+  uint64_t max_frame = 3, start_id = 200;
+  for (uint64_t i = 0; i < max_frame; ++i) {
     frame = CompositorFrameBuilder().Build();
     frame.render_pass_list.push_back(CompositorRenderPass::Create());
     frame.render_pass_list.back()->id =
@@ -183,6 +183,7 @@ TEST_F(SurfaceTest, CopyRequestLifetime) {
   }
 
   CompositorRenderPassId last_pass_id{(max_frame - 1) * 3 + start_id + 2};
+
   // The copy request should stay on the Surface until TakeCopyOutputRequests
   // is called.
   EXPECT_FALSE(copy_called);

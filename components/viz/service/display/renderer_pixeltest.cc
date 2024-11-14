@@ -6271,7 +6271,7 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     // by the delegated ink trail damage rect to confirm that it is the right
     // size to remove old trails and add new ones.
     gfx::Rect damage_rect(0, 0, 1, 1);
-    AggregatedRenderPassId id{render_pass_id};
+    AggregatedRenderPassId id{static_cast<uint64_t>(render_pass_id)};
     std::unique_ptr<AggregatedRenderPass> pass =
         CreateTestRootRenderPass(id, rect, damage_rect);
 

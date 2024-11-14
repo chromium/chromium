@@ -8871,7 +8871,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     // - The root pass embeds each of the first four render passes and then
     //   underneath them embeds the child surface.
     const gfx::Rect render_pass_rect(30, 30);
-    for (int i = 1; i < 5; ++i) {
+    for (uint64_t i = 1; i < 5; ++i) {
       root_pass_list.push_back(
           RenderPassBuilder(CompositorRenderPassId{i}, render_pass_rect)
               .AddSolidColorQuad(render_pass_rect, SkColors::kGreen)
