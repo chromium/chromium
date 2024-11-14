@@ -1457,6 +1457,37 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="HasButtonConfig"/>
 </enum>
 
+<enum name="MicrophoneMuteToggleDevices">
+  <int value="0" label="System Microphone Mute Jabra"/>
+  <int value="1" label="System Microphone Mute Logitech"/>
+  <int value="2" label="System Microphone Mute Poly"/>
+  <int value="3" label="System Microphone Mute Sony"/>
+  <int value="4" label="System Microphone Mute Google"/>
+  <int value="5" label="System Microphone Mute Other Has Keyboard"/>
+  <int value="6" label="System Microphone Mute Other Not Keyboard"/>
+  <int value="7" label="Phone Mute Jabra"/>
+  <int value="8" label="Phone Mute Logitech"/>
+  <int value="9" label="Phone Mute Poly"/>
+  <int value="10" label="Phone Mute Sony"/>
+  <int value="11" label="Phone Mute Google"/>
+  <int value="12" label="Phone Mute Other Has Keyboard"/>
+  <int value="13" label="Phone Mute Other Not Keyboard"/>
+  <int value="14" label="Start or Stop Microphone Capture Jabra"/>
+  <int value="15" label="Start or Stop Microphone Capture Logitech"/>
+  <int value="16" label="Start or Stop Microphone Capture Poly"/>
+  <int value="17" label="Start or Stop Microphone Capture Sony"/>
+  <int value="18" label="Start or Stop Microphone Capture Google"/>
+  <int value="19" label="Start or Stop Microphone Capture Other Has Keyboard"/>
+  <int value="20" label="Start or Stop Microphone Capture Other Not Keyboard"/>
+  <int value="21" label="Other Microphone Scan Code Jabra"/>
+  <int value="22" label="Other Microphone Scan Code Logitech"/>
+  <int value="23" label="Other Microphone Scan Code Poly"/>
+  <int value="24" label="Other Microphone Scan Code Sony"/>
+  <int value="25" label="Other Microphone Scan Code Google"/>
+  <int value="26" label="Other Microphone Scan Code Other Has Keyboard"/>
+  <int value="27" label="Other Microphone Scan Code Other Not Keyboard"/>
+</enum>
+
 <enum name="ModeEntryMetric">
   <int value="0" label="Unknown"/>
   <int value="1" label="Not supported"/>

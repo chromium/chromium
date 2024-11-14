@@ -2244,6 +2244,18 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.Peripherals.MicrophoneMuteToggleDevices"
+    enum="MicrophoneMuteToggleDevices" expires_after="2025-12-15">
+  <owner>jingyliang@google.com</owner>
+  <owner>chromeos-tango@google.com</owner>
+  <summary>
+    Records when a peripheral device tries to toggle ChromeOS microphone mute
+    state. It classifies whether the peripheral has a keyboard (likely
+    indicating not a telephony device) and what scan code it uses to trigger the
+    event. It also groups devices based on popular vendors.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.Stylus.BatteryReportingEligibility"
     enum="BatteryReportingEligibility" expires_after="2025-03-15">
   <owner>wmahon@google.com</owner>
