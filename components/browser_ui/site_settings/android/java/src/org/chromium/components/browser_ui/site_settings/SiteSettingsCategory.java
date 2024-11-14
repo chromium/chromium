@@ -74,6 +74,7 @@ public class SiteSettingsCategory {
         Type.STORAGE_ACCESS,
         Type.TRACKING_PROTECTION,
         Type.FILE_EDITING,
+        Type.JAVASCRIPT_OPTIMIZER,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -113,9 +114,10 @@ public class SiteSettingsCategory {
         int TRACKING_PROTECTION = 30;
         int HAND_TRACKING = 31;
         int FILE_EDITING = 32;
+        int JAVASCRIPT_OPTIMIZER = 33;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 33;
+        int NUM_ENTRIES = 34;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -232,6 +234,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.IDLE_DETECTION;
             case Type.JAVASCRIPT:
                 return ContentSettingsType.JAVASCRIPT;
+            case Type.JAVASCRIPT_OPTIMIZER:
+                return ContentSettingsType.JAVASCRIPT_OPTIMIZER;
             case Type.MICROPHONE:
                 return ContentSettingsType.MEDIASTREAM_MIC;
             case Type.NFC:
@@ -317,6 +321,8 @@ public class SiteSettingsCategory {
                 return "idle_detection";
             case Type.JAVASCRIPT:
                 return "javascript";
+            case Type.JAVASCRIPT_OPTIMIZER:
+                return "javascript_optimizer";
             case Type.MICROPHONE:
                 return "microphone";
             case Type.NFC:

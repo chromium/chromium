@@ -1272,7 +1272,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(33, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(34, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1737,6 +1737,16 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.FEDERATED_IDENTITY_API,
                 BINARY_TOGGLE_WITH_EXCEPTION,
                 BINARY_TOGGLE_WITH_EXCEPTION);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testOnlyExpctedPreferencesJavascriptOptimizer() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER,
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT);
     }
 
     @Test
@@ -2368,6 +2378,34 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    public void testAllowJavascriptOptimizer() {
+        new TwoStatePermissionTestCase(
+                        "JavascriptOptimizer",
+                        SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER,
+                        ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                        true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockJavascriptOptimizer() {
+        new TwoStatePermissionTestCase(
+                        "JavascriptOptimizer",
+                        SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER,
+                        ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                        false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
     @DisableIf.Build(
             message = "Flaky, see crbug.com/1170671",
             sdk_is_less_than = Build.VERSION_CODES.Q)
@@ -2964,6 +3002,11 @@ public class SiteSettingsTest {
         /** Set extra expected pref keys for category settings screen. */
         PermissionTestCase withExpectedPrefKeys(String expectedPrefKeys) {
             mExpectedPreferenceKeys.add(expectedPrefKeys);
+            return this;
+        }
+
+        PermissionTestCase withExpectedPrefKeysAtStart(String expectedPrefKeys) {
+            mExpectedPreferenceKeys.add(0, expectedPrefKeys);
             return this;
         }
 

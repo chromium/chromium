@@ -269,6 +269,16 @@ public class ContentSettingsResources {
                         0,
                         R.string.website_settings_category_javascript_a11y);
 
+            case ContentSettingsType.JAVASCRIPT_OPTIMIZER:
+                return new ResourceItem(
+                        R.drawable.settings_v8,
+                        R.string.website_settings_javascript_optimizer_link_row_label,
+                        ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_javascript_optimizer_allowed,
+                        R.string.website_settings_category_javascript_optimizer_blocked,
+                        R.string.website_settings_category_javascript_optimizer_a11y);
+
             case ContentSettingsType.MEDIASTREAM_CAMERA:
                 return new ResourceItem(
                         R.drawable.gm_filled_videocam_24,
@@ -712,6 +722,16 @@ public class ContentSettingsResources {
      */
     public static int getAutoDarkWebContentListSummary(boolean enabled) {
         return enabled ? R.string.text_on : R.string.text_off;
+    }
+
+    /**
+     * Returns the allowed/blocked summary for the javascript optimizer content setting, which
+     * should be used for display in the site settings list only.
+     */
+    public static int getJavascriptOptimizerListSummary(boolean enabled) {
+        return enabled
+                ? R.string.website_settings_category_javascript_optimizer_allowed_list
+                : R.string.website_settings_category_javascript_optimizer_blocked_list;
     }
 
     /**

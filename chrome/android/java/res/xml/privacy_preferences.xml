@@ -82,6 +82,11 @@ found in the LICENSE file.
         android:key="secure_dns"
         android:title="@string/settings_secure_dns_title"
         android:fragment="org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings" />
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="javascript_optimizer"
+        android:title="@string/website_settings_privacy_and_security_javascript_optimizer_row_label"
+        android:summary="@string/website_settings_privacy_and_security_javascript_optimizer_summary"
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
     <Preference
         android:key="phone_as_a_security_key"
         android:title="@string/cablev2_paask_title"

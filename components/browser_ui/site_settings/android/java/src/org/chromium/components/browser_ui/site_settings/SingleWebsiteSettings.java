@@ -142,6 +142,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 return "idle_detection_permission_list";
             case ContentSettingsType.JAVASCRIPT:
                 return "javascript_permission_list";
+            case ContentSettingsType.JAVASCRIPT_OPTIMIZER:
+                return "javascript_optimizer";
             case ContentSettingsType.POPUPS:
                 return "popup_permission_list";
             case ContentSettingsType.SOUND:

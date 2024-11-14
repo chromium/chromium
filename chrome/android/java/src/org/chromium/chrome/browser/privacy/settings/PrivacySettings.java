@@ -69,6 +69,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
     private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
+    private static final String PREF_JAVASCRIPT_OPTIMIZER = "javascript_optimizer";
     private static final String PREF_PHONE_AS_A_SECURITY_KEY = "phone_as_a_security_key";
     @VisibleForTesting static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
     @VisibleForTesting static final String PREF_DO_NOT_TRACK = "do_not_track";
@@ -231,6 +232,16 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             clearBrowsingDataPreference.setVisible(false);
             clearBrowsingDataAdvancedPreference.setVisible(true);
         }
+
+        Preference javascriptOptimizerPref = findPreference(PREF_JAVASCRIPT_OPTIMIZER);
+        javascriptOptimizerPref
+                .getExtras()
+                .putString(SingleCategorySettings.EXTRA_CATEGORY, javascriptOptimizerPref.getKey());
+        javascriptOptimizerPref
+                .getExtras()
+                .putString(
+                        SingleCategorySettings.EXTRA_TITLE,
+                        javascriptOptimizerPref.getTitle().toString());
 
         Preference phoneAsASecurityKey = findPreference(PREF_PHONE_AS_A_SECURITY_KEY);
         phoneAsASecurityKey.setVisible(

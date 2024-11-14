@@ -76,6 +76,9 @@
   <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY" desc="Title for Third-Party Sign In settings, which control whether websites can access browser third-party sign in API.">
     Third-party sign-in
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_OPTIMIZER_LINK_ROW_LABEL" desc="Title for V8 Optimizer settings, which controls whether the browser's JavaScript engine runs in a mode which is more resilient from attacks by malicious actors with the tradeoff of slightly reducing website performance.">
+    V8 optimizer
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_FILE_SYSTEM_WRITE_GUARD_TITLE" desc="Title of the permission to edit files [CHAR_LIMIT=32]">
     File editing
   </message>
@@ -454,6 +457,40 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_BACKGROUND_SYNC" desc="The description for the allow Background Sync for website dialog.">
     Allow Background Sync for a specific site.
+  </message>
+
+  <!-- Javascript Optimizer -->
+
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_A11Y" desc="The screen reader announcement describing a toggle with two states, controlling whether Javascript Optimizer is enabled. Disabling the JavaScript optimizer reduces performance but makes the JavaScript engine more resilient to attacks by malicious actors.">
+    When on, Chrome runs faster and features that use JavaScript should work as designed. When off, this reduces performance but makes V8 more resistant to attacks.
+  </message>
+
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_OPTIMIZER_ALLOW" desc="The description for the allow-v8-optimizer-for-website dialog.">
+    Allow site to use V8 optimizer.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_OPTIMIZER_BLOCK" desc="The description for the block-v8-optimizer-for-website dialog.">
+    Block site from using V8 optimizer.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_ALLOWED" desc="Label for the enabled option of the JavaScript optimizer content setting.">
+    Chrome runs faster and features that use JavaScript should work as designed
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_BLOCKED" desc="Label for the disabled option of the JavaScript optimizer content setting.">
+    Reduces performance but makes V8 more resistant to attacks
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_ALLOWED_LIST" desc="Summary text explaining that sites will use the Javascript optimizer. To be shown in the list of permission categories.">
+    Sites can use V8 optimizer
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_BLOCKED_LIST" desc="Summary text explaining that sites will not use the Javascript optimizer. To be shown in the list of permission categories.">
+    Sites cannot use V8 optimizer
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_PAGE_DESCRIPTION" desc="An explanation of what V8 is which appears beneath the page title: 'V8 optimizer'.">
+    V8 is Chrome’s JavaScript and WebAssembly engine used to improve site performance
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_PRIVACY_AND_SECURITY_JAVASCRIPT_OPTIMIZER_ROW_LABEL" desc="Title for the link row to the V8 security settings.">
+    Manage V8 security
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_PRIVACY_AND_SECURITY_JAVASCRIPT_OPTIMIZER_SUMMARY" desc="Description for the link row of the V8 security settings page.">
+    Turn on additional protection in Chrome’s JavaScript and WebAssembly engine
   </message>
 
   <!-- Bluetooth -->

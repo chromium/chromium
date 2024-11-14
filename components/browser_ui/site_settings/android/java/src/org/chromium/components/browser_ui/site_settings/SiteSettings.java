@@ -171,6 +171,8 @@ public class SiteSettings extends BaseSiteSettingsFragment
                 p.setSummary(ContentSettingsResources.getDesktopSiteListSummary(checked));
             } else if (Type.AUTO_DARK_WEB_CONTENT == prefCategory) {
                 p.setSummary(ContentSettingsResources.getAutoDarkWebContentListSummary(checked));
+            } else if (Type.JAVASCRIPT_OPTIMIZER == prefCategory) {
+                p.setSummary(ContentSettingsResources.getJavascriptOptimizerListSummary(checked));
             } else if (Type.ZOOM == prefCategory) {
                 // Don't want to set a summary for Zoom because we don't want any message to display
                 // under the Zoom row on site settings.

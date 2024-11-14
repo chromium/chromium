@@ -790,6 +790,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return isCategoryEnabled()
                         ? R.string.website_settings_blocked_group_heading_request_desktop_site
                         : R.string.website_settings_allowed_group_heading_request_desktop_site;
+            case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_javascript_optimizer_block
+                        : R.string.website_settings_add_site_description_javascript_optimizer_allow;
         }
         return 0;
     }
@@ -889,6 +893,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case SiteSettingsCategory.Type.SITE_DATA:
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
+            case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
                 allowSpecifyingExceptions = true;
                 break;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
@@ -1159,6 +1164,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             infoText.setSummary(R.string.website_settings_third_party_cookies_page_description);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
             infoText.setSummary(getStorageAccessSummary());
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER) {
+            infoText.setSummary(
+                    R.string.website_settings_category_javascript_optimizer_page_description);
         } else {
             screen.removePreference(infoText);
         }

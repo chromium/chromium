@@ -47,6 +47,7 @@ public class SiteSettingsUtil {
         ContentSettingsType.SENSORS,
         ContentSettingsType.AUTO_DARK_WEB_CONTENT,
         ContentSettingsType.REQUEST_DESKTOP_SITE,
+        ContentSettingsType.JAVASCRIPT_OPTIMIZER,
     };
 
     static final int[] CHOOSER_PERMISSIONS = {

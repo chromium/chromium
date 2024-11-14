@@ -242,6 +242,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_person_24dp.xml",
     "java/res/drawable/ic_timer.xml",
     "java/res/drawable/settings_bluetooth.xml",
+    "java/res/drawable/settings_v8.xml",
     "java/res/layout/add_site_dialog.xml",
     "java/res/layout/clear_data_dialog.xml",
     "java/res/layout/clear_reset_dialog.xml",
