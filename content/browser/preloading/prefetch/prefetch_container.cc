@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -202,10 +203,10 @@ void RecordWasBlockedUntilHeadWhenServingHistogram(
 
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     base::UmaHistogramBoolean(
-        base::StringPrintf(
-            "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
-            GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
-                .c_str()),
+        base::StrCat(
+            {"PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.",
+             GetPrefetchEagernessHistogramSuffix(
+                 prefetch_type.GetEagerness())}),
         blocked_until_head);
   } else {
     // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
@@ -220,11 +221,10 @@ void RecordPrefetchMatchingBlockedNavigationWithPrefetchHistogram(
 
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     base::UmaHistogramBoolean(
-        base::StringPrintf(
-            "PrefetchProxy.AfterClick."
-            "PrefetchMatchingBlockedNavigationWithPrefetch.%s",
-            GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
-                .c_str()),
+        base::StrCat({"PrefetchProxy.AfterClick."
+                      "PrefetchMatchingBlockedNavigationWithPrefetch.",
+                      GetPrefetchEagernessHistogramSuffix(
+                          prefetch_type.GetEagerness())}),
         blocked_until_head);
   } else {
     // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
@@ -240,11 +240,10 @@ void RecordBlockUntilHeadDurationHistogram(
 
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     base::UmaHistogramTimes(
-        base::StringPrintf(
-            "PrefetchProxy.AfterClick.BlockUntilHeadDuration.%s.%s",
-            served ? "Served" : "NotServed",
-            GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
-                .c_str()),
+        base::StrCat({"PrefetchProxy.AfterClick.BlockUntilHeadDuration.",
+                      served ? "Served." : "NotServed.",
+                      GetPrefetchEagernessHistogramSuffix(
+                          prefetch_type.GetEagerness())}),
         blocked_duration);
   } else {
     // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
@@ -260,19 +259,17 @@ void MaybeRecordBlockUntilHeadDuration2Histogram(
 
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     base::UmaHistogramTimes(
-        base::StringPrintf(
-            "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.%s.%s",
-            served ? "Served" : "NotServed",
-            GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
-                .c_str()),
+        base::StrCat({"PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.",
+                      served ? "Served." : "NotServed.",
+                      GetPrefetchEagernessHistogramSuffix(
+                          prefetch_type.GetEagerness())}),
         blocked_duration.value_or(base::Seconds(0)));
     if (blocked_duration.has_value()) {
       base::UmaHistogramTimes(
-          base::StringPrintf(
-              "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.%s.%s",
-              served ? "Served" : "NotServed",
-              GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
-                  .c_str()),
+          base::StrCat({"PrefetchProxy.AfterClick.BlockUntilHeadDuration2.",
+                        served ? "Served." : "NotServed.",
+                        GetPrefetchEagernessHistogramSuffix(
+                            prefetch_type.GetEagerness())}),
           blocked_duration.value());
     }
   } else {
