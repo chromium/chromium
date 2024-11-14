@@ -373,8 +373,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                                 const WGPURequestAdapterOptions* options,
                                 CallbackInfo callback_info);
   WGPUBool AdapterHasFeatureImpl(WGPUAdapter adapter, WGPUFeatureName feature);
-  size_t AdapterEnumerateFeaturesImpl(WGPUAdapter adapter,
-                                      WGPUFeatureName* features);
   void AdapterGetFeaturesImpl(WGPUAdapter adapter,
                               WGPUSupportedFeatures* features_out);
   template <typename CallbackInfo>
@@ -1186,11 +1184,6 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
     return parent_decoder->AdapterHasFeatureImpl(
         std::forward<decltype(args)>(args)...);
   };
-  wire_procs.adapterEnumerateFeatures = [](auto... args) {
-    DCHECK(parent_decoder);
-    return parent_decoder->AdapterEnumerateFeaturesImpl(
-        std::forward<decltype(args)>(args)...);
-  };
   wire_procs.adapterGetFeatures = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->AdapterGetFeaturesImpl(
@@ -1396,26 +1389,6 @@ WGPUBool WebGPUDecoderImpl::AdapterHasFeatureImpl(WGPUAdapter adapter,
   return adapter_obj.HasFeature(static_cast<wgpu::FeatureName>(feature));
 }
 
-size_t WebGPUDecoderImpl::AdapterEnumerateFeaturesImpl(
-    WGPUAdapter adapter,
-    WGPUFeatureName* features_out) {
-  wgpu::Adapter adapter_obj(adapter);
-  size_t count = adapter_obj.EnumerateFeatures(nullptr);
-
-  std::vector<wgpu::FeatureName> features(count);
-  adapter_obj.EnumerateFeatures(features.data());
-
-  auto it =
-      std::partition(features.begin(), features.end(),
-                     [&](wgpu::FeatureName f) { return IsFeatureExposed(f); });
-  count = std::distance(features.begin(), it);
-
-  if (features_out != nullptr) {
-    memcpy(features_out, features.data(), sizeof(wgpu::FeatureName) * count);
-  }
-  return count;
-}
-
 void WebGPUDecoderImpl::AdapterGetFeaturesImpl(
     WGPUAdapter adapter,
     WGPUSupportedFeatures* features_out) {
@@ -1475,7 +1448,7 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
     };
 
     // Check that no disallowed features were requested. They should be hidden
-    // by AdapterEnumerateFeaturesImpl.
+    // by AdapterGetFeaturesImpl.
     for (const wgpu::FeatureName& feature : required_features) {
       if (!IsFeatureExposed(feature)) {
         callback_info.callback(WGPURequestDeviceStatus_Error, nullptr,
