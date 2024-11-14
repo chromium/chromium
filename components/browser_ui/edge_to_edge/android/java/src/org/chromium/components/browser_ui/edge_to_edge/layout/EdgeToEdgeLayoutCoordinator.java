@@ -116,7 +116,8 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.edge_to_edge_base_layout, null, false);
         if (mInsetObserver != null) {
-            mInsetObserver.addInsetsConsumer(this);
+            mInsetObserver.addInsetsConsumer(
+                    this, InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR);
         } else {
             ViewCompat.setOnApplyWindowInsetsListener(mView, this);
         }

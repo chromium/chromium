@@ -74,6 +74,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -185,7 +186,11 @@ public class EdgeToEdgeControllerTest {
                 .when(mEdgeToEdgeStateProvider)
                 .acquireSetDecorFitsSystemWindowToken();
         doNothing().when(mOsWrapper).setPadding(any(), anyInt(), anyInt(), anyInt(), anyInt());
-        doNothing().when(mInsetObserver).addInsetsConsumer(mWindowInsetsListenerCaptor.capture());
+        doNothing()
+                .when(mInsetObserver)
+                .addInsetsConsumer(
+                        mWindowInsetsListenerCaptor.capture(),
+                        eq(InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL));
         doAnswer(
                         invocationOnMock -> {
                             int bottomInset = invocationOnMock.getArgument(0);
@@ -217,7 +222,8 @@ public class EdgeToEdgeControllerTest {
                         ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled()
                                 ? eq(0)
                                 : intThat(Matchers.greaterThan(0)));
-        verify(mInsetObserver, times(1)).addInsetsConsumer(any());
+        verify(mInsetObserver, times(1))
+                .addInsetsConsumer(any(), eq(InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL));
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
     }
 

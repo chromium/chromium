@@ -38,6 +38,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -184,7 +185,8 @@ public class EdgeToEdgeControllerImpl
                 : "The EdgeToEdgeControllerImpl needs access to a valid InsetObserver to listen to"
                         + " the system insets!";
         mWindowInsetsConsumer = this::handleWindowInsets;
-        mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
+        mInsetObserver.addInsetsConsumer(
+                mWindowInsetsConsumer, InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL);
 
         assert mInsetObserver.getLastRawWindowInsets() != null
                 : "The inset observer should have non-null insets by the time the"

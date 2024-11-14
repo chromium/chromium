@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.edge_to_edge.layout;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -29,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,7 +70,8 @@ public class EdgeToEdgeLayoutUnitTest {
     public void testInitialize_withInsetObserver() {
         initialize(mInsetObserver);
         assertEquals(mEdgeToEdgeLayout, mOriginalContentView.getParent());
-        verify(mInsetObserver).addInsetsConsumer(any());
+        verify(mInsetObserver)
+                .addInsetsConsumer(any(), eq(InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR));
     }
 
     // ┌────────┐

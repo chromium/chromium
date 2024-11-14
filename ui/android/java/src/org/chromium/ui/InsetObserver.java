@@ -7,6 +7,7 @@ package org.chromium.ui;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
@@ -21,14 +22,15 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.ImmutableWeakReference;
 
-import java.util.ArrayList;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
- * The purpose of this class is to store the system window insets (OSK, status bar) for
- * later use.
+ * The purpose of this class is to store the system window insets (OSK, status bar) for later use.
  */
 public class InsetObserver implements OnApplyWindowInsetsListener {
     private final Rect mWindowInsets;
@@ -39,7 +41,9 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private final WindowInsetsAnimationCompat.Callback mWindowInsetsAnimationProxyCallback;
     private final ObserverList<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
             new ObserverList<>();
-    private final List<WindowInsetsConsumer> mInsetsConsumers = new ArrayList<>();
+    private final WindowInsetsConsumer[] mInsetsConsumers =
+            new WindowInsetsConsumer[InsetConsumerSource.COUNT];
+
     private final ImmutableWeakReference<View> mRootViewReference;
     // Insets to be added to the current safe area.
     private int mBottomInsetsForEdgeToEdge;
@@ -68,7 +72,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     /**
-     * Alias for {@link  androidx.core.view.OnApplyWindowInsetsListener} to emphasize that an
+     * Alias for {@link androidx.core.view.OnApplyWindowInsetsListener} to emphasize that an
      * implementing class expects to consume insets, not just observe them. "Consuming" means "my
      * view/component will adjust its size to account for the space required by the inset." For
      * instance, the omnibox could "consume" the IME (keyboard) inset by adjusting the height of its
@@ -77,10 +81,38 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * enable custom behavior, e.g. you want to shield a specific view from inset changes by
      * consuming them elsewhere.
      */
-    public interface WindowInsetsConsumer extends androidx.core.view.OnApplyWindowInsetsListener {}
+    public interface WindowInsetsConsumer extends androidx.core.view.OnApplyWindowInsetsListener {
+
+        // Consumers will be given the opportunity to process applied insets based on the priority
+        // defined here. A lower value of the consumer source means that insets will be forwarded to
+        // this consumer before others with a higher value.
+        @IntDef({
+            InsetConsumerSource.TEST_SOURCE,
+            InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK,
+            InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION,
+            InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
+            InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
+            InsetConsumerSource.APP_HEADER_COORDINATOR_IME,
+            InsetConsumerSource.COUNT
+        })
+        @Retention(RetentionPolicy.SOURCE)
+        @interface InsetConsumerSource {
+            // For testing only.
+            int TEST_SOURCE = 0;
+
+            int DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK = 1;
+            int APP_HEADER_COORDINATOR_CAPTION = 2;
+            int EDGE_TO_EDGE_CONTROLLER_IMPL = 3;
+            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 4;
+            int APP_HEADER_COORDINATOR_IME = 5;
+
+            // Update this whenever a consumer source is added or removed.
+            int COUNT = 6;
+        }
+    }
 
     /**
-     * Interface equivalent of {@link  WindowInsetsAnimationCompat.Callback}. This allows
+     * Interface equivalent of {@link WindowInsetsAnimationCompat.Callback}. This allows
      * implementers to be notified of inset animation progress, enabling synchronization of browser
      * UI changes with system inset changes. This synchronization is potentially imperfect on API
      * level <30. Note that the interface version currently disallows modification of the insets
@@ -192,16 +224,23 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     /**
-     * Add a consumer of window insets. Consumers are given the opportunity to consume insets in
-     * the order they're added.
+     * Add a consumer of window insets. Consumers are given the opportunity to consume insets in the
+     * order of a pre-defined priority value.
      */
-    public void addInsetsConsumer(@NonNull WindowInsetsConsumer insetConsumer) {
-        mInsetsConsumers.add(insetConsumer);
+    public void addInsetsConsumer(
+            @NonNull WindowInsetsConsumer insetConsumer, @InsetConsumerSource int source) {
+        assert mInsetsConsumers[source] == null : "Inset consumer source has already been added.";
+        mInsetsConsumers[source] = insetConsumer;
     }
 
-    /** Remove a consumer of window insets.*/
+    /** Remove a consumer of window insets. */
     public void removeInsetsConsumer(@NonNull WindowInsetsConsumer insetConsumer) {
-        mInsetsConsumers.remove(insetConsumer);
+        for (int i = 0; i < mInsetsConsumers.length; i++) {
+            if (mInsetsConsumers[i] == insetConsumer) {
+                mInsetsConsumers[i] = null;
+                return;
+            }
+        }
     }
 
     /** Add a listener for inset animations. */
@@ -312,6 +351,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         if (rootView == null) return insets;
 
         for (WindowInsetsConsumer consumer : mInsetsConsumers) {
+            if (consumer == null) continue;
             insets = consumer.onApplyWindowInsets(rootView, insets);
         }
         return insets;

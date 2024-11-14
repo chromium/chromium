@@ -36,6 +36,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetObserver;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
@@ -141,7 +142,8 @@ public class AppHeaderCoordinator
                         : new InsetsRectProvider(
                                 insetObserver,
                                 WindowInsetsCompat.Type.captionBar(),
-                                insetObserver.getLastRawWindowInsets());
+                                insetObserver.getLastRawWindowInsets(),
+                                InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION);
         InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
         mCaptionBarRectProvider.addObserver(insetsRectUpdateRunnable);
 

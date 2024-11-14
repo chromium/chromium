@@ -31,6 +31,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.InsetsRectProviderTest.ShadowWindowInsetsUtils;
 import org.chromium.ui.util.WindowInsetsUtils;
 
@@ -75,7 +76,9 @@ public class InsetsRectProviderTest {
         WindowInsetsCompat windowInsets =
                 buildTestWindowInsets(
                         type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
-        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, windowInsets);
+        mInsetsRectProvider =
+                new InsetsRectProvider(
+                        mInsetObserver, type, windowInsets, InsetConsumerSource.TEST_SOURCE);
 
         assertSuppliedValues(insets, availableArea, blockingRects);
     }
@@ -83,7 +86,8 @@ public class InsetsRectProviderTest {
     @Test
     public void testInitializationEmpty() {
         int type = WindowInsetsCompat.Type.captionBar();
-        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, null);
+        mInsetsRectProvider =
+                new InsetsRectProvider(mInsetObserver, type, null, InsetConsumerSource.TEST_SOURCE);
 
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
     }
@@ -105,7 +109,9 @@ public class InsetsRectProviderTest {
 
         // Initialize with empty window insets.
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
-        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
+        mInsetsRectProvider =
+                new InsetsRectProvider(
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
 
         // Attach an observer and supply a new window insets.
@@ -139,7 +145,9 @@ public class InsetsRectProviderTest {
         WindowInsetsCompat windowInsets =
                 buildTestWindowInsets(
                         type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
-        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, windowInsets);
+        mInsetsRectProvider =
+                new InsetsRectProvider(
+                        mInsetObserver, type, windowInsets, InsetConsumerSource.TEST_SOURCE);
         assertSuppliedValues(insets, availableArea, blockingRects);
 
         // Attach an observer and supply a new window insets.
@@ -170,7 +178,9 @@ public class InsetsRectProviderTest {
         // corresponding OS APIs.
         // Initialize with empty window insets.
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
-        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
+        mInsetsRectProvider =
+                new InsetsRectProvider(
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
 
         // Attach an observer to verify that input insets are not processed or consumed.
         CallbackHelper observer = new CallbackHelper();
@@ -191,7 +201,9 @@ public class InsetsRectProviderTest {
 
         // Initialize with empty window insets.
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
-        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
+        mInsetsRectProvider =
+                new InsetsRectProvider(
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
 
         // Attach an observer to verify that new insets are processed once, with back to back
         // updates. Also verify that the insets are consumed in both cases.
@@ -223,7 +235,9 @@ public class InsetsRectProviderTest {
 
         // Initialize with empty window insets.
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
-        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
+        mInsetsRectProvider =
+                new InsetsRectProvider(
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
 
         // Attach an observer to verify that new insets are not consumed when there is no available
         // area in the insets region for customization. Verify that the insets are not consumed.
@@ -246,7 +260,9 @@ public class InsetsRectProviderTest {
 
         // Initialize with empty window insets.
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
-        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
+        mInsetsRectProvider =
+                new InsetsRectProvider(
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
 
         // Attach an observer to verify that new insets are processed once but never consumed, with
         // back to back updates, when there is no unoccluded area available for customization in

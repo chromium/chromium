@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.ImmutableWeakReference;
 
 import java.util.Collections;
@@ -71,7 +72,8 @@ public class InsetObserverTest {
     @Mock private WindowInsetsCompat mModifiedInsets;
     @Mock private WindowInsets mNonCompatInsets;
     @Mock private WindowInsets mModifiedNonCompatInsets;
-    @Mock private WindowInsetsConsumer mInsetsConsumer;
+    @Mock private WindowInsetsConsumer mInsetsConsumer1;
+    @Mock private WindowInsetsConsumer mInsetsConsumer2;
     @Mock private WindowInsetsAnimationListener mInsetsAnimationListener;
     @Mock private LinearLayout mContentView;
 
@@ -125,16 +127,43 @@ public class InsetObserverTest {
     @Test
     @SmallTest
     public void applyInsets_withInsetConsumer() {
-        mInsetObserver.addInsetsConsumer(mInsetsConsumer);
+        mInsetObserver.addInsetsConsumer(mInsetsConsumer1, InsetConsumerSource.TEST_SOURCE);
 
-        doReturn(mModifiedInsets).when(mInsetsConsumer).onApplyWindowInsets(mContentView, mInsets);
+        doReturn(mModifiedInsets).when(mInsetsConsumer1).onApplyWindowInsets(mContentView, mInsets);
         doReturn(Insets.of(14, 17, 31, 43))
                 .when(mModifiedInsets)
                 .getInsets(WindowInsetsCompat.Type.systemBars());
 
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
-        verify(mInsetsConsumer).onApplyWindowInsets(mContentView, mInsets);
+        verify(mInsetsConsumer1).onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1)).onInsetChanged(14, 17, 31, 43);
+    }
+
+    @Test
+    @SmallTest
+    public void applyInsets_withMultipleInsetConsumers() {
+        // Add consumers in reverse order of priority.
+        mInsetObserver.addInsetsConsumer(
+                mInsetsConsumer1, InsetConsumerSource.APP_HEADER_COORDINATOR_IME);
+        mInsetObserver.addInsetsConsumer(
+                mInsetsConsumer2,
+                InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK);
+
+        // Assume that the higher priority |mInsetsConsumer2| consumes the system bars insets.
+        doReturn(mModifiedInsets).when(mInsetsConsumer2).onApplyWindowInsets(mContentView, mInsets);
+        doReturn(Insets.NONE).when(mModifiedInsets).getInsets(WindowInsetsCompat.Type.systemBars());
+        doReturn(mModifiedInsets)
+                .when(mInsetsConsumer1)
+                .onApplyWindowInsets(mContentView, mModifiedInsets);
+
+        // Verify that consumed insets are forwarded to the lower priority |mInsetsConsumer1|.
+        var insets = mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        assertEquals(
+                "System bar insets should be empty.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.systemBars()));
+        verify(mInsetsConsumer2).onApplyWindowInsets(mContentView, mInsets);
+        verify(mInsetsConsumer1).onApplyWindowInsets(mContentView, mModifiedInsets);
     }
 
     @Test
