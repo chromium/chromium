@@ -72,7 +72,6 @@ void AdjustParamsForCurrentConfig(media::VideoCaptureParams* params) {
   params->requested_format.pixel_format = media::PIXEL_FORMAT_NV12;
   params->buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
 }
-#endif
 
 bool IsFatalError(media::VideoCaptureError error) {
   switch (error) {
@@ -90,6 +89,7 @@ bool IsFatalError(media::VideoCaptureError error) {
       return false;
   }
 }
+#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 bool IsGpuRasterizationSupported(ui::ContextFactory* context_factory) {
@@ -696,9 +696,14 @@ void CameraVideoFrameHandler::OnBufferRetired(int buffer_id) {
 
 void CameraVideoFrameHandler::OnError(media::VideoCaptureError error) {
   LOG(ERROR) << "Recieved error: " << static_cast<int>(error);
+  if (delegate_) {
+    delegate_->OnError(error);
+  }
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsFatalError(error)) {
     OnFatalErrorOrDisconnection();
   }
+#endif
 }
 
 void CameraVideoFrameHandler::OnFrameDropped(
@@ -733,6 +738,7 @@ void CameraVideoFrameHandler::OnSubscriptionCreationResult(
   if (result_code->is_error_code()) {
     LOG(ERROR) << "Error in creating push subscription: "
                << static_cast<int>(result_code->get_error_code());
+    OnError(result_code->get_error_code());
   } else {
     actual_params_.emplace(actual_params);
   }
