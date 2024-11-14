@@ -32,12 +32,6 @@ class WaylandBubble final : public WaylandWindow {
   void SetInputRegion(std::optional<std::vector<gfx::Rect>> region_px) override;
   void Activate() override;
   void Deactivate() override;
-  void ShowTooltip(const std::u16string& text,
-                   const gfx::Point& position,
-                   const PlatformWindowTooltipTrigger trigger,
-                   const base::TimeDelta show_delay,
-                   const base::TimeDelta hide_delay) override;
-  void HideTooltip() override;
 
   // WaylandWindow overrides:
   void UpdateWindowScale(bool update_bounds) override;

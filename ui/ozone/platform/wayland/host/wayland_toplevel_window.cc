@@ -419,39 +419,6 @@ void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   SizeConstraintsChanged();
 }
 
-void WaylandToplevelWindow::LockFrame() {
-  OnFrameLockingChanged(true);
-}
-
-void WaylandToplevelWindow::UnlockFrame() {
-  OnFrameLockingChanged(false);
-}
-
-void WaylandToplevelWindow::DeskChanged(int state) {
-  OnDeskChanged(state);
-}
-
-void WaylandToplevelWindow::StartThrottle() {
-  delegate()->SetFrameRateThrottleEnabled(true);
-}
-
-void WaylandToplevelWindow::EndThrottle() {
-  delegate()->SetFrameRateThrottleEnabled(false);
-}
-
-void WaylandToplevelWindow::TooltipShown(const char* text,
-                                         int32_t x,
-                                         int32_t y,
-                                         int32_t width,
-                                         int32_t height) {
-  delegate()->OnTooltipShownOnServer(base::UTF8ToUTF16(text),
-                                     gfx::Rect(x, y, width, height));
-}
-
-void WaylandToplevelWindow::TooltipHidden() {
-  delegate()->OnTooltipHiddenOnServer();
-}
-
 WaylandToplevelWindow* WaylandToplevelWindow::AsWaylandToplevelWindow() {
   return this;
 }
@@ -671,31 +638,6 @@ base::WeakPtr<WaylandWindow> WaylandToplevelWindow::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void WaylandToplevelWindow::ShowTooltip(
-    const std::u16string& text,
-    const gfx::Point& position,
-    const PlatformWindowTooltipTrigger trigger,
-    const base::TimeDelta show_delay,
-    const base::TimeDelta hide_delay) {
-  auto* zaura_surface = GetZAuraSurface();
-  const auto zaura_shell_trigger =
-      trigger == PlatformWindowTooltipTrigger::kCursor
-          ? ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR
-          : ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD;
-  if (zaura_surface &&
-      zaura_surface->ShowTooltip(text, position, zaura_shell_trigger,
-                                 show_delay, hide_delay)) {
-    connection()->Flush();
-  }
-}
-
-void WaylandToplevelWindow::HideTooltip() {
-  auto* zaura_surface = GetZAuraSurface();
-  if (zaura_surface && zaura_surface->HideTooltip()) {
-    connection()->Flush();
-  }
-}
-
 bool WaylandToplevelWindow::IsClientControlledWindowMovementSupported() const {
   auto* window_drag_controller = connection()->window_drag_controller();
   DCHECK(window_drag_controller);
@@ -731,52 +673,6 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
     return;
   }
   connection()->window_drag_controller()->StartDragSession(this, event_source);
-}
-
-void WaylandToplevelWindow::ShowSnapPreview(
-    WaylandWindowSnapDirection snap_direction,
-    bool allow_haptic_feedback) {
-  auto* zaura_surface = GetZAuraSurface();
-  zaura_surface_snap_direction zaura_shell_snap_direction =
-      ZAURA_SURFACE_SNAP_DIRECTION_NONE;
-  switch (snap_direction) {
-    case WaylandWindowSnapDirection::kPrimary:
-      zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_LEFT;
-      break;
-    case WaylandWindowSnapDirection::kSecondary:
-      zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_RIGHT;
-      break;
-    case WaylandWindowSnapDirection::kNone:
-      break;
-  }
-  if (zaura_surface &&
-      zaura_surface->IntentToSnap(zaura_shell_snap_direction)) {
-    return;
-  }
-
-  // Window snapping isn't available for non-lacros builds.
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void WaylandToplevelWindow::CommitSnap(
-    WaylandWindowSnapDirection snap_direction,
-    float snap_ratio) {
-  auto* zaura_surface = GetZAuraSurface();
-  if (zaura_surface && zaura_surface->SupportsUnsetSnap()) {
-    switch (snap_direction) {
-      case WaylandWindowSnapDirection::kPrimary:
-        zaura_surface->SetSnapLeft();
-        return;
-      case WaylandWindowSnapDirection::kSecondary:
-        zaura_surface->SetSnapRight();
-        return;
-      case WaylandWindowSnapDirection::kNone:
-        zaura_surface->UnsetSnap();
-        return;
-    }
-  }
-  // Window snapping isn't available for non-lacros builds.
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WaylandToplevelWindow::SetCanGoBack(bool value) {
@@ -825,9 +721,7 @@ std::u16string WaylandToplevelWindow::GetDeskName(int index) const {
 }
 
 void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    zaura_surface->MoveToDesk(index);
-  }
+  // TODO(crbug.com/374244479): remove this.
 }
 
 void WaylandToplevelWindow::SetSystemModal(bool modal) {
@@ -986,16 +880,6 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
   // This method should be called after the XDG surface is initialized.
   DCHECK(shell_toplevel_);
   if (connection()->zaura_shell()) {
-    if (auto* zaura_surface = root_surface()->CreateZAuraSurface()) {
-      zaura_surface->set_delegate(AsWeakPtr());
-
-      // If the server does not support the synchronized occlusion pathway,
-      // enable the unsynchronized occlusion pathway and disable native
-      // occlusion.
-      zaura_surface->SetOcclusionTracking();
-      delegate()->DisableNativeWindowOcclusion();
-    }
-
     SetInitialWorkspace();
   }
 
@@ -1023,18 +907,6 @@ void WaylandToplevelWindow::OnDecorationModeChanged() {
     shell_toplevel_->SetDecoration(
         ShellToplevelWrapper::DecorationMode::kClientSide);
   }
-}
-
-void WaylandToplevelWindow::OnFrameLockingChanged(bool lock) {
-  DCHECK(delegate());
-  delegate()->OnSurfaceFrameLockingChanged(lock);
-}
-
-void WaylandToplevelWindow::OnDeskChanged(int state) {
-  DCHECK(delegate());
-  workspace_ = state;
-  if (workspace_extension_delegate_)
-    workspace_extension_delegate_->OnWorkspaceChanged();
 }
 
 void WaylandToplevelWindow::SetInitialWorkspace() {

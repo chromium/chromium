@@ -72,8 +72,7 @@ class WaylandWindow : public PlatformWindow,
                       public PlatformEventDispatcher,
                       public WmDragHandler,
                       public WaylandExtension,
-                      public EventTarget,
-                      public WaylandZAuraSurface::Delegate {
+                      public EventTarget {
  public:
   WaylandWindow(const WaylandWindow&) = delete;
   WaylandWindow& operator=(const WaylandWindow&) = delete;

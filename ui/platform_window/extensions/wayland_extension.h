@@ -13,12 +13,6 @@ namespace ui {
 
 class PlatformWindow;
 
-enum class WaylandWindowSnapDirection {
-  kNone,
-  kPrimary,
-  kSecondary,
-};
-
 class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
  public:
   // Waits for a Wayland roundtrip to ensure all side effects have been
@@ -60,19 +54,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandToplevelExtension {
   virtual void StartWindowDraggingSessionIfNeeded(
       ui::mojom::DragEventSource event_source,
       bool allow_system_drag) = 0;
-
-  // Signals the underneath platform to shows a preview for the given window
-  // snap direction. `allow_haptic_feedback` indicates if it should send haptic
-  // feedback.
-  virtual void ShowSnapPreview(WaylandWindowSnapDirection snap,
-                               bool allow_haptic_feedback) = 0;
-
-  // Requests the underneath platform to snap the window in the given direction,
-  // if not WaylandWindowSnapDirection::kNone, otherwise cancels the window
-  // snapping. `snap_ratio` indicates the width of the work area to snap to in
-  // landscape mode, or height in portrait mode.
-  virtual void CommitSnap(WaylandWindowSnapDirection snap,
-                          float snap_ratio) = 0;
 
   // Signals the underneath platform whether the current tab of the browser
   // window can go back. The underneath platform might react, for example,

@@ -411,15 +411,4 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
   return window()->GetLocalSurfaceId().parent_sequence_number();
 }
 
-void WindowTreeHostPlatform::SetFrameRateThrottleEnabled(bool enabled) {
-  if (enabled)
-    HostFrameRateThrottler::GetInstance().AddHost(this);
-  else
-    HostFrameRateThrottler::GetInstance().RemoveHost(this);
-}
-
-void WindowTreeHostPlatform::DisableNativeWindowOcclusion() {
-  SetNativeWindowOcclusionEnabled(false);
-}
-
 }  // namespace aura

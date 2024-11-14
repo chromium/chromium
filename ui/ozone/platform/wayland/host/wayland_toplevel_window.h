@@ -53,17 +53,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // WaylandWindow overrides:
   void UpdateWindowScale(bool update_bounds) override;
-  void LockFrame() override;
-  void UnlockFrame() override;
-  void DeskChanged(int state) override;
-  void StartThrottle() override;
-  void EndThrottle() override;
-  void TooltipShown(const char* text,
-                    int32_t x,
-                    int32_t y,
-                    int32_t width,
-                    int32_t height) override;
-  void TooltipHidden() override;
   WaylandToplevelWindow* AsWaylandToplevelWindow() override;
 
   // Configure related:
@@ -86,12 +75,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsActive() const override;
   bool IsSuspended() const override;
   void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
-  void ShowTooltip(const std::u16string& text,
-                   const gfx::Point& position,
-                   const PlatformWindowTooltipTrigger trigger,
-                   const base::TimeDelta show_delay,
-                   const base::TimeDelta hide_delay) override;
-  void HideTooltip() override;
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
 
   // WmDragHandler:
@@ -141,9 +124,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void StartWindowDraggingSessionIfNeeded(
       ui::mojom::DragEventSource event_source,
       bool allow_system_drag) override;
-  void ShowSnapPreview(WaylandWindowSnapDirection snap,
-                       bool allow_haptic_feedback) override;
-  void CommitSnap(WaylandWindowSnapDirection snap, float snap_ratio) override;
   void SetCanGoBack(bool value) override;
   void SetPip() override;
   bool SupportsPointerLock() override;
@@ -204,14 +184,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // Sets decoration mode for a window.
   void OnDecorationModeChanged();
-
-  // Called when frame is locked to normal state or unlocked from
-  // previously locked state.
-  void OnFrameLockingChanged(bool lock);
-
-  // Called when a window is moved to another desk or assigned to
-  // all desks state.
-  void OnDeskChanged(int state);
 
   // Sets `workspace_` to `aura_surface_`.
   // This must be called in SetUpShellIntegration().

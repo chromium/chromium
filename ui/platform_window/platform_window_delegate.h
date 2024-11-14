@@ -43,11 +43,6 @@ enum class PlatformWindowOcclusionState {
   kHidden,
 };
 
-enum class PlatformWindowTooltipTrigger {
-  kCursor,
-  kKeyboard,
-};
-
 class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
  public:
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) BoundsChange {
@@ -190,13 +185,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // This is used to create the non-rectangular window shape.
   virtual SkPath GetWindowMaskForWindowShapeInPixels();
 
-  // Called while dragging maximized window when SurfaceFrame associated with
-  // this window is locked to normal state or unlocked from previously locked
-  // state. This function is used by chromeos for syncing
-  // `chromeos::kFrameRestoreLookKey` window property
-  // with lacros-chrome.
-  virtual void OnSurfaceFrameLockingChanged(bool lock);
-
   // Called when the location of mouse pointer entered the window.  This is
   // different from ui::EventType::kMouseEntered which may not be generated when
   // mouse is captured either by implicitly or explicitly.
@@ -224,17 +212,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // intended position caused the surface to be constrained.
   virtual std::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP();
 
-  // Enables or disables frame rate throttling.
-  virtual void SetFrameRateThrottleEnabled(bool enabled);
-
-  // Called when tooltip is shown on server.
-  // `bounds` is in screen coordinates.
-  virtual void OnTooltipShownOnServer(const std::u16string& text,
-                                      const gfx::Rect& bounds);
-
-  // Called when tooltip is hidden on server.
-  virtual void OnTooltipHiddenOnServer();
-
   // Converts gfx::Rect in pixels to DIP in screen, and vice versa.
   virtual gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const;
   virtual gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const;
@@ -247,9 +224,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // Converts gfx::Insets in DIP to pixels.
   virtual gfx::Insets ConvertInsetsToPixels(
       const gfx::Insets& insets_dip) const;
-
-  // Disables native window occlusion.
-  virtual void DisableNativeWindowOcclusion();
 };
 
 }  // namespace ui
