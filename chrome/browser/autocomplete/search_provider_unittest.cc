@@ -118,14 +118,12 @@ class TestAutocompleteProviderClient : public ChromeAutocompleteProviderClient {
                 loader_factory)) {}
   ~TestAutocompleteProviderClient() override = default;
 
-  bool IsPersonalizedUrlDataCollectionActive() const override {
-    return is_personalized_url_data_collection_active_;
+  bool IsUrlDataCollectionActive() const override {
+    return is_url_data_collection_active_;
   }
 
-  void set_is_personalized_url_data_collection_active(
-      bool is_personalized_url_data_collection_active) {
-    is_personalized_url_data_collection_active_ =
-        is_personalized_url_data_collection_active;
+  void set_is_url_data_collection_active(bool is_url_data_collection_active) {
+    is_url_data_collection_active_ = is_url_data_collection_active;
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -134,7 +132,7 @@ class TestAutocompleteProviderClient : public ChromeAutocompleteProviderClient {
   }
 
  private:
-  bool is_personalized_url_data_collection_active_ = true;
+  bool is_url_data_collection_active_ = true;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 };
 
@@ -3551,7 +3549,7 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
   TemplateURL google_template_url(google_template_url_data);
 
   // Enable personalized URL data collection.
-  client_->set_is_personalized_url_data_collection_active(true);
+  client_->set_is_url_data_collection_active(true);
 
   // Personalized URL data collection is active. Test that we can send the page
   // URL if all of the following hold:
@@ -3584,7 +3582,7 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
   EXPECT_TRUE(test_srp(&google_template_url, client_.get()));
 
   // Disable personalized URL data collection.
-  client_->set_is_personalized_url_data_collection_active(false);
+  client_->set_is_url_data_collection_active(false);
 
   // Does not require personalized URL data collection to be enabled.
   EXPECT_TRUE(test_lens(&google_template_url, client_.get()));
@@ -3594,7 +3592,7 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
   EXPECT_TRUE(test_srp(&google_template_url, client_.get()));
 
   // Re-enable personalized URL data collection.
-  client_->set_is_personalized_url_data_collection_active(true);
+  client_->set_is_url_data_collection_active(true);
 
   // Ensure the state is properly reset.
   EXPECT_TRUE(test_lens(&google_template_url, client_.get()));

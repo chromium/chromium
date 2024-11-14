@@ -189,12 +189,6 @@ BASE_FEATURE(kDocumentProviderNoSyncRequirement,
 // domains.
 BASE_FEATURE(kDomainSuggestions, "OmniboxDomainSuggestions", DISABLED);
 
-// Feature to determine if omnibox should use a pref based data collection
-// consent helper instead of a history sync based one.
-BASE_FEATURE(kPrefBasedDataCollectionConsentHelper,
-             "PrefBasedDataCollectionConsentHelper",
-             ENABLED);
-
 // If enabled, clipboard suggestion will not show the clipboard content until
 // the user clicks the reveal button.
 BASE_FEATURE(kClipboardSuggestionContentHidden,

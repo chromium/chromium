@@ -87,14 +87,12 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     return zero_suggest_cache_service_.get();
   }
 
-  bool IsPersonalizedUrlDataCollectionActive() const override {
-    return is_personalized_url_data_collection_active_;
+  bool IsUrlDataCollectionActive() const override {
+    return is_url_data_collection_active_;
   }
 
-  void set_is_personalized_url_data_collection_active(
-      bool is_personalized_url_data_collection_active) {
-    is_personalized_url_data_collection_active_ =
-        is_personalized_url_data_collection_active;
+  void set_is_url_data_collection_active(bool is_url_data_collection_active) {
+    is_url_data_collection_active_ = is_url_data_collection_active;
   }
 
   void Classify(
@@ -115,7 +113,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
  private:
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
-  bool is_personalized_url_data_collection_active_;
+  bool is_url_data_collection_active_;
   std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
   TestSchemeClassifier scheme_classifier_;
 };
@@ -249,8 +247,8 @@ class ZeroSuggestProviderTest : public testing::Test,
 void ZeroSuggestProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
 
-  // Activate personalized URL data collection.
-  client_->set_is_personalized_url_data_collection_active(true);
+  // Activate URL data collection.
+  client_->set_is_url_data_collection_active(true);
 
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
   template_url_service->Load();
@@ -409,8 +407,8 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     return eligible;
   };
 
-  // Enable personalized URL data collection.
-  client_->set_is_personalized_url_data_collection_active(true);
+  // Enable URL data collection.
+  client_->set_is_url_data_collection_active(true);
 
   {
     // Zero-suggest is generally not allowed for invalid or non-HTTP(S) URLs.
@@ -451,10 +449,10 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     EXPECT_TRUE(test_other());
   }
 
-  // Deactivate personalized URL data collection. This ensures that the page URL
+  // Deactivate URL data collection. This ensures that the page URL
   // cannot be sent and zero-suggest is disallowed unless the URL is the SRP or
   // the request is being made from the Lens searchboxes.
-  client_->set_is_personalized_url_data_collection_active(false);
+  client_->set_is_url_data_collection_active(false);
 
   {
     // Zero-suggest request can be made on NTP.
@@ -473,8 +471,8 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     EXPECT_FALSE(test_other());
   }
 
-  // Reactivate personalized URL data collection.
-  client_->set_is_personalized_url_data_collection_active(true);
+  // Reactivate URL data collection.
+  client_->set_is_url_data_collection_active(true);
 
   // Change the default search provider to a non-Google one.
   TemplateURLData non_google_provider_data;

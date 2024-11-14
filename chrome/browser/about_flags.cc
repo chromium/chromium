@@ -6432,11 +6432,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxForceAllowedToBeDefaultDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox_feature_configs::ForceAllowedToBeDefault::
                             kForceAllowedToBeDefault)},
-    {"omnibox-pref-based-data-collection-consent-helper",
-     flag_descriptions::kOmniboxPrefBasedDataCollectionConsentHelperName,
-     flag_descriptions::kOmniboxPrefBasedDataCollectionConsentHelperDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kPrefBasedDataCollectionConsentHelper)},
     {"omnibox-shortcut-boost", flag_descriptions::kOmniboxShortcutBoostName,
      flag_descriptions::kOmniboxShortcutBoostDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(

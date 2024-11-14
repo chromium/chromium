@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 
-#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/history/core/browser/history_service.h"
@@ -64,14 +63,8 @@ AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
     ProfileIOS* profile)
     : profile_(profile),
       url_consent_helper_(
-          base::FeatureList::IsEnabled(
-              omnibox::kPrefBasedDataCollectionConsentHelper)
-              ? unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewAnonymizedDataCollectionConsentHelper(
-                        profile_->GetPrefs())
-              : unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewPersonalizedDataCollectionConsentHelper(
-                        SyncServiceFactory::GetForProfile(profile_))),
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewAnonymizedDataCollectionConsentHelper(profile_->GetPrefs())),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()),
       tab_matcher_(profile_) {
@@ -251,8 +244,7 @@ bool AutocompleteProviderClientImpl::SearchSuggestEnabled() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled);
 }
 
-bool AutocompleteProviderClientImpl::IsPersonalizedUrlDataCollectionActive()
-    const {
+bool AutocompleteProviderClientImpl::IsUrlDataCollectionActive() const {
   return url_consent_helper_->IsEnabled();
 }
 

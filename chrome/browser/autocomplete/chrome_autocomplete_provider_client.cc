@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
@@ -136,14 +135,8 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
     : profile_(profile),
       scheme_classifier_(profile),
       url_consent_helper_(
-          base::FeatureList::IsEnabled(
-              omnibox::kPrefBasedDataCollectionConsentHelper)
-              ? unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewAnonymizedDataCollectionConsentHelper(
-                        profile_->GetPrefs())
-              : unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewPersonalizedDataCollectionConsentHelper(
-                        SyncServiceFactory::GetForProfile(profile_))),
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewAnonymizedDataCollectionConsentHelper(profile_->GetPrefs())),
       tab_matcher_(GetTemplateURLService(), profile_),
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
@@ -388,8 +381,7 @@ bool ChromeAutocompleteProviderClient::AllowDeletingBrowserHistory() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kAllowDeletingBrowserHistory);
 }
 
-bool ChromeAutocompleteProviderClient::IsPersonalizedUrlDataCollectionActive()
-    const {
+bool ChromeAutocompleteProviderClient::IsUrlDataCollectionActive() const {
   return url_consent_helper_->IsEnabled();
 }
 

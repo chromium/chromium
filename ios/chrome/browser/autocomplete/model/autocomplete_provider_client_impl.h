@@ -77,7 +77,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   bool IsIncognitoProfile() const override;
   bool IsGuestSession() const override;
   bool SearchSuggestEnabled() const override;
-  bool IsPersonalizedUrlDataCollectionActive() const override;
+  bool IsUrlDataCollectionActive() const override;
   bool IsAuthenticated() const override;
   bool IsSyncActive() const override;
   void Classify(

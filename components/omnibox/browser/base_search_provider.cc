@@ -452,10 +452,10 @@ bool BaseSearchProvider::CanSendSuggestRequestWithPageURL(
     return false;
   }
 
-  // Forbid sending the current page URL to the suggest endpoint if personalized
+  // Forbid sending the current page URL to the suggest endpoint if
   // URL data collection is off; unless the current page is the provider's
   // Search Results Page; or for the Lens searchboxes.
-  if (!client->IsPersonalizedUrlDataCollectionActive() &&
+  if (!client->IsUrlDataCollectionActive() &&
       !template_url->IsSearchURL(current_page_url, search_terms_data) &&
       !omnibox::IsLensSearchbox(page_classification)) {
     return false;

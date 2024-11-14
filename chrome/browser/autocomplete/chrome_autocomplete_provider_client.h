@@ -89,7 +89,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsGuestSession() const override;
   bool SearchSuggestEnabled() const override;
   bool AllowDeletingBrowserHistory() const override;
-  bool IsPersonalizedUrlDataCollectionActive() const override;
+  bool IsUrlDataCollectionActive() const override;
   bool IsAuthenticated() const override;
   bool IsSyncActive() const override;
   std::string ProfileUserName() const override;

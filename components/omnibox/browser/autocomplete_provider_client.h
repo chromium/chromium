@@ -143,12 +143,12 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // True for almost all users except ones with a specific enterprise policy.
   virtual bool AllowDeletingBrowserHistory() const;
 
-  // Returns whether personalized URL data collection is enabled.  I.e.,
+  // Returns whether URL data collection is enabled.  I.e.,
   // the user has consented to have URLs recorded keyed by their Google account.
   // In this case, the user has agreed to share browsing data with Google and so
   // this state can be used to govern features such as sending the current page
   // URL with omnibox suggest requests.
-  virtual bool IsPersonalizedUrlDataCollectionActive() const = 0;
+  virtual bool IsUrlDataCollectionActive() const = 0;
 
   // This function returns true if the user is signed in.
   virtual bool IsAuthenticated() const = 0;
