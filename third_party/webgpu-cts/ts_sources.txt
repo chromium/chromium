@@ -636,7 +636,6 @@ src/webgpu/shader/execution/expression/call/builtin/textureSampleCompare.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleCompareLevel.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleGrad.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleLevel.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureStore.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/texture_utils.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/transpose.cache.ts
@@ -655,6 +654,7 @@ src/webgpu/shader/execution/expression/call/builtin/unpack4x8unorm.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/unpack4x8unorm.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/unpack4xU8.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/utils.ts
 src/webgpu/shader/execution/expression/call/builtin/workgroupBarrier.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/workgroupUniformLoad.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/harness.ts
