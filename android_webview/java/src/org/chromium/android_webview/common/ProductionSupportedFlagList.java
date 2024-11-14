@@ -916,9 +916,6 @@ public final class ProductionSupportedFlagList {
                 "InputStreamOptimizations", "Enables optimizations to input stream handling."),
         Flag.baseFeature("WebViewOptimizeXrwNavigationFlow"),
         Flag.baseFeature(
-                "UseMoveNotCopyInAXTreeCombiner",
-                "Enables moves instead of copies of snapshot tree data when combining updates."),
-        Flag.baseFeature(
                 "EnableHangWatcher", "Controls whether hooks for hang detection are active"),
         Flag.baseFeature(
                 "MojoPredictiveAllocation",
