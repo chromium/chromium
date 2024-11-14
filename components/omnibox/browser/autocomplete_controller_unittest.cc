@@ -2302,11 +2302,13 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kAndroidHubSearch, {{"enable_bookmark_provider", "true"}});
+      omnibox::kAndroidHubSearch, {{"enable_bookmark_provider", "true"},
+                                   {"enable_history_provider", "true"}});
 
   expected_provider_types = {AutocompleteProvider::TYPE_SEARCH,
                              AutocompleteProvider::TYPE_OPEN_TAB,
-                             AutocompleteProvider::TYPE_BOOKMARK};
+                             AutocompleteProvider::TYPE_BOOKMARK,
+                             AutocompleteProvider::TYPE_HISTORY_QUICK};
 
   controller_.input_ =
       AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::ANDROID_HUB,

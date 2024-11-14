@@ -1052,8 +1052,10 @@ bool AutocompleteController::ShouldRunProvider(
   if (omnibox::IsAndroidHub(input_.current_page_classification())) {
     return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
            provider->type() == AutocompleteProvider::TYPE_OPEN_TAB ||
-           (omnibox::kAndroidHubSearchEnableBookmarkProvider.Get() &&
-            provider->type() == AutocompleteProvider::TYPE_BOOKMARK);
+           (OmniboxFieldTrial::kAndroidHubSearchEnableBookmarkProvider.Get() &&
+            provider->type() == AutocompleteProvider::TYPE_BOOKMARK) ||
+           (OmniboxFieldTrial::kAndroidHubSearchEnableHistoryProvider.Get() &&
+            provider->type() == AutocompleteProvider::TYPE_HISTORY_QUICK);
   }
 #endif
 

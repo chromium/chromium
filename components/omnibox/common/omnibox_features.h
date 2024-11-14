@@ -136,9 +136,6 @@ BASE_DECLARE_FEATURE(kRetainOmniboxOnFocus);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);
 BASE_DECLARE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices);
 BASE_DECLARE_FEATURE(kAndroidHubSearch);
-constexpr base::FeatureParam<bool> kAndroidHubSearchEnableBookmarkProvider{
-    &kAndroidHubSearch, /*name=*/"enable_bookmark_provider",
-    /*default_value=*/false};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // `ShortcutsProvider` features.
