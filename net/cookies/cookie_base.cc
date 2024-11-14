@@ -407,32 +407,6 @@ CookieAccessResult CookieBase::IsSetPermittedInContext(
         CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH);
   }
 
-  // Even though the cookie domain was checked during creation, we're checking
-  // it here again to make sure a cookie isn't being incorrectly set on a TLD or
-  // public suffix.
-  //
-  // Note: This variable is just a required placeholder for the function below.
-  // It shouldn't be compared to the `domain_`. This is because
-  // `GetCookieDomainWithString()` expects the domain argument to be the value
-  // of `ParsedCookie::Domain()`. This is important because a cookie might not
-  // have a Domain attribute, in which case the domain_ field is set to the
-  // hostname, else it's set to the Domain attribute's value with a '.'
-  // prepended to it.
-  std::string validated_domain;
-  // This validation step must happen before GetCookieDomainWithString, so it
-  // doesn't fail DCHECKs.
-  if (base::FeatureList::IsEnabled(features::kCookieDomainFieldIsValid)) {
-    if (!cookie_util::DomainIsHostOnly(source_url.host())) {
-      access_result.status.AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
-    } else if (!cookie_util::GetCookieDomainWithString(source_url, domain_,
-                                                       access_result.status,
-                                                       &validated_domain)) {
-      access_result.status.AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
-    }
-  }
-
   CookieAccessScheme access_scheme =
       cookie_util::ProvisionalAccessScheme(source_url);
   if (access_scheme == CookieAccessScheme::kNonCryptographic &&
