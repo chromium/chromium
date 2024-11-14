@@ -12,6 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.ExperimentalUrlRequest;
@@ -63,58 +64,62 @@ public final class JavaCronetEngine extends CronetEngineBase {
     private final Context mContext;
 
     public JavaCronetEngine(CronetEngineBuilderImpl builder) {
-        mContext = builder.getContext();
-        mCronetEngineId = hashCode();
-        // On android, all background threads (and all threads that are part
-        // of background processes) are put in a cgroup that is allowed to
-        // consume up to 5% of CPU - these worker threads spend the vast
-        // majority of their time waiting on I/O, so making them contend with
-        // background applications for a slice of CPU doesn't make much sense.
-        // We want to hurry up and get idle.
-        final int threadPriority =
-                builder.threadPriority(THREAD_PRIORITY_BACKGROUND + THREAD_PRIORITY_MORE_FAVORABLE);
-        this.mUserAgent = builder.getUserAgent();
-        // For unbounded work queues, the effective maximum pool size is
-        // equivalent to the core pool size.
-        this.mExecutorService =
-                new ThreadPoolExecutor(
-                        10,
-                        10,
-                        50,
-                        TimeUnit.SECONDS,
-                        new LinkedBlockingQueue<Runnable>(),
-                        new ThreadFactory() {
-                            @Override
-                            public Thread newThread(final Runnable r) {
-                                return Executors.defaultThreadFactory()
-                                        .newThread(
-                                                new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Thread.currentThread()
-                                                                .setName("JavaCronetEngine");
-                                                        android.os.Process.setThreadPriority(
-                                                                threadPriority);
-                                                        r.run();
-                                                    }
-                                                });
-                            }
-                        });
-        mLogger = CronetLoggerFactory.createLogger(mContext, CronetSource.CRONET_SOURCE_FALLBACK);
-        try {
-            mLogger.logCronetEngineCreation(
-                    mCronetEngineId,
-                    builder.toLoggerInfo(),
-                    buildCronetVersion(),
-                    CronetSource.CRONET_SOURCE_FALLBACK);
-        } catch (RuntimeException e) {
-            // Handle any issue gracefully, we should never crash due failures while logging.
-            Log.e(TAG, "Error while trying to log JavaCronetEngine creation: ", e);
+        try (var traceEvent = ScopedSysTraceEvent.scoped("JavaCronetEngine#JavaCronetEngine")) {
+            mContext = builder.getContext();
+            mCronetEngineId = hashCode();
+            // On android, all background threads (and all threads that are part
+            // of background processes) are put in a cgroup that is allowed to
+            // consume up to 5% of CPU - these worker threads spend the vast
+            // majority of their time waiting on I/O, so making them contend with
+            // background applications for a slice of CPU doesn't make much sense.
+            // We want to hurry up and get idle.
+            final int threadPriority =
+                    builder.threadPriority(
+                            THREAD_PRIORITY_BACKGROUND + THREAD_PRIORITY_MORE_FAVORABLE);
+            this.mUserAgent = builder.getUserAgent();
+            // For unbounded work queues, the effective maximum pool size is
+            // equivalent to the core pool size.
+            this.mExecutorService =
+                    new ThreadPoolExecutor(
+                            10,
+                            10,
+                            50,
+                            TimeUnit.SECONDS,
+                            new LinkedBlockingQueue<Runnable>(),
+                            new ThreadFactory() {
+                                @Override
+                                public Thread newThread(final Runnable r) {
+                                    return Executors.defaultThreadFactory()
+                                            .newThread(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            Thread.currentThread()
+                                                                    .setName("JavaCronetEngine");
+                                                            android.os.Process.setThreadPriority(
+                                                                    threadPriority);
+                                                            r.run();
+                                                        }
+                                                    });
+                                }
+                            });
+            mLogger =
+                    CronetLoggerFactory.createLogger(mContext, CronetSource.CRONET_SOURCE_FALLBACK);
+            try {
+                mLogger.logCronetEngineCreation(
+                        mCronetEngineId,
+                        builder.toLoggerInfo(),
+                        buildCronetVersion(),
+                        CronetSource.CRONET_SOURCE_FALLBACK);
+            } catch (RuntimeException e) {
+                // Handle any issue gracefully, we should never crash due failures while logging.
+                Log.e(TAG, "Error while trying to log JavaCronetEngine creation: ", e);
+            }
+            Log.w(
+                    TAG,
+                    "using the fallback Cronet Engine implementation. Performance will suffer "
+                            + "and many HTTP client features, including caching, will not work.");
         }
-        Log.w(
-                TAG,
-                "using the fallback Cronet Engine implementation. Performance will suffer "
-                        + "and many HTTP client features, including caching, will not work.");
     }
 
     /** Increment the number of active requests. */

@@ -6,6 +6,7 @@ package org.chromium.net.impl;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UploadDataSink;
 import org.chromium.net.impl.JavaUrlRequestUtils.CheckedRunnable;
@@ -128,7 +129,7 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
                         processUploadError(new IllegalArgumentException(msg));
                     }
                 };
-        mExecutor.execute(getErrorSettingRunnable(checkedRunnable));
+        executeOnExecutor(getErrorSettingRunnable(checkedRunnable), "onReadSucceeded");
     }
 
     @Override
@@ -154,13 +155,14 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
     }
 
     private void startRead() {
-        mExecutor.execute(
+        executeOnExecutor(
                 getErrorSettingRunnable(
                         () -> {
                             initializeRead();
                             mSinkState.set(SinkState.AWAITING_READ_RESULT);
                             readFromProvider();
-                        }));
+                        }),
+                "startRead");
     }
 
     private void readFromProvider() {
@@ -173,7 +175,24 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
                             () -> {
                                 mReadCount++;
                             });
-                });
+                },
+                "readFromProvider");
+    }
+
+    private void executeOnExecutor(Runnable runnable, String name) {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("JavaUploadDataSinkBase#executeOnExecutor " + name)) {
+            mExecutor.execute(
+                    () -> {
+                        try (var callbackTraceEvent =
+                                ScopedSysTraceEvent.scoped(
+                                        "JavaUploadDataSinkBase#executeOnExecutor "
+                                                + name
+                                                + " running callback")) {
+                            runnable.run();
+                        }
+                    });
+        }
     }
 
     /**
@@ -182,9 +201,21 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
      *
      * @param runnable the runnable to attempt to run and check for errors
      */
-    private void executeOnUploadExecutor(JavaUrlRequestUtils.CheckedRunnable runnable) {
-        try {
-            mUserUploadExecutor.execute(getUploadErrorSettingRunnable(runnable));
+    private void executeOnUploadExecutor(
+            JavaUrlRequestUtils.CheckedRunnable runnable, String name) {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped(
+                        "Cronet JavaUploadDataSinkBase#executeOnUploadExecutor " + name)) {
+            mUserUploadExecutor.execute(
+                    () -> {
+                        try (var callbackTraceEvent =
+                                ScopedSysTraceEvent.scoped(
+                                        "Cronet JavaUploadDataSinkBase#executeOnUploadExecutor "
+                                                + name
+                                                + " running callback")) {
+                            getUploadErrorSettingRunnable(runnable).run();
+                        }
+                    });
         } catch (RejectedExecutionException e) {
             processUploadError(e);
         }
@@ -223,7 +254,8 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
                             mUploadProvider.rewind(JavaUploadDataSinkBase.this);
                         }
                     }
-                });
+                },
+                "start");
     }
 
     /**
