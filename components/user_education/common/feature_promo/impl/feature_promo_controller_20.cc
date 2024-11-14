@@ -245,9 +245,11 @@ void FeaturePromoController20::MaybeShowPromo(FeaturePromoParams params) {
       MaybeShowPromoImpl(std::move(params), ShowSource::kNormal));
 }
 
-FeaturePromoResult FeaturePromoController20::MaybeShowPromoForDemoPage(
+void FeaturePromoController20::MaybeShowPromoForDemoPage(
     FeaturePromoParams params) {
-  return MaybeShowPromoCommon(std::move(params), ShowSource::kDemo);
+  auto callback = std::move(params.show_promo_result_callback);
+  PostShowPromoResult(std::move(callback),
+                      MaybeShowPromoImpl(std::move(params), ShowSource::kDemo));
 }
 
 FeaturePromoResult FeaturePromoController20::CanShowPromo(

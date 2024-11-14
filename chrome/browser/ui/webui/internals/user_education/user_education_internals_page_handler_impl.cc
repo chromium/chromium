@@ -29,6 +29,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
@@ -571,6 +572,11 @@ void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
 void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
     const std::string& feature_name,
     ShowFeaturePromoCallback callback) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (pending_callback_) {
+    std::move(pending_callback_).Run("Cancelled by new request.");
+  }
+
   const base::Feature* feature = GetFeatureByName(feature_name, profile_);
   if (!feature) {
     std::move(callback).Run(std::string("Cannot find IPH."));
@@ -584,14 +590,28 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
       interface ? interface->GetFeaturePromoController(
                       base::PassKey<UserEducationInternalsPageHandlerImpl>())
                 : nullptr;
-  const auto showed_promo =
-      controller ? controller->MaybeShowPromoForDemoPage(*feature)
-                 : user_education::FeaturePromoResult::kError;
 
+  user_education::FeaturePromoParams params(*feature);
+  params.show_promo_result_callback = base::BindOnce(
+      &UserEducationInternalsPageHandlerImpl::OnFeaturePromoShowResult,
+      weak_ptr_factory_.GetWeakPtr());
+  if (controller) {
+    controller->MaybeShowPromoForDemoPage(std::move(params));
+    pending_callback_ = std::move(callback);
+  } else {
+    std::move(callback).Run(std::string("No controller."));
+  }
+}
+
+void UserEducationInternalsPageHandlerImpl::OnFeaturePromoShowResult(
+    user_education::FeaturePromoResult show_result) {
+  if (!pending_callback_) {
+    return;
+  }
   std::string reason;
-  if (!showed_promo) {
+  if (!show_result) {
     using Failure = user_education::FeaturePromoResult::Failure;
-    switch (*showed_promo.failure()) {
+    switch (*show_result.failure()) {
       case Failure::kBlockedByContext:
         reason = "Cannot show IPH in this browser window.";
         break;
@@ -626,7 +646,7 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
         reason = "Unexpected failure (should not happen for demo).";
     }
   }
-  std::move(callback).Run(reason);
+  std::move(pending_callback_).Run(reason);
 }
 
 void UserEducationInternalsPageHandlerImpl::ClearFeaturePromoData(

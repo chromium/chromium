@@ -167,6 +167,12 @@ export class UserEducationInternalsElement extends
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
+    // Promos may go into a queue, so notify the user that the promo is waiting
+    // to show. If an error occurs, the toast will be updated with the error
+    // message.
+    this.featurePromoErrorMessage_ = 'Waiting to show promo...';
+    this.$.errorMessageToast.show();
+
     this.handler_.showFeaturePromo(id).then(({errorMessage}) => {
       this.featurePromoErrorMessage_ = errorMessage;
       if (errorMessage !== '') {

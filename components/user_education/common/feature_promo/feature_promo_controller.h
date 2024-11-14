@@ -168,8 +168,7 @@ class FeaturePromoController {
 
   // Starts a promo with the settings for skipping any logging or filtering
   // provided by the implementation for MaybeShowPromo.
-  virtual FeaturePromoResult MaybeShowPromoForDemoPage(
-      FeaturePromoParams params) = 0;
+  virtual void MaybeShowPromoForDemoPage(FeaturePromoParams params) = 0;
 
   // Ends or cancels the current promo if it is queued. Returns true if a promo
   // was successfully canceled or a bubble closed.

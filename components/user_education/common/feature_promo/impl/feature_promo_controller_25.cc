@@ -40,10 +40,8 @@ void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params) {
   MaybeShowStartupPromo(std::move(params));
 }
 
-FeaturePromoResult FeaturePromoController25::MaybeShowPromoForDemoPage(
-    FeaturePromoParams params) {
-  return FeaturePromoResult::kError;
-}
+void FeaturePromoController25::MaybeShowPromoForDemoPage(
+    FeaturePromoParams params) {}
 
 bool FeaturePromoController25::IsPromoQueued(
     const base::Feature& iph_feature) const {
