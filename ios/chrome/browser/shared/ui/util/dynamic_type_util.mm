@@ -7,8 +7,11 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 
+UIContentSizeCategory const kLocationBarSteadyViewMaxSizeCategory =
+    UIContentSizeCategoryAccessibilityExtraLarge;
+
 UIFont* LocationBarSteadyViewFont(UIContentSizeCategory currentCategory) {
   return PreferredFontForTextStyleWithMaxCategory(
       UIFontTextStyleBody, currentCategory,
-      UIContentSizeCategoryAccessibilityExtraLarge);
+      kLocationBarSteadyViewMaxSizeCategory);
 }
