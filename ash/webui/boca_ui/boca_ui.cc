@@ -50,9 +50,7 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
 BocaUI::BocaUI(content::WebUI* web_ui,
                std::unique_ptr<BocaUIDelegate> delegate,
                bool is_producer)
-    : UntrustedWebUIController(web_ui),
-      is_producer_(is_producer),
-      web_ui_(web_ui) {
+    : UntrustedWebUIController(web_ui), is_producer_(is_producer) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
@@ -124,7 +122,7 @@ void BocaUI::Create(
     mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
     mojo::PendingRemote<boca::mojom::Page> page) {
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
-      this, std::move(page_handler), std::move(page), web_ui_,
+      std::move(page_handler), std::move(page), web_ui(),
       std::make_unique<ClassroomPageHandlerImpl>(),
       BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
       is_producer_);

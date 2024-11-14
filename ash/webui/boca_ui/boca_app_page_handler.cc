@@ -10,7 +10,6 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/webui/boca_ui/boca_ui.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
@@ -149,7 +148,6 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
 }  // namespace
 
 BocaAppHandler::BocaAppHandler(
-    BocaUI* boca_ui,
     mojo::PendingReceiver<boca::mojom::PageHandler> receiver,
     mojo::PendingRemote<boca::mojom::Page> remote,
     content::WebUI* web_ui,
@@ -162,8 +160,7 @@ BocaAppHandler::BocaAppHandler(
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
       session_client_impl_(session_client_impl),
-      web_ui_(web_ui),
-      boca_ui_(boca_ui) {
+      web_ui_(web_ui) {
   auto* user = user_manager::UserManager::Get()->GetActiveUser();
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
   user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId());

@@ -25,8 +25,6 @@
 
 namespace ash::boca {
 
-class BocaUI;
-
 class BocaAppHandler : public mojom::PageHandler,
                        public mojom::Page,
                        public BocaSessionManager::Observer {
@@ -36,7 +34,6 @@ class BocaAppHandler : public mojom::PageHandler,
   using SessionConfigInterceptorCallback =
       base::OnceCallback<void(mojom::SessionResultPtr)>;
   BocaAppHandler(
-      BocaUI* boca_ui,
       mojo::PendingReceiver<mojom::PageHandler> receiver,
       mojo::PendingRemote<mojom::Page> remote,
       content::WebUI* webui,
@@ -140,7 +137,6 @@ class BocaAppHandler : public mojom::PageHandler,
   SessionConfigInterceptorCallback test_config_callback_;
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<content::WebUI> web_ui_;
-  raw_ptr<BocaUI> boca_ui_;  // Owns |this|.
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 

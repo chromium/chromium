@@ -234,7 +234,7 @@ class BocaAppPageHandlerTest : public testing::Test {
     EXPECT_CALL(*session_manager(), ToggleAppStatus(/*is_app_opened=*/true))
         .Times(1);
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
-        nullptr, remote_.BindNewPipeAndPassReceiver(),
+        remote_.BindNewPipeAndPassReceiver(),
         // TODO(b/359929870):Setting nullptr for other dependencies for now.
         // Adding test case for classroom and tab info.
         pending_receiver_.InitWithNewPipeAndPassRemote(), nullptr, nullptr,

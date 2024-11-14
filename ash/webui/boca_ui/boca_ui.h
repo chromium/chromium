@@ -67,7 +67,6 @@ class BocaUI : public ui::UntrustedWebUIController,
 
  private:
   const bool is_producer_;
-  const raw_ptr<content::WebUI> web_ui_;
   mojo::Receiver<boca::mojom::BocaPageHandlerFactory> receiver_{this};
   std::unique_ptr<BocaAppHandler> page_handler_impl_;
 
