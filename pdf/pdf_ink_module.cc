@@ -1074,7 +1074,8 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   if (max_stroke_id.has_value()) {
     // Since some stroke(s) got discarded, the maximum stroke ID value cannot be
     // the max integer value. Thus adding 1 will not overflow.
-    CHECK_NE(max_stroke_id.value(), std::numeric_limits<InkStrokeId>::max());
+    CHECK_NE(max_stroke_id.value(),
+             InkStrokeId(std::numeric_limits<size_t>::max()));
     stroke_id_generator_.ResetIdTo(
         InkStrokeId(max_stroke_id.value().value() + 1));
   } else {
