@@ -152,13 +152,11 @@ class NavigationCapturingDataTransferBrowserTest
     content::WebContents* contents =
         app_browser->tab_strip_model()->GetActiveWebContents();
 
-    std::string message;
-    EXPECT_TRUE(message_queue.WaitForMessage(&message));
-    std::string unquoted_message;
-    EXPECT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
-    EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
-        << unquoted_message;
-
+    auto result = apps::test::WaitForNavigationFinishedMessage(message_queue);
+    EXPECT_TRUE(result);
+    if (!result) {
+      return nullptr;
+    }
     return contents;
   }
 
@@ -167,13 +165,11 @@ class NavigationCapturingDataTransferBrowserTest
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(kStartPageScopeA)));
 
-    std::string message;
-    EXPECT_TRUE(message_queue.WaitForMessage(&message));
-    std::string unquoted_message;
-    EXPECT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
-    EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
-        << unquoted_message;
-
+    auto result = apps::test::WaitForNavigationFinishedMessage(message_queue);
+    EXPECT_TRUE(result);
+    if (!result) {
+      return nullptr;
+    }
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 

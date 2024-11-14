@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -197,7 +197,16 @@ void SimulateClickOnElement(content::WebContents* contents,
                             std::string element_id,
                             ClickMethod click);
 
+// Runs `action` for all tabs. This method is resilient to `action` waiting on
+// async work, and considers the fresh `BrowserList` and tab model before each
+// call. This method ensures that `action` is not called for the same web
+// contents twice.
+void RunForAllTabs(base::RepeatingCallback<void(content::WebContents&)> action);
+
 // Wait for all available `WebContents` when this is called to finish loading.
+// Note: This will hang forever if any web contents purposefully never finishes
+// loading, causes reloads, or in any other way doesn't call the 'load' event in
+// the page.
 void CompletePageLoadForAllWebContents();
 
 }  // namespace test

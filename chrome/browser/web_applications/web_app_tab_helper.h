@@ -115,6 +115,12 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
 
+  // Because the launch queue is communicated via a dedicated mojo pipe,
+  // ordering can be tricky in tests. This method allows tests to call
+  // `FlushForTesting()` on the launch queue mojo connection to ensure that all
+  // launch queue messages have been sent to the renderer.
+  void FlushLaunchQueueForTesting() const;
+
  private:
   friend class WebAppAudioFocusBrowserTest;
   friend class content::WebContentsUserData<WebAppTabHelper>;

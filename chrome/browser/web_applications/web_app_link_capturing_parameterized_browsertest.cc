@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -772,28 +773,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   // This function allows derived test suites to configure custom
   // pre-condition steps before each test runs.
-  //
-  // @param app_a The id of an app A (aka. 'source app').
-  // @param app_b The id of an app B (aka. a possible 'destination app').
-  virtual void MaybeCustomSetup(const webapps::AppId& app_a,
-                                const webapps::AppId& app_b) {}
+  virtual testing::AssertionResult MaybeCustomSetup(
+      const webapps::AppId& app_a,
+      const webapps::AppId& app_b) {
+    return testing::AssertionSuccess();
+  }
 
   virtual std::string GetTestClassName() const {
     return "WebAppLinkCapturingParameterizedBrowserTest";
-  }
-
-  // Listens for a DomMessage that starts with FinishedNavigating.
-  //
-  // @param message_queue The message queue expected to see the message.
-  void WaitForNavigationFinishedMessage(
-      content::DOMMessageQueue& message_queue) {
-    std::string message;
-    EXPECT_TRUE(message_queue.WaitForMessage(&message));
-    std::string unquoted_message;
-    ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
-    EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
-        << unquoted_message;
-    DLOG(INFO) << message;
   }
 
   // The expectations file can depend on whether link capturing is enabled or
@@ -893,7 +880,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
     content::WebContents* contents =
         launch_future.Get<base::WeakPtr<content::WebContents>>().get();
     content::WaitForLoadStop(contents);
-    WaitForNavigationFinishedMessage(message_queue);
+    auto result = apps::test::WaitForNavigationFinishedMessage(message_queue);
+    EXPECT_TRUE(result);
+    if (!result) {
+      return nullptr;
+    }
     return contents;
   }
 
@@ -904,7 +895,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    WaitForNavigationFinishedMessage(message_queue);
+    auto result = apps::test::WaitForNavigationFinishedMessage(message_queue);
+    EXPECT_TRUE(result);
+    if (!result) {
+      return nullptr;
+    }
     return contents;
   }
 
@@ -1461,7 +1456,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     DLOG(INFO) << "Setting up.";
 
-    MaybeCustomSetup(app_a, app_b);
+    ASSERT_TRUE(MaybeCustomSetup(app_a, app_b));
 
     // Setup the initial page.
     Browser* browser_a;
@@ -1475,6 +1470,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
         contents_a = LaunchPageInTab(url_a);
       }
+      ASSERT_TRUE(contents_a);
 
       // Verify that the the start page is actually ready. This should be
       // guaranteed by waiting for the FinishedNavigation message above, but
@@ -1523,7 +1519,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
       }
 
       if (expect_navigation) {
-        WaitForNavigationFinishedMessage(message_queue);
+        ASSERT_TRUE(
+            apps::test::WaitForNavigationFinishedMessage(message_queue));
       }
     }
 
@@ -2128,8 +2125,9 @@ class NavigationCapturingTestWithAppBLaunched
     return "navigation_capture_expectations_with_b_launched_in_setup";
   }
 
-  void MaybeCustomSetup(const webapps::AppId& app_a,
-                        const webapps::AppId& app_b) override {
+  testing::AssertionResult MaybeCustomSetup(
+      const webapps::AppId& app_a,
+      const webapps::AppId& app_b) override {
     DLOG(INFO) << "Launching App B.";
     content::DOMMessageQueue message_queue;
     ui_test_utils::UrlLoadObserver url_observer(
@@ -2144,10 +2142,12 @@ class NavigationCapturingTestWithAppBLaunched
     // in a browser tab or in an app window.
     provider().scheduler().LaunchApp(app_b, /*url=*/std::nullopt,
                                      launch_future.GetCallback());
-    ASSERT_TRUE(launch_future.Wait());
+    if (!launch_future.Wait()) {
+      return testing::AssertionFailure() << "Unable to launch app b";
+    }
     url_observer.Wait();
     // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessage(message_queue);
+    return apps::test::WaitForNavigationFinishedMessage(message_queue);
   }
 
   std::string GetTestClassName() const override {
@@ -2268,8 +2268,9 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
     return "navigation_capturing_with_b_lauched_and_browser_tab";
   }
 
-  void MaybeCustomSetup(const webapps::AppId& app_a,
-                        const webapps::AppId& app_b) override {
+  testing::AssertionResult MaybeCustomSetup(
+      const webapps::AppId& app_a,
+      const webapps::AppId& app_b) override {
     DLOG(INFO) << "Launching App B.";
     content::DOMMessageQueue message_queue;
     ui_test_utils::UrlLoadObserver url_observer(
@@ -2284,16 +2285,26 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
     // in a browser tab or in an app window.
     provider().scheduler().LaunchApp(app_b, /*url=*/std::nullopt,
                                      launch_future.GetCallback());
-    ASSERT_TRUE(launch_future.Wait());
+    if (!launch_future.Wait()) {
+      return testing::AssertionFailure()
+             << "Unable to launch app b in a standalone window.";
+    }
     url_observer.Wait();
     // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessage(message_queue);
+    auto navigation_wait =
+        apps::test::WaitForNavigationFinishedMessage(message_queue);
+    if (!navigation_wait) {
+      return navigation_wait;
+    }
 
     DLOG(INFO) << "Navigating to browser tab b.";
     EnsureValidNewTabPage();
 
     GURL url_b_dest = embedded_test_server()->GetURL(kDestinationPageScopeB);
-    LaunchPageInTab(url_b_dest);
+    if (!LaunchPageInTab(url_b_dest)) {
+      return testing::AssertionFailure() << "Unable to launch app b in a tab.";
+    }
+    return testing::AssertionSuccess();
   }
 
   std::string GetTestClassName() const override {
@@ -2356,10 +2367,15 @@ class NavigationCapturingTestWithExtraBrowserTabB
     return "navigation_capturing_with_extra_browser_tab_b";
   }
 
-  void MaybeCustomSetup(const webapps::AppId& app_a,
-                        const webapps::AppId& app_b) override {
+  testing::AssertionResult MaybeCustomSetup(
+      const webapps::AppId& app_a,
+      const webapps::AppId& app_b) override {
     EnsureValidNewTabPage();
-    LaunchPageInTab(embedded_test_server()->GetURL(kDestinationPageScopeB));
+    if (!LaunchPageInTab(
+            embedded_test_server()->GetURL(kDestinationPageScopeB))) {
+      return testing::AssertionFailure() << "Could not launch the tab in setup";
+    }
+    return testing::AssertionSuccess();
   }
 
   std::string GetTestClassName() const override {

@@ -181,6 +181,13 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
       page.GetMainDocument().GetLastCommittedURL());
 }
 
+void WebAppTabHelper::FlushLaunchQueueForTesting() const {
+  if (!launch_queue_) {
+    return;
+  }
+  launch_queue_->FlushForTesting();  // IN-TEST
+}
+
 WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
                                  content::WebContents* contents)
     : content::WebContentsUserData<WebAppTabHelper>(*contents),

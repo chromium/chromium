@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -32,6 +33,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -130,13 +132,30 @@ class WebAppNavigationCapturingIphUiTest
     return steps;
   }
 
+  auto WaitForLaunchQueuesFlushedAndNavigationComplete() {
+    auto steps = Steps(
+        WaitForState(kLatestDomMessage,
+                     testing::HasSubstr("PleaseFlushLaunchQueue")),
+        Do([]() { apps::test::FlushLaunchQueuesForAllBrowserTabs(); }),
+        CheckResult(&apps::test::ResolveWebContentsWaitingForLaunchQueueFlush,
+                    base::test::HasValue(),
+                    "Javascript error/s while notifying pages that the launch "
+                    "queue was flushed."),
+        WaitForState(kLatestDomMessage,
+                     testing::HasSubstr("FinishedNavigating")));
+    AddDescription(
+        steps,
+        "Waiting for PleaseFlushLaunchQueue and FinishedNavigating messages, "
+        "flushing launch queues and notifying pages of completion in between.");
+    return steps;
+  }
+
   // Opens the "start" page for app testing, with links to launch various apps.
   auto OpenStartPage() {
     auto steps = Steps(InstrumentTab(kStartPageId),
                        ObserveState(kLatestDomMessage, kStartPageId),
                        NavigateWebContents(kStartPageId, GetStartUrl()),
-                       WaitForState(kLatestDomMessage,
-                                    testing::HasSubstr("FinishedNavigating")));
+                       WaitForLaunchQueuesFlushedAndNavigationComplete());
     AddDescription(steps, "OpenStartPage( %s )");
     return steps;
   }
@@ -156,8 +175,7 @@ class WebAppNavigationCapturingIphUiTest
         InAnyContext(WaitForShow(kStartPageId)),
         InSameContext(
             Steps(ObserveState(kLatestDomMessage, kStartPageId),
-                  WaitForState(kLatestDomMessage,
-                               testing::HasSubstr("FinishedNavigating")))));
+                  WaitForLaunchQueuesFlushedAndNavigationComplete())));
     AddDescription(steps, "OpenAppStartPage( %s )");
     return steps;
   }

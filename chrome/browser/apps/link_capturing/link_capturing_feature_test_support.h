@@ -13,10 +13,14 @@
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
-
 namespace content {
+class DOMMessageQueue;
 class NavigationHandle;
 }  // namespace content
+
+namespace testing {
+class AssertionResult;
+}
 
 namespace apps::test {
 
@@ -92,6 +96,31 @@ class NavigationCommittedForUrlObserver
   GURL url_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
+
+// Flush the `WebAppLaunchQueue` instance for every browser tabs.
+void FlushLaunchQueuesForAllBrowserTabs();
+
+// Intended to be used with test sites in
+// chrome/test/data/banners/link_capturing.
+//
+// Calls `resolveLaunchParamsFlush()` on any web contents where that function is
+// globally defined. This is used in `WaitForNavigationFinishedMessage` below
+// (which is recommended for most tests), but defined publicly for Kombucha
+// tests which have custom waiting for dom messages.
+base::expected<void, std::vector<std::string>>
+ResolveWebContentsWaitingForLaunchQueueFlush();
+
+// Intended to be used with test sites in
+// chrome/test/data/banners/link_capturing.
+//
+// Waits for "PleaseFlushLaunchQueue" and "FinishedNavigating" messages, exiting
+// after receiving the latter. When a "PleaseFlushLaunchQueue" message is
+// received, this will call `FlushLaunchQueuesForAllBrowserTabs()` above and
+// then `ResolveWebContentsWaitingForLaunchQueueFlush()` to allow the
+// participating tab to then proceed to emit the "FinishedNavigating" message,
+// allowing this function to exit.
+testing::AssertionResult WaitForNavigationFinishedMessage(
+    content::DOMMessageQueue& message_queue);
 
 }  // namespace apps::test
 

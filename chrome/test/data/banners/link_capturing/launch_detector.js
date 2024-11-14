@@ -7,83 +7,108 @@
 // the launches that occurred for this document.
 var launchParamsTargetUrls = [];
 
-// The most recent launch url sent that hasn't been sent to the test framework
-// via the domAutomationController.
-var unsentLaunchParamUrl = null;
+var _onLaunchQueueFlushedByBrowser = null;
 
-// This promise is used by `listenForNextLaunchParams` to wait for the next
-// launch param.
-var waitingForLaunchParamsPromise = null;
-var resolveLaunchParamsPromise = null;
+// This function is called by the c++ test fixture to signify that the launch
+// queue mojom receiver was flushed. This can be called at any point in the
+// page's lifecycle, as the test currently has to spam-call this to all web
+// contents when it receives a "PleaseFlushLaunchQueue" message.
+function resolveLaunchParamsFlush() {
+  if (_onLaunchQueueFlushedByBrowser != null) {
+    _onLaunchQueueFlushedByBrowser();
+    _onLaunchQueueFlushedByBrowser = null;
+  }
+  // Forward call to frames, as the navigation could have happened in a frame.
+  const frames = window.frames;
+  for (let i = 0; i < frames.length; i++) {
+    if ('resolveLaunchParamsFlush' in frames[i]) {
+      frames[i].resolveLaunchParamsFlush();
+    }
+  }
+}
+
+var _onLaunchParamsReceived = null;
+var _launchParamToBeSentToBrowser = null;
 
 window.launchQueue.setConsumer((launchParams) => {
   console.assert('targetURL' in launchParams);
   console.log('Got launch at ' + launchParams.targetURL);
-  // This test page is designed to try to not ever have a launch
-  // params that wasn't sent back to the `domAutomationController` before
-  // the next one arrives, so assert-fail if this happens.
-  console.assert(unsentLaunchParamUrl == null);
-  unsentLaunchParamUrl = launchParams.targetURL;
+  console.assert(
+      _launchParamToBeSentToBrowser == null,
+      'Launch params from the last launch have not ' +
+          'been sent to the browser test fixture.');
+  _launchParamToBeSentToBrowser = launchParams.targetURL;
   launchParamsTargetUrls.push(launchParams.targetURL);
-  if (waitingForLaunchParamsPromise != null) {
-    resolveLaunchParamsPromise();
-    waitingForLaunchParamsPromise = null;
-    resolveLaunchParamsPromise = null;
+  if (_onLaunchParamsReceived != null) {
+    _onLaunchParamsReceived();
+    _onLaunchParamsReceived = null;
   }
 });
 
-async function listenForNextLaunchParams(delay) {
+async function _listenForNextLaunchParams(delay) {
   console.log('Listening for next launch in ' + window.location.pathname);
-  // It is invalid to listen multiple times overlapping.
   console.assert(
-      waitingForLaunchParamsPromise == null &&
-      resolveLaunchParamsPromise == null);
-  waitingForLaunchParamsPromise = new Promise(function(resolve) {
-    resolveLaunchParamsPromise = resolve;
+      _onLaunchParamsReceived == null,
+      'Cannot listen for two launches at the same time.');
+  let waitingForLaunchParamsPromise = new Promise(function(resolve) {
+    _onLaunchParamsReceived = resolve;
   });
   await waitingForLaunchParamsPromise;
-  // Ensure the promise was cleaned up.
-  console.assert(
-      waitingForLaunchParamsPromise == null &&
-      resolveLaunchParamsPromise == null);
-  signalNavigationCompleteAndListenForNextLaunch(delay);
+  console.assert(_onLaunchParamsReceived == null);
+  _signalNavigationCompleteAndListenForNextLaunch(delay);
 }
 
-// Sends the 'FinishedNavigating' message to `the domAutomationController`.
-// TODO(crbug.com/371180649): Include debug message in this message after
-// 'string contains' functionality is added to the Kombucha tests.
-function signalNavigationCompleteAndListenForNextLaunch(delay) {
-  // Always set timeout, which also helps with trying to catch any launch params
-  // that haven't hit the consumer. Increase this timeout if we haven't received
-  // initial launch params yet as a workaround for chrome not always delivering
-  // launch params on time.
-  let initialDelay = delay;
-  if (launchParamsTargetUrls.length === 0) {
-    console.log('Waiting some extra time for initial launch params');
-    initialDelay += 100;
-  }
-  setTimeout(() => {
-    let message = 'FinishedNavigating in ' +
+// Sends the "PleaseFlushLaunchQueue" message, waits for
+// `resolveLaunchParamsFlush()` to be called and then sends the
+// 'FinishedNavigating' message. This dance is required because the launch queue
+// is separate from page load, and sometimes it can be sent after the 'load'
+// event is sent (which is when this function is called). Thus the two messages
+// happen here, and the browser calls `resolveLaunchParamsFlush()` after it
+// flushes all launch queues, ensuring that the launch params will have gotten
+// here before this function finally sends "FinishedNavigating".
+function _signalNavigationCompleteAndListenForNextLaunch(delay) {
+  console.assert(
+      _onLaunchQueueFlushedByBrowser == null,
+      'Cannot signal navigation completion until ' +
+          'the existing call has completed.');
+  let launchQueueFlushed = new Promise((resolve) => {
+    _onLaunchQueueFlushedByBrowser = resolve;
+  });
+  setTimeout(async () => {
+    console.assert(_onLaunchQueueFlushedByBrowser != null);
+    const FLUSH_PREFIX = 'PleaseFlushLaunchQueue';
+    const FINISHED_NAVIGATING_PREFIX = 'FinishedNavigating';
+    let messageSuffix = ' in ' +
         (window.frameElement === null ? 'frame' : 'iframe') + ' for url ' +
         window.location.pathname;
-    // Note: We can assume in Chromium that the launch params will be consumed
-    // before the 'load' event is dispatched as long as there is a consumer set
-    // on the window.
-    if (unsentLaunchParamUrl != null) {
-      message += ' for launchParams.targetUrl: ' +
-          (new URL(unsentLaunchParamUrl)).pathname;
-      unsentLaunchParamUrl = null;
-    }
-    console.log(message);
-    domAutomationController.send(message);
 
-    // Listen for the next launch param (which, in our tests, should occur in
-    // the 'focus-existing' client mode).
-    listenForNextLaunchParams(delay);
-  }, initialDelay)
+
+    console.log(FLUSH_PREFIX + messageSuffix);
+    if (typeof domAutomationController !== 'undefined') {
+      domAutomationController.send(FLUSH_PREFIX + messageSuffix);
+    }
+    await launchQueueFlushed;
+    console.assert(_onLaunchQueueFlushedByBrowser == null);
+
+    if (_launchParamToBeSentToBrowser != null) {
+      messageSuffix += ' for launchParams.targetUrl: ' +
+          (new URL(_launchParamToBeSentToBrowser)).pathname;
+      _launchParamToBeSentToBrowser = null;
+    }
+
+    console.log(FINISHED_NAVIGATING_PREFIX + messageSuffix);
+
+    if (typeof domAutomationController !== 'undefined') {
+      domAutomationController.send(FINISHED_NAVIGATING_PREFIX + messageSuffix);
+    }
+
+    // Listen for the next launch param in order to handle 'navigate-existing'
+    // and 'focus-existing' client modes.
+    _listenForNextLaunchParams(delay);
+  }, delay);
 }
 
-function showParams(params) {
+function _showParams(params) {
   let output = decodeURI(params);
   console.log('Query params passed in: ' + output);
   // Make the query params easier to read on the page.

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
@@ -140,6 +141,16 @@ bool WebAppLaunchQueue::IsInScope(const WebAppLaunchParams& launch_params,
   // don't have a concept of scope.
   return IsExtensionURL(current_url) ||
          registrar_->IsUrlInAppExtendedScope(current_url, launch_params.app_id);
+}
+
+void WebAppLaunchQueue::FlushForTesting() const {
+  CHECK_IS_TEST();
+  mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&launch_service);
+  launch_service.FlushForTesting();  // IN-TEST
 }
 
 void WebAppLaunchQueue::Reset() {
