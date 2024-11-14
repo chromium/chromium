@@ -44,6 +44,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -368,6 +369,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, crbug.com/379120629")
     public void testTypedSuggestions_Incognito() {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ true);
@@ -413,6 +415,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, crbug.com/379120629")
     public void testTypedSuggestions_OpenSearchSuggestion() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
@@ -487,6 +490,7 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_bookmark_provider/true")
+    @DisabledTest(message = "Flaky, crbug.com/379120629")
     public void testBookmarkSuggestions() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(
@@ -522,6 +526,7 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_history_provider/true")
+    @DisabledTest(message = "Flaky, crbug.com/379120629")
     public void testHistorySuggestions() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(
