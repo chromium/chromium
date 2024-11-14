@@ -101,7 +101,8 @@ DataSharingServiceImpl::DataSharingServiceImpl(
       profile_dir_(profile_dir),
       preview_server_proxy_(
           std::make_unique<PreviewServerProxy>(identity_manager,
-                                               url_loader_factory)) {
+                                               url_loader_factory,
+                                               channel)) {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COLLABORATION_GROUP,

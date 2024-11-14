@@ -9,14 +9,17 @@
 #include <utility>
 
 #include "base/base64url.h"
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "components/data_sharing/public/features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
 #include "net/http/http_request_headers.h"
@@ -38,12 +41,13 @@ constexpr char kOAuthName[] = "shared_data_preview";
 // OAuth scope of the server.
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/chromesync";
 
-// Server address to get preview data.
+// Server addresses to get preview data.
 constexpr char kDefaultServiceBaseUrl[] =
+    "https://staging-chromesyncsharedentities-pa.googleapis.com/v1";
+constexpr char kAutopushServiceBaseUrl[] =
     "https://autopush-chromesyncsharedentities-pa.sandbox.googleapis.com/v1";
-constexpr base::FeatureParam<std::string> kServiceBaseUrl{
-    &features::kDataSharingFeature, "preview_service_base_url",
-    kDefaultServiceBaseUrl};
+constexpr char kStableAndBetaServiceBaseUrl[] =
+    "https://chromesyncsharedentities-pa.googleapis.com/v1";
 
 // How many share entities to retrieve for preview.
 constexpr int kDefaultPreviewDataSize = 100;
@@ -261,9 +265,11 @@ std::optional<sync_pb::EntitySpecifics> Deserialize(const base::Value& value) {
 
 PreviewServerProxy::PreviewServerProxy(
     signin::IdentityManager* identity_manager,
-    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory)
+    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+    version_info::Channel channel)
     : identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      channel_(channel) {}
 
 PreviewServerProxy::~PreviewServerProxy() = default;
 
@@ -303,8 +309,9 @@ void PreviewServerProxy::GetSharedDataPreview(
                                          "{collaborationId}", encoded_id);
   base::ReplaceFirstSubstringAfterOffset(&shared_entities_preview_path, 0,
                                          "{data_type}", data_type_str);
-  GURL url = GURL(
-      kServiceBaseUrl.Get().append("/").append(shared_entities_preview_path));
+  std::string url_str = GetPreviewServerURLString();
+  url_str.append("/").append(shared_entities_preview_path);
+  GURL url = GURL(url_str);
 
   // Query string in the URL to get shared entnties preview. {token} needs to
   // be replaced by the caller. {pageSize} can be configured through finch.
@@ -396,6 +403,36 @@ void PreviewServerProxy::OnResponseJsonParsed(
   } else {
     std::move(callback).Run(std::move(preview));
   }
+}
+
+std::string PreviewServerProxy::GetPreviewServerURLString() const {
+  // If there is a param set in a field trial, use the value from that as a
+  // failsafe.
+  std::string field_trial_param = GetFieldTrialParamValueByFeature(
+      features::kDataSharingFeature, "preview_service_base_url");
+  if (!field_trial_param.empty()) {
+    return field_trial_param;
+  }
+
+  // If the sync server is set manually (e.g. with
+  // chrome://flags/#use-sync-sandbox), use autopush.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          syncer::kSyncServiceURL)) {
+    return kAutopushServiceBaseUrl;
+  }
+
+  // Stable and Beta channel should use the production server.
+  if (GetChannel() == version_info::Channel::STABLE ||
+      GetChannel() == version_info::Channel::BETA) {
+    return kStableAndBetaServiceBaseUrl;
+  }
+
+  // Other channels and local builds use the default service URL.
+  return kDefaultServiceBaseUrl;
+}
+
+version_info::Channel PreviewServerProxy::GetChannel() const {
+  return channel_;
 }
 
 }  // namespace data_sharing
