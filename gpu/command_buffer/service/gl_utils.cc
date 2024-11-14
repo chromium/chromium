@@ -417,7 +417,13 @@ void LogGLDebugMessage(GLenum source,
                        const GLchar* message,
                        Logger* error_logger) {
   std::string id_string = GLES2Util::GetStringEnum(id);
-  if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API) {
+  // Suppresses GL_DEBUG_TYPE_PERFORMANCE log messages for web tests that can
+  // get sent to the JS console and cause unnecessary test failures due test
+  // output log expectation comparisons.
+  if (type == GL_DEBUG_TYPE_PERFORMANCE &&
+      error_logger->SuppressPerformanceLogs()) {
+    return;
+  } else if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API) {
     error_logger->LogMessage(__FILE__, __LINE__,
                              " " + id_string + ": " + message);
   } else {

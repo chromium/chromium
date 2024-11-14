@@ -168,4 +168,9 @@ const char kUseRedistributableDirectML[] = "use-redist-dml";
 const char kEnableGpuMainTimeKeeperMetrics[] =
     "enable-gpu-main-time-keeper-metrics";
 
+// Suppresses GL_DEBUG_TYPE_PERFORMANCE log messages for web tests that can get
+// sent to the JS console and cause unnecessary test failures due test output
+// log expectation comparisons.
+const char kSuppressPerformanceLogs[] = "suppress-performance-logs";
+
 }  // namespace switches

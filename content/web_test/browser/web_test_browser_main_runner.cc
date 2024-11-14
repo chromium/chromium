@@ -284,6 +284,11 @@ void WebTestBrowserMainRunner::Initialize() {
   // We want stable/baseline results when running web tests.
   command_line.AppendSwitch(switches::kDisableSkiaRuntimeOpts);
 
+  // Suppress GL_DEBUG_TYPE_PERFORMANCE log messages that can get sent to the JS
+  // console and cause unnecessary test failures due test output log expectation
+  // comparisons.
+  command_line.AppendSwitch(switches::kSuppressPerformanceLogs);
+
   command_line.AppendSwitch(switches::kDisallowNonExactResourceReuse);
 
   // Always run with fake media devices.

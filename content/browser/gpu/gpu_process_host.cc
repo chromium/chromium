@@ -290,6 +290,7 @@ static const char* const kSwitchNames[] = {
     switches::kUseGpuInTests,
     switches::kWatchDirForScrollJankReport,
     switches::kWebViewDrawFunctorUsesVulkan,
+    switches::kSuppressPerformanceLogs,
 #if BUILDFLAG(IS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
     sandbox::policy::switches::kDisableMetalShaderCache,
