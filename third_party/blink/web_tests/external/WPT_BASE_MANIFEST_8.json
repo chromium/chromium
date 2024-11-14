@@ -21058,6 +21058,21 @@
       ]
      ]
     },
+    "css-cascade": {
+     "scope-implicit-crash-print.html": [
+      "c34ea63935ee5d76990dcb820b53fc14e5a8521f",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
     "css-contain": {
      "content-visibility": {
       "content-visibility-auto-print.html": [
@@ -72557,6 +72572,19 @@
         [
          [
           "/css/css-align/abspos/align-items-static-position-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-self-stretch-auto-size.tentative.html": [
+       "74091feacfe63813aa4a6bbc3ef1b4d3e4e8a59c",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-self-stretch-auto-size-ref.tentative.html",
           "=="
          ]
         ],
@@ -306354,6 +306382,18 @@
      ]
     }
    },
+   "ai": {
+    "translator": {
+     "DIR_METADATA": [
+      "e6ed0a4d029acba85ba0f3707f52d6b732d6f539",
+      []
+     ],
+     "OWNERS": [
+      "ada9e7044f494a9db911e640fd69b83bdb5e854a",
+      []
+     ]
+    }
+   },
    "ambient-light": {
     "AmbientLightSensor-disabled-by-feature-policy.https.html.headers": [
      "b8073a87be0363fba6f078bfe457f776a77dd9c9",
@@ -339325,6 +339365,10 @@
        "text-box-valid-expected.txt": [
         "588e594cd7740a1a199d70ed4bde2c5ff486accd",
         []
+       ],
+       "values.js": [
+        "bfbaeb709be651212dc9f1c58a6db680336d0420",
+        []
        ]
       },
       "support": {
@@ -360641,7 +360685,7 @@
       []
      ],
      "sizing-orthog-vlr-in-htb-008-ref.xht": [
-      "d41cd933936d5d4d7734561c2b1a283b65523cb5",
+      "8e2e1df3d62367168e6a8ae4d68202791b909926",
       []
      ],
      "sizing-orthog-vlr-in-htb-009-ref.xht": [
@@ -360681,7 +360725,7 @@
       []
      ],
      "sizing-orthog-vlr-in-htb-020-ref.xht": [
-      "603732b7af8fe2e84f7f383e2f5288e6dfbcd8b4",
+      "0386d61be504d48ac83ca459e0b2ac1538b87d48",
       []
      ],
      "sizing-orthog-vlr-in-htb-022-ref.xht": [
@@ -360713,7 +360757,7 @@
       []
      ],
      "sizing-orthog-vrl-in-htb-008-ref.xht": [
-      "76fc0844c2887850b2f343173bd05cc762eb6c65",
+      "ab3953790ff36b7a5428db990f2d984aec34a379",
       []
      ],
      "sizing-orthog-vrl-in-htb-009-ref.xht": [
@@ -360753,7 +360797,7 @@
       []
      ],
      "sizing-orthog-vrl-in-htb-020-ref.xht": [
-      "12f5d4c413e1d8d5a0afb1e668f65d05564a3546",
+      "d274465d354e7ada8c94e27b6b4e2a4360e6153b",
       []
      ],
      "sizing-orthog-vrl-in-htb-022-ref.xht": [
@@ -439005,6 +439049,27 @@
        }
       ]
      ]
+    },
+    "translator": {
+     "translator_translate.tentative.window.js": [
+      "cfa6654e8ce5973364b8b43f512ee80f2dee0405",
+      [
+       "ai/translator/translator_translate.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ]
     }
    },
    "ambient-light": {
@@ -462844,7 +462909,7 @@
       ]
      ],
      "anchor-parse-valid.html": [
-      "ec1c4971349cca93aa8ec473ba38e64b9adba1b0",
+      "742afa92b961bc70d77f7a45128e0e29c6c971c0",
       [
        null,
        {}
@@ -478070,7 +478135,7 @@
         ]
        ],
        "text-box-edge-computed.html": [
-        "df7775570fcc7bbcb85e67614d27170a8146bb70",
+        "5eaacf8a5f2ee827e4bc3e5135af3e692f67c486",
         [
          null,
          {}
@@ -478084,7 +478149,7 @@
         ]
        ],
        "text-box-edge-valid.html": [
-        "4aa1d3fdda06ede751903a21990cf82d80ee3848",
+        "fbc8d003f372e977ea651a613a5a72a0ea37605c",
         [
          null,
          {}
@@ -777333,6 +777398,15 @@
      ]
     },
     "css-align": {
+     "abspos": {
+      "align-self-stretch-auto-size-ref.tentative.html": [
+       "1d04e257c4b6beb940a771f07d15cf4d94e1ef20",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "ttwf-reftest-alignContent.html": [
       "18c838e90de5135267227d2136abbfa64f4d1dff",
       [
