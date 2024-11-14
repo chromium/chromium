@@ -2677,8 +2677,8 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 #   ../../third_party/libc++/src/include/optional:810: assertion this->has_value() failed: optional operator* called on a disengaged value
 #
 # https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1942084/overview
-crbug.com/364676078 external/wpt/css/css-animations/parsing/animation-duration-computed.html [ Crash Pass Timeout ]
-crbug.com/364676078 external/wpt/css/css-animations/parsing/animation-iteration-count-computed.html [ Crash Pass Timeout ]
+crbug.com/364676078 external/wpt/css/css-animations/parsing/animation-duration-computed.html [ Crash Failure Pass Timeout ]
+crbug.com/364676078 external/wpt/css/css-animations/parsing/animation-iteration-count-computed.html [ Crash Failure Pass Timeout ]
 crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-color-function.html [ Crash Pass ]
 crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-color-mix-function.html [ Crash Pass Timeout ]
 crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-hsl.html [ Crash Pass ]
