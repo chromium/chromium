@@ -28,6 +28,10 @@ class DataSharingBubbleController
   // Closes the instance of the data sharing bubble.
   void Close();
 
+  base::WeakPtr<WebUIBubbleDialogView> BubbleViewForTesting() {
+    return bubble_view_;
+  }
+
  private:
   friend class BrowserUserData<DataSharingBubbleController>;
 

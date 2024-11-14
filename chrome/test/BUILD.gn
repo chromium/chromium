@@ -3146,6 +3146,7 @@ if (!is_android) {
       "../browser/ui/views/content_setting_bubble_contents_browsertest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
+      "../browser/ui/views/data_sharing/data_sharing_live_browsertest.cc",
       "../browser/ui/views/device_chooser_browsertest.cc",
       "../browser/ui/views/digital_credentials/digital_identity_multi_step_dialog_browsertest.cc",
       "../browser/ui/views/digital_credentials/digital_identity_safety_interstitial_integration_test.cc",
