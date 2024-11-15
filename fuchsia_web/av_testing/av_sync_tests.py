@@ -18,6 +18,7 @@ import time
 import urllib.request
 
 from contextlib import AbstractContextManager
+from pathlib import Path
 
 import camera
 import server
@@ -175,7 +176,8 @@ if __name__ == '__main__':
     # TODO(crbug.com/40935291): Currently the machine is not running a fuchsia
     # managed docker image, the FUCHSIA_NODENAME environment is not set.
     if 'FUCHSIA_NODENAME' not in os.environ:
-        os.environ['FUCHSIA_NODENAME'] = 'fuchsia-ac67-8475-ee82'
+        os.environ['FUCHSIA_NODENAME'] = Path(
+            '/home/swarming/target-id').read_text().strip()
     if running_unattended():
         # The version is not available without explicitly sending in the
         # command line flags.
