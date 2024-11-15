@@ -527,6 +527,21 @@ TEST_F(AddressAccessoryControllerTest, TriggersManagePlusAddress) {
             1);
 }
 
+TEST_F(AddressAccessoryControllerTest, TriggersSelectPlusAddressMenu) {
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  EXPECT_CALL(mock_manual_filling_controller_, GetLastFocusedFieldId)
+      .WillOnce(Return(field_id));
+  EXPECT_CALL(mock_manual_filling_controller_, Hide);
+
+  base::UserActionTester user_action_tester;
+  controller()->OnOptionSelected(
+      AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses."
+                "SelectPlusAddressOptionOnAddressManualFallbackSelected"),
+            1);
+}
+
 TEST_F(AddressAccessoryControllerTest, FillsPlusAddressSuggestion) {
   FieldGlobalId field_id = test::MakeFieldGlobalId();
   const std::u16string plus_address = u"example@gmail.com";

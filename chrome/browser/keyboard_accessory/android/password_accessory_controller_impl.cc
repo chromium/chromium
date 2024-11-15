@@ -474,6 +474,9 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
       all_plus_addresses_bottom_sheet_controller_->Show(base::BindOnce(
           &PasswordAccessoryControllerImpl::OnPlusAddressSelected,
           weak_ptr_factory_.GetWeakPtr()));
+      base::RecordAction(base::UserMetricsAction(
+          "PlusAddresses."
+          "SelectPlusAddressOptionOnPasswordManualFallbackSelected"));
       GetManualFillingController()->Hide();
       return;
     case autofill::AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:

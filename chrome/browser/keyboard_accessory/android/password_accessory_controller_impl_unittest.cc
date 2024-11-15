@@ -2137,6 +2137,19 @@ TEST_F(PasswordAccessoryControllerTest, TriggersManagePlusAddress) {
             1);
 }
 
+TEST_F(PasswordAccessoryControllerTest, TriggersSelectPlusAddressMenu) {
+  base::UserActionTester user_action_tester;
+  CreateSheetController();
+  EXPECT_CALL(mock_manual_filling_controller_, Hide());
+
+  controller()->OnOptionSelected(
+      AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses."
+                "SelectPlusAddressOptionOnPasswordManualFallbackSelected"),
+            1);
+}
+
 class PasswordAccessoryControllerWithTestStoreTest
     : public PasswordAccessoryControllerTest,
       public testing::WithParamInterface<bool> {
