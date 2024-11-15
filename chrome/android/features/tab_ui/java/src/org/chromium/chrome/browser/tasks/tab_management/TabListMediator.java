@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
@@ -93,7 +94,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -116,7 +116,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -959,6 +958,11 @@ class TabListMediator implements TabListNotificationHandler {
                     }
 
                     @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        sTabClosedFromMapTabClosedFromMap.remove(tab.getId());
+                    }
+
+                    @Override
                     public void tabClosureUndone(Tab tab) {
                         assert mShowingTabs;
 
@@ -1095,8 +1099,6 @@ class TabListMediator implements TabListNotificationHandler {
                     }
                 };
 
-        // TODO(meiliang): follow up with unit tests to test the close signal is sent correctly with
-        // the recommendedNextTab.
         mTabClosedListener =
                 new TabActionListener() {
                     @Override
@@ -1110,68 +1112,32 @@ class TabListMediator implements TabListNotificationHandler {
                         Tab closingTab = tabModel.getTabById(tabId);
                         if (closingTab == null) return;
 
-                        if (mActionsOnAllRelatedTabs
-                                || filter.isIncognito()
-                                || mActionConfirmationManager == null) {
-                            doCloseTab(tabId, closingTab, filter, /* allowUndo= */ true);
+                        setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
+                        if (mActionsOnAllRelatedTabs && filter.isTabInTabGroup(closingTab)) {
+                            onGroupClosedFrom(tabId);
+                            TabUiUtils.closeTabGroup(
+                                    mCurrentTabGroupModelFilterSupplier.get(),
+                                    tabId,
+                                    /* hideTabGroups= */ true,
+                                    getOnMaybeTabClosedCallback(tabId));
                             return;
                         }
 
-                        Callback<Integer> onResult =
-                                (@ActionConfirmationResult Integer result) -> {
-                                    if (result == ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                                        // If this is being invoked because of a swipe, the view
-                                        // element has been removed. We need to bring that back.
-                                        // This is done by just triggering a model update for that
-                                        // index.
-                                        int lastIndex = mModelList.size() - 1;
-                                        if (lastIndex >= 0) {
-                                            mModelList.update(lastIndex, mModelList.get(lastIndex));
-                                        }
-                                    } else {
-                                        doCloseTab(
-                                                tabId,
-                                                closingTab,
-                                                filter,
-                                                result
-                                                        == ActionConfirmationResult
-                                                                .IMMEDIATE_CONTINUE);
-                                    }
-                                };
+                        onTabClosedFrom(tabId, mComponentName);
+                        Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
+                        Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
+                        TabClosureParams closureParams =
+                                TabClosureParams.closeTab(closingTab)
+                                        .recommendedNextTab(nextTab)
+                                        .allowUndo(true)
+                                        .build();
 
-                        mActionConfirmationManager.processCloseTabAttempt(
-                                Collections.singletonList(closingTab.getId()), onResult);
-                    }
-
-                    private void doCloseTab(
-                            int tabId,
-                            Tab closingTab,
-                            TabGroupModelFilter filter,
-                            boolean allowUndo) {
-                        RecordUserAction.record("MobileTabClosed." + mComponentName);
-
-                        setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
-                        if (mActionsOnAllRelatedTabs && filter.isTabInTabGroup(closingTab)) {
-                            List<Tab> related = getRelatedTabsForId(tabId);
-                            onGroupClosedFrom(tabId);
-                            filter.closeTabs(
-                                    TabClosureParams.closeTabs(related)
-                                            .allowUndo(allowUndo)
-                                            .hideTabGroups(true)
-                                            .build());
-                        } else {
-                            TabModel tabModel = filter.getTabModel();
-                            onTabClosedFrom(tabId, mComponentName);
-
-                            Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
-                            Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
-
-                            tabModel.closeTabs(
-                                    TabClosureParams.closeTab(closingTab)
-                                            .recommendedNextTab(nextTab)
-                                            .allowUndo(allowUndo)
-                                            .build());
-                        }
+                        @Nullable
+                        TabModelActionListener listener =
+                                TabUiUtils.buildMaybeDidCloseTabListener(
+                                        getOnMaybeTabClosedCallback(tabId));
+                        tabModel.getTabRemover()
+                                .closeTabs(closureParams, /* allowDialog= */ true, listener);
                     }
 
                     private Tab getNextTab(int closingTabId) {
@@ -2714,11 +2680,12 @@ class TabListMediator implements TabListNotificationHandler {
                 RecordUserAction.record("TabGroupItemMenu.Delete");
             }
             setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
+            onGroupClosedFrom(tabId);
             TabUiUtils.closeTabGroup(
                     mCurrentTabGroupModelFilterSupplier.get(),
                     tabId,
                     hideTabGroups,
-                    getMaybeUnsetShrinkCloseAnimationCallback(tabId));
+                    getOnMaybeTabClosedCallback(tabId));
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");
             renameTabGroup(tabId);
@@ -2895,35 +2862,64 @@ class TabListMediator implements TabListNotificationHandler {
 
     @VisibleForTesting
     @Nullable
-    Callback<Boolean> getMaybeUnsetShrinkCloseAnimationCallback(int tabId) {
+    Callback<Boolean> getOnMaybeTabClosedCallback(int tabId) {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
 
         Tab tab = filter.getTabModel().getTabById(tabId);
         if (tab == null) return null;
 
-        Token tabGroupId = tab.getTabGroupId();
-        if (tabGroupId == null) return null;
-
         return (didClose) -> {
-            // The close did not happen unset the shrink animation bit.
             if (!didClose) {
+                sTabClosedFromMapTabClosedFromMap.remove(tabId);
                 setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ false);
+                int modelIndex = mModelList.indexFromId(tabId);
+                if (modelIndex != TabModel.INVALID_TAB_INDEX) {
+                    resetSwipe(modelIndex);
+                }
                 return;
             }
 
-            // Special case in defense of the group not being completely closed. We need to find the
-            // group and unset the USE_SHRINK_CLOSE_ANIMATION property.
-            int rootId = filter.getRootIdFromStableId(tabGroupId);
-            if (rootId == Tab.INVALID_TAB_ID) return;
+            RecordUserAction.record("MobileTabClosed." + mComponentName);
 
-            List<Integer> ids = filter.getRelatedTabIds(rootId);
-            for (int id : ids) {
-                @Nullable PropertyModel model = getModelFromId(id);
-                if (model != null) {
-                    model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false);
+            // Special case in defense of a group not being completely closed. We need to find the
+            // group and reset it.
+            @Nullable
+            Pair<Integer, PropertyModel> indexAndModel =
+                    getIndexAndPropertyModelForGroup(filter, tab.getTabGroupId());
+            if (indexAndModel != null) {
+                if (mMode == TabListMode.GRID) {
+                    indexAndModel.second.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false);
                 }
+                resetSwipe(indexAndModel.first);
             }
         };
+    }
+
+    private void resetSwipe(int index) {
+        if (index < 0 || index >= mModelList.size()) return;
+        // The view element has been removed. We need to bring that back. This is done by just
+        // triggering a model update for that index.
+        mModelList.update(index, mModelList.get(index));
+    }
+
+    private @Nullable Pair<Integer, PropertyModel> getIndexAndPropertyModelForGroup(
+            TabGroupModelFilter filter, @Nullable Token tabGroupId) {
+        if (tabGroupId == null) return null;
+
+        int rootId = filter.getRootIdFromStableId(tabGroupId);
+        if (rootId == Tab.INVALID_TAB_ID) return null;
+
+        List<Integer> ids = filter.getRelatedTabIds(rootId);
+        for (int id : ids) {
+            int index = mModelList.indexFromId(id);
+            if (index == TabModel.INVALID_TAB_INDEX) continue;
+
+            @Nullable PropertyModel model = mModelList.get(index).model;
+            if (model != null) {
+                return Pair.create(index, model);
+            }
+        }
+        return null;
     }
 
     private PropertyModel getModelFromId(int tabId) {
