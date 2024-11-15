@@ -561,9 +561,15 @@ impl<'a> Engine<'a> {
         let selector = self.value_stack.pop()? as u32;
         let value = self.value_stack.pop()? as u32;
         // Selectors are indices starting with 1; not flags.
+        // Avoid potential subtract with overflow below.
+        // See <https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=70426>
+        // and <https://oss-fuzz.com/testcase?key=6243979511791616>
+        if !(1..=3).contains(&selector) {
+            return Ok(());
+        }
         // Convert index to flag.
         let selector_flag = 1 << (selector - 1);
-        if !(1..=3).contains(&selector) || (value != 0 && value != selector_flag) {
+        if value != 0 && value != selector_flag {
             return Ok(());
         }
         // If preserving linear metrics, prevent modification of the backward
@@ -1110,6 +1116,19 @@ mod tests {
         engine.value_stack.push(3).unwrap();
         engine.op_instctrl().unwrap();
         assert!(engine.graphics.backward_compatibility);
+    }
+
+    // Subtract with overflow caught by fuzzing when selector == 0
+    // See <https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=70426>
+    // and <https://oss-fuzz.com/testcase?key=6243979511791616>
+    #[test]
+    fn instctrl_avoid_overflow() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        engine.program.initial = Program::ControlValue;
+        engine.value_stack.push(0).unwrap();
+        engine.value_stack.push(0).unwrap();
+        engine.op_instctrl().unwrap();
     }
 
     #[test]

@@ -2181,6 +2181,16 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.23.0 -> 0.23.1"
 notes = "Minimal changes for fix in integer overflow in CFF processing."
 
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.23.1 -> 0.23.2"
+notes = """
+Overflow and underflow fixes for issues
+* https://github.com/googlefonts/fontations/issues/1218
+* https://github.com/googlefonts/fontations/issues/1217
+"""
+
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
