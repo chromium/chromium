@@ -9312,21 +9312,6 @@
             ]
         }
     ],
-    "EphemeralCCT": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTEphemeralMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "EsbAiStringUpdate": [
         {
             "platforms": [
