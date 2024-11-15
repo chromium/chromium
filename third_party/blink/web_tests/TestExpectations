@@ -7531,7 +7531,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-context-lost-restored-worker.html [ Timeout ]
 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-context-lost-worker.html [ Timeout ]
 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-image-rendering.html [ Timeout ]
-crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBitmap-invalid-mailbox.html [ Failure Timeout ]
 [ Mac14-arm64 ] fast/webgl/texImage-imageBitmap-from-blob-resize.html [ Skip Timeout ]
 [ Mac14-arm64 ] fast/webgl/texImage-imageBitmap-from-canvas-resize.html [ Skip Timeout ]
 [ Mac14-arm64 ] fast/webgl/texImage-imageBitmap-from-image-resize.html [ Skip Timeout ]
