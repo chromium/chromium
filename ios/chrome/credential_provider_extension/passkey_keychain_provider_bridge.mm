@@ -95,6 +95,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
                 credential:credential
         canMarkKeysAsStale:YES
                    purpose:purpose
+         canReauthenticate:YES
                 completion:fetchSecurityDomainSecretCompletion
                      error:nil];
   }
@@ -143,6 +144,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
                 credential:credential
         canMarkKeysAsStale:YES
                    purpose:purpose
+         canReauthenticate:YES
                 completion:fetchSecurityDomainSecretCompletion
                      error:nil];
   } else {
@@ -152,6 +154,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
                       credential:credential
               canMarkKeysAsStale:YES
                          purpose:purpose
+               canReauthenticate:NO
                       completion:fetchSecurityDomainSecretCompletion
                            error:enroll_error];
     };
@@ -173,11 +176,15 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
 }
 
 // Attempts to fetch the keys for the account associated with the provided gaia
-// ID if no error occured at the previous stage.
+// ID if no error occured at the previous stage. `canReauthenticate` indicates
+// whether the user can be asked to reauthenticate by entering their GPM PIN.
+// This argument should only be set to `NO` if the user has already been asked
+// to reauthenticate.
 - (void)fetchKeysForGaia:(NSString*)gaia
               credential:(id<Credential>)credential
       canMarkKeysAsStale:(BOOL)canMarkKeysAsStale
                  purpose:(PasskeyKeychainProvider::ReauthenticatePurpose)purpose
+       canReauthenticate:(BOOL)canReauthenticate
               completion:(FetchSecurityDomainSecretCompletionBlock)
                              fetchSecurityDomainSecretCompletion
                    error:(NSError*)error {
@@ -196,7 +203,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
                                purpose:purpose
                             completion:fetchSecurityDomainSecretCompletion
                                keyList:key_list
-                     canReauthenticate:YES];
+                     canReauthenticate:canReauthenticate];
       };
   [self fetchKeysForGaia:gaia purpose:purpose completion:fetchKeysCompletion];
 }
@@ -229,15 +236,15 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
     if (purpose == PasskeyKeychainProvider::ReauthenticatePurpose::kDecrypt &&
         canMarkKeysAsStale && credential &&
         !ContainsValidKey(keyList, credential)) {
-      // Mark keys as stale and try again. Note that "credential" is only used
-      // here, so we set "credential" to nil in the following call to avoid
-      // getting into an infinite loop.
+      // Mark keys as stale and try again. `canMarkKeysAsStale` is set to `NO`
+      // to avoid getting into an infinite loop.
       [self markKeysAsStaleForGaia:gaia
                         completion:^() {
                           [weakSelf fetchKeysForGaia:gaia
                                           credential:credential
                                   canMarkKeysAsStale:NO
                                              purpose:purpose
+                                   canReauthenticate:canReauthenticate
                                           completion:completion
                                                error:nil];
                         }];
