@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync;
 
-import android.os.Build;
 import android.util.Pair;
 
 import androidx.test.filters.LargeTest;
@@ -23,7 +22,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -101,6 +99,7 @@ public class OpenTabsTest {
     // Test syncing an open tab from client to server.
     @Test
     @LargeTest
+    @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testUploadOpenTab() {
         mSyncTestRule.loadUrl(URL);
@@ -111,6 +110,7 @@ public class OpenTabsTest {
     // Test syncing multiple open tabs from client to server.
     @Test
     @LargeTest
+    @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testUploadMultipleOpenTabs() {
         mSyncTestRule.loadUrl(URL);
@@ -123,10 +123,8 @@ public class OpenTabsTest {
     // Test syncing an open tab from client to server.
     @Test
     @LargeTest
+    @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.N,
-            message = "https://crbug.com/1515319")
     public void testUploadAndCloseOpenTab() {
         mSyncTestRule.loadUrl(URL);
         // Can't have zero tabs, so we have to open two to test closing one.
@@ -147,6 +145,7 @@ public class OpenTabsTest {
     // Test syncing an open tab from server to client.
     @Test
     @LargeTest
+    @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testDownloadOpenTab() {
         addFakeServerTabs(FAKE_CLIENT, URL);
@@ -157,6 +156,7 @@ public class OpenTabsTest {
     // Test syncing multiple open tabs from server to client.
     @Test
     @LargeTest
+    @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testDownloadMultipleOpenTabs() {
         addFakeServerTabs(FAKE_CLIENT, URL, URL2, URL3);
@@ -167,6 +167,7 @@ public class OpenTabsTest {
     // Test syncing a tab deletion from server to client.
     @Test
     @LargeTest
+    @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testDownloadDeletedOpenTab() throws Exception {
         // Add the entity to test deleting.
@@ -183,6 +184,7 @@ public class OpenTabsTest {
     // Test syncing multiple tab deletions from server to client.
     @Test
     @LargeTest
+    @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testDownloadMultipleDeletedOpenTabs() throws Exception {
         // Add the entity to test deleting.
