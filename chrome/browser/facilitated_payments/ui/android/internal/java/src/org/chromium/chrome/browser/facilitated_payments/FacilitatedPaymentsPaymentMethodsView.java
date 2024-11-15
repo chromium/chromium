@@ -50,6 +50,7 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
                     switch (reason) {
                         case StateChangeReason.BACK_PRESS: // Intentional fallthrough.
                         case StateChangeReason.SWIPE: // Intentional fallthrough.
+                        case StateChangeReason.OMNIBOX_FOCUS: // Intentional fallthrough.
                         case StateChangeReason.TAP_SCRIM:
                             mUiEventListener.onResult(UiEvent.SCREEN_CLOSED_BY_USER);
                             break;
@@ -57,7 +58,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
                         case StateChangeReason.COMPOSITED_UI: // Intentional fallthrough.
                         case StateChangeReason.VR: // Intentional fallthrough.
                         case StateChangeReason.PROMOTE_TAB: // Intentional fallthrough.
-                        case StateChangeReason.OMNIBOX_FOCUS: // Intentional fallthrough.
                         case StateChangeReason.INTERACTION_COMPLETE: // Intentional fallthrough.
                         case StateChangeReason.NONE:
                             mUiEventListener.onResult(UiEvent.SCREEN_CLOSED_NOT_BY_USER);
