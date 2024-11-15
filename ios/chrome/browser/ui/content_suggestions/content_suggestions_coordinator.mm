@@ -1188,11 +1188,8 @@ using segmentation_platform::TipIdentifier;
       };
   // If there are 0 identities, kInstantSignin requires less taps.
   AuthenticationOperation operation =
-      ChromeAccountManagerServiceFactory::GetForProfile(
-          self.browser->GetProfile())
-              ->HasIdentities()
-          ? AuthenticationOperation::kSigninOnly
-          : AuthenticationOperation::kInstantSignin;
+      [self hasIdentitiesOnDevice] ? AuthenticationOperation::kSigninOnly
+                                   : AuthenticationOperation::kInstantSignin;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
@@ -1373,6 +1370,18 @@ using segmentation_platform::TipIdentifier;
 }
 
 #pragma mark - Helpers
+
+- (bool)hasIdentitiesOnDevice {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    return !IdentityManagerFactory::GetForProfile(profile)
+                ->GetAccountsOnDevice()
+                .empty();
+  } else {
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile)
+        ->HasIdentities();
+  }
+}
 
 - (void)showMagicStackParcelList {
   _parcelListHalfSheetTableViewController =
