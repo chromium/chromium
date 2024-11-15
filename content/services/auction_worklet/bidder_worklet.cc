@@ -1488,6 +1488,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
           CreateContextRecyclerAndRunTopLevelForGenerateBid(
               trace_id, *total_timeout, should_deep_freeze, script_timed_out,
               errors_out);
+      ++non_premade_contexts_created;
     } else {
       fresh_context_recycler = std::move(unused_context_recyclers_.back());
       unused_context_recyclers_.pop_back();
@@ -1980,6 +1981,12 @@ BidderWorklet::V8State::~V8State() {
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Auction.BidderWorkletIsolateTotalHeapSizeKilobytes",
       heap_statistics.total_heap_size() / 1024);
+
+  base::UmaHistogramCounts100("Ads.InterestGroup.Auction.UnusedPremadeContexts",
+                              unused_context_recyclers_.size());
+  base::UmaHistogramCounts100(
+      "Ads.InterestGroup.Auction.NonPremadeContextsCreated",
+      non_premade_contexts_created);
 }
 
 void BidderWorklet::V8State::FinishInit(

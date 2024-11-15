@@ -673,6 +673,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // be frozen before it's used.
     std::vector<std::unique_ptr<ContextRecycler>> unused_context_recyclers_;
 
+    // The number of contexts we created that were not premade. Used for UMA:
+    // Ads.InterestGroup.Auction.NonPremadeContextsCreated.
+    size_t non_premade_contexts_created = 0;
+
     // ContextRecycler for "frozen-context" execution mode.
     std::unique_ptr<ContextRecycler> context_recycler_for_frozen_context_;
 

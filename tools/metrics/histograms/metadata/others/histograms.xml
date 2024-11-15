@@ -900,6 +900,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.NonPremadeContextsCreated"
+    units="contexts" expires_after="2025-05-10">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of contexts created as needed on a bidder worklet thread instead
+    of being prepared in advance. This metric is the logical inverse of
+    Ads.InterestGroup.Auction.UnusedPremadeContexts, in that this reflects
+    missed opportunities to prepare a context in advance of a bid task. Recorded
+    for each thread when the bidder worklet is destroyed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.NumAuctionsPerPage" units="auctions"
     expires_after="2025-05-04">
   <owner>caraitto@chromium.org</owner>
@@ -1307,6 +1323,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     At time of scoreAd(), records how the trusted signals URL, if any, related
     to the script URL.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.UnusedPremadeContexts"
+    units="contexts" expires_after="2025-05-10">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of contexts on a thread prepared in advance of bidding that were
+    never used. This metric is the logical inverse of
+    Ads.InterestGroup.Auction.NonPremadeContextsCreated, in that it reflects
+    wasted effort preparing a context that wasn't used. Recorded for each thread
+    when the bidder worklet is destroyed.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

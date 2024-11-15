@@ -1218,6 +1218,10 @@ TEST_F(BidderWorkletTest, PipeClosed) {
       1);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.Auction.BidderWorkletIsolateUsedHeapSizeKilobytes", 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.UnusedPremadeContexts", 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.NonPremadeContextsCreated", 1);
 }
 
 TEST_F(BidderWorkletTest, NetworkError) {
@@ -8829,6 +8833,30 @@ TEST_P(BidderWorkletMultiThreadingTest, UsesPremadeContextIfEnabled) {
         EXPECT_EQ(bids_[0]->bid, 2);
       }
       bids_.clear();
+
+      // Let the worklet be destroyed so the following two metrics will be
+      // recorded.
+      bidder_worklet.reset();
+      task_environment_.RunUntilIdle();
+      if (feature_enabled) {
+        // Each thread should create a context & only one should be used.
+        histogram_tester.ExpectBucketCount(
+            "Ads.InterestGroup.Auction.UnusedPremadeContexts", 1,
+            NumThreads() - 1);
+        histogram_tester.ExpectBucketCount(
+            "Ads.InterestGroup.Auction.UnusedPremadeContexts", 0, 1);
+        histogram_tester.ExpectBucketCount(
+            "Ads.InterestGroup.Auction.NonPremadeContextsCreated", 0,
+            NumThreads());
+      } else {
+        histogram_tester.ExpectBucketCount(
+            "Ads.InterestGroup.Auction.UnusedPremadeContexts", 0, NumThreads());
+        histogram_tester.ExpectBucketCount(
+            "Ads.InterestGroup.Auction.NonPremadeContextsCreated", 1, 1);
+        histogram_tester.ExpectBucketCount(
+            "Ads.InterestGroup.Auction.NonPremadeContextsCreated", 0,
+            NumThreads() - 1);
+      }
     }
   }
 }
