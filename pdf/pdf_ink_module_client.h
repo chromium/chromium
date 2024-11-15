@@ -39,6 +39,10 @@ class PdfInkModuleClient {
 
   virtual ~PdfInkModuleClient() = default;
 
+  // Asks the client to discard the stroke identified by `id` on the page at
+  // `page_index`.
+  virtual void DiscardStroke(int page_index, InkStrokeId id) {}
+
   // Gets the current page orientation.
   virtual PageOrientation GetOrientation() const = 0;
 

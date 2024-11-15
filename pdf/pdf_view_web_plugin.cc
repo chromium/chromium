@@ -126,6 +126,7 @@
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "base/memory/raw_ref.h"
+#include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_module.h"
 #include "pdf/pdf_ink_module_client.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -355,6 +356,10 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
                           InkStrokeId id,
                           bool active) override {
     plugin_->engine_->UpdateStrokeActive(page_index, id, active);
+  }
+
+  void DiscardStroke(int page_index, InkStrokeId id) override {
+    plugin_->engine_->DiscardStroke(page_index, id);
   }
 
   void UpdateThumbnail(int page_index) override {

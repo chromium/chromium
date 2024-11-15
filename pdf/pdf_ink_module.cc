@@ -1049,10 +1049,14 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   const InkStrokeId start_id = *discards.begin();
   for (auto& [page_index, page_ink_strokes] : strokes_) {
     // Find the first element in `page_ink_strokes` whose ID >= `start_id`.
-    auto it = base::ranges::lower_bound(
+    auto start = base::ranges::lower_bound(
         page_ink_strokes, start_id, {},
         [](const FinishedStrokeState& state) { return state.id; });
-    page_ink_strokes.erase(it, page_ink_strokes.end());
+    auto end = page_ink_strokes.end();
+    for (auto it = start; it < end; ++it) {
+      client_->DiscardStroke(page_index, it->id);
+    }
+    page_ink_strokes.erase(start, end);
   }
 
   // Check the pages with strokes and remove the ones that are now empty.

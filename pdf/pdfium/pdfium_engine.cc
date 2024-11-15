@@ -4424,6 +4424,22 @@ void PDFiumEngine::UpdateStrokeActive(int page_index,
   ink_stroked_pages_needing_regeneration_.insert(page_index);
 }
 
+void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
+  CHECK(PageIndexInBounds(page_index));
+  auto it = ink_stroke_objects_map_.find(id);
+  CHECK(it != ink_stroke_objects_map_.end());
+  for (FPDF_PAGEOBJECT page_object : it->second) {
+    bool result =
+        FPDFPage_RemoveObject(pages_[page_index]->GetPage(), page_object);
+    CHECK(result);
+
+    // After FPDFPage_RemoveObject(), ownership of `page_object` is transferred
+    // from the page to `this`, so free it.
+    FPDFPageObj_Destroy(page_object);
+  }
+  ink_stroke_objects_map_.erase(it);
+}
+
 std::map<InkModeledShapeId, ink::ModeledShape>
 PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
   CHECK(PageIndexInBounds(page_index));
