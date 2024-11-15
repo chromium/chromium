@@ -16330,6 +16330,7 @@ from previous Chrome versions.
   <int value="-1591974904"
       label="SafeBrowsingSeparateNetworkContexts:disabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>
+  <int value="-1590631822" label="enable-openxr-android-smooth-depth:enabled"/>
   <int value="-1589720671"
       label="DebugHistoryInterventionNoUserActivation:disabled"/>
   <int value="-1589087211"
@@ -22622,6 +22623,7 @@ from previous Chrome versions.
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>
   <int value="954368502" label="AllowWgcWindowCapturer:enabled"/>
+  <int value="955200915" label="enable-openxr-android-smooth-depth:disabled"/>
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
   <int value="955425932" label="EnterpriseReportingInChromeOS:enabled"/>
   <int value="955901619" label="EmojiSuggestAddition:disabled"/>

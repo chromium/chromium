@@ -2880,6 +2880,9 @@ extern const char kOpenXRExtendedFeaturesDescription[];
 
 extern const char kOpenXRName[];
 extern const char kOpenXRDescription[];
+
+extern const char kOpenXRAndroidSmoothDepthName[];
+extern const char kOpenXRAndroidSmoothDepthDescription[];
 #endif
 
 // Non-Android ----------------------------------------------------------------

@@ -35,6 +35,9 @@ BASE_DECLARE_FEATURE(kOpenXrExtendedFeatureSupport);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXRSharedImages);
 COMPONENT_EXPORT(VR_FEATURES)
 BASE_DECLARE_FEATURE(kAllowOpenXrWithImmersiveFeature);
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXrAndroidSmoothDepth);
+#endif
 
 // Helper method to check if OpenXR should be enabled. It takes into account
 // both the kOpenXR feature, as well as the state of the system features on

@@ -93,6 +93,12 @@ BASE_FEATURE(kAllowOpenXrWithImmersiveFeature,
              "AllowOpenXrWithImmersiveFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kOpenXrAndroidSmoothDepth,
+             "OpenXrAndroidSmoothDepth",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Helper for enabling a feature if either the base flag is enabled or if the
 // device has an immersive feature that we will allow to override the default
 // state.

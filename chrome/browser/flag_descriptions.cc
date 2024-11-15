@@ -5005,6 +5005,11 @@ const char kOpenXRExtendedFeaturesDescription[] =
 const char kOpenXRName[] = "Enable OpenXR WebXR Runtime";
 const char kOpenXRDescription[] =
     "Enables the use of the OpenXR runtime to create WebXR sessions.";
+
+const char kOpenXRAndroidSmoothDepthName[] = "Enable OpenXR Smooth Depth";
+const char kOpenXRAndroidSmoothDepthDescription[] =
+    "Forces the OpenXR Android runtime to use the Smooth depth image. When "
+    "Disabled, the raw depth image will be used instead.";
 #endif
 
 // Non-Android -----------------------------------------------------------------
