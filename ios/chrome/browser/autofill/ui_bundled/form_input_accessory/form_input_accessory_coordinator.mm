@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -237,18 +238,26 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
 - (void)stop {
   [self clearPresentedState];
-  [self.formInputAccessoryTapRecognizer.view
-      removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
+
+  // Avoid cleaning up the views after the scene has been disconnected. This
+  // seems to cause watchdog kills. See crbug.com/40918951.
+  if (SceneState* sceneState = self.browser->GetSceneState();
+      sceneState.activationLevel > SceneActivationLevelDisconnected) {
+    [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
+    [self.formInputAccessoryTapRecognizer.view
+        removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
+    [GetFirstResponder() reloadInputViews];
+  }
+
   _formInputAccessoryViewController = nil;
   _formInputViewController = nil;
-  [GetFirstResponder() reloadInputViews];
 
   [_formInputAccessoryMediator disconnect];
   _formInputAccessoryMediator = nil;
 
   [_brandingCoordinator stop];
   _brandingCoordinator = nil;
-  [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
+
   self.layoutGuide = nil;
 }
 
