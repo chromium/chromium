@@ -748,15 +748,15 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTranslateLanguagesURL) {
   std::string client_param_value;
   net::GetValueForKeyInQuery(translate_url_english_us, kClientIdQueryParameter,
                              &client_param_value);
-  EXPECT_EQ(client_param_value, "cr");
+  EXPECT_EQ(client_param_value, "lens-overlay");
   client_param_value = "";
   net::GetValueForKeyInQuery(translate_url_french_nocountry,
                              kClientIdQueryParameter, &client_param_value);
-  EXPECT_EQ(client_param_value, "cr");
+  EXPECT_EQ(client_param_value, "lens-overlay");
   client_param_value = "";
   net::GetValueForKeyInQuery(translate_url_english_uk, kClientIdQueryParameter,
                              &client_param_value);
-  EXPECT_EQ(client_param_value, "cr");
+  EXPECT_EQ(client_param_value, "lens-overlay");
 }
 
 }  // namespace lens
