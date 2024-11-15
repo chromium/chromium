@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <array>
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <utility>
@@ -1145,7 +1146,7 @@ class BidderWorkletTwoThreadsTest : public BidderWorkletTest {
 class BidderWorkletMultiThreadingTest
     : public BidderWorkletTest,
       public testing::WithParamInterface<size_t> {
- private:
+ public:
   size_t NumThreads() override { return GetParam(); }
 };
 
@@ -8734,6 +8735,333 @@ TEST_P(BidderWorkletMultiThreadingTest, PauseOnStartDelete) {
                                    int id) { v8_helper->Resume(id); },
                                 v8_helper(), id));
   task_environment_.RunUntilIdle();
+}
+
+TEST_P(BidderWorkletMultiThreadingTest, UsesPremadeContextIfEnabled) {
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData":
+                            {"Fred": {"priorityVector": {"foo": 1.0}}}
+                          })";
+
+  const char kScript[] = R"(
+     function generateBid(interestGroup) {
+      return {
+        ad: ["ad"],
+        bid: Object.isFrozen(globalThis) ? 1 : 2,
+        render: interestGroup.ads[0].renderURL};
+    }
+  )";
+
+  for (bool feature_enabled : {true, false}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (feature_enabled) {
+      scoped_feature_list.InitAndEnableFeature(
+          blink::features::kFledgePrepareBidderContextsInAdvance);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(
+          blink::features::kFledgePrepareBidderContextsInAdvance);
+    }
+    // We should be able to use a premade context for any execution mode.
+    for (auto execution_mode :
+         {blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode,
+          blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode,
+          blink::mojom::InterestGroup::ExecutionMode::kFrozenContext}) {
+      SCOPED_TRACE(execution_mode);
+      execution_mode_ = execution_mode;
+      url_loader_factory_.ClearResponses();
+      auto bidder_worklet = CreateWorklet();
+      AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                            kScript);
+
+      base::HistogramTester histogram_tester;
+      base::RunLoop on_bidding_signals_received_run_loop;
+      base::OnceClosure on_bidding_signals_received_continue_callback;
+      auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
+          [&](const base::flat_map<std::string, double>& priority_vector,
+              base::TimeDelta trusted_signals_fetch_latency,
+              std::optional<base::TimeDelta> update_if_older_than,
+              base::OnceClosure callback) {
+            on_bidding_signals_received_run_loop.Quit();
+            on_bidding_signals_received_continue_callback = std::move(callback);
+          });
+      generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+      GenerateBid(bidder_worklet.get(),
+                  GenerateBidClientWithCallbacks::Create(
+                      base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
+                                     base::Unretained(this)),
+                      on_bidding_signals_received_callback));
+
+      // This RunUntilIdle should include creating contexts.
+      task_environment_.RunUntilIdle();
+      EXPECT_FALSE(on_bidding_signals_received_run_loop.AnyQuitCalled());
+      EXPECT_FALSE(generate_bid_run_loop_->AnyQuitCalled());
+
+      AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+      task_environment_.RunUntilIdle();
+      EXPECT_TRUE(on_bidding_signals_received_run_loop.AnyQuitCalled());
+      EXPECT_FALSE(generate_bid_run_loop_->AnyQuitCalled());
+      ASSERT_TRUE(on_bidding_signals_received_continue_callback);
+
+      histogram_tester.ExpectTotalCount(
+          "Ads.InterestGroup.Auction.UsedPremadeContext", 0);
+      histogram_tester.ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread", 1,
+          feature_enabled);
+
+      std::move(on_bidding_signals_received_continue_callback).Run();
+      generate_bid_run_loop_->Run();
+      generate_bid_run_loop_.reset();
+
+      histogram_tester.ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.UsedPremadeContext", feature_enabled, 1);
+
+      // Make sure if we're in frozen mode, the frozen context is actually
+      // frozen (we set the bid based on if the context is frozen).
+      EXPECT_THAT(bid_errors_, testing::ElementsAre());
+      ASSERT_EQ(1u, bids_.size());
+      if (execution_mode ==
+          blink::mojom::InterestGroup::ExecutionMode::kFrozenContext) {
+        EXPECT_EQ(bids_[0]->bid, 1);
+      } else {
+        EXPECT_EQ(bids_[0]->bid, 2);
+      }
+      bids_.clear();
+    }
+  }
+}
+
+TEST_P(BidderWorkletMultiThreadingTest,
+       DoesNotUsePremadeContextIfSignalsComeBeforeScript) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgePrepareBidderContextsInAdvance);
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData":
+                            {"Fred": {"priorityVector": {"foo": 1.0}}}
+                          })";
+
+  auto bidder_worklet = CreateWorklet();
+
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+
+  base::HistogramTester histogram_tester;
+  generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(
+      bidder_worklet.get(),
+      GenerateBidClientWithCallbacks::Create(base::BindOnce(
+          &BidderWorkletTest::GenerateBidCallback, base::Unretained(this))));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(generate_bid_run_loop_->AnyQuitCalled());
+
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.UsedPremadeContext", 0);
+
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateBasicGenerateBidScript());
+  generate_bid_run_loop_->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.UsedPremadeContext", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread", 0);
+}
+
+TEST_P(BidderWorkletMultiThreadingTest,
+       DoesNotMakeMorePremadeContextsAfterFirstGenerateBid) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgePrepareBidderContextsInAdvance);
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData":
+                            {"Fred": {"priorityVector": {"foo": 1.0}}}
+                          })";
+  auto bidder_worklet = CreateWorklet();
+
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateBasicGenerateBidScript());
+
+  base::HistogramTester histogram_tester;
+  generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(
+      bidder_worklet.get(),
+      GenerateBidClientWithCallbacks::Create(base::BindOnce(
+          &BidderWorkletTest::GenerateBidCallback, base::Unretained(this))));
+
+  task_environment_.RunUntilIdle();
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+  generate_bid_run_loop_->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.UsedPremadeContext", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread", 1, 1);
+
+  // Now try to generate another bid. It shouldn't make any new premade
+  // contexts.
+  generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(
+      bidder_worklet.get(),
+      GenerateBidClientWithCallbacks::Create(base::BindOnce(
+          &BidderWorkletTest::GenerateBidCallback, base::Unretained(this))));
+  generate_bid_run_loop_->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread", 1, 1);
+}
+
+TEST_P(BidderWorkletMultiThreadingTest, CreatesCorrectNumberOfPremadeContexts) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kFledgePrepareBidderContextsInAdvance,
+      {{"BidderContextsDivisor", "2"},
+       {"BidderContextsMultiplier", "1"},
+       {"MaxBidderContextsPerThread", "4"}});
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData":
+                            {"Fred": {"priorityVector": {"foo": 1.0}}}
+                          })";
+
+  // Define some test cases with generate bid tasks of 4 types: compatibility
+  // mode, frozen context mode, grouped-by-origin mode with a fixed joining
+  // origin, grouped-by-origin mode with distinct joining origins.
+  std::vector<blink::mojom::InterestGroup_ExecutionMode> execution_modes{
+      blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode,
+      blink::mojom::InterestGroup_ExecutionMode::kFrozenContext,
+      blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode,
+      blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode};
+  std::vector<bool> use_distinct_origins{false, false, false, true};
+  std::vector<std::pair<std::vector<std::size_t>, size_t>>
+      tasks_by_mode_and_expected_premade_contexts = {
+          // Compatibility-mode only
+          {{2, 0, 0, 0}, 1},
+          {{4, 0, 0, 0}, 2},
+          {{5, 0, 0, 0}, 2},
+          {{8, 0, 0, 0}, 4},
+          {{10, 0, 0, 0}, 4},  // we have a maximum of 4 contexts.
+          // Frozen-mode only
+          {{0, 2, 0, 0}, 1},
+          {{0, 5, 0, 0}, 1},
+          {{0, 10, 0, 0}, 1},
+          // Group-by-origin mode only (same origin)
+          {{0, 0, 2, 0}, 1},
+          {{0, 0, 5, 0}, 1},
+          {{0, 0, 10, 0}, 1},
+          // Group-by-origin mode only (distinct origins)
+          {{0, 0, 0, 2}, 1},
+          {{0, 0, 0, 5}, 2},
+          {{0, 0, 0, 10}, 4},  // we have a maximum of 4 contexts.
+          // Combination of modes
+          {{1, 1, 1, 1}, 2},
+          {{2, 2, 2, 2}, 3},
+          {{5, 2, 3, 3}, 4},  // we have a maximum of 4 contexts.
+      };
+
+  for (const auto& [tasks_by_mode, expected_premade_contexts] :
+       tasks_by_mode_and_expected_premade_contexts) {
+    std::stringstream scoped_trace_input;
+    std::copy(tasks_by_mode.begin(), tasks_by_mode.end(),
+              std::ostream_iterator<int>(scoped_trace_input, " "));
+    SCOPED_TRACE(scoped_trace_input.str());
+
+    url_loader_factory_.ClearResponses();
+    auto bidder_worklet = CreateWorklet();
+
+    AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                          CreateBasicGenerateBidScript());
+
+    base::HistogramTester histogram_tester;
+    base::RunLoop run_loop;
+    size_t total_generate_bid_tasks = 0;
+    size_t completed_generated_bid_tasks = 0;
+    auto generate_bid_callback = base::BindLambdaForTesting(
+        [&](std::vector<mojom::BidderWorkletBidPtr> bid,
+            std::optional<uint32_t> data_version,
+            const std::optional<GURL>& debug_loss_report_url,
+            const std::optional<GURL>& debug_win_report_url,
+            std::optional<double> set_priority,
+            base::flat_map<std::string,
+                           auction_worklet::mojom::PrioritySignalsDoublePtr>
+                update_priority_signals_overrides,
+            PrivateAggregationRequests pa_requests,
+            PrivateAggregationRequests non_kanon_pa_requests,
+            RealTimeReportingContributions real_time_contributions,
+            mojom::BidderTimingMetricsPtr generate_bid_metrics,
+            mojom::GenerateBidDependencyLatenciesPtr
+                generate_bid_dependency_latencies,
+            mojom::RejectReason reject_reason,
+            const std::vector<std::string>& errors) {
+          ++completed_generated_bid_tasks;
+          if (completed_generated_bid_tasks == total_generate_bid_tasks) {
+            run_loop.Quit();
+          }
+        });
+    for (size_t mode_idx = 0; mode_idx < 4; ++mode_idx) {
+      execution_mode_ = execution_modes[mode_idx];
+      join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+      total_generate_bid_tasks += tasks_by_mode[mode_idx];
+      for (size_t task_idx = 0; task_idx < tasks_by_mode[mode_idx];
+           ++task_idx) {
+        if (use_distinct_origins[mode_idx]) {
+          join_origin_ = url::Origin::Create(
+              GURL(base::StringPrintf("https://%i.test", task_idx)));
+        }
+        GenerateBid(
+            bidder_worklet.get(),
+            GenerateBidClientWithCallbacks::Create(generate_bid_callback));
+      }
+    }
+    task_environment_.RunUntilIdle();
+    AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+    run_loop.Run();
+
+    size_t expected_premade_contexts_per_thread =
+        fmax(1, expected_premade_contexts / NumThreads());
+    size_t total_expected_created_contexts =
+        // Compatibility mode tasks use new contexts each time.
+        tasks_by_mode[0] +
+        // Frozen mode tasks will use a new context once per thread.
+        fmin(tasks_by_mode[1], NumThreads()) +
+        // Group-by-origin mode will use 1 context per origin.
+        (tasks_by_mode[2] > 0) + tasks_by_mode[3];
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread",
+        expected_premade_contexts_per_thread, 1);
+    if (NumThreads() == 1u ||
+        (tasks_by_mode[2] == 0 && tasks_by_mode[3] == 0)) {
+      // We can't predict which thread a group-by-origin mode task will go to,
+      // because for those tasks, the thread is chosen by hashing the joining
+      // origin.
+      histogram_tester.ExpectBucketCount(
+          "Ads.InterestGroup.Auction.UsedPremadeContext", true,
+          expected_premade_contexts_per_thread * NumThreads());
+      histogram_tester.ExpectBucketCount(
+          "Ads.InterestGroup.Auction.UsedPremadeContext", false,
+          total_expected_created_contexts -
+              (expected_premade_contexts_per_thread * NumThreads()));
+    } else {
+      // Even if all the compatibility mode tasks were assigned the same thread,
+      // they should have used at least expected_premade_contexts_per_thread
+      // premade contexts.
+      EXPECT_GE(histogram_tester.GetBucketCount(
+                    "Ads.InterestGroup.Auction.UsedPremadeContext", true),
+                static_cast<int>(expected_premade_contexts_per_thread));
+      histogram_tester.ExpectTotalCount(
+          "Ads.InterestGroup.Auction.UsedPremadeContext",
+          total_expected_created_contexts);
+    }
+  }
 }
 
 TEST_F(BidderWorkletTest, BasicV8Debug) {

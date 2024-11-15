@@ -1168,6 +1168,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread"
+    units="contexts" expires_after="2025-05-10">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of contexts scheduled to be prepared before bid tasks are ready.
+    Recorded when the context preparation tasks are posted in each bidder
+    thread. Fewer contexts may be created if any generate bid task is ready
+    prior to the completion of the preparation tasks, because generate bid tasks
+    will take precedence over context preparation tasks.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.ProcessLaunchTime" units="ms"
     expires_after="2025-05-04">
   <owner>pauljensen@chromium.org</owner>
@@ -1311,6 +1327,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     At time of scoreAd(), records how the trusted signals URL, if any, related
     to the script URL.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.UsedPremadeContext" enum="Boolean"
+    expires_after="2025-05-10">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the browser can use a prepared context when calling generateBid().
+    Recorded when a previously used context cannot be used
+    (Ads.InterestGroup.Auction.ContextReused is false).
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

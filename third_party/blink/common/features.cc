@@ -998,6 +998,25 @@ BASE_FEATURE(kFledgeAlwaysReuseSellerContext,
              "FledgeAlwaysReuseSellerContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFledgePrepareBidderContextsInAdvance,
+             "FledgePrepareBidderContextsInAdvance",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kFledgeMaxBidderContextsPerThreadInAdvance,
+                   &kFledgePrepareBidderContextsInAdvance,
+                   "MaxBidderContextsPerThread",
+                   10);
+BASE_FEATURE_PARAM(int,
+                   kFledgeBidderContextsDivisor,
+                   &kFledgePrepareBidderContextsInAdvance,
+                   "BidderContextsDivisor",
+                   2);
+BASE_FEATURE_PARAM(int,
+                   kFledgeBidderContextsMultiplier,
+                   &kFledgePrepareBidderContextsInAdvance,
+                   "BidderContextsMultiplier",
+                   1);
+
 BASE_FEATURE_PARAM(int,
                    kFledgeRealTimeReportingNumBuckets,
                    &kFledgeRealTimeReporting,

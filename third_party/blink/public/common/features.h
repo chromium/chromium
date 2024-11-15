@@ -575,6 +575,17 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseBidderContext);
 // Reuse a single V8 context to score all ads in a seller worklet.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseSellerContext);
 
+// Prepare bidder contexts, including running top level scripts, before
+// we're ready to generate a worklet's first bid.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgePrepareBidderContextsInAdvance);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeMaxBidderContextsPerThreadInAdvance);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kFledgeBidderContextsDivisor);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kFledgeBidderContextsMultiplier);
+
 // Feature params for feature kFledgeRealTimeReporting.
 // Epsilon of FLEDGE real time reporting's Rappor noise algorithm.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
