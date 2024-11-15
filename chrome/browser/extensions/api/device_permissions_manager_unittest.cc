@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/api/device_permissions_manager.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -13,7 +15,6 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/test/base/testing_profile.h"
-#include "extensions/browser/api/device_permissions_manager.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/extension_prefs.h"
@@ -85,10 +86,13 @@ class DevicePermissionsManagerTest : public testing::Test {
         "7", 0, 0, "Test HID Device", "", HidBusType::kHIDBusTypeUSB);
   }
 
-  void TearDown() override { env_.reset(nullptr); }
+  void TearDown() override {
+    extension_ = nullptr;
+    env_.reset(nullptr);
+  }
 
   std::unique_ptr<extensions::TestExtensionEnvironment> env_;
-  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_;
+  raw_ptr<const extensions::Extension> extension_ = nullptr;
   device::FakeUsbDeviceManager fake_usb_manager_;
   device::mojom::UsbDeviceInfoPtr device0_;
   device::mojom::UsbDeviceInfoPtr device1_;
