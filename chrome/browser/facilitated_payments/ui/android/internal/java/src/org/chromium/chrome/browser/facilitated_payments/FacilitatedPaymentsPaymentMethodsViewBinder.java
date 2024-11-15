@@ -116,8 +116,7 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         } else if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == UI_EVENT_LISTENER) {
-            // TODO(crbug.com/375089558): Set UI event listener to the view and trigger on UI
-            // events.
+            view.setUiEventListener(model.get(UI_EVENT_LISTENER));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
