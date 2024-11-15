@@ -34,6 +34,8 @@ void RecordFirstTimeServerRegistrationDuration(
 // numeric values should never be reused. This enum should be kept in sync with
 // the NearbyPresenceFirstTimeRegistrationResult enum in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyPresenceFirstTimeRegistrationResult)
 enum class FirstTimeRegistrationResult {
   kSuccess = 0,
   kRegistrationWithServerFailure = 1,
@@ -43,6 +45,8 @@ enum class FirstTimeRegistrationResult {
   kSaveRemoteCredentialsFailure = 5,
   kMaxValue = kSaveRemoteCredentialsFailure,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyPresenceFirstTimeRegistrationResult)
+
 void RecordFirstTimeRegistrationFlowResult(FirstTimeRegistrationResult result);
 void RecordFirstTimeServerRegistrationFailureReason(
     ash::nearby::NearbyHttpResult failure_reason);

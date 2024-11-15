@@ -6,12 +6,13 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
 /**
- * This enum is tied directly to a UMA enum defined in
- * //tools/metrics/histograms/enums.xml, and should always reflect it (do not
- * change one without changing the other).
+ * This enum is tied directly to the NearbyShareOnboardingFinalState UMA enum
+ * defined in //tools/metrics/histograms/metadata/nearby/enums.xml, and should
+ * always reflect it (do not change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  */
+// LINT.IfChange(NearbyShareOnboardingFinalState)
 export enum NearbyShareOnboardingFinalState {
   DEVICE_NAME_PAGE = 0,
   VISIBILITY_PAGE = 1,
@@ -19,14 +20,16 @@ export enum NearbyShareOnboardingFinalState {
   INITIAL_PAGE = 3,
   MAX = 4,
 }
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:NearbyShareOnboardingFinalState)
 
 /**
- * This enum is tied directly to a UMA enum defined in
- * //tools/metrics/histograms/enums.xml, and should always reflect it (do not
- * change one without changing the other).
+ * This enum is tied directly to the NearbyShareOnboardingEntryPoint UMA enum
+ * defined in //tools/metrics/histograms/metadata/nearby/enums.xml, and should
+ * always reflect it(do not change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  */
+// LINT.IfChange(NearbyShareOnboardingEntryPoint)
 export enum NearbyShareOnboardingEntryPoint {
   SETTINGS = 0,
   TRAY = 1,
@@ -34,14 +37,16 @@ export enum NearbyShareOnboardingEntryPoint {
   NEARBY_DEVICE_TRYING_TO_SHARE_NOTIFICATION = 3,
   MAX = 4,
 }
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:NearbyShareOnboardingEntryPoint)
 
 /**
- * This enum is tied directly to a UMA enum defined in
- * //tools/metrics/histograms/enums.xml, and should always reflect it (do not
- * change one without changing the other).
+ * This enum is tied directly to the NearbyShareOnboardingFlowEvent UMA enum
+ * defined in //tools/metrics/histograms/metadata/nearby/enums.xml, and should
+ * always reflect it (do not change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  */
+// LINT.IfChange(NearbyShareOnboardingFlowEvent)
 enum NearbyShareOnboardingFlowEvent {
   ONBOARDING_SHOWN = 1,
   CONFIRM_ON_INITIAL_PAGE = 12,
@@ -55,6 +60,7 @@ enum NearbyShareOnboardingFlowEvent {
   CANCEL_SELECTED_ON_VISIBILITY_PAGE = 1416,
   YOUR_DEVICES_SELECTED_AND_CONFIRMED = 1417,
 }
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:NearbyShareOnboardingFlowEvent)
 
 const NearbyShareOnboardingResultHistogramName =
     'Nearby.Share.Onboarding.Result';

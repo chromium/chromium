@@ -31,7 +31,10 @@ class NearbySharingService : public KeyedService {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. If entries are added, kMaxValue
-  // should be updated.
+  // should be updated. Keep in sync with the NearbyShareServiceStatusCode UMA
+  // enum defined in //tools/metrics/histograms/metadata/nearby/enums.xml.
+  //
+  // LINT.IfChange(NearbyShareServiceStatusCode)
   enum class StatusCodes {
     // The operation was successful.
     kOk = 0,
@@ -51,6 +54,7 @@ class NearbySharingService : public KeyedService {
     kNoAvailableConnectionMedium = 5,
     kMaxValue = kNoAvailableConnectionMedium
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareServiceStatusCode)
 
   enum class ReceiveSurfaceState {
     // Default, invalid state.

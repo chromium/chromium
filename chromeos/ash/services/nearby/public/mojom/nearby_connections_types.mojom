@@ -11,7 +11,10 @@ import "mojo/public/mojom/base/time.mojom";
 // Generic result status of NearbyConnections API calls. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-// Keep synced with tools/metrics/histograms/enums.xml - NearbyConnectionsStatus
+// Keep synced with with the NearbyConnectionsStatus UMA enum defined in
+// //tools/metrics/histograms/metadata/cross_device/enums.xml.
+//
+// LINT.IfChange(NearbyConnectionsStatus)
 enum Status {
   // The operation was successful.
   kSuccess = 0,
@@ -68,6 +71,7 @@ enum Status {
   // Value of the next enum variant.
   kNextValue = 19,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:NearbyConnectionsStatus)
 
 // Information about a connection that is being initiated.
 struct ConnectionInfo {
@@ -274,8 +278,10 @@ enum BandwidthQuality {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// This enum should be kept in sync with the `NearbyConnectionsMedium` enum at
-// //tools/metrics/histograms/metadata/nearby/enums.xml
+// This enum should be kept in sync with the NearbyConnectionsMedium enum at
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyConnectionsMedium)
 enum Medium {
   kUnknown = 0,
   kMdns = 1,
@@ -291,6 +297,7 @@ enum Medium {
   kUsb = 11,
   kWebRtcNonCellular = 12,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsMedium)
 
 // Log severity levels. This is passed as a member of
 // NearbyConnectionsDependencies to set the minimum log level in the Nearby
