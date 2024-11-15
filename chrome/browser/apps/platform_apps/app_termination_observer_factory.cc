@@ -30,9 +30,10 @@ AppTerminationObserverFactory::AppTerminationObserverFactory()
 
 AppTerminationObserverFactory::~AppTerminationObserverFactory() = default;
 
-KeyedService* AppTerminationObserverFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AppTerminationObserverFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new AppTerminationObserver(browser_context);
+  return std::make_unique<AppTerminationObserver>(browser_context);
 }
 
 bool AppTerminationObserverFactory::ServiceIsCreatedWithBrowserContext() const {
