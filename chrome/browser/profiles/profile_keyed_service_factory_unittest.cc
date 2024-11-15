@@ -32,7 +32,7 @@ class ProfileKeyedServiceFactoryTest : public ProfileKeyedServiceFactory {
 
  protected:
   // Implementation is not for testing.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {
     NOTREACHED();
   }
