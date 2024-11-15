@@ -61,7 +61,8 @@ InstanceIDProfileServiceFactory::InstanceIDProfileServiceFactory()
 
 InstanceIDProfileServiceFactory::~InstanceIDProfileServiceFactory() = default;
 
-KeyedService* InstanceIDProfileServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+InstanceIDProfileServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -72,7 +73,7 @@ KeyedService* InstanceIDProfileServiceFactory::BuildServiceInstanceFor(
   bool is_incognito = profile->IsOffTheRecord();
 #endif
 
-  return new InstanceIDProfileService(
+  return std::make_unique<InstanceIDProfileService>(
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
       is_incognito);
 }
