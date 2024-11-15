@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -615,8 +616,15 @@ public class ChromeTabUtils {
                                 new Runnable() {
                                     @Override
                                     public void run() {
-                                        TabModelUtils.closeCurrentTab(
-                                                activity.getCurrentTabModel());
+                                        TabModel model = activity.getCurrentTabModel();
+                                        Tab tab = TabModelUtils.getCurrentTab(model);
+                                        if (tab == null) return;
+                                        model.getTabRemover()
+                                                .closeTabs(
+                                                        TabClosureParams.closeTab(tab)
+                                                                .allowUndo(false)
+                                                                .build(),
+                                                        /* allowDialog= */ false);
                                     }
                                 });
                     }

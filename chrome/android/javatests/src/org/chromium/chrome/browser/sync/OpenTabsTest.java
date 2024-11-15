@@ -24,7 +24,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -134,8 +136,14 @@ public class OpenTabsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModelSelector selector = mSyncTestRule.getActivity().getTabModelSelector();
-                    Assert.assertTrue(TabModelUtils.closeCurrentTab(selector.getCurrentModel()));
+                    TabModel model =
+                            mSyncTestRule.getActivity().getTabModelSelector().getCurrentModel();
+                    Tab tab = TabModelUtils.getCurrentTab(model);
+                    Assert.assertNotNull(tab);
+                    model.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                 });
 
         waitForLocalTabsForClient(mClientName, URL);

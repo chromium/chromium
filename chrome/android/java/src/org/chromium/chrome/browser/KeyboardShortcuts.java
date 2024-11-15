@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -589,7 +590,14 @@ public class KeyboardShortcuts {
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.CLOSE_TAB:
-                    TabModelUtils.closeCurrentTab(currentTabModel);
+                    Tab tab = TabModelUtils.getCurrentTab(currentTabModel);
+                    if (tab != null) {
+                        currentTabModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab).allowUndo(true).build(),
+                                        /* allowDialog= */ true);
+                    }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(

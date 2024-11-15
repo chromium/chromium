@@ -30,6 +30,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -95,6 +96,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
+import org.chromium.chrome.browser.tabmodel.PassthroughTabRemover;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -187,6 +189,13 @@ public class StripLayoutHelperTest {
     public void beforeTest() {
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
+        doCallback(
+                        (TabClosureParams tabClosureParams) -> {
+                            mModel.closeTabs(tabClosureParams);
+                        })
+                .when(mTabGroupModelFilter)
+                .closeTabs(any());
+        mModel.setTabRemover(new PassthroughTabRemover(() -> mTabGroupModelFilter));
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),

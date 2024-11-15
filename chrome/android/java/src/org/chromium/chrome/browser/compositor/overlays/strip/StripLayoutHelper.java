@@ -2517,8 +2517,14 @@ public class StripLayoutHelper
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    for (StripLayoutTab tab : tabsToRemove) {
-                        TabModelUtils.closeTabById(mModel, tab.getTabId(), true);
+                    for (StripLayoutTab stripTab : tabsToRemove) {
+                        @Nullable Tab tab = mModel.getTabById(stripTab.getTabId());
+                        if (tab == null) continue;
+                        // Tab group closure related dialogs are handled elsewhere and any logic
+                        // related to them can be bypassed.
+                        mModel.getTabRemover()
+                                .forceCloseTabs(
+                                        TabClosureParams.closeTab(tab).allowUndo(true).build());
                     }
 
                     if (!tabsToRemove.isEmpty()) mUpdateHost.requestUpdate();
