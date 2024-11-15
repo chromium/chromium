@@ -157,7 +157,7 @@ class GifTenorApiFetcherTest : public testing::Test {
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& url,
       const net::NetworkTrafficAnnotationTag& annotation_tag) {
     return std::make_unique<FakeEndpointFetcher>(response_);

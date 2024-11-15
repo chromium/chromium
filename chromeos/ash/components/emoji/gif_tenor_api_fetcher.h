@@ -36,8 +36,7 @@ class GifTenorApiFetcher {
   // Used in tests to mock a creation of the endpoint_fetcher
   using EndpointFetcherCreator =
       base::RepeatingCallback<std::unique_ptr<EndpointFetcher>(
-          const scoped_refptr<network::SharedURLLoaderFactory>
-              url_loader_factory,
+          scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
           const GURL& url,
           const net::NetworkTrafficAnnotationTag& annotation_tag)>;
 
@@ -60,18 +59,18 @@ class GifTenorApiFetcher {
   // Fetch tenor API Categories endpoint
   void FetchCategories(
       GetCategoriesCallback callback,
-      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Fetch tenor API Featured endpoint
   void FetchFeaturedGifs(
       TenorGifsApiCallback callback,
-      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::optional<std::string>& pos);
 
   // Fetch tenor API Search endpoint
   void FetchGifSearch(
       TenorGifsApiCallback callback,
-      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& query,
       const std::optional<std::string>& pos,
       std::optional<int> limit = std::nullopt);
@@ -80,7 +79,7 @@ class GifTenorApiFetcher {
   // request, which will cancel the network request once it is deleted.
   std::unique_ptr<EndpointFetcher> FetchGifSearchCancellable(
       TenorGifsApiCallback callback,
-      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view query,
       const std::optional<std::string>& pos,
       std::optional<int> limit = std::nullopt);
@@ -88,7 +87,7 @@ class GifTenorApiFetcher {
   // Fetch tenor API Posts endpoint
   void FetchGifsByIds(
       GetGifsByIdsCallback callback,
-      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::vector<std::string>& ids);
 
  private:

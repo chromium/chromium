@@ -92,11 +92,11 @@ constexpr net::NetworkTrafficAnnotationTag kSearchTrafficAnnotation =
 )");
 
 std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
   return std::make_unique<EndpointFetcher>(
-      /*url_loader_factory=*/url_loader_factory,
+      /*url_loader_factory=*/std::move(url_loader_factory),
       /*url=*/url,
       /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
@@ -310,7 +310,7 @@ void GifTenorApiFetcher::OnGifsJsonParsed(
 
 void GifTenorApiFetcher::FetchCategories(
     GetCategoriesCallback callback,
-    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   constexpr char kCategoriesApi[] = "/v2/categories";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       net::DefineNetworkTrafficAnnotation(
@@ -348,7 +348,7 @@ void GifTenorApiFetcher::FetchCategories(
   )");
 
   auto endpoint_fetcher = endpoint_fetcher_creator_.Run(
-      url_loader_factory,
+      std::move(url_loader_factory),
       net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(kCategoriesApi),
                                 kClientKeyName, kClientKeyValue),
       kTrafficAnnotation);
@@ -405,7 +405,7 @@ void GifTenorApiFetcher::OnCategoriesJsonParsed(
 
 void GifTenorApiFetcher::FetchFeaturedGifs(
     TenorGifsApiCallback callback,
-    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::optional<std::string>& pos) {
   constexpr char kFeaturedApi[] = "/v2/featured";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -446,7 +446,8 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
   )");
 
   auto endpoint_fetcher = endpoint_fetcher_creator_.Run(
-      url_loader_factory, GetUrl(kFeaturedApi, pos), kTrafficAnnotation);
+      std::move(url_loader_factory), GetUrl(kFeaturedApi, pos),
+      kTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
       base::BindOnce(&GifTenorApiFetcher::TenorGifsApiResponseHandler,
@@ -457,7 +458,7 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
 
 void GifTenorApiFetcher::FetchGifSearch(
     TenorGifsApiCallback callback,
-    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& query,
     const std::optional<std::string>& pos,
     std::optional<int> limit) {
@@ -468,7 +469,7 @@ void GifTenorApiFetcher::FetchGifSearch(
   }
 
   auto endpoint_fetcher = endpoint_fetcher_creator_.Run(
-      url_loader_factory, url, kSearchTrafficAnnotation);
+      std::move(url_loader_factory), url, kSearchTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
       base::BindOnce(&GifTenorApiFetcher::TenorGifsApiResponseHandler,
@@ -479,7 +480,7 @@ void GifTenorApiFetcher::FetchGifSearch(
 
 std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
     TenorGifsApiCallback callback,
-    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view query,
     const std::optional<std::string>& pos,
     std::optional<int> limit) {
@@ -490,7 +491,7 @@ std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
   }
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher =
-      endpoint_fetcher_creator_.Run(url_loader_factory, url,
+      endpoint_fetcher_creator_.Run(std::move(url_loader_factory), url,
                                     kSearchTrafficAnnotation);
   CHECK_DEREF(endpoint_fetcher.get())
       .PerformRequest(
@@ -503,7 +504,7 @@ std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
 
 void GifTenorApiFetcher::FetchGifsByIds(
     GetGifsByIdsCallback callback,
-    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::vector<std::string>& ids) {
   constexpr char kPostsApi[] = "/v2/posts";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -543,7 +544,7 @@ void GifTenorApiFetcher::FetchGifsByIds(
   )");
 
   auto endpoint_fetcher = endpoint_fetcher_creator_.Run(
-      url_loader_factory,
+      std::move(url_loader_factory),
       net::AppendQueryParameter(
           net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(kPostsApi),
                                     kClientKeyName, kClientKeyValue),
