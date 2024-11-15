@@ -1016,6 +1016,7 @@ const CGFloat kMenuSymbolSize = 18;
 // Blocks user interaction with the Lens UI.
 - (void)disableSelectionInteraction:(BOOL)disabled {
   _containerViewController.selectionInteractionDisabled = disabled;
+  [_selectionViewController disableFlyoutMenu:disabled];
 }
 
 // Called after consent dialog was dismissed and TOS accepted.

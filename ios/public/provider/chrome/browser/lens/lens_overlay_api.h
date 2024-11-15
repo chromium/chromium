@@ -79,6 +79,9 @@ class GURL;
 // Updates the visibility of the top icons.
 - (void)setTopIconsHidden:(BOOL)hidden;
 
+// Disables flyout menus from displaying.
+- (void)disableFlyoutMenu:(BOOL)disable;
+
 @end
 
 namespace ios {
