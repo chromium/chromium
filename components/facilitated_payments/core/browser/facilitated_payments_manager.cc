@@ -270,10 +270,8 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
 
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
+    LogPayflowExitedReason(PayflowExitedReason::kActionTokenNotAvailable);
     client_->ShowErrorScreen();
-    LogTransactionResult(TransactionResult::kFailed, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
     return;
   }
   std::optional<CoreAccountInfo> account_info = client_->GetCoreAccountInfo();
@@ -281,10 +279,8 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   // `account_info` would be empty, and the `FacilitatedPaymentsManager` should
   // abandon the payment flow.
   if (!account_info.has_value() || account_info.value().IsEmpty()) {
+    LogPayflowExitedReason(PayflowExitedReason::kUserLoggedOut);
     client_->ShowErrorScreen();
-    LogTransactionResult(TransactionResult::kFailed, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
     return;
   }
   purchase_action_start_time_ = base::TimeTicks::Now();

@@ -38,7 +38,11 @@ enum class PayflowExitedReason {
   kClientTokenNotAvailable = 7,
   // The InitiatePayment response indicated a failure.
   kInitiatePaymentFailed = 8,
-  kMaxValue = kInitiatePaymentFailed
+  // The action token returned in the InitiatePayment response is not available.
+  kActionTokenNotAvailable = 9,
+  // The user has logged out after selecting a payment method.
+  kUserLoggedOut = 10,
+  kMaxValue = kUserLoggedOut
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is

@@ -677,6 +677,10 @@ TEST_F(FacilitatedPaymentsManagerTest,
       "FacilitatedPayments.Pix.InitiatePayment.Success.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kActionTokenNotAvailable,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the core account is std::nullopt, purchase action is not
@@ -704,6 +708,10 @@ TEST_F(FacilitatedPaymentsManagerTest,
       "FacilitatedPayments.Pix.InitiatePayment.Success.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kUserLoggedOut,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the user is logged out, purchase action is not invoked. Instead,
@@ -730,6 +738,10 @@ TEST_F(FacilitatedPaymentsManagerTest,
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.InitiatePayment.Success.Latency",
       /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kUserLoggedOut,
       /*expected_bucket_count=*/1);
 }
 
