@@ -65,6 +65,7 @@ NSDictionary<NSString*, NSArray<NSString*>*>* TextToButtonsOfKnownSystemAlerts(
       @"iPhone is not Activated" : @[ @"Dismiss" ],
       @"Apple Account Verification" : @[ @"Not Now" ],
       @"to find devices on local networks" : @[ @"Allow" ],
+      @"Not Installed" : @[ @"OK" ],
     };
   });
   return text_to_buttons;
