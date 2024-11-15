@@ -98,6 +98,11 @@
 }
 
 - (void)start {
+  [self restart];
+}
+
+// Similar to start but can be called after pause.
+- (void)restart {
   DCHECK(self.presenter);
   DCHECK(self.browser);
 
@@ -156,6 +161,11 @@
 }
 
 - (void)stop {
+  [self pause];
+}
+
+// Similar to stop, but the coordinator can be restarted later.
+- (void)pause {
   _mediator.SetDriveService(nullptr);
   _mediator.SetPrefService(nullptr);
   _mediator.SetIdentityManager(nullptr);
@@ -214,7 +224,7 @@
     _mediator.SetDownloadTask(_downloadTask);
   } else {
     self.animatesPresentation = YES;
-    [self start];
+    [self restart];
   }
 }
 
@@ -277,7 +287,7 @@
   }
   DCHECK_EQ(_downloadTask, download);
   self.animatesPresentation = NO;
-  [self stop];
+  [self pause];
   self.animatesPresentation = YES;
 }
 
@@ -482,7 +492,7 @@
   // first to perform all coordinator cleanups, but copy `_downloadTask`
   // pointer to destroy the task.
   web::DownloadTask* downloadTask = _downloadTask;
-  [self stop];
+  [self pause];
 
   // The pointer may be null if -stop was called before -cancelDownload.
   // This can happen during shutdown because -stop is called when the UI
