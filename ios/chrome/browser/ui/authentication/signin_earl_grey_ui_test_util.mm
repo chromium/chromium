@@ -122,6 +122,10 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
     GREYAssert(isSigned,
                @"Signed in failed. Expected: %@, Currently signed: %@",
                fakeIdentity.gaiaID, [SigninEarlGrey primaryAccountGaiaID]);
+
+    [ChromeEarlGrey
+        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+
     return;
   }
 
