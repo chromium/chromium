@@ -369,9 +369,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const base::LRUCache<PossibleUsernameFieldIdentifier,
                            PossibleUsernameData>& possible_usernames);
 
-  // Updates the predictions stored in `parser_` with predictions relevant for
-  // `observed_form_or_digest_`.
-  void UpdatePredictionsForObservedForm(
+  // Updates the server predictions stored in `parser_` with predictions
+  // relevant for `observed_form_or_digest_`.
+  void UpdateServerPredictionsForObservedForm(
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
   // Creates a timer to wait for server side predictions. On timeout (or on

@@ -167,13 +167,15 @@ class FormDataParser {
 
   ~FormDataParser();
 
-  void set_predictions(FormPredictions predictions) {
-    predictions_ = std::move(predictions);
+  void set_server_predictions(FormPredictions predictions) {
+    server_predictions_ = std::move(predictions);
   }
 
-  void reset_predictions() { predictions_.reset(); }
+  void reset_server_predictions() { server_predictions_.reset(); }
 
-  const std::optional<FormPredictions>& predictions() { return predictions_; }
+  const std::optional<FormPredictions>& server_predictions() {
+    return server_predictions_;
+  }
 
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
@@ -195,9 +197,8 @@ class FormDataParser {
       const base::flat_set<std::u16string>& stored_usernames);
 
  private:
-  // Predictions are an optional source of server-side information about field
-  // types.
-  std::optional<FormPredictions> predictions_;
+  // Server predictions are an optional source of information about field types.
+  std::optional<FormPredictions> server_predictions_;
 
   // Records whether readonly password fields were seen during the last call to
   // Parse().

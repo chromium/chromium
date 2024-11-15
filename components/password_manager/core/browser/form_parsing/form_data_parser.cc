@@ -403,10 +403,10 @@ bool HasPasswordFieldsWithUserInput(
 
 // Tries to parse |processed_fields| based on server |predictions|. Uses |mode|
 // to decide which of two username hints are relevant, if present.
-void ParseUsingPredictions(std::vector<ProcessedField>& processed_fields,
-                           const FormPredictions& predictions,
-                           FormDataParser::Mode mode,
-                           SignificantFields* result) {
+void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
+                                 const FormPredictions& predictions,
+                                 FormDataParser::Mode mode,
+                                 SignificantFields* result) {
   // Following the design from https://goo.gl/Mc2KRe, this code will attempt to
   // understand the special case when there are two usernames hinted by the
   // server. In that case, they are considered the sign-in and sign-up
@@ -1151,9 +1151,9 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   UsernameDetectionMethod method = UsernameDetectionMethod::kNoUsernameDetected;
 
   // (1) First, try to parse with server predictions.
-  if (predictions_) {
-    ParseUsingPredictions(processed_fields, *predictions_, mode,
-                          &significant_fields);
+  if (server_predictions_) {
+    ParseUsingServerPredictions(processed_fields, *server_predictions_, mode,
+                                &significant_fields);
     if (significant_fields.username) {
       method = UsernameDetectionMethod::kServerSidePrediction;
     }
@@ -1295,9 +1295,9 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
     significant_fields.is_fallback = true;
   }
   return FormParsingResult(
-      AssemblePasswordForm(form_data, significant_fields,
-                           std::move(all_alternative_passwords),
-                           std::move(all_alternative_usernames), predictions_),
+      AssemblePasswordForm(
+          form_data, significant_fields, std::move(all_alternative_passwords),
+          std::move(all_alternative_usernames), server_predictions_),
       method, is_new_password_reliable, suggestion_banned_fields,
       significant_fields.manual_generation_enabled_fields);
 }
@@ -1341,7 +1341,7 @@ autofill::PasswordFormClassification ClassifyAsPasswordForm(
     const autofill::FormData& renderer_form,
     const FormPredictions& form_predictions) {
   FormDataParser parser;
-  parser.set_predictions(form_predictions);
+  parser.set_server_predictions(form_predictions);
   // The parser can use stored usernames to identify a filled username field by
   // the value it contains. Here it remains empty.
   std::unique_ptr<PasswordForm> pw_form =

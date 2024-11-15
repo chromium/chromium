@@ -392,7 +392,7 @@ class FormParserTest : public testing::Test {
       const FormData form_data = GetFormDataAndExpectation(
           test_case, &predictions, &fill_result, &save_result);
       FormDataParser parser;
-      parser.set_predictions(std::move(predictions));
+      parser.set_server_predictions(std::move(predictions));
       for (auto mode :
            {FormDataParser::Mode::kFilling, FormDataParser::Mode::kSaving}) {
         SCOPED_TRACE(
@@ -3365,7 +3365,7 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
   const FormData form_data = GetFormDataAndExpectation(
       {test_case}, &predictions, &fill_result, &save_result);
   FormDataParser parser;
-  parser.set_predictions(std::move(predictions));
+  parser.set_server_predictions(std::move(predictions));
 
   auto [result, username_detection_method, is_new_password_reliable,
         suggestion_banned_fields, manual_generation_enabled_field] =

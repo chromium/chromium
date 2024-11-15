@@ -821,12 +821,11 @@ std::unique_ptr<PasswordFormManager> PasswordFormManager::Clone() {
   //   (2) They are potentially used in the clone as the clone is used in the UI
   //       code.
   //   (3) They are not changed during OnFetchCompleted, triggered at some point
-  //   by the
-  //       cloned FormFetcher.
+  //       by the cloned FormFetcher.
   result->votes_uploader_ = votes_uploader_;
 
-  if (parser_.predictions()) {
-    result->parser_.set_predictions(*parser_.predictions());
+  if (parser_.server_predictions()) {
+    result->parser_.set_server_predictions(*parser_.server_predictions());
   }
 
   if (parsed_submitted_form_) {
@@ -919,7 +918,7 @@ void PasswordFormManager::OnFetchCompleted() {
   if (IsHttpAuth()) {
     // No server prediction for http auth, so no need to wait.
     FillHttpAuth();
-  } else if (parser_.predictions() ||
+  } else if (parser_.server_predictions() ||
              !wait_for_server_predictions_for_filling_) {
     ReportTimeBetweenStoreAndServerUMA();
     FillNow();
@@ -1094,13 +1093,13 @@ PasswordForm::Scheme PasswordFormManager::GetScheme() const {
 
 void PasswordFormManager::ProcessServerPredictions(
     const std::map<FormSignature, FormPredictions>& predictions) {
-  if (parser_.predictions()) {
+  if (parser_.server_predictions()) {
     // This method might be called multiple times. No need to process
     // predictions again.
     return;
   }
-  UpdatePredictionsForObservedForm(predictions);
-  if (parser_.predictions()) {
+  UpdateServerPredictionsForObservedForm(predictions);
+  if (parser_.server_predictions()) {
     if (!server_predictions_closure_.is_null()) {
       if (server_side_predictions_timer_) {
         base::UmaHistogramTimes("PasswordManager.ServerPredictionsWaitDuration",
@@ -1117,7 +1116,8 @@ void PasswordFormManager::ProcessServerPredictions(
 }
 
 void PasswordFormManager::Fill() {
-  if (parser_.predictions() || !wait_for_server_predictions_for_filling_) {
+  if (parser_.server_predictions() ||
+      !wait_for_server_predictions_for_filling_) {
     FillNow();
     return;
   }
@@ -1495,14 +1495,14 @@ PasswordFormManager::FindBestPossibleUsernameCandidate(
   return result;
 }
 
-void PasswordFormManager::UpdatePredictionsForObservedForm(
+void PasswordFormManager::UpdateServerPredictionsForObservedForm(
     const std::map<FormSignature, FormPredictions>& predictions) {
   CHECK(observed_form());
   if (net::IsLocalhost(observed_form()->url())) {
     // Avoid relying on crowdsourcing on localhost to avoid aggregating multiple
     // unrelated form together. Set empty predictions instead to avoid delaying
     // filling.
-    parser_.set_predictions(FormPredictions());
+    parser_.set_server_predictions(FormPredictions());
     return;
   }
 
@@ -1535,7 +1535,7 @@ void PasswordFormManager::UpdatePredictionsForObservedForm(
     }
   }
   ReportTimeBetweenStoreAndServerUMA();
-  parser_.set_predictions(it->second);
+  parser_.set_server_predictions(it->second);
 }
 
 void PasswordFormManager::UpdateFormManagerWithFormChanges(
@@ -1547,8 +1547,8 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
   async_predictions_waiter_.Reset();
   server_predictions_closure_.Reset();
   autofills_left_ = kMaxTimesAutofill;
-  parser_.reset_predictions();
-  UpdatePredictionsForObservedForm(predictions);
+  parser_.reset_server_predictions();
+  UpdateServerPredictionsForObservedForm(predictions);
 }
 
 // Best candidate is considered for single username vote in four cases:

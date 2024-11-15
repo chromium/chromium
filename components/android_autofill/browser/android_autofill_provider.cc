@@ -72,7 +72,7 @@ std::unique_ptr<PasswordForm> ParseToPasswordForm(
   // The driver id is irrelevant here because it would only be used by password
   // manager logic that handles the `PasswordForm` returned by the parser.
   // Therefore we pass a dummy a value.
-  parser.set_predictions(password_manager::ConvertToFormPredictions(
+  parser.set_server_predictions(password_manager::ConvertToFormPredictions(
       /*driver_id=*/0, form_data, autofill_predictions));
   // On Chrome, the parser can use stored usernames to identify a filled
   // username field by the value it contains. Since we do not have access to
