@@ -512,6 +512,55 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
   bool profile_creation_required_by_policy =
       create_param->profile_creation_required_by_policy;
 
+  if (profile_creation_required_by_policy &&
+      base::FeatureList::IsEnabled(
+          features::kManagedProfileRequiredInterstitial)) {
+    if (std::holds_alternative<signin::SigninChoiceWithConfirmAndRetryCallback>(
+            create_param->process_user_choice_callback)) {
+      create_param->process_user_choice_callback = base::BindOnce(
+          [](base::WeakPtr<content::BrowserContext> browser_context,
+             signin::SigninChoiceWithConfirmAndRetryCallback callback,
+             signin::SigninChoice signin_choice,
+             signin::SigninChoiceOperationDoneCallback done_callback,
+             signin::SigninChoiceOperationRetryCallback retry_callback) {
+            if (!browser_context.WasInvalidated()) {
+              ManagedProfileRequiredNavigationThrottle::SetReloadRequired(
+                  browser_context.get(),
+                  signin_choice ==
+                          signin::SigninChoice::SIGNIN_CHOICE_CONTINUE ||
+                      signin_choice ==
+                          signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
+            }
+            std::move(callback).Run(signin_choice, std::move(done_callback),
+                                    std::move(retry_callback));
+          },
+          browser->profile()->GetWeakPtr(),
+          std::move(std::get<signin::SigninChoiceWithConfirmAndRetryCallback>(
+              create_param->process_user_choice_callback)));
+    }
+
+    if (std::holds_alternative<signin::SigninChoiceCallback>(
+            create_param->process_user_choice_callback)) {
+      create_param->process_user_choice_callback = base::BindOnce(
+          [](base::WeakPtr<content::BrowserContext> browser_context,
+             signin::SigninChoiceCallback callback,
+             signin::SigninChoice signin_choice) {
+            if (!browser_context.WasInvalidated()) {
+              ManagedProfileRequiredNavigationThrottle::SetReloadRequired(
+                  browser_context.get(),
+                  signin_choice ==
+                          signin::SigninChoice::SIGNIN_CHOICE_CONTINUE ||
+                      signin_choice ==
+                          signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
+            }
+            std::move(callback).Run(signin_choice);
+          },
+          browser->profile()->GetWeakPtr(),
+          std::move(std::get<signin::SigninChoiceCallback>(
+              create_param->process_user_choice_callback)));
+    }
+  }
+
   auto web_view = SigninViewControllerDelegateViews::
       CreateManagedUserNoticeConfirmationWebView(browser,
                                                  std::move(create_param));
@@ -523,26 +572,25 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
   if (profile_creation_required_by_policy &&
       base::FeatureList::IsEnabled(
           features::kManagedProfileRequiredInterstitial)) {
-    on_closed_callback = ManagedProfileRequiredNavigationThrottle::
-        BlockNavigationUntilEnterpriseActionTaken(browser->profile(),
-                                                  dialog_web_contents);
-
     content::WebContents* active_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     // Reload the active web contents so that the managed profile required
     // interstitial is shown there.
-    if (active_contents) {
-      content::OpenURLParams params(active_contents->GetVisibleURL(),
-                                    content::Referrer(),
-                                    WindowOpenDisposition::CURRENT_TAB,
-                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+    CHECK(active_contents);
+    on_closed_callback = ManagedProfileRequiredNavigationThrottle::
+        BlockNavigationUntilEnterpriseActionTaken(
+            browser->profile(), active_contents, dialog_web_contents);
 
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(base::IgnoreResult(&content::WebContents::OpenURL),
-                         active_contents->GetWeakPtr(), std::move(params),
-                         /*navigation_handle_callback=*/base::DoNothing()));
-    }
+    content::OpenURLParams params(active_contents->GetVisibleURL(),
+                                  content::Referrer(),
+                                  WindowOpenDisposition::CURRENT_TAB,
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(base::IgnoreResult(&content::WebContents::OpenURL),
+                       active_contents->GetWeakPtr(), std::move(params),
+                       /*navigation_handle_callback=*/base::DoNothing()));
   }
 
   return new SigninViewControllerDelegateViews(

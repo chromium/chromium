@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_SIGNIN_MANAGED_PROFILE_REQUIRED_NAVIGATION_THROTTLE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
@@ -58,7 +59,15 @@ class ManagedProfileRequiredNavigationThrottle
   [[nodiscard]] static base::ScopedClosureRunner
   BlockNavigationUntilEnterpriseActionTaken(
       content::BrowserContext* browser_context,
+      content::WebContents* enterprise_action_web_contents,
       content::WebContents* allowed_web_contents = nullptr);
+
+  static void ShowBlockedWindow(content::BrowserContext* browser_context);
+  static void SetReloadRequired(
+      content::BrowserContext* browser_context,
+      bool success,
+      base::OnceCallback<void(content::NavigationHandle&)> on_reload_triggered =
+          base::OnceCallback<void(content::NavigationHandle&)>());
 
  private:
   ThrottleCheckResult ProcessThrottleEvent();
