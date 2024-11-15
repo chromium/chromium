@@ -28,6 +28,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_host_delegate.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
@@ -216,7 +217,7 @@ class BrowserChildProcessHostImpl
   std::unique_ptr<ChildProcessHost> child_process_host_;
   mojo::Receiver<memory_instrumentation::mojom::CoordinatorConnector>
       coordinator_connector_receiver_{this};
-
+  mojo::BinderMapWithContext<BrowserChildProcessHost*> binder_map_;
   std::unique_ptr<ChildProcessLauncher> child_process_launcher_;
 
 #if BUILDFLAG(IS_WIN)

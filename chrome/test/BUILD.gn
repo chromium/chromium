@@ -5655,6 +5655,11 @@ config("disable_thinlto_cache_flags") {
   }
 }
 
+mojom("test_interfaces") {
+  testonly = true
+  sources = [ "mojom/echo.test-mojom" ]
+}
+
 test("unit_tests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -5713,6 +5718,7 @@ test("unit_tests") {
     "../browser/browsing_data/site_data_size_collector_unittest.cc",
     "../browser/chained_back_navigation_tracker_unittest.cc",
     "../browser/chrome_browser_field_trials_unittest.cc",
+    "../browser/chrome_content_browser_client_parts_unittest.cc",
     "../browser/chrome_content_browser_client_unittest.cc",
     "../browser/collaboration/collaboration_service_factory_unittest.cc",
     "../browser/collaboration/messaging/messaging_backend_service_factory_unittest.cc",
@@ -6220,6 +6226,7 @@ test("unit_tests") {
 
   public_deps = [ "//chrome/browser/media/webrtc" ]
   deps = [
+    ":test_interfaces",
     ":test_support",
     ":test_support_unit",
     "//base:base_stack_sampling_profiler_test_util",

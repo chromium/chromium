@@ -568,6 +568,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) override;
+  void ExposeInterfacesToChild(
+      mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map)
+      override;
   void BindMediaServiceReceiver(content::RenderFrameHost* render_frame_host,
                                 mojo::GenericPendingReceiver receiver) override;
   void RegisterBrowserInterfaceBindersForFrame(
@@ -1099,6 +1102,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
+
+  void AddExtraPartForTesting(
+      std::unique_ptr<ChromeContentBrowserClientParts> part);
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

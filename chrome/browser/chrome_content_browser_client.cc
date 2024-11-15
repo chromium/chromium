@@ -8857,6 +8857,12 @@ void ChromeContentBrowserClient::SetSamplingProfiler(
   sampling_profiler_ = std::move(sampling_profiler);
 }
 
+void ChromeContentBrowserClient::AddExtraPartForTesting(
+    std::unique_ptr<ChromeContentBrowserClientParts> part) {
+  // AddExtraPart takes ownership of a raw pointer.
+  AddExtraPart(part.release());
+}
+
 bool ChromeContentBrowserClient::ShouldDispatchPagehideDuringCommit(
     content::BrowserContext* browser_context,
     const GURL& destination_url) {
