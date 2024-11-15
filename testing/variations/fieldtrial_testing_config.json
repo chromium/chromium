@@ -20017,24 +20017,6 @@
             ]
         }
     ],
-    "SafeBrowsingHashPrefixRealTimeLookupsFasterOhttpKeyRotation": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingHashPrefixRealTimeLookupsFasterOhttpKeyRotation"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingNestedArchives": [
         {
             "platforms": [
