@@ -3503,6 +3503,31 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 
   {
+    // Navigate to the same URL (browser-initiated from bookmark).
+    FrameNavigateParamsCapturer capturer(root);
+    NavigationController::LoadURLParams params(url1);
+    params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+    controller.LoadURLWithParams(params);
+    capturer.Wait();
+    // The navigation is a replacement navigation, and we're classifying this as
+    // NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
+
+    // Ensure the pending entry was cleared after commit.
+    EXPECT_FALSE(shell()->web_contents()->GetController().GetPendingEntry());
+
+    // We replaced the last committed entry for this navigation.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
     // Navigate to the same URL (renderer-initiated).
     FrameNavigateParamsCapturer capturer(root);
     EXPECT_TRUE(NavigateToURLFromRenderer(root, url1));
@@ -3878,7 +3903,7 @@ IN_PROC_BROWSER_TEST_P(
   NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
 
   {
-    // Navigate to the same URL (browser-initiated).
+    // Navigate to the same URL (browser-initiated via address bar).
     // This is same url navigation from address bar of a url with fragment.
     // It starts as same document navigation with should_replace_current_entry
     // set, and RenderFrameImpl::MakeDidCommitProvisionalLoadParams reuses
@@ -3886,6 +3911,40 @@ IN_PROC_BROWSER_TEST_P(
     // It is the same behavior as renderer-initiated navigation below.
     FrameNavigateParamsCapturer capturer(root);
     EXPECT_TRUE(NavigateToURL(shell(), url1));
+    capturer.Wait();
+    // We're classifying this as EXISTING_ENTRY because the current entry is
+    // reused.
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+              capturer.navigation_type());
+
+    // Same url navigation from address bar is a same-document navigation.
+    EXPECT_TRUE(capturer.is_same_document());
+
+    // did_replace_entry reflects should_replace_current_entry in navigation
+    // params when the navigation request starts and that is true.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    // We reuse the last committed entry for this same document navigation.
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate to the same URL (browser-initiated via bookmark).
+    // This is same url navigation from bookmark of a url with fragment.
+    // It starts as regular navigation, classified as same document navigation
+    // with should_replace_current_entry set in NavigationRequest::
+    // StartNavigation, and RenderFrameImpl::MakeDidCommitProvisionalLoadParams
+    // reuses current history entry instead of replacing it.
+    // It is the same behavior as renderer-initiated navigation below.
+    FrameNavigateParamsCapturer capturer(root);
+    NavigationController::LoadURLParams params(url1);
+    params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+    controller.LoadURLWithParams(params);
     capturer.Wait();
     // We're classifying this as EXISTING_ENTRY because the current entry is
     // reused.
@@ -4040,24 +4099,42 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // is unnecessary. https://crbug.com/414283.
   bool fractional_scroll_offsets_enabled = IsFractionalScrollOffsetsEnabled();
 
-  double expected_window_scroll_y = 2100;
+  double window_scroll_y_with_user_scroll = 2100;
   if (!fractional_scroll_offsets_enabled) {
     float device_scale_factor = shell()
                                     ->web_contents()
                                     ->GetRenderWidgetHostView()
                                     ->GetDeviceScaleFactor();
-    expected_window_scroll_y =
-        floor(device_scale_factor * expected_window_scroll_y) /
+    window_scroll_y_with_user_scroll =
+        floor(device_scale_factor * window_scroll_y_with_user_scroll) /
         device_scale_factor;
   }
-  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
+  EXPECT_FLOAT_EQ(window_scroll_y_with_user_scroll, window_scroll_y);
 
   // Navigate to the same url and user scroll should be dropped.
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  expected_window_scroll_y = window_scroll_y_without_user_scroll;
 
   window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
-  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
+  EXPECT_FLOAT_EQ(window_scroll_y_without_user_scroll, window_scroll_y);
+
+  // Test the same scenario for same url navigation via bookmark, and user
+  // scroll should be dropped.
+  EXPECT_TRUE(ExecJs(shell(), script_scroll_down));
+  window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
+  EXPECT_FLOAT_EQ(window_scroll_y_with_user_scroll, window_scroll_y);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  FrameNavigateParamsCapturer capturer(root);
+  NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  controller.LoadURLWithParams(params);
+  capturer.Wait();
+  window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
+  EXPECT_FLOAT_EQ(window_scroll_y_without_user_scroll, window_scroll_y);
 }
 
 // Verify that navigation to same url for a page with url anchor and scroll
@@ -4087,24 +4164,42 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // is unnecessary. https://crbug.com/414283.
   bool fractional_scroll_offsets_enabled = IsFractionalScrollOffsetsEnabled();
 
-  double expected_window_scroll_y = 2100;
+  double window_scroll_y_with_user_scroll = 2100;
   if (!fractional_scroll_offsets_enabled) {
     float device_scale_factor = shell()
                                     ->web_contents()
                                     ->GetRenderWidgetHostView()
                                     ->GetDeviceScaleFactor();
-    expected_window_scroll_y =
-        floor(device_scale_factor * expected_window_scroll_y) /
+    window_scroll_y_with_user_scroll =
+        floor(device_scale_factor * window_scroll_y_with_user_scroll) /
         device_scale_factor;
   }
-  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
+  EXPECT_FLOAT_EQ(window_scroll_y_with_user_scroll, window_scroll_y);
 
   // Navigate to the same url and user scroll should be dropped.
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  expected_window_scroll_y = window_scroll_y_without_user_scroll;
 
   window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
-  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
+  EXPECT_FLOAT_EQ(window_scroll_y_without_user_scroll, window_scroll_y);
+
+  // Test the same scenario for same url navigation via bookmark, and user
+  // scroll should be dropped.
+  EXPECT_TRUE(ExecJs(shell(), script_scroll_down));
+  window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
+  EXPECT_FLOAT_EQ(window_scroll_y_with_user_scroll, window_scroll_y);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  FrameNavigateParamsCapturer capturer(root);
+  NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  controller.LoadURLWithParams(params);
+  capturer.Wait();
+  window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
+  EXPECT_FLOAT_EQ(window_scroll_y_without_user_scroll, window_scroll_y);
 }
 
 // Verify that empty GURL navigations are not classified as EXISTING_ENTRY.
