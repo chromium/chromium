@@ -244,6 +244,11 @@
       depends_on: ["FetchLaterAPI"],
     },
     {
+      name: "DeferredFetchMinimal",
+      permissions_policy_name: "deferred-fetch-minimal",
+      depends_on: ["FetchLaterAPI"],
+    },
+    {
       name: "DigitalCredentialsGet",
       permissions_policy_name: "digital-credentials-get",
       depends_on: ["WebIdentityDigitalCredentials"],

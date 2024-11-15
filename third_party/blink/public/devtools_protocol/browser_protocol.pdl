@@ -8130,6 +8130,7 @@ domain Page
       controlled-frame
       cross-origin-isolated
       deferred-fetch
+      deferred-fetch-minimal
       digital-credentials-get
       direct-sockets
       direct-sockets-private

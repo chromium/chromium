@@ -11026,6 +11026,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="125" label="ControlledFrame"/>
   <int value="126" label="DirectSocketsPrivate"/>
   <int value="127" label="FencedUnpartitionedStorageRead"/>
+  <int value="128" label="DeferredFetchMinimal"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">
