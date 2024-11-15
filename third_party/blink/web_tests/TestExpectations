@@ -1471,6 +1471,9 @@ crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 crbug.com/354069716 external/wpt/ai/language_detection/detect-en.tentative.window.html [ Failure Timeout ]
 crbug.com/354069716 external/wpt/ai/language_detection/detector.tentative.window.html [ Failure Timeout ]
 
+# Failing on Linux MSAN
+crbug.com/379199004 [ Linux ] external/wpt/ai/translator/translator_translate.tentative.window.html [ Failure Pass ]
+
 ### sheriff 2019-07-16
 
 ### sheriff 2018-05-28
