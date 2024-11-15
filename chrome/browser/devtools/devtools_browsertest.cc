@@ -4060,8 +4060,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, NotBeBlockedByFeatureFlag) {
   CloseDevToolsWindow();
 }
 
+// TODO(https://crbug.com/379205654): Times out on Linux dbg.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_EnterprisePolicyEnabledByDefault \
+  DISABLED_EnterprisePolicyEnabledByDefault
+#else
+#define MAYBE_EnterprisePolicyEnabledByDefault EnterprisePolicyEnabledByDefault
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       EnterprisePolicyEnabledByDefault) {
+                       MAYBE_EnterprisePolicyEnabledByDefault) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
