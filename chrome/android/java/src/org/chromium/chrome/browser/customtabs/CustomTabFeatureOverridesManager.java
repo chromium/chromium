@@ -10,7 +10,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -39,12 +38,12 @@ public class CustomTabFeatureOverridesManager {
     private Map<String, Boolean> mFeatureOverrides;
 
     @Inject
-    CustomTabFeatureOverridesManager(BrowserServicesIntentDataProvider intentDataProvider) {
+    CustomTabFeatureOverridesManager(BaseCustomTabActivity activity) {
         if (ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()
                 && (CommandLine.getInstance().hasSwitch("cct-client-firstparty-override")
-                        || intentDataProvider.isTrustedIntent())) {
+                        || activity.getIntentDataProvider().isTrustedIntent())) {
             setUpFeatureOverrides(
-                    intentDataProvider.getIntent(),
+                    activity.getIntentDataProvider().getIntent(),
                     sAllowedFeaturesForTesting != null
                             ? sAllowedFeaturesForTesting
                             : ALLOWED_FEATURES);

@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.Origin;
@@ -55,19 +54,17 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
 
     @Inject
     public CustomTabSessionHandler(
-            BrowserServicesIntentDataProvider intentDataProvider,
             Lazy<CustomTabToolbarCoordinator> toolbarCoordinator,
             Lazy<CustomTabBottomBarDelegate> bottomBarDelegate,
             CustomTabIntentHandler intentHandler,
-            BaseCustomTabActivity activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mIntentDataProvider = intentDataProvider;
+            BaseCustomTabActivity activity) {
+        mIntentDataProvider = activity.getIntentDataProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mToolbarCoordinator = toolbarCoordinator;
         mBottomBarDelegate = bottomBarDelegate;
         mIntentHandler = intentHandler;
         mActivity = activity;
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
 
         // The active handler will also get set in onStartWithNative, but since native may take some
         // time to initialize, we eagerly set it here to catch any messages the Custom Tabs Client

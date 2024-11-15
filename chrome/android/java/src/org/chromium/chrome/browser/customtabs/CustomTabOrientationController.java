@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.os.Build;
 
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashscreenObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -27,18 +26,15 @@ public class CustomTabOrientationController {
 
     @Inject
     public CustomTabOrientationController(
-            ActivityWindowAndroid activityWindowAndroid,
-            BrowserServicesIntentDataProvider intentDataProvider) {
+            ActivityWindowAndroid activityWindowAndroid, BaseCustomTabActivity activity) {
         mActivityWindowAndroid = activityWindowAndroid;
 
-        mLockScreenOrientation = intentDataProvider.getDefaultOrientation();
+        mLockScreenOrientation = activity.getIntentDataProvider().getDefaultOrientation();
     }
 
     /**
      * Delays screen orientation requests if the activity window's initial translucency and the
-     * Android OS version requires it.
-     * Should be called:
-     * - Prior to pre inflation startup occurring.
+     * Android OS version requires it. Should be called: - Prior to pre inflation startup occurring.
      * - Only if the splash screen is shown for the activity.
      */
     public void delayOrientationRequestsIfNeeded(

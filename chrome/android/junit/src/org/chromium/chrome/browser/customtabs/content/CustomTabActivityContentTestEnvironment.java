@@ -148,6 +148,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(activity.getCustomTabNavigationEventObserver()).thenReturn(navigationEventObserver);
         when(activity.getCipherFactory()).thenReturn(cipherFactory);
         when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
+        when(activity.getIntentDataProvider()).thenReturn(intentDataProvider);
+        when(activity.getLifecycleDispatcher()).thenReturn(lifecycleDispatcher);
         when(powerManager.isInteractive()).thenReturn(true);
     }
 
@@ -165,10 +167,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 activity,
                 profileProviderSupplier,
                 () -> customTabDelegateFactory,
-                intentDataProvider,
                 activityTabProvider,
                 () -> compositorViewHolder,
-                lifecycleDispatcher,
                 tabPersistencePolicy,
                 tabFactory,
                 () -> activity.getSavedInstanceState(),
@@ -180,18 +180,13 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
             CustomTabActivityTabController tabController) {
         CustomTabActivityNavigationController controller =
                 new CustomTabActivityNavigationController(
-                        tabController,
-                        intentDataProvider,
-                        closeButtonNavigator,
-                        activity,
-                        lifecycleDispatcher);
+                        tabController, closeButtonNavigator, activity);
         return controller;
     }
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
         return new CustomTabIntentHandler(
-                intentDataProvider,
                 new DefaultCustomTabIntentHandlingStrategy(navigationController, activity),
                 mMinimizationManagerHolder,
                 activity);

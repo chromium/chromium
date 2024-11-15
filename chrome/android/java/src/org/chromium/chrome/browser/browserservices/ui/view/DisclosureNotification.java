@@ -23,7 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -50,14 +50,12 @@ public class DisclosureNotification
 
     @Inject
     DisclosureNotification(
-            Resources resources,
-            TrustedWebActivityModel model,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            Resources resources, TrustedWebActivityModel model, BaseCustomTabActivity activity) {
         mResources = resources;
         mModel = model;
 
         mModel.addObserver(this);
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     private void show() {

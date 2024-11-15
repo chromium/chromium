@@ -10,8 +10,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.res.AssetManager;
@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
@@ -87,7 +88,8 @@ import java.util.Map;
         shadows = {ShadowUrlUtilities.class, BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkUpdateManagerUnitTest {
-    @Mock private Activity mActivityMock;
+    @Mock public BaseCustomTabActivity mActivityMock;
+    @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
 
@@ -226,13 +228,15 @@ public class WebApkUpdateManagerUnitTest {
 
         private boolean mIconUpdatesEnabled;
 
-        public TestWebApkUpdateManager(Activity activity) {
+        public TestWebApkUpdateManager(BaseCustomTabActivity activity) {
             this(activity, /* nameUpdatesEnabled= */ false, /* iconUpdatesEnabled= */ false);
         }
 
         public TestWebApkUpdateManager(
-                Activity activity, boolean nameUpdatesEnabled, boolean iconUpdatesEnabled) {
-            this(activity, buildMockTabProvider(), Mockito.mock(ActivityLifecycleDispatcher.class));
+                BaseCustomTabActivity activity,
+                boolean nameUpdatesEnabled,
+                boolean iconUpdatesEnabled) {
+            this(activity, buildMockTabProvider());
             mNameUpdatesEnabled = nameUpdatesEnabled;
             mIconUpdatesEnabled = iconUpdatesEnabled;
         }
@@ -245,10 +249,8 @@ public class WebApkUpdateManagerUnitTest {
         }
 
         private TestWebApkUpdateManager(
-                Activity activity,
-                ActivityTabProvider tabProvider,
-                ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-            super(activity, tabProvider, activityLifecycleDispatcher);
+                BaseCustomTabActivity activity, ActivityTabProvider tabProvider) {
+            super(activity, tabProvider);
         }
 
         /** Returns whether the is-update-needed check has been triggered. */
@@ -737,6 +739,8 @@ public class WebApkUpdateManagerUnitTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        when(mActivityMock.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
 
         PathUtils.setPrivateDataDirectorySuffix("chrome");
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());

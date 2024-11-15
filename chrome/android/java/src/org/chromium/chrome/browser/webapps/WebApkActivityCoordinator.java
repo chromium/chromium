@@ -15,8 +15,8 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -37,21 +37,20 @@ public class WebApkActivityCoordinator implements DestroyObserver {
             WebappDisclosureController unused_disclosureController,
             DisclosureInfobar unused_disclosureInfobar,
             WebApkActivityLifecycleUmaTracker unused_webApkActivityLifecycleUmaTracker,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            BrowserServicesIntentDataProvider intendDataProvider,
-            Lazy<WebApkUpdateManager> webApkUpdateManager) {
+            Lazy<WebApkUpdateManager> webApkUpdateManager,
+            BaseCustomTabActivity activity) {
         // The unused_ params are present just to initialize them.
 
-        mIntentDataProvider = intendDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mWebApkUpdateManager = webApkUpdateManager;
 
         deferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {
-                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
+                    if (activity.getLifecycleDispatcher().isActivityFinishingOrDestroyed()) return;
 
                     onDeferredStartupWithStorage(storage, didCreateStorage);
                 });
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     public void onDeferredStartupWithStorage(

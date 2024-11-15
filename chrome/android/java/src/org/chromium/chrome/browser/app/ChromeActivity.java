@@ -92,7 +92,6 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManagerH
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
-import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerUiUtils;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -567,61 +566,31 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected abstract RootUiCoordinator createRootUiCoordinator();
 
     private C createComponent() {
-        ChromeActivityCommonsModule.Factory overridenCommonsFactory =
-                ModuleFactoryOverrides.getOverrideFor(ChromeActivityCommonsModule.Factory.class);
-
         ChromeActivityCommonsModule commonsModule =
-                overridenCommonsFactory == null
-                        ? new ChromeActivityCommonsModule(
-                                this,
-                                getFullscreenManager(),
-                                getLayoutManagerSupplier(),
-                                getLifecycleDispatcher(),
-                                this::getSnackbarManager,
-                                getProfileProviderSupplier(),
-                                mActivityTabProvider,
-                                getTabContentManager(),
-                                getWindowAndroid(),
-                                mCompositorViewHolderSupplier,
-                                /* tabCreatorManager= */ this,
-                                this::getCurrentTabCreator,
-                                mRootUiCoordinator.getStatusBarColorController(),
-                                ScreenOrientationProvider.getInstance(),
-                                getTabContentManagerSupplier(),
-                                this::getLegacyTabStartupMetricsTracker,
-                                this::getStartupMetricsTracker,
-                                /* compositorViewHolderInitializer= */ this,
-                                getModalDialogManagerSupplier(),
-                                this::getSavedInstanceState,
-                                mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
-                                getShareDelegateSupplier(),
-                                /* tabModelInitializer= */ this,
-                                getActivityType())
-                        : overridenCommonsFactory.create(
-                                this,
-                                getFullscreenManager(),
-                                getLayoutManagerSupplier(),
-                                getLifecycleDispatcher(),
-                                this::getSnackbarManager,
-                                getProfileProviderSupplier(),
-                                mActivityTabProvider,
-                                getTabContentManager(),
-                                getWindowAndroid(),
-                                mCompositorViewHolderSupplier,
-                                this,
-                                this::getCurrentTabCreator,
-                                mRootUiCoordinator.getStatusBarColorController(),
-                                ScreenOrientationProvider.getInstance(),
-                                getTabContentManagerSupplier(),
-                                this::getLegacyTabStartupMetricsTracker,
-                                this::getStartupMetricsTracker,
-                                /* CompositorViewHolder.Initializer */ this,
-                                getModalDialogManagerSupplier(),
-                                this::getSavedInstanceState,
-                                mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
-                                getShareDelegateSupplier(),
-                                /* tabModelInitializer= */ this,
-                                getActivityType());
+                new ChromeActivityCommonsModule(
+                        this,
+                        getFullscreenManager(),
+                        getLayoutManagerSupplier(),
+                        this::getSnackbarManager,
+                        getProfileProviderSupplier(),
+                        mActivityTabProvider,
+                        getTabContentManager(),
+                        getWindowAndroid(),
+                        mCompositorViewHolderSupplier,
+                        /* tabCreatorManager= */ this,
+                        this::getCurrentTabCreator,
+                        mRootUiCoordinator.getStatusBarColorController(),
+                        ScreenOrientationProvider.getInstance(),
+                        getTabContentManagerSupplier(),
+                        this::getLegacyTabStartupMetricsTracker,
+                        this::getStartupMetricsTracker,
+                        /* compositorViewHolderInitializer= */ this,
+                        getModalDialogManagerSupplier(),
+                        this::getSavedInstanceState,
+                        mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
+                        getShareDelegateSupplier(),
+                        /* tabModelInitializer= */ this,
+                        getActivityType());
 
         return createComponent(commonsModule);
     }

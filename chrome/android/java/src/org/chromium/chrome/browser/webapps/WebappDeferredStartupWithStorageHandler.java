@@ -9,8 +9,8 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 
 import java.util.ArrayList;
@@ -42,12 +42,11 @@ public class WebappDeferredStartupWithStorageHandler {
     private final List<Task> mDeferredWithStorageTasks = new ArrayList<>();
 
     @Inject
-    public WebappDeferredStartupWithStorageHandler(
-            Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
+    public WebappDeferredStartupWithStorageHandler(BaseCustomTabActivity activity) {
         mActivity = activity;
-        WebappExtras webappExtras = intentDataProvider.getWebappExtras();
+        WebappExtras webappExtras = activity.getIntentDataProvider().getWebappExtras();
         mWebappId = (webappExtras != null) ? webappExtras.id : null;
-        mIsWebApk = intentDataProvider.isWebApkActivity();
+        mIsWebApk = activity.getIntentDataProvider().isWebApkActivity();
     }
 
     /** Invoked to add deferred startup task to queue. */

@@ -11,8 +11,8 @@ import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUma
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -32,12 +32,12 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
 
     @Inject
     TrustedWebActivityOpenTimeRecorder(
-            ActivityLifecycleDispatcher lifecycleDispatcher,
+            BaseCustomTabActivity activity,
             CurrentPageVerifier currentPageVerifier,
             ActivityTabProvider provider) {
         mCurrentPageVerifier = currentPageVerifier;
         mTabProvider = provider;
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
         currentPageVerifier.addVerificationObserver(this::onVerificationStateChanged);
     }
 

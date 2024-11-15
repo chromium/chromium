@@ -8,7 +8,6 @@ import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandlingStrategy;
@@ -18,25 +17,17 @@ import org.chromium.chrome.browser.flags.ActivityType;
 /** Module for bindings shared between custom tabs and webapps. */
 @Module
 public class BaseCustomTabActivityModule {
-    private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final @ActivityType int mActivityType;
     private final BaseCustomTabActivity mActivity;
 
-    public BaseCustomTabActivityModule(
-            BrowserServicesIntentDataProvider intentDataProvider, BaseCustomTabActivity activity) {
-        mIntentDataProvider = intentDataProvider;
-        mActivityType = intentDataProvider.getActivityType();
+    public BaseCustomTabActivityModule(BaseCustomTabActivity activity) {
+        mActivityType = activity.getIntentDataProvider().getActivityType();
         mActivity = activity;
     }
 
     @Provides
     public BaseCustomTabActivity providesBaseCustomTabActivity() {
         return mActivity;
-    }
-
-    @Provides
-    public BrowserServicesIntentDataProvider providesBrowserServicesIntentDataProvider() {
-        return mIntentDataProvider;
     }
 
     @Provides
@@ -50,8 +41,6 @@ public class BaseCustomTabActivityModule {
     }
 
     public interface Factory {
-        BaseCustomTabActivityModule create(
-                BrowserServicesIntentDataProvider intentDataProvider,
-                BaseCustomTabActivity activity);
+        BaseCustomTabActivityModule create(BaseCustomTabActivity activity);
     }
 }

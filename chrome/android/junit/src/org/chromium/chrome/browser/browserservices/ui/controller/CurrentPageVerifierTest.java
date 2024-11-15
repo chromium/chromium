@@ -74,8 +74,9 @@ public class CurrentPageVerifierTest {
         when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
         when(mActivity.getTabObserverRegistrar()).thenReturn(mTabObserverRegistrar);
         when(mActivity.getVerifier()).thenReturn(mVerifierDelegate);
-        mCurrentPageVerifier =
-                new CurrentPageVerifier(mLifecycleDispatcher, mActivity, mIntentDataProvider);
+        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
+        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        mCurrentPageVerifier = new CurrentPageVerifier(mActivity);
         // TODO(peconn): Add check on permission updated being updated.
     }
 

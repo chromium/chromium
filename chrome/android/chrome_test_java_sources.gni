@@ -181,7 +181,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/customtabs/content/TabObserverRegistrarTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/features/branding/CustomTabBrandingTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCustomTabsIntegrationTest.java",
-  "javatests/src/org/chromium/chrome/browser/dependency_injection/ModuleOverridesRule.java",
   "javatests/src/org/chromium/chrome/browser/desktop_windowing/AppHeaderCoordinatorBrowserTest.java",
   "javatests/src/org/chromium/chrome/browser/device_dialog/BluetoothChooserDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/device_dialog/BluetoothScanningPermissionDialogTest.java",

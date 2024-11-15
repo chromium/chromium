@@ -135,12 +135,11 @@ public class CustomTabBottomBarDelegate
     public CustomTabBottomBarDelegate(
             BaseCustomTabActivity activity,
             WindowAndroid windowAndroid,
-            BrowserServicesIntentDataProvider dataProvider,
             CustomTabCompositorContentInitializer compositorContentInitializer) {
         this(
                 activity,
                 windowAndroid,
-                dataProvider,
+                activity.getIntentDataProvider(),
                 activity.getBrowserControlsManager(),
                 activity.getCustomTabNightModeStateController(),
                 activity.getCustomTabActivityTabProvider(),

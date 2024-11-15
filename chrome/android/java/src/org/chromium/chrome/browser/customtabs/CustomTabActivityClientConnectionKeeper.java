@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.gsa.GSAUtils;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -50,13 +49,10 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
     private boolean mIsKeepingAlive;
 
     @Inject
-    public CustomTabActivityClientConnectionKeeper(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            BaseCustomTabActivity activity) {
-        mIntentDataProvider = intentDataProvider;
+    public CustomTabActivityClientConnectionKeeper(BaseCustomTabActivity activity) {
+        mIntentDataProvider = activity.getIntentDataProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     @Override

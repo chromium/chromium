@@ -17,6 +17,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -46,22 +47,20 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
 
     @Inject
     public CustomTabMinimizationManagerHolder(
-            AppCompatActivity activity,
+            BaseCustomTabActivity activity,
             Provider<CustomTabActivityNavigationController> navigationController,
             ActivityTabProvider activityTabProvider,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
             CustomTabFeatureOverridesManager featureOverridesManager) {
         mActivity = activity;
         mNavigationController = navigationController;
         mActivityTabProvider = activityTabProvider;
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
-        mLifecycleDispatcher = lifecycleDispatcher;
+        mLifecycleDispatcher = activity.getLifecycleDispatcher();
         mFeatureOverridesManager = featureOverridesManager;
 
-        lifecycleDispatcher.register(this);
+        mLifecycleDispatcher.register(this);
     }
 
     @Override

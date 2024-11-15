@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
 import org.chromium.chrome.browser.tab.Tab;
@@ -144,18 +143,16 @@ public class CustomTabActivityNavigationController
     @Inject
     public CustomTabActivityNavigationController(
             CustomTabActivityTabController tabController,
-            BrowserServicesIntentDataProvider intentDataProvider,
             CloseButtonNavigator closeButtonNavigator,
-            BaseCustomTabActivity activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            BaseCustomTabActivity activity) {
         mTabController = tabController;
         mTabProvider = activity.getCustomTabActivityTabProvider();
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mCustomTabObserver = activity.getCustomTabObserver();
         mCloseButtonNavigator = closeButtonNavigator;
         mActivity = activity;
 
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
         mTabProvider.addObserver(mTabObserver);
         ChromeBrowserInitializer.getInstance()
                 .runNowOrAfterFullBrowserStarted(

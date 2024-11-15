@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
 import android.content.Context;
@@ -41,7 +40,7 @@ import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -60,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * WebApkUpdateManager manages when to check for updates to the WebAPK's Web Manifest, and sends an
@@ -135,12 +133,10 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     @Inject
     public WebApkUpdateManager(
-            @Named(ACTIVITY_CONTEXT) Context context,
-            ActivityTabProvider tabProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mContext = context;
+            AsyncInitializationActivity activity, ActivityTabProvider tabProvider) {
+        mContext = activity;
         mTabProvider = tabProvider;
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     /**

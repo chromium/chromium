@@ -26,9 +26,8 @@ public class CustomTabStatusBarColorProvider {
 
     @Inject
     public CustomTabStatusBarColorProvider(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            StatusBarColorController statusBarColorController) {
-        mIntentDataProvider = intentDataProvider;
+            BaseCustomTabActivity activity, StatusBarColorController statusBarColorController) {
+        mIntentDataProvider = activity.getIntentDataProvider();
         mStatusBarColorController = statusBarColorController;
     }
 

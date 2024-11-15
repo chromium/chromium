@@ -83,13 +83,12 @@ public class CustomTabToolbarCoordinator {
 
     @Inject
     public CustomTabToolbarCoordinator(
-            BrowserServicesIntentDataProvider intentDataProvider,
             BaseCustomTabActivity activity,
             ActivityWindowAndroid windowAndroid,
             CustomTabActivityNavigationController navigationController,
             CustomTabCompositorContentInitializer compositorContentInitializer,
             CustomTabToolbarColorController toolbarColorController) {
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mActivity = activity;
         mWindowAndroid = windowAndroid;

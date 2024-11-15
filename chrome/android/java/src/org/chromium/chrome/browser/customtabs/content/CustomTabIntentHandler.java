@@ -40,12 +40,11 @@ public class CustomTabIntentHandler {
 
     @Inject
     public CustomTabIntentHandler(
-            BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabIntentHandlingStrategy handlingStrategy,
             CustomTabMinimizationManagerHolder minimizationManagerHolder,
             BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mHandlingStrategy = handlingStrategy;
         mContext = activity;
         mMinimizationManagerHolder = minimizationManagerHolder;

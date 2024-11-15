@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.features.ImmersiveModeController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 
 import javax.inject.Inject;
@@ -44,10 +43,8 @@ public class SharedActivityCoordinator implements InflationObserver {
     public SharedActivityCoordinator(
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
-            BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabToolbarColorController toolbarColorController,
             CustomTabStatusBarColorProvider statusBarColorProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
             TrustedWebActivityBrowserControlsVisibilityManager browserControlsVisibilityManager,
             Lazy<ImmersiveModeController> immersiveModeController,
             CustomTabOrientationController customTabOrientationController,
@@ -57,14 +54,14 @@ public class SharedActivityCoordinator implements InflationObserver {
         mToolbarColorController = toolbarColorController;
         mStatusBarColorProvider = statusBarColorProvider;
         mImmersiveModeController = immersiveModeController;
-        mImmersiveDisplayMode = computeImmersiveMode(intentDataProvider);
+        mImmersiveDisplayMode = computeImmersiveMode(activity.getIntentDataProvider());
         mCustomTabOrientationController = customTabOrientationController;
 
         navigationController.setLandingPageOnCloseCriterion(
                 activity.getVerifier()::wasPreviouslyVerified);
 
         currentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     public boolean shouldUseAppModeUi() {

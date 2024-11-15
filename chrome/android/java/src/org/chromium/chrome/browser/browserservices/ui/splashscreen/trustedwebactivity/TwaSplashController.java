@@ -26,6 +26,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.util.ColorUtils;
@@ -68,13 +69,10 @@ public class TwaSplashController implements SplashDelegate {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @Inject
-    public TwaSplashController(
-            SplashController splashController,
-            Activity activity,
-            BrowserServicesIntentDataProvider intentDataProvider) {
+    public TwaSplashController(SplashController splashController, BaseCustomTabActivity activity) {
         mSplashController = splashController;
         mActivity = activity;
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
 
         long splashHideAnimationDurationMs =
                 IntentUtils.safeGetInt(

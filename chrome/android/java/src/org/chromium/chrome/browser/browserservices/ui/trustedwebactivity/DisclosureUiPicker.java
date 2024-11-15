@@ -22,8 +22,8 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 
@@ -32,9 +32,9 @@ import javax.inject.Inject;
 /**
  * Determines which of the versions of the "Running in Chrome" UI is displayed to the user.
  *
- * There are three:
- * * The old Infobar. (An Infobar doesn't go away until you accept it.)
- * * The new Notification. (When notifications are enabled.)
+ * <p>There are three: <br>
+ * * The old Infobar. (An Infobar doesn't go away until you accept it.) <br>
+ * * The new Notification. (When notifications are enabled.) <br>
  * * The new Snackbar. (A Snackbar dismisses automatically, this one after 7 seconds.)
  */
 @ActivityScope
@@ -49,13 +49,12 @@ public class DisclosureUiPicker implements NativeInitObserver {
             Lazy<DisclosureInfobar> disclosureInfobar,
             Lazy<DisclosureSnackbar> disclosureSnackbar,
             Lazy<DisclosureNotification> disclosureNotification,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            BaseCustomTabActivity activity) {
         mDisclosureInfobar = disclosureInfobar;
         mDisclosureSnackbar = disclosureSnackbar;
         mDisclosureNotification = disclosureNotification;
-        mIntentDataProvider = intentDataProvider;
-        lifecycleDispatcher.register(this);
+        mIntentDataProvider = activity.getIntentDataProvider();
+        activity.getLifecycleDispatcher().register(this);
     }
 
     @Override

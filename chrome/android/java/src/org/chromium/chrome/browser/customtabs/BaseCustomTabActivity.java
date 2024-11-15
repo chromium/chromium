@@ -68,12 +68,12 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
-import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
@@ -133,7 +133,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private TwaFinishHandler mTwaFinishHandler;
     private CloseButtonVisibilityManager mCloseButtonVisibilityManager;
     private CustomTabBrowserControlsVisibilityDelegate mCustomTabBrowserControlsVisibilityDelegate;
-    private WebappActionsNotificationManager mWebappActionsNotificationManager;
+
+    private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -319,13 +320,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     protected BaseCustomTabActivityComponent createComponent(
             ChromeActivityCommonsModule commonsModule) {
-        BaseCustomTabActivityModule.Factory overridenBaseCustomTabFactory =
-                ModuleFactoryOverrides.getOverrideFor(BaseCustomTabActivityModule.Factory.class);
-
-        BaseCustomTabActivityModule baseCustomTabsModule =
-                overridenBaseCustomTabFactory != null
-                        ? overridenBaseCustomTabFactory.create(mIntentDataProvider, this)
-                        : new BaseCustomTabActivityModule(mIntentDataProvider, this);
+        BaseCustomTabActivityModule baseCustomTabsModule = new BaseCustomTabActivityModule(this);
 
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent()
@@ -367,7 +362,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         if (intentDataProvider.isWebappOrWebApkActivity()) {
             mWebappActivityCoordinator = component.resolveWebappActivityCoordinator();
-            mWebappActionsNotificationManager = new WebappActionsNotificationManager(this);
+            new WebappActionsNotificationManager(this);
         }
 
         if (intentDataProvider.isWebApkActivity()) {
@@ -945,11 +940,17 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         return mCustomTabBrowserControlsVisibilityDelegate;
     }
 
-    public WebappActionsNotificationManager getWebappActionsNotificationManagerForTesting() {
-        return mWebappActionsNotificationManager;
-    }
-
     public Supplier<BottomSheetController> getBottomSheetController() {
         return mRootUiCoordinator::getBottomSheetController;
+    }
+
+    @Override
+    public ActivityLifecycleDispatcher getLifecycleDispatcher() {
+        if (mLifecycleDispatcherForTesting != null) return mLifecycleDispatcherForTesting;
+        return super.getLifecycleDispatcher();
+    }
+
+    public void setLifecycleDispatcherForTesting(ActivityLifecycleDispatcher dispatcher) {
+        mLifecycleDispatcherForTesting = dispatcher;
     }
 }

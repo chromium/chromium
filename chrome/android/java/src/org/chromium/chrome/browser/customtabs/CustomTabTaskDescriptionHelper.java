@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -62,17 +61,14 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     @Nullable private Bitmap mLargestFavicon;
 
     @Inject
-    public CustomTabTaskDescriptionHelper(
-            BaseCustomTabActivity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+    public CustomTabTaskDescriptionHelper(BaseCustomTabActivity activity) {
         mActivity = activity;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();
 
-        activityLifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     @Override

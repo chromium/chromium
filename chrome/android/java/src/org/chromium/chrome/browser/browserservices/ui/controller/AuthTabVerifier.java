@@ -84,15 +84,12 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     private CallbackController mCallbackController;
 
     @Inject
-    public AuthTabVerifier(
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            BaseCustomTabActivity activity) {
-        mLifecycleDispatcher = lifecycleDispatcher;
-        mIntentDataProvider = intentDataProvider;
+    public AuthTabVerifier(BaseCustomTabActivity activity) {
+        mLifecycleDispatcher = activity.getLifecycleDispatcher();
+        mIntentDataProvider = activity.getIntentDataProvider();
         mActivity = activity;
-        mRedirectHost = intentDataProvider.getAuthRedirectHost();
-        mRedirectPath = intentDataProvider.getAuthRedirectPath();
+        mRedirectHost = mIntentDataProvider.getAuthRedirectHost();
+        mRedirectPath = mIntentDataProvider.getAuthRedirectPath();
         mLifecycleDispatcher.register(this);
 
         // TODO(b/358167556): Do this in a background to avoid potential ANR from system IPC call.
@@ -108,7 +105,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
                     tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;
             mOriginVerifier =
                     ChromeOriginVerifierFactory.create(
-                            intentDataProvider.getClientPackageName(),
+                            mIntentDataProvider.getClientPackageName(),
                             CustomTabsService.RELATION_HANDLE_ALL_URLS,
                             webContents);
         }

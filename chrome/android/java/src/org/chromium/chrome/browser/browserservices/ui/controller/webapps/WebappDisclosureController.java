@@ -10,8 +10,8 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -34,21 +34,20 @@ public class WebappDisclosureController extends DisclosureController {
 
     @Inject
     public WebappDisclosureController(
-            BrowserServicesIntentDataProvider intentDataProvider,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             TrustedWebActivityModel model,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            CurrentPageVerifier currentPageVerifier) {
+            CurrentPageVerifier currentPageVerifier,
+            BaseCustomTabActivity activity) {
         super(
                 model,
-                lifecycleDispatcher,
+                activity.getLifecycleDispatcher(),
                 currentPageVerifier,
-                intentDataProvider.getClientPackageName());
-        mIntentDataProvider = intentDataProvider;
+                activity.getIntentDataProvider().getClientPackageName());
+        mIntentDataProvider = activity.getIntentDataProvider();
 
         deferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {
-                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
+                    if (activity.getLifecycleDispatcher().isActivityFinishingOrDestroyed()) return;
 
                     onDeferredStartupWithStorage(storage, didCreateStorage);
                 });

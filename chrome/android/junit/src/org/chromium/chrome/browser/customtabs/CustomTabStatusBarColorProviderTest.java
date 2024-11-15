@@ -33,22 +33,23 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 public class CustomTabStatusBarColorProviderTest {
     private static final int USER_PROVIDED_COLOR = 0x99aabbcc;
 
-    @Mock public CustomTabIntentDataProvider mCustomTabIntentDataProvider;
+    @Mock public CustomTabIntentDataProvider mIntentDataProvider;
     @Mock public StatusBarColorController mStatusBarColorController;
     @Mock public Tab mTab;
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
     @Mock private ColorProvider mColorProvider;
+    @Mock public BaseCustomTabActivity mActivity;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
         mStatusBarColorProvider =
                 Mockito.spy(
-                        new CustomTabStatusBarColorProvider(
-                                mCustomTabIntentDataProvider, mStatusBarColorController));
+                        new CustomTabStatusBarColorProvider(mActivity, mStatusBarColorController));
 
-        when(mCustomTabIntentDataProvider.getColorProvider()).thenReturn(mColorProvider);
+        when(mIntentDataProvider.getColorProvider()).thenReturn(mColorProvider);
 
         when(mColorProvider.getToolbarColor()).thenReturn(USER_PROVIDED_COLOR);
         when(mColorProvider.hasCustomToolbarColor()).thenReturn(true);
@@ -56,14 +57,14 @@ public class CustomTabStatusBarColorProviderTest {
 
     @Test
     public void undefinedWhenOpenedByChromeNoCustom() {
-        when(mCustomTabIntentDataProvider.isOpenedByChrome()).thenReturn(true);
+        when(mIntentDataProvider.isOpenedByChrome()).thenReturn(true);
         when(mColorProvider.hasCustomToolbarColor()).thenReturn(false);
         Assert.assertEquals(UNDEFINED_STATUS_BAR_COLOR, getStatusBarColor(mTab));
     }
 
     @Test
     public void openedByChromeWithCustom() {
-        when(mCustomTabIntentDataProvider.isOpenedByChrome()).thenReturn(true);
+        when(mIntentDataProvider.isOpenedByChrome()).thenReturn(true);
         when(mColorProvider.hasCustomToolbarColor()).thenReturn(true);
         Assert.assertEquals(USER_PROVIDED_COLOR, getStatusBarColor(mTab));
     }

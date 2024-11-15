@@ -398,7 +398,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     @Inject
     public CustomTabDelegateFactory(
             BaseCustomTabActivity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
             FullscreenManager fullscreenManager,
             TabCreatorManager tabCreatorManager,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
@@ -409,12 +408,12 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Lazy<AuthTabVerifier> authTabVerifier) {
         this(
                 activity,
-                intentDataProvider.shouldEnableUrlBarHiding(),
-                intentDataProvider.isOpenedByChrome(),
-                getWebApkScopeUrl(intentDataProvider),
-                intentDataProvider,
-                getDisplayMode(intentDataProvider),
-                intentDataProvider.shouldEnableEmbeddedMediaExperience(),
+                activity.getIntentDataProvider().shouldEnableUrlBarHiding(),
+                activity.getIntentDataProvider().isOpenedByChrome(),
+                getWebApkScopeUrl(activity.getIntentDataProvider()),
+                activity.getIntentDataProvider(),
+                getDisplayMode(activity.getIntentDataProvider()),
+                activity.getIntentDataProvider().shouldEnableEmbeddedMediaExperience(),
                 activity.getCustomTabBrowserControlsVisibilityDelegate(),
                 activity.getVerifier(),
                 activity,
@@ -429,7 +428,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 activityType,
                 activity.getBottomSheetController(),
                 authTabVerifier,
-                !intentDataProvider.isAuthTab(),
+                !activity.getIntentDataProvider().isAuthTab(),
                 activity.getBrowserControlsManager());
     }
 

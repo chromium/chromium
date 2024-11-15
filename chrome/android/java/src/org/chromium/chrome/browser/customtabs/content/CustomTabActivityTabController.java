@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.TwaOfflineDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -125,10 +124,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             BaseCustomTabActivity activity,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
-            BrowserServicesIntentDataProvider intentDataProvider,
             ActivityTabProvider activityTabProvider,
             Lazy<CompositorViewHolder> compositorViewHolder,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabTabPersistencePolicy persistencePolicy,
             CustomTabActivityTabFactory tabFactory,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
@@ -137,7 +134,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         mProfileProviderSupplier = profileProviderSupplier;
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mActivity = activity;
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mCompositorViewHolder = compositorViewHolder;
         mTabPersistencePolicy = persistencePolicy;
@@ -154,7 +151,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         mSession = mIntentDataProvider.getSession();
         mIntent = mIntentDataProvider.getIntent();
 
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     /**

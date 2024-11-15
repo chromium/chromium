@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,17 +43,15 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
 
     @Inject
     public CustomTabIncognitoManager(
-            Activity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
+            BaseCustomTabActivity activity,
             CustomTabActivityNavigationController navigationController,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
             OneshotSupplier<ProfileProvider> profileProviderSupplier) {
         mActivity = activity;
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mNavigationController = navigationController;
         mProfileProviderSupplier = profileProviderSupplier;
 
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     @Override

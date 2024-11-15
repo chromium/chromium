@@ -84,10 +84,10 @@ public class CustomTabToolbarCoordinatorUnitTest {
         when(mActivity.getCloseButtonVisibilityManager()).thenReturn(mCloseButtonVisibilityManager);
         when(mActivity.getCustomTabBrowserControlsVisibilityDelegate())
                 .thenReturn(mVisibilityDelegate);
+        when(mActivity.getIntentDataProvider()).thenReturn(env.intentDataProvider);
 
         mCoordinator =
                 new CustomTabToolbarCoordinator(
-                        env.intentDataProvider,
                         mActivity,
                         mActivityWindowAndroid,
                         env.createNavigationController(mTabController),

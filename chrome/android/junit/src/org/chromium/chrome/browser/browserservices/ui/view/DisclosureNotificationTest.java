@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices.ui.view;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_FIRST_TIME;
@@ -31,6 +32,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -46,6 +48,7 @@ public class DisclosureNotificationTest {
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
     @Mock public NotificationManagerProxy mNotificationManager;
+    @Mock public BaseCustomTabActivity mActivity;
 
     private TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosureNotification mNotification;
@@ -61,9 +64,9 @@ public class DisclosureNotificationTest {
 
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);
 
+        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
         Context context = RuntimeEnvironment.application;
-        mNotification =
-                new DisclosureNotification(context.getResources(), mModel, mLifecycleDispatcher);
+        mNotification = new DisclosureNotification(context.getResources(), mModel, mActivity);
     }
 
     @Test

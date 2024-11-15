@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
@@ -28,6 +27,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UnownedUserDataHost;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -46,7 +46,7 @@ public class ImmersiveModeControllerTest {
 
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
-    @Mock public Activity mActivity;
+    @Mock public CustomTabActivity mActivity;
     @Mock public WindowAndroid mWindowAndroid;
     @Mock public Window mWindow;
     @Mock public View mDecorView;
@@ -78,8 +78,8 @@ public class ImmersiveModeControllerTest {
                 .setSystemUiVisibility(anyInt());
 
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mWindowUserDataHost);
-
-        mController = new ImmersiveModeController(mLifecycleDispatcher, mActivity, mWindowAndroid);
+        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
+        mController = new ImmersiveModeController(mActivity, mWindowAndroid);
     }
 
     @Test

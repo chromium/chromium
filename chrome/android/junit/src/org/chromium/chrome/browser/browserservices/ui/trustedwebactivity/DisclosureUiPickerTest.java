@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
@@ -50,6 +51,7 @@ public class DisclosureUiPickerTest {
     @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock public NotificationManagerProxy mNotificationManager;
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock public BaseCustomTabActivity mActivity;
 
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
@@ -63,13 +65,14 @@ public class DisclosureUiPickerTest {
 
         when(mIntentDataProvider.getTwaDisclosureUi()).thenReturn(TwaDisclosureUi.DEFAULT);
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);
+        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
         mPicker =
                 new DisclosureUiPicker(
                         new FilledLazy<>(mInfobar),
                         new FilledLazy<>(mSnackbar),
                         new FilledLazy<>(mNotification),
-                        mIntentDataProvider,
-                        mLifecycleDispatcher);
+                        mActivity);
     }
 
     @Test

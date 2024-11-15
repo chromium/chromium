@@ -14,7 +14,6 @@ import android.widget.ImageView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
@@ -42,13 +41,11 @@ public class WebappSplashController implements SplashDelegate {
 
     @Inject
     public WebappSplashController(
-            SplashController splashController,
-            BaseCustomTabActivity activity,
-            BrowserServicesIntentDataProvider intentDataProvider) {
+            SplashController splashController, BaseCustomTabActivity activity) {
         mSplashController = splashController;
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
 
-        mWebappInfo = WebappInfo.create(intentDataProvider);
+        mWebappInfo = WebappInfo.create(activity.getIntentDataProvider());
 
         mSplashController.setConfig(this, HIDE_ANIMATION_DURATION_MS);
 

@@ -78,8 +78,10 @@ public class AuthTabVerifierTest {
         when(mIntentDataProvider.getClientPackageName()).thenReturn("org.chromium.authtab");
         ChromeOriginVerifierFactory.setInstanceForTesting(mOriginVerifier);
         when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mActivityTabProvider);
+        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
+        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
 
-        mDelegate = new AuthTabVerifier(mLifecycleDispatcher, mIntentDataProvider, mActivity);
+        mDelegate = new AuthTabVerifier(mActivity);
     }
 
     void simulateVerificationResultFromNetwork(String url, boolean success) {

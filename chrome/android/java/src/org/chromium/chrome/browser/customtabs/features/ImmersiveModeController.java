@@ -19,9 +19,9 @@ import android.view.Window;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.display_cutout.ActivityDisplayCutoutModeSupplier;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -57,12 +57,9 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     @Inject
-    public ImmersiveModeController(
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            Activity activity,
-            WindowAndroid window) {
+    public ImmersiveModeController(BaseCustomTabActivity activity, WindowAndroid window) {
         mActivity = activity;
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
 
         mCutoutSupplier.attach(window.getUnownedUserDataHost());
     }

@@ -17,8 +17,8 @@ import dagger.Lazy;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -60,12 +60,12 @@ public class DisclosureInfobar
             Resources resources,
             Lazy<SnackbarManager> snackbarManager,
             TrustedWebActivityModel model,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            BaseCustomTabActivity activity) {
         mResources = resources;
         mSnackbarManager = snackbarManager;
         mModel = model;
         mModel.addObserver(this);
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     @Override

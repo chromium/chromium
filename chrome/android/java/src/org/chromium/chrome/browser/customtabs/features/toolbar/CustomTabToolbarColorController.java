@@ -75,9 +75,8 @@ public class CustomTabToolbarColorController {
     private boolean mUseTabThemeColor;
 
     @Inject
-    public CustomTabToolbarColorController(
-            BrowserServicesIntentDataProvider intentDataProvider, BaseCustomTabActivity activity) {
-        mIntentDataProvider = intentDataProvider;
+    public CustomTabToolbarColorController(BaseCustomTabActivity activity) {
+        mIntentDataProvider = activity.getIntentDataProvider();
         mActivity = activity;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();

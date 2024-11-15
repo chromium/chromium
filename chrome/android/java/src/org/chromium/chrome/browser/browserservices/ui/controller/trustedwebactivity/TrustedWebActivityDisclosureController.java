@@ -10,7 +10,6 @@ import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import javax.inject.Inject;
 
@@ -24,12 +23,11 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     @Inject
     TrustedWebActivityDisclosureController(
             TrustedWebActivityModel model,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier,
             BaseCustomTabActivity activity) {
         super(
                 model,
-                lifecycleDispatcher,
+                activity.getLifecycleDispatcher(),
                 currentPageVerifier,
                 activity.getClientPackageNameProvider().get());
         mClientPackageNameProvider = activity.getClientPackageNameProvider();
