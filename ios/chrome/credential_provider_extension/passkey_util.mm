@@ -4,6 +4,8 @@
 
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 
+#import <AuthenticationServices/AuthenticationServices.h>
+
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
 #import "base/debug/dump_without_crashing.h"
@@ -13,6 +15,7 @@
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential_provider_creation_notifier.h"
@@ -69,6 +72,29 @@ NSData* GenerateSignature(id<Credential> credential,
   return [NSData dataWithBytes:signature->data() length:signature->size()];
 }
 
+void SaveToIdentityStore(id<Credential> credential, ProceduralBlock completion)
+    API_AVAILABLE(ios(17.0)) {
+  auto stateCompletion = ^(ASCredentialIdentityStoreState* state) {
+    if (state.enabled) {
+      // Update ASCredentialIdentityStore to make the passkey immediately
+      // available locally.
+      NSMutableArray<id<ASCredentialIdentity>>* storeIdentities =
+          [NSMutableArray arrayWithCapacity:1];
+      [storeIdentities addObject:[[ASPasskeyCredentialIdentity alloc]
+                                     cr_initWithCredential:credential]];
+      [ASCredentialIdentityStore.sharedStore
+          replaceCredentialIdentityEntries:storeIdentities
+                                completion:^(BOOL success, NSError* error) {
+                                  completion();
+                                }];
+    } else {
+      completion();
+    }
+  };
+  [ASCredentialIdentityStore.sharedStore
+      getCredentialIdentityStoreStateWithCompletion:stateCompletion];
+}
+
 // Saves a newly created passkey to the user defaults credential store. This
 // credential store will be read by Chrome if it is currently running, or the
 // next time it runs, to sync the newly created passkeys in the user's account.
@@ -89,7 +115,12 @@ void SaveCredential(id<Credential> credential) {
       return;
     }
 
-    [CredentialProviderCreationNotifier notifyCredentialCreated];
+    if (@available(iOS 17.0, *)) {
+      SaveToIdentityStore(credential, ^{
+        // Notify Chrome that a new passkey was created
+        [CredentialProviderCreationNotifier notifyCredentialCreated];
+      });
+    }
   }];
 }
 
