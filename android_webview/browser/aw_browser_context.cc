@@ -74,7 +74,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
-#include "content/public/browser/prefetch_browser_callbacks.h"
+#include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -99,6 +99,53 @@ using base::FilePath;
 using content::BrowserThread;
 
 namespace android_webview {
+
+class AwPrefetchRequestStatusListener
+    : public content::PrefetchRequestStatusListener {
+ public:
+  AwPrefetchRequestStatusListener(
+      const base::android::ScopedJavaGlobalRef<jobject>
+          browser_context_java_object,
+      const base::android::JavaRef<jobject>& callback,
+      const base::android::JavaRef<jobject>& callback_executor)
+      : browser_context_java_object_(browser_context_java_object),
+        prefetch_java_callback_(callback),
+        prefetch_java_callback_executor_(callback_executor) {}
+  ~AwPrefetchRequestStatusListener() override = default;
+
+  void OnPrefetchStartFailed() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwBrowserContext_onPrefetchStartFailed(
+        env, browser_context_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_);
+  }
+
+  void OnPrefetchResponseCompleted() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwBrowserContext_onPrefetchResponseCompleted(
+        env, browser_context_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_);
+  }
+
+  void OnPrefetchResponseError() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwBrowserContext_onPrefetchResponseError(
+        env, browser_context_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_);
+  }
+
+  void OnPrefetchResponseServerError(int response_code) override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwBrowserContext_onPrefetchResponseServerError(
+        env, browser_context_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_, response_code);
+  }
+
+ private:
+  base::android::ScopedJavaGlobalRef<jobject> browser_context_java_object_;
+  base::android::ScopedJavaGlobalRef<jobject> prefetch_java_callback_;
+  base::android::ScopedJavaGlobalRef<jobject> prefetch_java_callback_executor_;
+};
 
 namespace {
 
@@ -707,40 +754,19 @@ void AwBrowserContext::StartPrefetchRequest(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GURL pf_url = GURL(url);
-  net::HttpRequestHeaders pf_additional_headers =
+  net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
-  std::optional<net::HttpNoVarySearchData> pf_expected_no_vary_search =
+  std::optional<net::HttpNoVarySearchData> expected_no_vary_search =
       GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
-  base::android::ScopedJavaGlobalRef<jobject> pf_callback(callback);
-  base::android::ScopedJavaGlobalRef<jobject> pf_callback_executor(
-      callback_executor);
-  content::PrefetchStartCallback pf_start_callback =
-      base::BindOnce(&AwBrowserContext::HandlePrefetchStartCallback,
-                     weak_method_factory_.GetWeakPtr(), std::move(pf_callback),
-                     std::move(pf_callback_executor));
+  std::unique_ptr<content::PrefetchRequestStatusListener>
+      request_status_listener =
+          std::make_unique<AwPrefetchRequestStatusListener>(obj_, callback,
+                                                            callback_executor);
   StartBrowserPrefetchRequest(
       pf_url,
       GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
-      pf_expected_no_vary_search, pf_additional_headers,
-      std::move(pf_start_callback));
-}
-
-void AwBrowserContext::HandlePrefetchStartCallback(
-    const base::android::ScopedJavaGlobalRef<jobject> callback,
-    const base::android::ScopedJavaGlobalRef<jobject> callback_executor,
-    const content::PrefetchStartResultCode result_code) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  switch (result_code) {
-    case content::PrefetchStartResultCode::kSuccess:
-      Java_AwBrowserContext_onPrefetchStarted(env, obj_, callback,
-                                              callback_executor);
-      break;
-    case content::PrefetchStartResultCode::kFailed:
-      Java_AwBrowserContext_onPrefetchStartFailed(env, obj_, callback,
-                                                  callback_executor);
-      break;
-  }
+      expected_no_vary_search, additional_headers,
+      std::move(request_status_listener));
 }
 
 std::unique_ptr<AwContentsIoThreadClient>

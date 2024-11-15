@@ -30,7 +30,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/prefetch_browser_callbacks.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
@@ -198,11 +197,6 @@ class AwBrowserContext : public content::BrowserContext,
   // AwBrowserContextIoThreadHandle#GetServiceWorkerIoThreadClient().
   std::unique_ptr<AwContentsIoThreadClient>
   GetServiceWorkerIoThreadClientThreadSafe();
-
-  void HandlePrefetchStartCallback(
-      const base::android::ScopedJavaGlobalRef<jobject> callback,
-      const base::android::ScopedJavaGlobalRef<jobject> callback_executor,
-      const content::PrefetchStartResultCode result_code);
 
   const std::string name_;
   const base::FilePath relative_path_;

@@ -39,7 +39,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/prefetch_browser_callbacks.h"
+#include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
@@ -415,7 +415,7 @@ PrefetchContainer::PrefetchContainer(
           /*holdback_status_override=*/std::nullopt,
           referring_render_frame_host.GetDevToolsNavigationToken(),
           /*Must be empty: additional_headers=*/{},
-          /*prefetch_start_callback=*/std::nullopt,
+          /*request_status_listener=*/nullptr,
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
               ->GetOrCreateWebPreferences()
               .javascript_enabled) {
@@ -449,7 +449,7 @@ PrefetchContainer::PrefetchContainer(
           holdback_status_override,
           /*initiator_devtools_navigation_token=*/std::nullopt,
           /*Must be empty: additional_headers=*/{},
-          /*prefetch_start_callback=*/std::nullopt,
+          /*request_status_listener=*/nullptr,
           referring_web_contents.GetOrCreateWebPreferences()
               .javascript_enabled) {
   CHECK(!prefetch_type_.IsRendererInitiated());
@@ -466,7 +466,7 @@ PrefetchContainer::PrefetchContainer(
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PreloadingAttempt> attempt,
     const net::HttpRequestHeaders& additional_headers,
-    std::optional<PrefetchStartCallback> prefetch_start_callback)
+    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener)
     : PrefetchContainer(GlobalRenderFrameHostId(),
                         referring_origin,
                         /*referring_url_hash=*/std::nullopt,
@@ -484,7 +484,7 @@ PrefetchContainer::PrefetchContainer(
                         /*holdback_status_override=*/std::nullopt,
                         /*initiator_devtools_navigation_token=*/std::nullopt,
                         additional_headers,
-                        std::move(prefetch_start_callback),
+                        std::move(request_status_listener),
                         javascript_enabled) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
@@ -506,7 +506,7 @@ PrefetchContainer::PrefetchContainer(
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
     std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
     const net::HttpRequestHeaders& additional_headers,
-    std::optional<PrefetchStartCallback> prefetch_start_callback,
+    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
     bool is_javascript_enabled)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       referring_origin_(referring_origin),
@@ -525,7 +525,7 @@ PrefetchContainer::PrefetchContainer(
       initiator_devtools_navigation_token_(
           std::move(initiator_devtools_navigation_token)),
       additional_headers_(additional_headers),
-      prefetch_start_callback_(std::move(prefetch_start_callback)),
+      request_status_listener_(std::move(request_status_listener)),
       is_javascript_enabled_(is_javascript_enabled) {
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(attempt_.get());
@@ -1421,13 +1421,32 @@ void PrefetchContainer::OnPrefetchComplete(
     RecordPrefetchProxyPrefetchMainframeBodyLength(body_length);
   }
 
-  if (GetPrefetchStatus() == PrefetchStatus::kPrefetchSuccessful) {
+  const PrefetchStatus prefetch_status = GetPrefetchStatus();
+  if (prefetch_status == PrefetchStatus::kPrefetchSuccessful &&
+      IsRendererInitiated()) {
     // TODO(crbug.com/40946257): Current code doesn't support
     // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
-    if (IsRendererInitiated()) {
-      if (prefetch_document_manager_) {
-        prefetch_document_manager_->OnPrefetchSuccessful(this);
+    if (prefetch_document_manager_) {
+      prefetch_document_manager_->OnPrefetchSuccessful(this);
+    }
+  }
+
+  if (request_status_listener_) {
+    switch (prefetch_status) {
+      case PrefetchStatus::kPrefetchSuccessful:
+      case PrefetchStatus::kPrefetchResponseUsed:
+        request_status_listener_->OnPrefetchResponseCompleted();
+        break;
+      case PrefetchStatus::kPrefetchFailedNon2XX: {
+        int response_code = GetNonRedirectHead()
+                                ? GetNonRedirectHead()->headers->response_code()
+                                : 0;
+        request_status_listener_->OnPrefetchResponseServerError(response_code);
+        break;
       }
+      default:
+        request_status_listener_->OnPrefetchResponseError();
+        break;
     }
   }
 }
@@ -1633,11 +1652,6 @@ void PrefetchContainer::OnDetectedCookiesChange2() {
 
 void PrefetchContainer::OnPrefetchStarted() {
   SetLoadState(PrefetchContainer::LoadState::kStarted);
-  if (prefetch_start_callback_.has_value()) {
-    CHECK(prefetch_start_callback_.value());
-    std::move(prefetch_start_callback_.value())
-        .Run(PrefetchStartResultCode::kSuccess);
-  }
 }
 
 // TODO(crbug.com/40274818): We might be waiting on PrefetchContainer's head
@@ -2027,18 +2041,9 @@ void PrefetchContainer::OnInitialPrefetchFailedIneligible(
     PreloadingEligibility eligibility) {
   CHECK(redirect_chain_.size() == 1);
   CHECK_NE(eligibility, PreloadingEligibility::kEligible);
-  if (prefetch_start_callback_.has_value()) {
-    CHECK(prefetch_start_callback_.value());
-    std::move(prefetch_start_callback_.value())
-        .Run(GetPrefetchFailedIneligibleStartResultCode(eligibility));
+  if (request_status_listener_) {
+    request_status_listener_->OnPrefetchStartFailed();
   }
-}
-
-PrefetchStartResultCode
-PrefetchContainer::GetPrefetchFailedIneligibleStartResultCode(
-    PreloadingEligibility eligibility) {
-  CHECK_NE(eligibility, PreloadingEligibility::kEligible);
-  return PrefetchStartResultCode::kFailed;
 }
 
 void PrefetchContainer::AddObserver(Observer* observer) {

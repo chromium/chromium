@@ -4,6 +4,7 @@
 
 package com.android.webview.chromium;
 
+import android.os.Bundle;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
@@ -15,9 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.AwBrowserContext;
-import org.chromium.android_webview.AwPrefetchOperationCallback;
+import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwPrefetchParameters;
-import org.chromium.android_webview.AwPrefetchStartResultCode;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -106,12 +106,17 @@ public class Profile {
 
             AwPrefetchParameters awPrefetchParameters =
                     params == null ? null : params.toAwPrefetchParams();
-            AwPrefetchOperationCallback<Integer> awCallback =
-                    new AwPrefetchOperationCallback<>() {
+            AwPrefetchCallback awCallback =
+                    new AwPrefetchCallback() {
                         @Override
-                        public void onResult(@AwPrefetchStartResultCode Integer result) {
-                            resultCallback.onReceiveValue(
-                                    PrefetchOperationResult.fromStartResultCode(result));
+                        public void onStatusUpdated(
+                                @StatusCode int statusCode, @Nullable Bundle extras) {
+                            PrefetchOperationResult operationResult =
+                                    PrefetchOperationResult.fromPrefetchStatusCode(
+                                            statusCode, extras);
+                            if (operationResult != null) {
+                                resultCallback.onReceiveValue(operationResult);
+                            }
                         }
 
                         @Override

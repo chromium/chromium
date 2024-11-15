@@ -50,7 +50,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/prefetch_browser_callbacks.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
@@ -196,15 +195,14 @@ void BrowserContext::StartBrowserPrefetchRequest(
     bool javascript_enabled,
     std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
     const net::HttpRequestHeaders& additional_headers,
-    std::optional<PrefetchStartCallback> prefetch_start_callback) {
+    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   PrefetchService* prefetch_service =
       BrowserContextImpl::From(this)->GetPrefetchService();
   if (!prefetch_service) {
-    if (prefetch_start_callback.has_value()) {
-      std::move(prefetch_start_callback.value())
-          .Run(PrefetchStartResultCode::kFailed);
+    if (request_status_listener) {
+      request_status_listener->OnPrefetchStartFailed();
     }
     return;
   }
@@ -215,7 +213,7 @@ void BrowserContext::StartBrowserPrefetchRequest(
       this, url, prefetch_type, blink::mojom::Referrer(), javascript_enabled,
       /*referring_origin=*/std::nullopt, std::move(no_vary_search_expected),
       /*attempt=*/nullptr, additional_headers,
-      std::move(prefetch_start_callback));
+      std::move(request_status_listener));
   prefetch_service->AddPrefetchContainer(std::move(container));
 }
 

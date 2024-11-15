@@ -21,7 +21,7 @@
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/prefetch_browser_callbacks.h"
+#include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -137,8 +137,8 @@ class CONTENT_EXPORT PrefetchContainer {
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       const net::HttpRequestHeaders& additional_headers = {},
-      std::optional<PrefetchStartCallback> prefetch_start_callback =
-          std::nullopt);
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
+          nullptr);
 
   ~PrefetchContainer();
 
@@ -789,7 +789,7 @@ class CONTENT_EXPORT PrefetchContainer {
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
       std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
       const net::HttpRequestHeaders& additional_headers,
-      std::optional<PrefetchStartCallback> prefetch_start_callback,
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       bool is_javascript_enabled);
 
   // Update |prefetch_status_| and report prefetch status to
@@ -826,10 +826,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // reasons. Should only be called for the initial prefetch request and not
   // redirects.
   void OnInitialPrefetchFailedIneligible(PreloadingEligibility eligibility);
-
-  // Returns the |PrefetchStartResultCode| based on the |eligibility|.
-  PrefetchStartResultCode GetPrefetchFailedIneligibleStartResultCode(
-      PreloadingEligibility eligibility);
 
   // Record `prefetch_status` to UMA if it hasn't already been recorded for this
   // container.
@@ -1021,8 +1017,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // TODO(crbug.com/369859822): Revisit the semantics if needed.
   const net::HttpRequestHeaders additional_headers_;
 
-  // Browser callbacks.
-  std::optional<PrefetchStartCallback> prefetch_start_callback_;
+  // Listener of prefetch request. Currently used for WebView initiated
+  // prefetch.
+  std::unique_ptr<PrefetchRequestStatusListener> request_status_listener_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 

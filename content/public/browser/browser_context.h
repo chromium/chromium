@@ -21,7 +21,7 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
-#include "content/public/browser/prefetch_browser_callbacks.h"
+#include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -207,7 +207,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       bool javascript_enabled,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       const net::HttpRequestHeaders& additional_headers,
-      std::optional<PrefetchStartCallback> prefetch_start_callback);
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener);
 
   using BlobCallback = base::OnceCallback<void(std::unique_ptr<BlobHandle>)>;
   using BlobContextGetter =

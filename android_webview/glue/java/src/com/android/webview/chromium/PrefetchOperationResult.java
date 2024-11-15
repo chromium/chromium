@@ -4,7 +4,12 @@
 
 package com.android.webview.chromium;
 
-import org.chromium.android_webview.AwPrefetchStartResultCode;
+import android.os.Bundle;
+
+import androidx.annotation.Nullable;
+
+import org.chromium.android_webview.AwPrefetchCallback;
+import org.chromium.android_webview.AwPrefetchCallback.StatusCode;
 import org.chromium.android_webview.common.Lifetime;
 
 @Lifetime.Temporary
@@ -16,19 +21,26 @@ public class PrefetchOperationResult {
         this.statusCode = statusCode;
     }
 
-    public static PrefetchOperationResult fromStartResultCode(
-            @AwPrefetchStartResultCode int startResultCode) {
-        int statusCode;
-        switch (startResultCode) {
-            case AwPrefetchStartResultCode.SUCCESS:
-                statusCode = PrefetchOperationStatusCode.SUCCESS;
-                break;
-            case AwPrefetchStartResultCode.FAILURE:
-                statusCode = PrefetchOperationStatusCode.FAILURE;
-                break;
+    @Nullable
+    public static PrefetchOperationResult fromPrefetchStatusCode(
+            @StatusCode int statusCode, @Nullable Bundle extras) {
+        // TODO(crbug.com/372915075) : Implement tests.
+        switch (statusCode) {
+            case StatusCode.PREFETCH_RESPONSE_COMPLETED:
+                return new PrefetchOperationResult(PrefetchOperationStatusCode.SUCCESS);
+            case StatusCode.PREFETCH_START_FAILED:
+            case StatusCode.PREFETCH_RESPONSE_GENERIC_ERROR:
+                return new PrefetchOperationResult(PrefetchOperationStatusCode.FAILURE);
+            case StatusCode.PREFETCH_RESPONSE_SERVER_ERROR:
+                if (extras != null
+                        && extras.containsKey(AwPrefetchCallback.EXTRA_HTTP_RESPONSE_CODE)) {
+                    // TODO(crbug.com/378481147) : Return the HTTP response code via. prefetch
+                    // exception.
+                }
+                return new PrefetchOperationResult(PrefetchOperationStatusCode.FAILURE);
             default:
-                throw new IllegalArgumentException("Invalid prefetch start result code");
+                throw new IllegalArgumentException(
+                        "Unhandled or invalid prefetch status code - status_code=" + statusCode);
         }
-        return new PrefetchOperationResult(statusCode);
     }
 }
