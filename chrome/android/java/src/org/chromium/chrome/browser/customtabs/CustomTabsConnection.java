@@ -50,7 +50,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
@@ -93,7 +92,6 @@ import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -1365,20 +1363,6 @@ public class CustomTabsConnection {
             CustomTabsSessionToken session,
             Intent intent,
             Supplier<ProfileProvider> profileProviderSupplier) {}
-
-    /**
-     * @param session The session that the corresponding custom tab is assigned to.
-     * @param intent The intent that launched the custom tab.
-     * @param context the Android context.
-     * @param windowAndroid The android window.
-     * @param profileProviderSupplier The supplier of the current profile.
-     */
-    void maybeShowAccountMismatchNotification(
-            CustomTabsSessionToken session,
-            Intent intent,
-            Context context,
-            WindowAndroid windowAndroid,
-            OneshotSupplier<ProfileProvider> profileProviderSupplier) {}
 
     /**
      * Returns whether the app launching the CCT may display account mismatch notification UI.
