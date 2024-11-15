@@ -158,7 +158,7 @@ void ClientSession::NotifyClientResolution(
   webrtc::DesktopVector dpi_vector{kDefaultDpi, kDefaultDpi};
 #if BUILDFLAG(IS_WIN)
   // Matching the client DPI is only supported on Windows when curtained.
-  if (desktop_environment_options_.enable_curtaining()) {
+  if (effective_policies_.curtain_required.value_or(false)) {
     dpi_vector.set(resolution.x_dpi(), resolution.y_dpi());
   }
 #elif BUILDFLAG(IS_LINUX)
