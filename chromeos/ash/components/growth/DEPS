@@ -1,9 +1,11 @@
 include_rules = [
   "+ash/constants",
   "+ash/resources/vector_icons",
+  "+ash/webui/grit",
   "+base",
   "+chromeos/ash/components/demo_mode",
   "+chromeos/ash/components/channel",
+  "+chromeos/ash/components/scalable_iph",
   "+components/feature_engagement/public",
   "+components/prefs",
   "+components/user_manager",

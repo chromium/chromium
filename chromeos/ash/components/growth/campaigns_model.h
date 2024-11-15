@@ -61,7 +61,11 @@ enum class BuiltInImage {
   kSparkV2 = 4,
   kG1Notification = 5,
   kMall = 6,
-  kMaxValue = kMall
+  kPrintJobsIcon = 7,
+  kGoogleDocsIcon = 8,
+  kYouTubeIcon = 9,
+  kPlayStoreIcon = 10,
+  kMaxValue = kPlayStoreIcon,
 };
 
 // Supported window anchor element.
