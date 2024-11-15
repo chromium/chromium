@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
+#import "base/types/pass_key.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
 struct AccountInfo;
+class DeviceAccountsProviderImpl;
 class PrefService;
 @protocol RefreshAccessTokenError;
 @class ResizedAvatarCache;
@@ -131,6 +133,14 @@ class ChromeAccountManagerService : public KeyedService,
   // profiles.
   NSArray<id<SystemIdentity>>* GetIdentitiesOnDeviceWithGaiaIDs(
       const std::vector<AccountInfo>& account_infos) const;
+
+  // For use by DeviceAccountsProviderImpl only, may not be called otherwise!
+  // Returns all SystemIdentity objects that are available on the device,
+  // including (as opposed to GetAllIdentities()) those that are assigned to
+  // different profiles. (Identities that are restricted due to enterprise
+  // policy are still filtered out.)
+  NSArray<id<SystemIdentity>>* GetAllIdentitiesOnDevice(
+      base::PassKey<DeviceAccountsProviderImpl>) const;
 
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() override;

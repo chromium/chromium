@@ -387,8 +387,7 @@ DeviceAccountsSynchronizer* IdentityManager::GetDeviceAccountsSynchronizer() {
 
 #if BUILDFLAG(IS_IOS)
 std::vector<AccountInfo> IdentityManager::GetAccountsOnDevice() {
-  // TODO(crbug.com/368409110): Implement this method.
-  return {};
+  return token_service_->GetAccountsOnDevice();
 }
 #endif
 

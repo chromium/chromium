@@ -110,10 +110,19 @@ class ProfileOAuth2TokenServiceDelegate {
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   // Returns a list of accounts for which a refresh token is maintained by
-  // |this| instance, in the order the refresh tokens were added.
+  // |this| instance, i.e. the accounts available in this profile, in the order
+  // the refresh tokens were added.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.
   // Also, see |RefreshTokenIsAvailable|.
+  // TODO(crbug.com/368409110): Rename to GetAccountsInProfile(), to distinguish
+  // from GetAccountsOnDevice().
   virtual std::vector<CoreAccountId> GetAccounts() const;
+
+#if BUILDFLAG(IS_IOS)
+  // Returns a list of accounts that exist on the device, including those that
+  // are assigned to different profiles.
+  virtual std::vector<AccountInfo> GetAccountsOnDevice() const;
+#endif  // BUILDFLAG(IS_IOS)
 
   virtual void OnAccessTokenInvalidated(
       const CoreAccountId& account_id,

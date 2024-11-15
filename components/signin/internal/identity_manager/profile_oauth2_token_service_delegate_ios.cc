@@ -209,7 +209,7 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
 
   // Get the list of new account ids.
   std::set<CoreAccountId> new_account_ids;
-  for (const auto& new_account : provider_->GetAllAccounts()) {
+  for (const auto& new_account : provider_->GetAccountsForProfile()) {
     DCHECK(!new_account.gaia.empty());
     DCHECK(!new_account.email.empty());
 
@@ -304,6 +304,28 @@ std::vector<CoreAccountId> ProfileOAuth2TokenServiceIOSDelegate::GetAccounts()
     const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return std::vector<CoreAccountId>(accounts_.begin(), accounts_.end());
+}
+
+std::vector<AccountInfo>
+ProfileOAuth2TokenServiceIOSDelegate::GetAccountsOnDevice() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // TODO(crbug.com/368409110): Cache these accounts somewhere, maybe in a
+  // separate AccountTrackerService instance.
+  std::vector<AccountInfo> account_infos;
+  for (const auto& account : provider_->GetAccountsOnDevice()) {
+    CHECK(!account.gaia.empty());
+    CHECK(!account.email.empty());
+    AccountInfo account_info;
+    account_info.account_id = CoreAccountId::FromGaiaId(account.gaia);
+    account_info.gaia = account.gaia;
+    account_info.email = account.email;
+    account_info.hosted_domain = account.hosted_domain;
+    // TODO(crbug.com/368409110): Find a way to determine the full AccountInfo
+    // for these accounts, not only the "core" fields.
+    account_infos.push_back(std::move(account_info));
+  }
+  return account_infos;
 }
 
 bool ProfileOAuth2TokenServiceIOSDelegate::RefreshTokenIsAvailable(

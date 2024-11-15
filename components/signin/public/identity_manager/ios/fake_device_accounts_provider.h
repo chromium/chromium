@@ -28,7 +28,8 @@ class FakeDeviceAccountsProvider : public DeviceAccountsProvider {
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) override;
-  std::vector<AccountInfo> GetAllAccounts() const override;
+  std::vector<AccountInfo> GetAccountsForProfile() const override;
+  std::vector<AccountInfo> GetAccountsOnDevice() const override;
 
   // Methods to configure this fake provider.
   AccountInfo AddAccount(const std::string& gaia, const std::string& email);

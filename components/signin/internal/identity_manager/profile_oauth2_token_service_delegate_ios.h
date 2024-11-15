@@ -45,6 +45,8 @@ class ProfileOAuth2TokenServiceIOSDelegate
 
   std::vector<CoreAccountId> GetAccounts() const override;
 
+  std::vector<AccountInfo> GetAccountsOnDevice() const override;
+
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const std::optional<CoreAccountId>& primary_account_id) override;
   void ReloadAccountFromSystem(const CoreAccountId& account_id) override;

@@ -21,7 +21,14 @@ void FakeDeviceAccountsProvider::GetAccessToken(
 }
 
 std::vector<DeviceAccountsProvider::AccountInfo>
-FakeDeviceAccountsProvider::GetAllAccounts() const {
+FakeDeviceAccountsProvider::GetAccountsForProfile() const {
+  return accounts_;
+}
+
+std::vector<DeviceAccountsProvider::AccountInfo>
+FakeDeviceAccountsProvider::GetAccountsOnDevice() const {
+  // TODO(crbug.com/368409110): Add the capability to set accounts-on-device
+  // separate from accounts-for-profile.
   return accounts_;
 }
 

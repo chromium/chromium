@@ -319,6 +319,13 @@ std::vector<CoreAccountId> ProfileOAuth2TokenService::GetAccounts() const {
   return GetDelegate()->GetAccounts();
 }
 
+#if BUILDFLAG(IS_IOS)
+std::vector<AccountInfo> ProfileOAuth2TokenService::GetAccountsOnDevice()
+    const {
+  return GetDelegate()->GetAccountsOnDevice();
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 bool ProfileOAuth2TokenService::RefreshTokenIsAvailable(
     const CoreAccountId& account_id) const {
   return delegate_->RefreshTokenIsAvailable(account_id);

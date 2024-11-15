@@ -5,7 +5,12 @@
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
 std::vector<DeviceAccountsProvider::AccountInfo>
-DeviceAccountsProvider::GetAllAccounts() const {
+DeviceAccountsProvider::GetAccountsForProfile() const {
+  return std::vector<DeviceAccountsProvider::AccountInfo>();
+}
+
+std::vector<DeviceAccountsProvider::AccountInfo>
+DeviceAccountsProvider::GetAccountsOnDevice() const {
   return std::vector<DeviceAccountsProvider::AccountInfo>();
 }
 

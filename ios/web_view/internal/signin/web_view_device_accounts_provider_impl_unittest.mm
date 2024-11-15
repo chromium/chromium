@@ -81,7 +81,7 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAllAccounts) {
 
   WebViewDeviceAccountsProviderImpl accounts_provider;
   std::vector<DeviceAccountsProvider::AccountInfo> accounts =
-      accounts_provider.GetAllAccounts();
+      accounts_provider.GetAccountsOnDevice();
 
   ASSERT_EQ(1UL, accounts.size());
   DeviceAccountsProvider::AccountInfo account_info = accounts[0];

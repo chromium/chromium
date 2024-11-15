@@ -230,6 +230,13 @@ std::vector<CoreAccountId> ProfileOAuth2TokenServiceDelegate::GetAccounts()
   return std::vector<CoreAccountId>();
 }
 
+#if BUILDFLAG(IS_IOS)
+std::vector<AccountInfo>
+ProfileOAuth2TokenServiceDelegate::GetAccountsOnDevice() const {
+  return std::vector<AccountInfo>();
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 const net::BackoffEntry* ProfileOAuth2TokenServiceDelegate::BackoffEntry()
     const {
   return backoff_entry_.get();

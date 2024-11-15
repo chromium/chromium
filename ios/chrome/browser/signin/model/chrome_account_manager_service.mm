@@ -330,6 +330,13 @@ ChromeAccountManagerService::GetIdentitiesOnDeviceWithGaiaIDs(
   return identities;
 }
 
+NSArray<id<SystemIdentity>>*
+ChromeAccountManagerService::GetAllIdentitiesOnDevice(
+    base::PassKey<DeviceAccountsProviderImpl>) const {
+  return IterateOverAllIdentitiesOnDevice(CollectIdentities{},
+                                          SkipRestricted{restriction_});
+}
+
 void ChromeAccountManagerService::OnIdentityListChanged() {
   for (auto& observer : observer_list_) {
     observer.OnIdentityListChanged();
