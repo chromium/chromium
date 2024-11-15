@@ -31,7 +31,7 @@ proto_library("extensions_workflow_events_proto") {
 
 proto_library("legacy_tech_events_proto") {
   proto_in_dir = "//"
-  sources = [ "legacy_tech_events.proto" ]
+  sources = [ "synced/legacy_tech_events.proto" ]
 }
 
 proto_library("policy_validation_report") {

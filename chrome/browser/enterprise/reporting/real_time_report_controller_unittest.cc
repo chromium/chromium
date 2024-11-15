@@ -13,7 +13,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/browser/reporting/real_time_uploader.h"
-#include "components/enterprise/common/proto/legacy_tech_events.pb.h"
+#include "components/enterprise/common/proto/synced/legacy_tech_events.pb.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

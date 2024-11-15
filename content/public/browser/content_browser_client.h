@@ -2620,7 +2620,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // if the `url` or `frame_url` that triggers the event is matched to any
   // enterprise policies that are set by administrators. For a description of
   // reported fields, see
-  // https://crsrc.org/c/components/enterprise/common/proto/legacy_tech_events.proto
+  // https://crsrc.org/c/components/enterprise/common/proto/synced/legacy_tech_events.proto
   virtual void ReportLegacyTechEvent(
       content::RenderFrameHost* render_frame_host,
       const std::string& type,

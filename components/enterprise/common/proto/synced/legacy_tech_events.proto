@@ -2,42 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
-
-option optimize_for = LITE_RUNTIME;
+syntax = "proto3";
 
 package enterprise_reporting;
+
+// Used for annotating sensitive fields in google3.
+// ${COPYBARA_DATAPOL_IMPORT}
+
+option optimize_for = LITE_RUNTIME;
 
 // LegacyTechEvent is sent whenever a chrome deprecated feature is encountered
 // on the client side chrome browser.
 //
-// Next ID: 9.
+// Next ID: 10.
 message LegacyTechEvent {
-  reserved 2;
-
   // ID of the deprecated feature.
-  optional string feature_id = 1;
+  string feature_id = 1;
 
-  // This includes url + path but not the params. The params will be cut before
-  // data uploading.
-  optional string url = 3;
+  // The event upload time, in milliseconds since Epoch in UTC timezone (Java
+  // time).
+  int64 event_timestamp_millis = 2;
+
+  // This includes url + path but not the params. The params are cut out on the
+  // client side.
+  string url = 3;
 
   // The entity from the allowlist policy that has matched the url on the client
   // side.
-  optional string allowlisted_url_match = 4;
+  string allowlisted_url_match = 4;
 
   // The js filename where the deprecated feature was encountered.
-  optional string filename = 5;
+  string filename = 5;
+
   // The column where the legacy tech was encountered.
-  optional uint64 column = 6;
+  uint64 column = 6;
+
   // The line where the legacy tech was encountered.
-  optional uint64 line = 7;
+  uint64 line = 7;
 
   // Details of a Cookie Issue.
-  optional CookieIssueDetails cookie_issue_details = 8;
+  CookieIssueDetails cookie_issue_details = 8;
 
   // The URL of the frame that raised the event.
-  optional string frame_url = 9;
+  string frame_url = 9;
 }
 
 // Operation of the cookie access.
@@ -45,8 +52,10 @@ message LegacyTechEvent {
 enum CookieAccessOperation {
   // Unspecified operation.
   COOKIE_ACCESS_OPERATION_UNSPECIFIED = 0;
+
   // The cookie was read.
   COOKIE_ACCESS_OPERATION_READ = 1;
+
   // The cookie was written.
   COOKIE_ACCESS_OPERATION_WRITE = 2;
 }
@@ -57,17 +66,33 @@ message CookieIssueDetails {
   // If the cookie is accessed by a network transfer, this is the URL being
   // loaded; if it is read by a script, it's the URL of the window or service
   // worker script looking them up.
-  optional string transfer_or_script_url = 1;
+  string transfer_or_script_url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NETWORK_ENDPOINT]
+      // copybara:datapol_end
+      ;
 
   // Name of the cookie.
-  optional string name = 2;
+  string name = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NOT_REQUIRED]
+      // copybara:datapol_end
+      ;
 
   // Domain of the cookie.
-  optional string domain = 3;
+  string domain = 3
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NETWORK_ENDPOINT]
+      // copybara:datapol_end
+      ;
 
   // Path of the cookie.
-  optional string path = 4;
+  string path = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NOT_REQUIRED]
+      // copybara:datapol_end
+      ;
 
   // The operation performed on the cookie.
-  optional CookieAccessOperation access_operation = 5;
+  CookieAccessOperation access_operation = 5;
 }
