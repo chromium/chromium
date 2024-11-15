@@ -168,7 +168,7 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     cc_layer_->SetNearestNeighbor(FilterQuality() ==
                                   cc::PaintFlags::FilterQuality::kNone);
-    cc_layer_->SetFlipped(!resource_provider_->IsOriginTopLeft());
+    cc_layer_->SetFlipped(false);
   }
   return cc_layer_.get();
 }
