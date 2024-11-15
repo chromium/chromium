@@ -228,10 +228,9 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveTabsToNewDesk) {
       CreateTestGroup({{"Youtube", GURL("https://youtube.com")},
                        {"Google Maps", GURL("https://maps.google.com")}},
                       "Coral desk");
-
-  DeskSwitchAnimationWaiter waiter;
+  ToggleOverview();
+  WaitForOverviewEntered();
   Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(fake_group));
-  waiter.Wait();
 
   // We should have two desks and the new active desk has the coral title.
   DesksController* desks_controller = DesksController::Get();
@@ -290,9 +289,9 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveAppsToNewDesk) {
                        {"Settings", "odknhmnlageboeamepcngndbggdpaobj"}},
                       "Coral desk");
 
-  DeskSwitchAnimationWaiter waiter;
+  ToggleOverview();
+  WaitForOverviewEntered();
   Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(fake_group));
-  waiter.Wait();
 
   // We should have two desks and the new active desk has the coral title.
   DesksController* desks_controller = DesksController::Get();
@@ -718,14 +717,15 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, NoRepeatChipAfterLaunchGroup) {
   ASSERT_TRUE(coral_chip);
 
   // Create a new desk by clicking on the chip.
-  DeskSwitchAnimationWaiter waiter;
   test::Click(coral_chip);
-  waiter.Wait();
 
   auto* desks_controller = DesksController::Get();
   EXPECT_EQ(2u, desks_controller->desks().size());
   EXPECT_EQ(u"Coral desk", desks_controller->GetDeskName(
                                desks_controller->GetActiveDeskIndex()));
+
+  ToggleOverview();
+  WaitForOverviewExitAnimation();
 
   // Re-enter in Overview, there should be no chips.
   base::RunLoop birch_data_fetch_waiter2;

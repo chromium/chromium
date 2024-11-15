@@ -44,11 +44,9 @@ class CoralControllerTest : public AshTestBase {
   }
 
   void ClickFirstCoralButton() {
-    DeskSwitchAnimationWaiter waiter;
     BirchChipButton* coral_button = GetFirstCoralButton();
     CHECK(coral_button);
     LeftClickOn(coral_button);
-    waiter.Wait();
   }
 
   void AddCoralEntry(const std::string& name) {

@@ -122,8 +122,8 @@ Profile* GetActiveUserProfile() {
   return Profile::FromBrowserContext(browser_context);
 }
 
-// Creates a browser on the new desk.
-Browser* CreateBrowserOnNewDesk() {
+// Creates a browser on the active desk.
+Browser* CreateBrowser() {
   Profile* active_profile = GetActiveUserProfile();
   if (!active_profile) {
     return nullptr;
@@ -132,20 +132,20 @@ Browser* CreateBrowserOnNewDesk() {
   Browser::CreateParams params(Browser::Type::TYPE_NORMAL, active_profile,
                                /*user_gesture=*/false);
   params.should_trigger_session_restore = false;
-  params.initial_workspace = base::NumberToString(
-      chromeos::DesksHelper::Get(nullptr)->GetNumberOfDesks() - 1);
   return Browser::Create(std::move(params));
 }
 
-// Finds the first tab with given url on the active desk and returns the source
-// browser and the tab index.
-Browser* FindTabOnActiveDesk(const GURL& url, int& out_tab_index) {
+// Finds the first tab with given url on the desk with the given `index` and
+// returns the source browser and the tab index.
+Browser* FindTabOnDeskAtIndex(const GURL& url,
+                              int& out_tab_index,
+                              size_t src_desk_index) {
   out_tab_index = -1;
   auto* desks_helper = chromeos::DesksHelper::Get(nullptr);
   for (auto browser : *BrowserList::GetInstance()) {
-    // Guarantee the window belongs to the active desk.
-    if (!desks_helper->BelongsToActiveDesk(
-            browser->window()->GetNativeWindow())) {
+    // Guarantee the window belongs to the desk with the given `index`.
+    if (!desks_helper->BelongsToDesk(browser->window()->GetNativeWindow(),
+                                     src_desk_index)) {
       continue;
     }
 
@@ -199,17 +199,19 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
 }
 
 void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
-    const std::vector<coral::mojom::Tab>& tabs) {
+    const std::vector<coral::mojom::Tab>& tabs,
+    size_t src_desk_index) {
   Browser* target_browser = nullptr;
   for (const auto& tab : tabs) {
     // Find the index of the tab item on its browser window.
     const auto& tab_url = tab.url;
     int tab_index = -1;
-    Browser* source_browser = FindTabOnActiveDesk(tab_url, tab_index);
+    Browser* source_browser =
+        FindTabOnDeskAtIndex(tab_url, tab_index, src_desk_index);
     if (source_browser) {
       // Create a browser on the new desk if there is none.
       if (!target_browser) {
-        target_browser = CreateBrowserOnNewDesk();
+        target_browser = CreateBrowser();
         if (!target_browser) {
           break;
         }

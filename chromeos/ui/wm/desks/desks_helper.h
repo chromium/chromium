@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_WM) DesksHelper {
   // Returns true if |window| exists on the currently active desk.
   virtual bool BelongsToActiveDesk(aura::Window* window) = 0;
 
+  // Returns true if `Window` exists on the desk with the given `index`.
+  virtual bool BelongsToDesk(aura::Window* window, size_t index) = 0;
+
   // Returns the active desk's index.
   virtual int GetActiveDeskIndex() const = 0;
 

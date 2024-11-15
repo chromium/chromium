@@ -13,7 +13,8 @@ TestCoralDelegate::~TestCoralDelegate() = default;
 void TestCoralDelegate::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {}
 
 void TestCoralDelegate::MoveTabsInGroupToNewDesk(
-    const std::vector<coral::mojom::Tab>& tabs) {}
+    const std::vector<coral::mojom::Tab>& tabs,
+    size_t src_desk_index) {}
 
 void TestCoralDelegate::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) {
 }

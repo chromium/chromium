@@ -19,8 +19,8 @@ class TestCoralDelegate : public CoralDelegate {
 
   // CoralDelegate:
   void LaunchPostLoginGroup(coral::mojom::GroupPtr group) override;
-  void MoveTabsInGroupToNewDesk(
-      const std::vector<coral::mojom::Tab>& tabs) override;
+  void MoveTabsInGroupToNewDesk(const std::vector<coral::mojom::Tab>& tabs,
+                                size_t src_desk_index) override;
   void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) override;
 };
 

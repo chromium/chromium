@@ -10,9 +10,11 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/coral/fake_coral_service.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "base/command_line.h"
@@ -219,24 +221,19 @@ void CoralController::HandleCacheEmbeddingsResult(
 }
 
 void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
+  // TODO(crbug.com/378558824): Fix desk preview view after moving apps and
+  // tabs.
+  // TODO(crbug.com/378558491): Handle floating window.
   if (group->entities.empty()) {
     return;
   }
 
   DesksController* desks_controller = DesksController::Get();
   CHECK(desks_controller->CanCreateDesks());
-  desks_controller->NewDesk(
-      DesksCreationRemovalSource::kCoral,
-      base::UTF8ToUTF16(group->title.value_or(std::string())));
   const coral_util::TabsAndApps tabs_apps =
       coral_util::SplitContentData(group->entities);
 
-  // Move tabs to a browser on the new desk.
-  Shell::Get()->coral_delegate()->MoveTabsInGroupToNewDesk(tabs_apps.tabs);
-
-  // Move the apps to the new desk.
-  const int new_desk_idx = desks_controller->GetNumberOfDesks() - 1;
-  Desk* new_desk = desks_controller->GetDeskAtIndex(new_desk_idx);
+  int src_desk_index = desks_controller->GetActiveDeskIndex();
 
   // First place all windows that should be moved in a set, this is so we can
   // have O(1) lookups for snap groups later.
@@ -247,29 +244,45 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
     }
   }
 
-  auto* snap_group_controller = SnapGroupController::Get();
-  for (aura::Window* window : windows_set) {
-    // If a window is part of a snap group, and the other window is not part of
-    // `windows_set` (i.e. not in the group), remove the snap group first
-    // otherwise both windows will be moved.
-    if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      aura::Window* other_window = window == snap_group->window1()
-                                       ? snap_group->window2()
-                                       : snap_group->window1();
-      CHECK(other_window);
-      if (!windows_set.contains(other_window)) {
-        snap_group_controller->RemoveSnapGroup(snap_group,
-                                               SnapGroupExitPoint::kCoral);
-      }
-    }
-    desks_controller->MoveWindowFromActiveDeskTo(
-        window, new_desk, window->GetRootWindow(),
-        DesksMoveWindowFromActiveDeskSource::kCoral);
-  }
+  // Create the new desk to which the apps and tabs will be moved. And activate
+  // it.
+  Desk* new_desk = desks_controller->CreateNewDeskForCoralGroup(
+      base::UTF8ToUTF16(group->title.value_or(std::string())));
 
-  desks_controller->ActivateDesk(desks_controller->desks().back().get(),
-                                 DesksSwitchSource::kCoral);
+  auto* snap_group_controller = SnapGroupController::Get();
+  {
+    // Don't update desk mini view of the `new_desk` until all the apps and tabs
+    // are moved to the `new_desk`.
+    auto new_desk_mini_view_pauser =
+        Desk::ScopedContentUpdateNotificationDisabler(
+            /*desks=*/{new_desk},
+            /*notify_when_destroyed=*/true);
+
+    for (aura::Window* window : windows_set) {
+      // If a window is part of a snap group, and the other window is not part
+      // of `windows_set` (i.e. not in the group), remove the snap group first
+      // otherwise both windows will be moved.
+      if (SnapGroup* snap_group =
+              snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+        aura::Window* other_window = window == snap_group->window1()
+                                         ? snap_group->window2()
+                                         : snap_group->window1();
+        CHECK(other_window);
+        if (!windows_set.contains(other_window)) {
+          snap_group_controller->RemoveSnapGroup(snap_group,
+                                                 SnapGroupExitPoint::kCoral);
+        }
+      }
+
+      desks_controller->MoveWindowFromDeskAtIndexTo(
+          window, src_desk_index, new_desk, window->GetRootWindow(),
+          DesksMoveWindowFromActiveDeskSource::kCoral);
+    }
+
+    // Move tabs to a browser on the new desk.
+    Shell::Get()->coral_delegate()->MoveTabsInGroupToNewDesk(tabs_apps.tabs,
+                                                             src_desk_index);
+  }
 }
 
 }  // namespace ash
