@@ -1309,12 +1309,11 @@
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL" desc="Label for checkbox which enables showing a larger mouse cursor than normal.">
     Show large mouse cursor
   </message>
-  <!-- TODO(b/341770655): Finalize strings for Facegaze and mark translatable -->
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements.">
     Face control
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements.">
-    Use face and gaze movement to control cursor and keyboard
+    Use head movements and facial expressions to control your Chromebook
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PREVIOUS" desc="Label for previous button.">
     Previous
