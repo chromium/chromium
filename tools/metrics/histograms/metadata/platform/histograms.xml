@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.BootMode.WriteProtectSwitch"
-    enum="Platform.BootMode.SwitchStatus" expires_after="2024-12-24">
+    enum="Platform.BootMode.SwitchStatus" expires_after="2025-05-11">
   <owner>enlightened@chromium.org</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
