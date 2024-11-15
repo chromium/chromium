@@ -473,28 +473,30 @@ void CreateTestY16TextureDrawQuad_TwoColor(
           visible_rect.size(), memory.get(), rect.size().GetArea() * 2,
           base::TimeDelta());
   DCHECK_EQ(video_frame->rows(0) % 2, 0);
-  DCHECK_EQ(video_frame->stride(0) % 2, 0);
+  DCHECK_EQ(video_frame->stride(0) % 2, 0ul);
 
   for (int j = 0; j < video_frame->rows(0); ++j) {
     uint8_t* row = video_frame->writable_data(0) + j * video_frame->stride(0);
     if (j < foreground_rect.y() || j >= foreground_rect.bottom()) {
-      for (int i = 0; i < video_frame->stride(0) / 2; ++i) {
+      for (size_t i = 0; i < video_frame->stride(0) / 2; ++i) {
         *row++ = i & 0xFF;  // Fill R with anything. It is not rendered.
         *row++ = g_background;
       }
     } else {
-      for (int i = 0;
-           i < std::min(video_frame->stride(0) / 2, foreground_rect.x()); ++i) {
+      for (size_t i = 0; i < std::min<size_t>(video_frame->stride(0) / 2,
+                                              foreground_rect.x());
+           ++i) {
         *row++ = i & 0xFF;
         *row++ = g_background;
       }
-      for (int i = foreground_rect.x();
-           i < std::min(video_frame->stride(0) / 2, foreground_rect.right());
+      for (size_t i = foreground_rect.x();
+           i < std::min<size_t>(video_frame->stride(0) / 2,
+                                foreground_rect.right());
            ++i) {
         *row++ = i & 0xFF;
         *row++ = g_foreground;
       }
-      for (int i = foreground_rect.right(); i < video_frame->stride(0) / 2;
+      for (size_t i = foreground_rect.right(); i < video_frame->stride(0) / 2;
            ++i) {
         *row++ = i & 0xFF;
         *row++ = g_background;

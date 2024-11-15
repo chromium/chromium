@@ -405,9 +405,9 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureLibYuv(
   DCHECK(gfx::Rect(src_size).Contains(crop_rect));
 
   // Wrap |image| into VideoFrame.
-  std::vector<int32_t> strides(image->num_planes);
-  for (uint32_t i = 0; i < image->num_planes; ++i) {
-    if (!base::CheckedNumeric<uint32_t>(image->pitches[i])
+  std::vector<size_t> strides(image->num_planes);
+  for (size_t i = 0; i < image->num_planes; ++i) {
+    if (!base::CheckedNumeric<size_t>(image->pitches[i])
              .AssignIfValid(&strides[i])) {
       VLOGF(1) << "Invalid VAImage stride " << image->pitches[i]
                << " for plane " << i;

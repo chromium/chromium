@@ -109,7 +109,7 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
         frame = media::VideoFrame::CreateFrame(format, kCodedSize, kVisibleRect,
                                                kNaturalSize, kTimestamp);
       } else {
-        std::vector<int32_t> strides =
+        std::vector<size_t> strides =
             VideoFrame::ComputeStrides(format, kCodedSize);
         size_t aggregate_size = 0;
         size_t sizes[3] = {};
@@ -168,7 +168,7 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
 
   scoped_refptr<media::VideoFrame> frame;
 
-  std::vector<int32_t> strides = VideoFrame::ComputeStrides(format, kCodedSize);
+  std::vector<size_t> strides = VideoFrame::ComputeStrides(format, kCodedSize);
   ASSERT_EQ(strides[1], strides[2]);
 
   size_t aggregate_size = 0;
@@ -189,7 +189,7 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
   // Setup memory layout where U and V planes occupy the same space, but have
   // interleaving Y and V rows. This is achieved by doubling the stride.
   auto u_plane = region_span.subspan(sizes[0]);
-  int32_t normal_stride = strides[1];
+  size_t normal_stride = strides[1];
   auto v_plane = u_plane.subspan(normal_stride);
   strides[1] = strides[2] = normal_stride * 2;
 

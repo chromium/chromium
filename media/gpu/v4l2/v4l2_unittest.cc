@@ -164,10 +164,10 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
   // of 32. Round device value to nearest multiple of 64 and compare
   // stride values.
   const int bo_num_planes = gbm_bo_get_plane_count(bo);
-  std::vector<int32_t> strides =
+  std::vector<size_t> strides =
       VideoFrame::ComputeStrides(PIXEL_FORMAT_NV12, coded_size);
   for (int i = 0; i < bo_num_planes; ++i) {
-    uint32_t s = base::bits::AlignUpDeprecatedDoNotUse(strides[i], 64);
+    size_t s = base::bits::AlignUp(strides[i], 64ul);
     EXPECT_EQ(s, gbm_bo_get_stride_for_plane(bo, i));
   }
 
