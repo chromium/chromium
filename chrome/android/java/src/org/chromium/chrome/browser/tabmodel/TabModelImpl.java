@@ -993,17 +993,13 @@ public class TabModelImpl extends TabModelJniBridge {
         List<Tab> tabsToClose = getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs);
         if (tabsToClose.isEmpty()) return;
 
-        final TabGroupModelFilter filter =
-                TabModelUtils.getTabGroupModelFilterByTab(tabsToClose.get(0));
-        assert filter != null;
-
         var params =
                 TabClosureParams.closeTabs(tabsToClose)
                         .allowUndo(false)
                         .saveToTabRestoreService(false)
                         .build();
 
-        filter.closeTabs(params);
+        getTabRemover().closeTabs(params, /* allowDialog= */ false);
 
         // Open a new tab if all tabs are closed and the respective experiment arm is eanbled.
         if (QuickDeleteController.isQuickDeleteFollowupEnabledOpenNewTabOnEmptyState()) {

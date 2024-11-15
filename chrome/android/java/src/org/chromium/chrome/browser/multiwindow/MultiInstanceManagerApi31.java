@@ -847,11 +847,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             //
             // TODO(crbug.com/40826734): This only works for windows with live activities. It is
             // non-trivial to add recent tab entries without an active {@link Tab} instance.
-            var filterProvider = selector.getTabGroupModelFilterProvider();
             TabClosureParams params =
                     TabClosureParams.closeAllTabs().uponExit(true).hideTabGroups(true).build();
-            filterProvider.getTabGroupModelFilter(true).closeTabs(params);
-            filterProvider.getTabGroupModelFilter(false).closeTabs(params);
+            selector.getModel(true).getTabRemover().closeTabs(params, /* allowDialog= */ false);
+            selector.getModel(false).getTabRemover().closeTabs(params, /* allowDialog= */ false);
         }
         mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         Activity activity = getActivityById(instanceId);

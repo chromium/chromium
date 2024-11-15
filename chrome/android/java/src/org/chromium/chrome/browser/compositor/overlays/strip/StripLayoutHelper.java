@@ -625,8 +625,14 @@ public class StripLayoutHelper
                             AdapterView<?> parent, View view, int position, long id) {
                         mTabMenu.dismiss();
                         if (position == ID_CLOSE_ALL_TABS) {
-                            mTabGroupModelFilter.closeTabs(
-                                    TabClosureParams.closeAllTabs().hideTabGroups(true).build());
+                            mTabGroupModelFilter
+                                    .getTabModel()
+                                    .getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeAllTabs()
+                                                    .hideTabGroups(true)
+                                                    .build(),
+                                            /* allowDialog= */ true);
                             RecordUserAction.record("MobileToolbarCloseAllTabs");
                         }
                     }

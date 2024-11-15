@@ -83,6 +83,7 @@ public class TabModelImplUnitTest {
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private WeakReference<Context> mWeakReferenceContext;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
+    @Mock private TabModel mEmptyModel;
 
     private int mNextTabId;
 
@@ -99,6 +100,7 @@ public class TabModelImplUnitTest {
                 .thenReturn(FAKE_NATIVE_ADDRESS);
 
         when(mTabModelDelegate.isReparentingInProgress()).thenReturn(false);
+        when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mEmptyModel);
 
         when(mTabModelSelector.getTabGroupModelFilterProvider())
                 .thenReturn(mTabGroupModelFilterProvider);
@@ -471,11 +473,7 @@ public class TabModelImplUnitTest {
         tab3.updateAttachment(mWindowAndroid, mTabDelegateFactory);
 
         tabModel.closeTabsNavigatedInTimeWindow(20, 50);
-        verify(mTabGroupModelFilter)
-                .closeTabs(
-                        TabClosureParams.closeTabs(Arrays.asList(tab2, tab3))
-                                .allowUndo(false)
-                                .saveToTabRestoreService(false)
-                                .build());
+        assertEquals(1, tabModel.getCount());
+        assertEquals(tab1, tabModel.getTabAt(0));
     }
 }
