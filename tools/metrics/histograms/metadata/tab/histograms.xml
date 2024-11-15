@@ -950,6 +950,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Shared.UseUrlForTitle.{SanitizationRequestType}"
+    enum="Boolean" expires_after="2025-10-10">
+  <owner>qinmin@google.com</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records whether a tab in a shared tab group uses page URL as its title, if
+    the page is http(s) and optimization guide is enabled to retrieve the
+    alternative title. Recorded when a tab is added to a shared tab group, or
+    when a tab in a shared tab group finishes a navigation, or after the
+    tabgroup owning the tab was converted to a shared group. No metrics are
+    recorded for tabs in non-shared tab groups. This is recorded on all
+    platforms.
+  </summary>
+  <token key="SanitizationRequestType">
+    <variant name="AddTab" summary="Add a tab"/>
+    <variant name="NavigateTab" summary="Navigate a tab"/>
+    <variant name="ShareTabGroup" summary="Share a tab group"/>
+  </token>
+</histogram>
+
 <histogram name="TabGroups.ShowTabGroupCreationDialogSwitch.ToggledToState"
     enum="Boolean" expires_after="2025-04-30">
   <owner>bjfong@google.com</owner>

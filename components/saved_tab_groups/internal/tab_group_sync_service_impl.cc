@@ -54,7 +54,8 @@ bool IsSanitizationRequired(const SavedTabGroup& tab_group, const GURL url) {
 void UpdateTabTitleIfNeeded(
     const SavedTabGroup& group,
     SavedTabGroupTab& tab,
-    optimization_guide::OptimizationGuideDecider* opt_guide) {
+    optimization_guide::OptimizationGuideDecider* opt_guide,
+    stats::TitleSanitizationType type) {
   if (!IsSanitizationRequired(group, tab.url())) {
     return;
   }
@@ -70,6 +71,7 @@ void UpdateTabTitleIfNeeded(
   optimization_guide::OptimizationGuideDecision decision =
       opt_guide->CanApplyOptimization(
           tab.url(), optimization_guide::proto::PAGE_ENTITIES, &metadata);
+  bool use_url_as_title = true;
 
   if (decision == optimization_guide::OptimizationGuideDecision::kTrue &&
       metadata.any_metadata().has_value()) {
@@ -78,9 +80,11 @@ void UpdateTabTitleIfNeeded(
             optimization_guide::proto::PageEntitiesMetadata>();
     if (page_entities_metadata.has_value() &&
         !page_entities_metadata->alternative_title().empty()) {
+      use_url_as_title = false;
       title = base::ASCIIToUTF16(page_entities_metadata->alternative_title());
     }
   }
+  stats::RecordSharedGroupTitleSanitization(use_url_as_title, type);
   tab.SetTitle(title);
 }
 
@@ -338,7 +342,8 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                            /*saved_tab_guid=*/std::nullopt, tab_id);
   new_tab.SetCreatorCacheGuid(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
-  UpdateTabTitleIfNeeded(*group, new_tab, opt_guide_);
+  UpdateTabTitleIfNeeded(*group, new_tab, opt_guide_,
+                         stats::TitleSanitizationType::kAddTab);
 
   UpdateAttributions(group_id);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
@@ -372,7 +377,8 @@ void TabGroupSyncServiceImpl::NavigateTab(const LocalTabGroupID& group_id,
   SavedTabGroupTab updated_tab(*tab);
   updated_tab.SetURL(url);
   updated_tab.SetTitle(title);
-  UpdateTabTitleIfNeeded(*group, updated_tab, opt_guide_);
+  UpdateTabTitleIfNeeded(*group, updated_tab, opt_guide_,
+                         stats::TitleSanitizationType::kNavigateTab);
 
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
@@ -496,7 +502,8 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   SavedTabGroup shared_group =
       saved_group->CloneAsSharedTabGroup(std::string(collaboration_id));
   for (auto& tab : shared_group.saved_tabs()) {
-    UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_);
+    UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_,
+                           stats::TitleSanitizationType::kShareTabGroup);
   }
 
   // Make a copy before moving the group.

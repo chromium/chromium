@@ -62,6 +62,18 @@ enum class SharedTabGroupDataLoadFromDiskResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SharedTabGroupDataLoadFromDiskResult)
 
+// Types of tab title sanitization.
+enum class TitleSanitizationType {
+  // A tab was added to a group.
+  kAddTab = 0,
+  // A navigation was triggered in the tab.
+  kNavigateTab = 1,
+  // A tab group become shared.
+  kShareTabGroup = 2,
+
+  kMaxValue = kShareTabGroup
+};
+
 // Records metrics about the state of model such as the number of saved groups,
 // the number of tabs in each group, and more.
 // Only used for desktop code that uses SavedTabGroupKeyedService. Soon to be
@@ -116,6 +128,10 @@ void RecordEmptyGroupsMetricsOnTabAddedFromSync(const SavedTabGroup& group,
                                                 const SavedTabGroupTab& tab,
                                                 bool model_is_loaded);
 
+// Records metrics about title sanitization for shared tab groups.
+void RecordSharedGroupTitleSanitization(
+    bool use_url_as_title,
+    TitleSanitizationType title_sanitization_type);
 }  // namespace stats
 }  // namespace tab_groups
 

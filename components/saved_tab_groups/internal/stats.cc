@@ -249,5 +249,22 @@ void RecordEmptyGroupsMetricsOnTabAddedFromSync(const SavedTabGroup& group,
                             group.saved_tabs().empty());
 }
 
+void RecordSharedGroupTitleSanitization(
+    bool use_url_as_title,
+    TitleSanitizationType title_sanitization_type) {
+  std::string histogram;
+  switch (title_sanitization_type) {
+    case TitleSanitizationType::kAddTab:
+      histogram = "TabGroups.Shared.UseUrlForTitle.AddTab";
+      break;
+    case TitleSanitizationType::kNavigateTab:
+      histogram = "TabGroups.Shared.UseUrlForTitle.NavigateTab";
+      break;
+    case TitleSanitizationType::kShareTabGroup:
+      histogram = "TabGroups.Shared.UseUrlForTitle.ShareTabGroup";
+      break;
+  }
+  base::UmaHistogramBoolean(histogram, use_url_as_title);
+}
 }  // namespace stats
 }  // namespace tab_groups
