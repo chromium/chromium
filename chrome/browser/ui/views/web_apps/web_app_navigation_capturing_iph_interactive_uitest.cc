@@ -44,6 +44,8 @@
 
 namespace web_app {
 
+using apps::test::LinkCapturingFeatureVersion;
+
 namespace {
 constexpr char kStartPageScopeA[] =
     "/banners/link_capturing/scope_a/start.html";
@@ -59,20 +61,23 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDestinationPageId);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LatestDomMessageObserver,
                                     kLatestDomMessage);
 
-// Test to verify that the IPH is shown when navigation due to link capture
-// occurs.
-class WebAppNavigationCapturingIphUiTest
-    : public InteractiveFeaturePromoTest,
-      public testing::WithParamInterface<bool> {
+// IPH tests that need the navigation capturing flag to be turned on can use
+// this base class to test the IPH functionality. Note: If the intent is to also
+// test the IPH with the navigation capturing flag *off*, then use the derived
+// class instead (see WebAppNavigationCapturingIphUiTestParameterized below).
+class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
  public:
   WebAppNavigationCapturingIphUiTest()
+      : WebAppNavigationCapturingIphUiTest(
+            LinkCapturingFeatureVersion::kV2DefaultOn) {}
+
+  explicit WebAppNavigationCapturingIphUiTest(LinkCapturingFeatureVersion flag)
       : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab})) {
-    base::FieldTrialParams params;
-    params["link_capturing_state"] = "reimpl_default_on";
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPwaNavigationCapturing, params);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(flag),
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -89,6 +94,13 @@ class WebAppNavigationCapturingIphUiTest
                                            log_time);
     }
     InteractiveFeaturePromoTest::TearDownOnMainThread();
+  }
+
+  virtual bool NavigationCapturingV2Enabled() {
+    // Base class assumes Navigation Capture flag is always on. For testing with
+    // that flag off also, see WebAppNavigationCapturingIphUiTestParameterized
+    // below.
+    return true;
   }
 
  protected:
@@ -230,35 +242,66 @@ class WebAppNavigationCapturingIphUiTest
   web_app::OsIntegrationTestOverrideBlockingRegistration override_registration_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
+// This class is for testing IPH functionality with the Navigation Capturing
+// flag either on/off.
+class WebAppNavigationCapturingIphUiTestParameterized
+    : public WebAppNavigationCapturingIphUiTest,
+      public testing::WithParamInterface<LinkCapturingFeatureVersion> {
+ public:
+  WebAppNavigationCapturingIphUiTestParameterized()
+      : WebAppNavigationCapturingIphUiTest(GetParam()) {}
+
+  bool NavigationCapturingV2Enabled() override {
+    return GetParam() == LinkCapturingFeatureVersion::kV2DefaultOn;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHShownOnLinkLeftClick) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
   RunTestSequence(
       OpenStartPage(),
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
-      InSameContext(WaitForPromo(
-          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
+      If([this]() { return NavigationCapturingV2Enabled(); },
+         InSameContextAs(
+             kDestinationPageId,
+             WaitForPromo(
+                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch))),
+      InSameContextAs(
+          kDestinationPageId,
+          CheckPromoIsActive(
+              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
+              NavigationCapturingV2Enabled())));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
+IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHShownOnLinkMiddleClick) {
   const webapps::AppId app_id = InstallTestWebApp(GetStartUrl());
-  RunTestSequence(OpenAppStartPage(app_id),
-                  TriggerAppLaunch(kToSiteATargetBlankWithOpener,
+  RunTestSequence(
+      OpenAppStartPage(app_id),
+      TriggerAppLaunch(kToSiteATargetBlankWithOpener,
 #if BUILDFLAG(IS_MAC)
-                                   // Middle click does not work (consistently?)
-                                   // on Mac; see http://crbug.com/366580804
-                                   ui_controls::LEFT, ui_controls::kCommand
+                       // Middle click does not work (consistently?)
+                       // on Mac; see http://crbug.com/366580804
+                       ui_controls::LEFT, ui_controls::kCommand
 #else
-                                   ui_controls::MIDDLE
+                       ui_controls::MIDDLE
 #endif
-                                   ),
-                  InSameContext(WaitForPromo(
-                      feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
+                       ),
+      If([this]() { return NavigationCapturingV2Enabled(); },
+         InSameContextAs(
+             kDestinationPageId,
+             WaitForPromo(
+                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch))),
+      InSameContextAs(
+          kDestinationPageId,
+          CheckPromoIsActive(
+              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
+              NavigationCapturingV2Enabled())));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       /*MAYBE_*/ IPHShownOnLinkShiftClick) {
+IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
+                       IPHShownOnLinkShiftClick) {
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
   const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
   RunTestSequence(
@@ -273,11 +316,19 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                        ui_controls::kShift
 #endif
                            ),
-      InSameContext(WaitForPromo(
-          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
+      If([this]() { return NavigationCapturingV2Enabled(); },
+         InSameContextAs(
+             kDestinationPageId,
+             WaitForPromo(
+                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch))),
+      InSameContextAs(
+          kDestinationPageId,
+          CheckPromoIsActive(
+              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
+              NavigationCapturingV2Enabled())));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
+IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHShownForFocusExisting) {
   const webapps::AppId app_id = InstallTestWebApp(
       GetDestinationUrl(),
@@ -287,15 +338,18 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
   RunTestSequence(
       OpenStartPage(), OpenApp(app_id),
       ClickLaunchLink(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
-      // Switch back to the app browser's context and verify the IPH
-      // shows there.
-      InAnyContext(WithElement(kAppPageId, base::DoNothing())),
-      InSameContext(WaitForPromo(
-          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
+      If([this]() { return NavigationCapturingV2Enabled(); },
+         InSameContextAs(
+             kAppPageId,
+             WaitForPromo(
+                 feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch))),
+      InAnyContext(CheckPromoIsActive(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
+          NavigationCapturingV2Enabled())));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       IPHShownOnAuxContext) {
+                       IPHNotShownOnAuxContext) {
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
   const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
 
@@ -351,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
           CheckActionCount("LinkCapturingIPHAppBubbleNotAccepted", 1))));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
+IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHShownForAppInTab) {
   webapps::AppId app_id = test::InstallWebApp(
       browser()->profile(),
@@ -364,9 +418,24 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
                        ui_controls::kNoAccelerator,
                        /* expect_new_browser= */ false),
-      InSameContext(WaitForPromo(
-          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)));
+      // The app will launch in a new tab in the same browser window, so
+      // InSameContext can be used throughout.
+      If([this]() { return NavigationCapturingV2Enabled(); },
+         InSameContext(WaitForPromo(
+             feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab))),
+      InSameContext(CheckPromoIsActive(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
+          NavigationCapturingV2Enabled())));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppNavigationCapturingIphUiTestParameterized,
+    testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
+                    LinkCapturingFeatureVersion::kV2DefaultOff),
+    [](const testing::TestParamInfo<LinkCapturingFeatureVersion>& info) {
+      return apps::test::ToString(info.param);
+    });
 
 }  // namespace
 
