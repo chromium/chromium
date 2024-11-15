@@ -57,10 +57,10 @@ void VariationsSafeSeedStoreLocalState::SetTimeForStudyDateChecks(
   local_state_->SetTime(prefs::kVariationsSafeSeedDate, safe_seed_time);
 }
 
-const std::string& VariationsSafeSeedStoreLocalState::GetCompressedSeed()
-    const {
+StoredSeed VariationsSafeSeedStoreLocalState::GetCompressedSeed() const {
   // TODO(crbug.com/374947675): Use |seed_reader_writer_| to read a seed.
-  return local_state_->GetString(prefs::kVariationsSafeCompressedSeed);
+  return {StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
+          local_state_->GetString(prefs::kVariationsSafeCompressedSeed)};
 }
 
 void VariationsSafeSeedStoreLocalState::SetCompressedSeed(

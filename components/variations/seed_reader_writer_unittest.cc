@@ -165,7 +165,9 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedFileBasedSeed) {
       GetParam().seed_pref, file_writer_thread_.task_runner());
 
   // Ensure seed data loaded from seed file.
-  ASSERT_EQ(compressed_seed, seed_reader_writer.GetSeedData());
+  ASSERT_EQ(StoredSeed::StorageFormat::kCompressed,
+            seed_reader_writer.GetSeedData().storage_format);
+  ASSERT_EQ(compressed_seed, seed_reader_writer.GetSeedData().data);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Variations.SeedFileRead.",
@@ -196,7 +198,9 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadEmptySeedFile) {
       /*sample=*/1, /*expected_bucket_count=*/1);
 
   // Ensure seed data from local state prefs is loaded and decoded.
-  ASSERT_EQ("", seed_reader_writer.GetSeedData());
+  ASSERT_EQ(StoredSeed::StorageFormat::kCompressed,
+            seed_reader_writer.GetSeedData().storage_format);
+  ASSERT_EQ("", seed_reader_writer.GetSeedData().data);
 }
 
 // Verifies clients in SeedFiles group read seeds from local state prefs if no
@@ -223,7 +227,9 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadMissingSeedFile) {
       /*sample=*/0, /*expected_bucket_count=*/1);
 
   // Ensure seed data from local state prefs is loaded and decoded.
-  ASSERT_EQ(compressed_seed, seed_reader_writer.GetSeedData());
+  ASSERT_EQ(StoredSeed::StorageFormat::kCompressed,
+            seed_reader_writer.GetSeedData().storage_format);
+  ASSERT_EQ(compressed_seed, seed_reader_writer.GetSeedData().data);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -307,8 +313,10 @@ TEST_P(SeedReaderWriterControlAndLocalStateOnlyGroupTest,
       GetParam().seed_pref, file_writer_thread_.task_runner());
 
   // Ensure seed data loaded from prefs, not seed file.
+  ASSERT_EQ(StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
+            seed_reader_writer.GetSeedData().storage_format);
   ASSERT_EQ(local_state_.GetString(GetParam().seed_pref),
-            seed_reader_writer.GetSeedData());
+            seed_reader_writer.GetSeedData().data);
   histogram_tester.ExpectTotalCount(
       base::StrCat(
           {"Variations.SeedFileRead.",

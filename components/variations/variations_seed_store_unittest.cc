@@ -249,7 +249,7 @@ bool PrefHasDefaultValue(const TestingPrefServiceSimple& prefs,
 
 void CheckRegularSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
                                         TestVariationsSeedStore& seed_store) {
-  EXPECT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData(),
+  EXPECT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data,
               Not(IsEmpty()));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsLastFetchTime));
@@ -260,7 +260,7 @@ void CheckRegularSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
 void CheckRegularSeedAndSeedPrefsAreCleared(
     const TestingPrefServiceSimple& prefs,
     TestVariationsSeedStore& seed_store) {
-  EXPECT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData(),
+  EXPECT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data,
               IsEmpty());
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsLastFetchTime));
@@ -270,8 +270,9 @@ void CheckRegularSeedAndSeedPrefsAreCleared(
 
 void CheckSafeSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
                                      TestVariationsSeedStore& seed_store) {
-  EXPECT_THAT(seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData(),
-              Not(IsEmpty()));
+  EXPECT_THAT(
+      seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data,
+      Not(IsEmpty()));
   EXPECT_FALSE(
       PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedDate));
@@ -287,8 +288,9 @@ void CheckSafeSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
 
 void CheckSafeSeedAndSeedPrefsAreCleared(const TestingPrefServiceSimple& prefs,
                                          TestVariationsSeedStore& seed_store) {
-  EXPECT_THAT(seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData(),
-              IsEmpty());
+  EXPECT_THAT(
+      seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data,
+      IsEmpty());
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedDate));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedFetchTime));
@@ -388,9 +390,8 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ValidSeed) {
   EXPECT_EQ(seed_data, loaded_seed_data);
   EXPECT_EQ(base64_seed_signature, loaded_base64_seed_signature);
   // Make sure the seed data from prefs or SeedReaderWriter hasn't been changed.
-  EXPECT_EQ(base64_seed, prefs_.GetString(prefs::kVariationsCompressedSeed));
   EXPECT_EQ(expected_seed,
-            seed_store.GetSeedReaderWriterForTesting()->GetSeedData());
+            seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data);
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidSeed) {
@@ -528,7 +529,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_EmptySeed) {
   // Loading an empty seed should return false.
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
-  ASSERT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData(),
+  ASSERT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data,
               IsEmpty());
 
   base::HistogramTester histogram_tester;
@@ -1053,7 +1054,7 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_ValidSeed) {
   EXPECT_EQ(base64_seed,
             prefs_.GetString(prefs::kVariationsSafeCompressedSeed));
   EXPECT_EQ(expected_seed,
-            seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData());
+            seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data);
 }
 
 TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_CorruptSeed) {
@@ -1131,8 +1132,9 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_EmptySeed) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   ASSERT_TRUE(
       PrefHasDefaultValue(prefs_, prefs::kVariationsSafeCompressedSeed));
-  ASSERT_THAT(seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData(),
-              IsEmpty());
+  ASSERT_THAT(
+      seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data,
+      IsEmpty());
 
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
@@ -1528,7 +1530,7 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
   EXPECT_EQ(base64_seed,
             prefs_.GetString(prefs::kVariationsSafeCompressedSeed));
   EXPECT_EQ(expected_seed,
-            seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData());
+            seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data);
   VariationsSeed loaded_safe_seed;
   EXPECT_TRUE(
       seed_store.LoadSafeSeed(&loaded_safe_seed, unused_client_state.get()));
@@ -1578,7 +1580,7 @@ TEST_P(StoreSafeSeedDataAllGroupsTest,
   EXPECT_EQ(base64_old_seed,
             prefs_.GetString(prefs::kVariationsCompressedSeed));
   EXPECT_EQ(expected_seed,
-            seed_store.GetSeedReaderWriterForTesting()->GetSeedData());
+            seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data);
   // Verify that loading the stored seed returns the old seed value.
   VariationsSeed loaded_seed;
   std::string loaded_seed_data;
@@ -1820,7 +1822,7 @@ TEST_P(VariationsSeedStoreTestAllGroups,
   prefs_.SetString(prefs::kVariationsSeedSignature, "an unused signature");
   EXPECT_EQ(std::string(), seed_store.GetLatestSerialNumber());
   EXPECT_TRUE(PrefHasDefaultValue(prefs_, prefs::kVariationsCompressedSeed));
-  EXPECT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData(),
+  EXPECT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data,
               IsEmpty());
 }
 

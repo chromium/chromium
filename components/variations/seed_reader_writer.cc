@@ -77,9 +77,8 @@ SeedReaderWriter::~SeedReaderWriter() {
   }
 }
 
-void SeedReaderWriter::StoreValidatedSeed(
-    const std::string& compressed_seed_data,
-    const std::string& base64_seed_data) {
+void SeedReaderWriter::StoreValidatedSeed(std::string_view compressed_seed_data,
+                                          std::string_view base64_seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_state_->SetString(seed_pref_, base64_seed_data);
   if (ShouldUseSeedFile()) {
@@ -106,12 +105,13 @@ void SeedReaderWriter::ClearSeed() {
   }
 }
 
-const std::string& SeedReaderWriter::GetSeedData() const {
+StoredSeed SeedReaderWriter::GetSeedData() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
-    return seed_data_;
+    return {StoredSeed::StorageFormat::kCompressed, seed_data_};
   } else {
-    return local_state_->GetString(seed_pref_);
+    return {StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
+            local_state_->GetString(seed_pref_)};
   }
 }
 
@@ -137,7 +137,7 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
   return base::BindOnce(&DoSerialize, seed_data_);
 }
 
-void SeedReaderWriter::ScheduleSeedFileWrite(const std::string& seed_data) {
+void SeedReaderWriter::ScheduleSeedFileWrite(std::string_view seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (seed_writer_) {
     // Set `seed_data_`, this will be used later by the background serialization

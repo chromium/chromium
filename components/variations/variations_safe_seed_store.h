@@ -39,7 +39,7 @@ class VariationsSafeSeedStore {
   virtual void SetTimeForStudyDateChecks(const base::Time& safe_seed_time) = 0;
 
   // Getter and setter for the compressed and base64-encoded safe seed.
-  virtual const std::string& GetCompressedSeed() const = 0;
+  virtual StoredSeed GetCompressedSeed() const = 0;
   virtual void SetCompressedSeed(const std::string& safe_compressed,
                                  const std::string& base64_safe_compressed) = 0;
 

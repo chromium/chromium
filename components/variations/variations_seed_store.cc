@@ -628,7 +628,7 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
     base64_seed_data =
         local_state_->GetString(prefs::kVariationsCompressedSeed);
   } else {
-    base64_seed_data = safe_seed_store_->GetCompressedSeed();
+    base64_seed_data = safe_seed_store_->GetCompressedSeed().data;
   }
 
   if (base64_seed_data.empty())
@@ -740,7 +740,7 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
   // As a space optimization, store an alias to the safe seed if the contents
   // are identical.
   bool matches_safe_seed =
-      (seed.base64_seed_data == safe_seed_store_->GetCompressedSeed());
+      (seed.base64_seed_data == safe_seed_store_->GetCompressedSeed().data);
   seed_reader_writer_->StoreValidatedSeed(
       seed.compressed_seed_data,
       matches_safe_seed ? kIdenticalToSafeSeedSentinel : seed.base64_seed_data);
@@ -758,7 +758,8 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
     base::Time seed_fetch_time) {
   // As a performance optimization, avoid an expensive no-op of overwriting
   // the previous safe seed with an identical copy.
-  const std::string& previous_safe_seed = safe_seed_store_->GetCompressedSeed();
+  std::string_view previous_safe_seed =
+      safe_seed_store_->GetCompressedSeed().data;
   if (seed.base64_seed_data != previous_safe_seed) {
     // It's theoretically possible to overwrite an existing safe seed value,
     // which was identical to the latest seed, with a new value. This could

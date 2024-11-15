@@ -28,6 +28,16 @@ const char kDefaultGroup[] = "Default";
 const char kControlGroup[] = "Control_V3";
 const char kSeedFilesGroup[] = "SeedFiles_V3";
 
+// Represents a seed and its storage format where clients using
+// seed-file-based seeds store compressed data and those using
+// local-state-based seeds store compressed, base64 encoded data.
+struct StoredSeed {
+  enum class StorageFormat { kCompressed, kCompressedAndBase64Encoded };
+
+  StorageFormat storage_format;
+  std::string_view data;
+};
+
 // Handles reading and writing seeds to disk.
 class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     : public base::ImportantFileWriter::BackgroundDataSerializer {
@@ -58,14 +68,14 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Schedules a write of `base64_seed_data` to local state. For some clients
   // (see ShouldUseSeedFile()), also schedules a write of `compressed_seed_data`
   // to a seed file.
-  void StoreValidatedSeed(const std::string& compressed_seed_data,
-                          const std::string& base64_seed_data);
+  void StoreValidatedSeed(std::string_view compressed_seed_data,
+                          std::string_view base64_seed_data);
 
   // Clears seed data by overwriting it with an empty string.
   void ClearSeed();
 
   // Returns stored seed data.
-  const std::string& GetSeedData() const;
+  StoredSeed GetSeedData() const;
 
   // Overrides the timer used for scheduling writes with `timer_override`.
   void SetTimerForTesting(base::OneShotTimer* timer_override);
@@ -77,7 +87,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   GetSerializedDataProducerForBackgroundSequence() override;
 
   // Schedules `seed_data` to be written using `seed_writer_`.
-  void ScheduleSeedFileWrite(const std::string& seed_data);
+  void ScheduleSeedFileWrite(std::string_view seed_data);
 
   // Schedules the deletion of a seed file.
   void DeleteSeedFile();
