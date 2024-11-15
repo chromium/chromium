@@ -24,15 +24,19 @@ namespace WTF {
 
 namespace {
 
+// `lang` - Language code.  Now it is one of "tr", "az", "el", and "lt".
 inline bool LocaleIdMatchesLang(const AtomicString& locale_id,
-                                const StringView& lang) {
-  CHECK_GE(lang.length(), 2u);
-  CHECK_LE(lang.length(), 3u);
-  if (!locale_id.Impl() || !locale_id.Impl()->StartsWithIgnoringCase(lang))
+                                const StringView lang) {
+  wtf_size_t lang_length = lang.length();
+  CHECK(lang_length == 2u || lang_length == 3u);
+  if (!locale_id.Impl() ||
+      !locale_id.Impl()->StartsWithIgnoringASCIICase(lang)) {
     return false;
-  if (locale_id.Impl()->length() == lang.length())
+  }
+  if (locale_id.Impl()->length() == lang_length) {
     return true;
-  const UChar maybe_delimiter = (*locale_id.Impl())[lang.length()];
+  }
+  const UChar maybe_delimiter = (*locale_id.Impl())[lang_length];
   return maybe_delimiter == '-' || maybe_delimiter == '_' ||
          maybe_delimiter == '@';
 }
