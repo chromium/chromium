@@ -12,6 +12,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace content {
+class BrowserChildProcessHost;
 class RenderFrameHost;
 class RenderProcessHost;
 }  // namespace content
@@ -34,6 +35,12 @@ class Binders {
   void ExposeInterfacesToRendererProcess(
       service_manager::BinderRegistry* registry,
       content::RenderProcessHost* host);
+
+  // Allows the remote non-renderer child process to bind to the corresponding
+  // ProcessNode in the graph. Typically wired up via
+  // ContentBrowserClient::ExposeInterfacesToBrowserChild().
+  void ExposeInterfacesToBrowserChildProcess(
+      mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map);
 
   // Allows the remote renderer frame to bind to its corresponding FrameNode in
   // the graph. Typically wired up via

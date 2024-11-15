@@ -97,13 +97,22 @@ ProcessNodeImpl::~ProcessNodeImpl() {
   CHECK(worker_nodes_.empty());
 }
 
-void ProcessNodeImpl::Bind(
+void ProcessNodeImpl::BindRenderProcessCoordinationUnit(
     mojo::PendingReceiver<mojom::ProcessCoordinationUnit> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // A RenderProcessHost can be reused if the backing process suddenly dies, in
   // which case we will receive a new receiver from the newly spawned process.
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
+  render_process_receiver_.reset();
+  render_process_receiver_.Bind(std::move(receiver));
+}
+
+void ProcessNodeImpl::BindChildProcessCoordinationUnit(
+    mojo::PendingReceiver<mojom::ChildProcessCoordinationUnit> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // A RenderProcessHost can be reused if the backing process suddenly dies, in
+  // which case we will receive a new receiver from the newly spawned process.
+  child_process_receiver_.reset();
+  child_process_receiver_.Bind(std::move(receiver));
 }
 
 void ProcessNodeImpl::SetMainThreadTaskLoadIsLow(
@@ -181,16 +190,14 @@ void ProcessNodeImpl::OnRemoteIframeDetached(
   }
 }
 
-void ProcessNodeImpl::RequestSharedPerformanceScenarioRegions(
+void ProcessNodeImpl::InitializeChildProcessCoordination(
     uint64_t process_track_id,
-    RequestSharedPerformanceScenarioRegionsCallback callback) {
+    InitializeChildProcessCoordinationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Should not be called for the Browser process, which already has a track.
   // Otherwise, it's ok to overwrite `tracing_track_`, since processes can be
   // re-initialized for the same ProcessNode (eg. after a crash).
-  // TODO(crbug.com/374302723): Rename the Mojo message that sets this, since
-  // the track ID is used for more than PerformanceScenarios now.
   CHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
   tracing_track_.emplace(perfetto::Track::Global(process_track_id));
 
@@ -322,7 +329,8 @@ void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
   process_.SetAndNotify(this, base::Process());
 
   // No more message should be received from this process.
-  receiver_.reset();
+  render_process_receiver_.reset();
+  child_process_receiver_.reset();
 }
 
 void ProcessNodeImpl::SetProcessMetricsName(const std::string& metrics_name) {

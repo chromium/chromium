@@ -25,3 +25,12 @@ void ChromeContentBrowserClientPerformanceManagerPart::
         registry, render_process_host);
   }
 }
+
+void ChromeContentBrowserClientPerformanceManagerPart::ExposeInterfacesToChild(
+    mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map) {
+  auto* pm_registry =
+      performance_manager::PerformanceManagerRegistry::GetInstance();
+  if (pm_registry) {
+    pm_registry->GetBinders().ExposeInterfacesToBrowserChildProcess(map);
+  }
+}

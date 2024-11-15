@@ -8,16 +8,13 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -33,9 +30,6 @@ namespace blink {
 
 namespace {
 
-using blink::performance_scenarios::ScenarioScope;
-using blink::performance_scenarios::ScenarioState;
-using blink::performance_scenarios::ScopedReadOnlyScenarioMemory;
 using performance_manager::mojom::blink::IframeAttributionData;
 using performance_manager::mojom::blink::IframeAttributionDataPtr;
 using performance_manager::mojom::blink::ProcessCoordinationUnit;
@@ -81,10 +75,6 @@ class MockProcessCoordinationUnit : public ProcessCoordinationUnit {
               (const blink::LocalFrameToken& parent_frame_token,
                const blink::RemoteFrameToken& remote_frame_token),
               (override));
-  MOCK_METHOD(void,
-              RequestSharedPerformanceScenarioRegions,
-              (uint64_t, RequestSharedPerformanceScenarioRegionsCallback),
-              (override));
 
   void VerifyExpectations() {
     // Ensure that any pending Mojo messages are processed.
@@ -129,15 +119,9 @@ class RendererResourceCoordinatorImplTest : public ::testing::Test {
   }
 
   // Creates a MockProcessCoordinationUnit and binds it to a
-  // RendererResourceCoordinatorImpl. `global_region` and `process_region` will
-  // be sent in reply to the RequestSharedPerformanceScenarioRegions() call from
-  // the RendererResourceCoordinatorImpl constructor.
+  // RendererResourceCoordinatorImpl.
   template <typename MockType>
-  void InitializeMockProcessCoordinationUnit(
-      base::ReadOnlySharedMemoryRegion global_region =
-          base::ReadOnlySharedMemoryRegion(),
-      base::ReadOnlySharedMemoryRegion process_region =
-          base::ReadOnlySharedMemoryRegion()) {
+  void InitializeMockProcessCoordinationUnit() {
     DCHECK(!mock_process_coordination_unit_);
     DCHECK(!resource_coordinator_);
 
@@ -145,29 +129,12 @@ class RendererResourceCoordinatorImplTest : public ::testing::Test {
     mock_process_coordination_unit_ = std::make_unique<MockType>(
         pending_remote.InitWithNewPipeAndPassReceiver());
 
-    // The RendererResourceCoordinatorImpl constructor will always call
-    // RequestSharedPerformanceScenarioRegions().
-    base::OnceClosure quit_closure = task_environment_.QuitClosure();
-    EXPECT_CALL(*mock_process_coordination_unit_,
-                RequestSharedPerformanceScenarioRegions(_, _))
-        .WillOnce(
-            [&](uint64_t,
-                ProcessCoordinationUnit::
-                    RequestSharedPerformanceScenarioRegionsCallback callback) {
-              std::move(callback).Run(std::move(global_region),
-                                      std::move(process_region));
-              std::move(quit_closure).Run();
-            });
-
     // Create a RendererResourceCoordinator bound to the other end of the
     // MockProcessCoordinationUnit's remote.
     // Can't use make_unique with a private constructor.
     resource_coordinator_ = base::WrapUnique(
         new RendererResourceCoordinatorImpl(std::move(pending_remote)));
     RendererResourceCoordinator::Set(resource_coordinator_.get());
-
-    // Wait for the RequestSharedPerformanceScenarioRegions() call to finish.
-    task_environment_.RunUntilQuit();
   }
 
   test::TaskEnvironment task_environment_;
@@ -309,48 +276,6 @@ TEST_F(RendererResourceCoordinatorImplTest, NonIframeNotifications) {
       .Times(0);
   frame_test_helpers::SwapRemoteFrame(main_frame->FirstChild(), remote_frame);
   mock_process_coordination_unit_->VerifyExpectations();
-}
-
-TEST_F(RendererResourceCoordinatorImplTest, NoScenarioRegion) {
-  InitializeMockProcessCoordinationUnit<StrictMockProcessCoordinationUnit>(
-      /*global_region=*/base::ReadOnlySharedMemoryRegion(),
-      /*process_region=*/base::ReadOnlySharedMemoryRegion());
-  mock_process_coordination_unit_->VerifyExpectations();
-
-  EXPECT_FALSE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      ScenarioScope::kGlobal));
-  EXPECT_FALSE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      ScenarioScope::kCurrentProcess));
-}
-
-TEST_F(RendererResourceCoordinatorImplTest, GlobalScenarioRegion) {
-  auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
-  ASSERT_TRUE(shared_memory.has_value());
-
-  InitializeMockProcessCoordinationUnit<StrictMockProcessCoordinationUnit>(
-      /*global_region=*/shared_memory->DuplicateReadOnlyRegion(),
-      /*process_region=*/base::ReadOnlySharedMemoryRegion());
-  mock_process_coordination_unit_->VerifyExpectations();
-
-  EXPECT_TRUE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      ScenarioScope::kGlobal));
-  EXPECT_FALSE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      ScenarioScope::kCurrentProcess));
-}
-
-TEST_F(RendererResourceCoordinatorImplTest, ProcessScenarioRegion) {
-  auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
-  ASSERT_TRUE(shared_memory.has_value());
-
-  InitializeMockProcessCoordinationUnit<StrictMockProcessCoordinationUnit>(
-      /*global_region=*/base::ReadOnlySharedMemoryRegion(),
-      /*process_region=*/shared_memory->DuplicateReadOnlyRegion());
-  mock_process_coordination_unit_->VerifyExpectations();
-
-  EXPECT_FALSE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      ScenarioScope::kGlobal));
-  EXPECT_TRUE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      ScenarioScope::kCurrentProcess));
 }
 
 }  // namespace blink

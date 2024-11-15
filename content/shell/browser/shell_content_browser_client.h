@@ -111,6 +111,9 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       RenderProcessHost* render_process_host) override;
+  void ExposeInterfacesToChild(
+      mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map)
+      override;
   mojo::Remote<::media::mojom::MediaService> RunSecondaryMediaService()
       override;
   void RegisterBrowserInterfaceBindersForFrame(

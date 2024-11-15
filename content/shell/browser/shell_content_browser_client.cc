@@ -612,6 +612,13 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
       .ExposeInterfacesToRendererProcess(registry, render_process_host);
 }
 
+void ShellContentBrowserClient::ExposeInterfacesToChild(
+    mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map) {
+  PerformanceManagerRegistry::GetInstance()
+      ->GetBinders()
+      .ExposeInterfacesToBrowserChildProcess(map);
+}
+
 mojo::Remote<::media::mojom::MediaService>
 ShellContentBrowserClient::RunSecondaryMediaService() {
   mojo::Remote<::media::mojom::MediaService> remote;

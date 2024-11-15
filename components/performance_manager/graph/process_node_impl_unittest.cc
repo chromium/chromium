@@ -277,12 +277,12 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   }
 }
 
-TEST_F(ProcessNodeImplTest, RequestSharedPerformanceScenarioRegions) {
+TEST_F(ProcessNodeImplTest, InitializeChildProcessCoordination) {
   auto process_node = CreateNode<ProcessNodeImpl>();
 
   // No global memory mapped. ProcessNodeImpl automatically creates a process
   // memory region on request.
-  process_node->RequestSharedPerformanceScenarioRegions(
+  process_node->InitializeChildProcessCoordination(
       0u, base::BindLambdaForTesting(
               [&](base::ReadOnlySharedMemoryRegion global_region,
                   base::ReadOnlySharedMemoryRegion process_region) {
@@ -294,7 +294,7 @@ TEST_F(ProcessNodeImplTest, RequestSharedPerformanceScenarioRegions) {
 
   // Map global memory.
   ScopedGlobalScenarioMemory global_shared_memory;
-  process_node->RequestSharedPerformanceScenarioRegions(
+  process_node->InitializeChildProcessCoordination(
       0u, base::BindLambdaForTesting(
               [&](base::ReadOnlySharedMemoryRegion global_region,
                   base::ReadOnlySharedMemoryRegion process_region) {
@@ -309,7 +309,7 @@ TEST_F(ProcessNodeImplTest, RequestSharedPerformanceScenarioRegions) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kSingleProcess);
-  process_node->RequestSharedPerformanceScenarioRegions(
+  process_node->InitializeChildProcessCoordination(
       0u, base::BindLambdaForTesting(
               [&](base::ReadOnlySharedMemoryRegion global_region,
                   base::ReadOnlySharedMemoryRegion process_region) {
