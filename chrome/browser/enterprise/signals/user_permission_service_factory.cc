@@ -58,7 +58,8 @@ UserPermissionServiceFactory::UserPermissionServiceFactory()
 
 UserPermissionServiceFactory::~UserPermissionServiceFactory() = default;
 
-KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+UserPermissionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
 
@@ -81,11 +82,13 @@ KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
       profile, identity_manager, device_trust_connector_service);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* user_permission_service = new device_signals::UserPermissionServiceAsh(
-      management_service, std::move(user_delegate), profile->GetPrefs());
+  auto user_permission_service =
+      std::make_unique<device_signals::UserPermissionServiceAsh>(
+          management_service, std::move(user_delegate), profile->GetPrefs());
 #else
-  auto* user_permission_service = new device_signals::UserPermissionServiceImpl(
-      management_service, std::move(user_delegate), profile->GetPrefs());
+  auto user_permission_service =
+      std::make_unique<device_signals::UserPermissionServiceImpl>(
+          management_service, std::move(user_delegate), profile->GetPrefs());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return user_permission_service;
