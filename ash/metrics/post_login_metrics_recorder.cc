@@ -329,6 +329,12 @@ void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
 
 void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(
     base::TimeTicks ts) {
+  if (!timestamp_origin_.has_value()) {
+    // Tests could get here when they don't simulate login.
+    CHECK_IS_TEST();
+    return;
+  }
+
   // TODO(b/328339021, b/323098858): This is the mitigation against a bug that
   // animation observation has race condition. Can be in a part of better
   // architecture.

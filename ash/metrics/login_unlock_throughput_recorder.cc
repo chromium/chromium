@@ -278,10 +278,7 @@ void LoginUnlockThroughputRecorder::OnAuthSuccess() {
 
 void LoginUnlockThroughputRecorder::OnAshRestart() {
   is_ash_restart_ = true;
-  post_login_deferred_task_timer_.Stop();
-  if (!post_login_deferred_task_runner_->Started()) {
-    post_login_deferred_task_runner_->Start();
-  }
+  StartDeferredTaskRunner();
 }
 
 void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
@@ -339,13 +336,6 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   // were loaded.
   scoped_throughput_reporter_blocker_ =
       login_animation_throughput_reporter_->NewScopedBlocker();
-
-  constexpr base::TimeDelta kLoginAnimationDelayTimer = base::Seconds(20);
-  // post_login_deferred_task_timer_ is owned by this class so it's safe to
-  // use unretained pointer here.
-  post_login_deferred_task_timer_.Start(
-      FROM_HERE, kLoginAnimationDelayTimer, this,
-      &LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired);
 }
 
 void LoginUnlockThroughputRecorder::OnRestoredWindowCreated(int id) {
@@ -434,10 +424,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
 
   (new ShelfAnimationObserver(on_shelf_animation_end))->StartObserving();
 
-  post_login_deferred_task_timer_.Stop();
-  if (!post_login_deferred_task_runner_->Started()) {
-    post_login_deferred_task_runner_->Start();
-  }
+  StartDeferredTaskRunner();
 }
 
 void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {
@@ -495,6 +482,12 @@ void LoginUnlockThroughputRecorder::SetLoginFinishedReportedForTesting() {
   login_finished_reported_ = true;
 }
 
+void LoginUnlockThroughputRecorder::StartDeferredTaskRunner() {
+  if (!post_login_deferred_task_runner_->Started()) {
+    post_login_deferred_task_runner_->Start();
+  }
+}
+
 void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
   if (!time_compositor_animation_finished_.has_value() ||
       !time_shelf_animation_finished_.has_value()) {
@@ -513,24 +506,6 @@ void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
   }
 
   ui_recorder_.OnPostLoginAnimationFinish();
-}
-
-void LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired() {
-  TRACE_EVENT0(
-      "startup",
-      "LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired");
-
-  // `post_login_deferred_task_runner_` could be started in tests in
-  // `ScheduleWaitForShelfAnimationEndIfNeeded` where shelf is created
-  // before tests fake logins.
-  // No `CHECK_IS_TEST()` because there could be longer than 20s animations
-  // in production. See http://b/331236941
-  if (post_login_deferred_task_runner_->Started()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
-  post_login_deferred_task_runner_->Start();
 }
 
 void LoginUnlockThroughputRecorder::OnAllWindowsCreated(base::TimeTicks time) {
