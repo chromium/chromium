@@ -16,20 +16,6 @@
 
 namespace logging {
 
-// Migration in progress: For new code use NOTREACHED() or
-// NOTREACHED(base::NotFatalUntil::M*). NOTREACHED_IN_MIGRATION() is equally
-// fatal to NOTREACHED() without parameters but not annotated as [[noreturn]].
-#if CHECK_WILL_STREAM()
-#define NOTREACHED_IN_MIGRATION() \
-  LOGGING_CHECK_FUNCTION_IMPL(::logging::NotReachedError::NotReached(), false)
-#else
-#define NOTREACHED_IN_MIGRATION()                          \
-  (true) ? ::logging::NotReachedError::TriggerNotReached() \
-         : EAT_CHECK_STREAM_PARAMS()
-#endif
-
-// Migration in progress: Use NOTREACHED() directly without parameters instead.
-// TODO(crbug.com/40580068): Merge this with NOTREACHED().
 #if CHECK_WILL_STREAM()
 #define NOTREACHED_INTERNAL_IMPL() ::logging::NotReachedNoreturnError()
 #else

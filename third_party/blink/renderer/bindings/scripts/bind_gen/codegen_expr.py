@@ -313,8 +313,11 @@ def expr_from_exposure(exposure,
                 # We don't currently have a general way of checking the exposure
                 # of [TargetOfExposed] exposure. If this is actually a global,
                 # add it to GLOBAL_NAME_TO_EXECUTION_CONTEXT_CHECK.
+                # TODO(pbos): Migrate this to use NOTREACHED() directly, or even
+                # better don't generate code that shouldn't be reachable at all.
                 return _Expr(
-                    "(::logging::NotReachedError::NotReached() << "
+                    "(::logging::NotReachedError::NotReached("
+                    "base::NotFatalUntil::NoSpecifiedMilestoneInternal) << "
                     "\"{} exposure test is not supported at runtime\", false)".
                     format(entry.global_name))
 

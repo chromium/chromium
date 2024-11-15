@@ -145,28 +145,22 @@ class BASE_EXPORT CheckError {
   std::unique_ptr<LogMessage> log_message_;
 };
 
+// Used for NOTREACHED(base::NotFatalUntil).
+// TODO(pbos): Reconsider the name of this + NotReachedNoreturnError to be less
+// confusing.
 class BASE_EXPORT NotReachedError : public CheckError {
  public:
   static NotReachedError NotReached(
-      base::NotFatalUntil fatal_milestone =
-          base::NotFatalUntil::NoSpecifiedMilestoneInternal,
+      base::NotFatalUntil fatal_milestone,
       const base::Location& location = base::Location::Current());
 
-  // Used to trigger a NOTREACHED_IN_MIGRATION() without providing file or line
-  // while also discarding log-stream arguments. See base/notreached.h.
-  NOMERGE NOINLINE NOT_TAIL_CALLED static void TriggerNotReached();
-
-  // TODO(crbug.com/40580068): Mark [[noreturn]] once this is CHECK-fatal on all
-  // builds.
   NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedError();
 
  private:
   using CheckError::CheckError;
 };
 
-// TODO(crbug.com/40580068): This should take the name of the above class once
-// all callers of NOTREACHED_IN_MIGRATION() have migrated to the CHECK-fatal
-// version.
+// Used for NOTREACHED(), its destructor is importantly [[noreturn]].
 class BASE_EXPORT NotReachedNoreturnError : public CheckError {
  public:
   explicit NotReachedNoreturnError(

@@ -557,10 +557,6 @@ TEST(CheckDeathTest, NotReached) {
                             CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");
 }
 
-TEST(CheckDeathTest, NotReachedInMigration) {
-  EXPECT_CHECK_DEATH(NOTREACHED_IN_MIGRATION());
-}
-
 TEST(CheckDeathTest, DumpWillBeCheck) {
   DUMP_WILL_BE_CHECK(true);
 

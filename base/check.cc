@@ -375,13 +375,6 @@ NotReachedError NotReachedError::NotReached(base::NotFatalUntil fatal_milestone,
   return NotReachedError(log_message);
 }
 
-void NotReachedError::TriggerNotReached() {
-  // This triggers a NOTREACHED_IN_MIGRATION() error as the returned
-  // NotReachedError goes out of scope.
-  NotReached()
-      << "NOTREACHED log messages are omitted in official builds. Sorry!";
-}
-
 NotReachedError::~NotReachedError() = default;
 
 NotReachedNoreturnError::NotReachedNoreturnError(const base::Location& location)
