@@ -1956,6 +1956,14 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
       label="Memfd execution attempt detected in the audit log file."/>
 </enum>
 
+<enum name="SelectedTextState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Eligible"/>
+  <int value="2" label="Empty"/>
+  <int value="3" label="Too short"/>
+  <int value="4" label="Too long"/>
+</enum>
+
 <enum name="SimulateRightClickModifier">
   <int value="0" label="None"/>
   <int value="1" label="Alt"/>

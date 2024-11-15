@@ -35,6 +35,8 @@ enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) ButtonType {
 
 // Contains the eligibility status of text for a certain feature, e.g.
 // elucidation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) SelectedTextState {
   kUnknown = 0,
   kEligible = 1,

@@ -274,7 +274,7 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
                                gfx::Insets::TLBR(0, 0, 0, kButtonsRowSpacing))
                   // kUnknown mean hiding.
                   .SetVisible(button_status.elucidation_eligiblity !=
-                                  SelectedTextState::kUnknown)
+                              SelectedTextState::kUnknown)
                   .SetEnabled(button_status.elucidation_eligiblity ==
                               SelectedTextState::kEligible))
           .Build());
@@ -300,6 +300,9 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_MAHI_MENU_TITLE));
+
+  base::UmaHistogramEnumeration(kMahiContextMenuElucidationState,
+                                button_status.elucidation_eligiblity);
 }
 
 MahiMenuView::~MahiMenuView() {

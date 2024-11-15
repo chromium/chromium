@@ -2810,6 +2810,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Mahi.ContextMenuView.ElucidationState"
+    enum="SelectedTextState" expires_after="2025-04-06">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
+  <summary>
+    Records whether the elucidation function is available based on the current
+    selected text when the user right clicks and the Mahi menu is requested.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Mahi.ProviderCreationStatus"
     enum="MahiProviderCreationStatus" expires_after="2025-06-01">
   <owner>alanlxl@chromium.org</owner>

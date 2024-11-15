@@ -38,6 +38,8 @@ inline constexpr char kMahiContextMenuButtonClickHistogram[] =
     "ChromeOS.Mahi.ContextMenuView.ButtonClicked";
 inline constexpr char kMahiContextMenuDistillableHistogram[] =
     "ChromeOS.Mahi.ContextMenuView.Distillable";
+inline constexpr char kMahiContextMenuElucidationState[] =
+    "ChromeOS.Mahi.ContextMenuView.ElucidationState";
 
 }  // namespace chromeos::mahi
 

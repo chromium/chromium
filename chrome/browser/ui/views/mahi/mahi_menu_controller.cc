@@ -32,7 +32,7 @@ namespace {
 // TODO(b:374172642): final numbers are TBD
 constexpr int kMaxCharForCondensedView = 100;
 constexpr int kMinCharForElucidation = 100;
-constexpr int kMaxCharForElucidation = 1600;
+constexpr int kMaxCharForElucidation = 3200;
 
 // Whether the `text` is eligible for elucidation / simplication feature.
 SelectedTextState IsTextEligibleForElucidation(const std::u16string& text) {
