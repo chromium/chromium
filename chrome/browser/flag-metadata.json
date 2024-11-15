@@ -2025,11 +2025,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "disable-camera-frame-rotation-at-source",
-    "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "disable-cancel-all-touches",
     "owners": [ "chrome-knowledge-eng@google.com", "chromeos-touch-ml@google.com" ],
     // This flag is use to disable CancelAllTouches() function, which enable the

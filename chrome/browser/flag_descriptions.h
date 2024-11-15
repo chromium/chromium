@@ -3637,9 +3637,6 @@ extern const char kConchSystemAudioFromMicDescription[];
 extern const char kDeskProfilesName[];
 extern const char kDeskProfilesDescription[];
 
-extern const char kDisableCameraFrameRotationAtSourceName[];
-extern const char kDisableCameraFrameRotationAtSourceDescription[];
-
 extern const char kDisableCancelAllTouchesName[];
 extern const char kDisableCancelAllTouchesDescription[];
 
