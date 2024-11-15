@@ -1,9 +1,9 @@
 Name: serde_json_lenient
 URL: https://crates.io/crates/serde_json_lenient
-Version: 0.2.1
-Revision: 0dc4b4dc302f3e636c66e2661d46caf7b0394c67
+Version: 0.2.3
+Revision: 422da85272805a597368a17a01d477e153a8913e
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.3/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

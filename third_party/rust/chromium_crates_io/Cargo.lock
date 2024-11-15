@@ -586,10 +586,11 @@ dependencies = [
 
 [[package]]
 name = "serde_json_lenient"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "itoa",
+ "memchr",
  "ryu",
  "serde",
 ]
