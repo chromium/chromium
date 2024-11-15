@@ -75,6 +75,12 @@ const test::UIPath kPinKeyboardInput = {kPinSetupScreen, "pinKeyboard",
 const test::UIPath kSetupTitle = {kPinSetupScreen, "setupTitle"};
 const test::UIPath kSetupSubtitle = {kPinSetupScreen, "setupSubtitle"};
 
+const test::UIPath kPinInputField = {kPinSetupScreen, "pinKeyboard",
+                                     "pinKeyboard", "pinInput"};
+
+const test::UIPath kShowHidePinButton = {kPinSetupScreen, "pinKeyboard",
+                                         "pinKeyboard", "showPinButton"};
+
 // PasswordSelectionScreen elements.
 const test::UIPath kGaiaPasswordButton = {"password-selection",
                                           "gaiaPasswordButton"};
@@ -734,6 +740,26 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
       LoginDisplayHost::default_host()
           ->GetWizardContext()
           ->extra_factors_token.value()));
+}
+
+// Ensures that the 'eye' icon for showing/hiding the PIN works.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, ShowHidePin) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  test::OobeJS().CreateVisibilityWaiter(true, kShowHidePinButton)->Wait();
+
+  // Input field should have the 'password' type by default.
+  test::OobeJS().ExpectAttributeEQ("type", kPinInputField,
+                                   std::string{"password"});
+  // Clicking should make the PIN visible.
+  test::OobeJS().ClickOnPath(kShowHidePinButton);
+  test::OobeJS().ExpectAttributeEQ("type", kPinInputField, std::string{"text"});
+
+  // Back to hidden
+  test::OobeJS().ClickOnPath(kShowHidePinButton);
+  test::OobeJS().ExpectAttributeEQ("type", kPinInputField,
+                                   std::string{"password"});
 }
 
 // Tests that the 'Back' button logic on the PasswordSelectionScreen can bring

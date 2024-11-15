@@ -75,6 +75,8 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
   builder->Add("pinKeyboardPlaceholderPin", IDS_PIN_KEYBOARD_HINT_TEXT_PIN);
   builder->Add("pinKeyboardPlaceholderPinPassword",
                IDS_PIN_KEYBOARD_HINT_TEXT_PIN_PASSWORD);
+  builder->Add("showPin", IDS_AUTH_SETUP_SHOW_PIN);
+  builder->Add("hidePin", IDS_AUTH_SETUP_HIDE_PIN);
   builder->Add("pinKeyboardDeleteAccessibleName",
                IDS_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME);
   builder->Add("configurePinMismatched",

@@ -6649,6 +6649,12 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_AUTH_SETUP_HIDE_PASSWORD" desc="A tooltip on a button that hides the password that is being shown.">
     Hide password
   </message>
+  <message name="IDS_AUTH_SETUP_SHOW_PIN" desc="A tooltip on a button that reveals the PIN.">
+    Show PIN
+  </message>
+  <message name="IDS_AUTH_SETUP_HIDE_PIN" desc="A tooltip on a button that hides the PIN that is being shown.">
+    Hide PIN
+  </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT" desc="The hint about the minimal length of a password when the user sets a new password.">
     Password must be at least 8 characters
   </message>

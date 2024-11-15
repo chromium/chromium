@@ -159,6 +159,14 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
         value: false,
       },
 
+      /**
+       * Enables the visibility icon for showing/hiding the PIN
+       */
+      enableVisibilityIcon: {
+        type: Boolean,
+        value: false,
+      },
+
       isSetPinCallPending_: {
         notify: true,
         type: Boolean,
@@ -181,6 +189,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   useRecoveryModeApi: boolean;
   quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
   enablePlaceholder: boolean;
+  enableVisibilityIcon: boolean;
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();
@@ -353,6 +362,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       this.initialPin_ = this.pinKeyboardValue_;
       this.pinKeyboardValue_ = '';
       this.isConfirmStep = true;
+      this.$.pinKeyboard.resetPinVisibility();
       this.onPinChange_(new CustomEvent(
           'pin-change', {detail: {pin: this.pinKeyboardValue_}}));
       this.$.pinKeyboard.focusInput();

@@ -119,16 +119,23 @@
     background-color: var(--cros-sys-hover_on_subtle);
   }
 
-  cr-icon-button {
+  cr-icon-button#backspaceButton {
     background-color: var(--cros-icon-button-background-color);
     border-radius: 50%;
+  }
+
+  cr-icon-button#showPinButton {
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-size: 32px;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-margin-end: 0;
   }
 
   :host-context(.jelly-enabled) cr-icon-button#backspaceButton {
     background-color: var(--cros-sys-surface3);
   }
 
-  cr-icon-button:hover {
+  cr-icon-button#backspaceButton:hover {
     background-color: var(--cros-highlight-color-focus);
   }
 
@@ -207,7 +214,10 @@
 
 <div id="root" on-click="onRootClick_">
   <div id="pinInputDiv">
-    <cr-input id="pinInput" type="password" value="{{value}}"
+    <cr-input
+        id="pinInput"
+        type="[[getPinInputType(isPinVisible_)]]"
+        value="{{value}}"
         is-input-rtl$="[[isInputRtl_(value)]]" aria-label="[[ariaLabel]]"
         make-contrast$="[[hasInputOrFocus_(value, focused_)]]"
         invalid="[[hasError]]"
@@ -215,6 +225,11 @@
             enablePlaceholder)]]" inputmode="none"
         on-keydown="onInputKeyDown_" force-underline="true"
         disabled="[[disabled]]">
+        <cr-icon-button id="showPinButton" slot="inline-suffix"
+        hidden="[[!enableVisibilityIcon]]"
+        title="[[getShowHideButtonLabel(isPinVisible_)]]"
+        iron-icon="[[getShowHideButtonIcon(isPinVisible_)]]"
+        on-click="onPinShowHideButtonClick"></cr-icon-button>
     </cr-input>
     <slot select="[problem]"></slot>
   </div>
