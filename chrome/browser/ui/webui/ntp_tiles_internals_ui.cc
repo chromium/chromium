@@ -16,8 +16,10 @@
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/ntp_tiles_internals_resources.h"
+#include "components/grit/ntp_tiles_internals_resources_map.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/ntp_tiles/features.h"
@@ -112,17 +114,17 @@ void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionSpan(
 void CreateAndAddNTPTilesInternalsHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUINTPTilesInternalsHost);
+  webui::SetupWebUIDataSource(
+      source,
+      base::span<const webui::ResourcePath>(kNtpTilesInternalsResources),
+      IDR_NTP_TILES_INTERNALS_NTP_TILES_INTERNALS_HTML);
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
-
-  source->AddResourcePath("ntp_tiles_internals.js", IDR_NTP_TILES_INTERNALS_JS);
-  source->AddResourcePath("ntp_tiles_internals.css",
-                          IDR_NTP_TILES_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_NTP_TILES_INTERNALS_HTML);
 }
 
 }  // namespace

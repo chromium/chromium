@@ -51,6 +51,7 @@ static_library("ntp_tiles") {
   public_deps = [
     "//base",
     "//components/history/core/browser",
+    "//components/ntp_tiles/webui/resources:resources",
   ]
   deps = [
     "//build:branding_buildflags",
