@@ -46,6 +46,7 @@
 #include "content/services/auction_worklet/seller_lazy_filler.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "content/services/auction_worklet/worklet_util.h"
@@ -428,6 +429,7 @@ SellerWorklet::SellerWorklet(
         pending_url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
+    TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
     const GURL& decision_logic_url,
     const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
@@ -438,6 +440,7 @@ SellerWorklet::SellerWorklet(
     mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
         load_seller_worklet_client)
     : url_loader_factory_(std::move(pending_url_loader_factory)),
+      trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
       script_source_url_(decision_logic_url),
       trusted_scoring_signals_origin_(
           trusted_scoring_signals_url ? std::make_optional(url::Origin::Create(
@@ -622,9 +625,38 @@ void SellerWorklet::ScoreAd(
   score_ad_task->trace_wait_deps_start = base::TimeTicks::Now();
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_score_ad_deps", trace_id);
 
-  // If `trusted_signals_request_manager_` exists, there's a trusted scoring
-  // signals URL which needs to be fetched before the auction can be run.
+  if (trusted_signals_cache_key) {
+    // When using the TrustedSignalsCache, must have already discovered that the
+    // signals are allowed before a key is provided. If signals were not
+    // permitted, a null key should be passed in, and no signals will be
+    // retrieved.
+    CHECK(trusted_signals_relation_ ==
+              SignalsOriginRelation::kSameOriginSignals ||
+          trusted_signals_relation_ ==
+              SignalsOriginRelation::kPermittedCrossOriginSignals);
+
+    score_ad_task->waiting_for_signals_fetch = true;
+    score_ad_task->trusted_scoring_signals_kvv2_request =
+        trusted_signals_kvv2_manager_->RequestSignals(
+            TrustedSignalsKVv2Manager::SignalsType::kScoring,
+            trusted_signals_cache_key->compression_group_token,
+            trusted_signals_cache_key->partition_id,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+    return;
+  }
+
   if (trusted_signals_request_manager_) {
+    // If there's a coordinator and `trusted_signals_kvv2_manager_` is non-null,
+    // then the KVv2 cache should be in use, and either the caller should have
+    // passed in a `trusted_signals_cache_key`, or the trusted signals URL is
+    // cross-origin and we've learned that cross-origin signals aren't allowed,
+    // which will result in the destruction of
+    // `trusted_signals_request_manager_`.
+    CHECK(!auction_ad_config_non_shared_params
+               .trusted_scoring_signals_coordinator ||
+          !trusted_signals_kvv2_manager_);
+
     // Can only start fetching trusted seller signals if they're same-origin or
     // we have confirmation they are authorized by guaranteed-same-origin
     // script, as otherwise we may end up sending sensitive IG information to an
@@ -2013,6 +2045,9 @@ void SellerWorklet::OnGotCrossOriginTrustedSignalsPermissions(
   // more.
   trusted_signals_request_manager_.reset();
 
+  // The KVv2 manager will not be needed.
+  trusted_signals_kvv2_manager_ = nullptr;
+
   // If we're here, we don't actually have to worry about kicking off scoreAd()
   // execution since we only got the headers for the script; the body hasn't
   // been handed to us yet.
@@ -2026,6 +2061,7 @@ void SellerWorklet::StartFetchingSignalsForTask(
         trusted_signals_relation_ ==
             SignalsOriginRelation::kPermittedCrossOriginSignals);
 
+  score_ad_task->waiting_for_signals_fetch = true;
   if (trusted_signals_request_manager_->HasPublicKey()) {
     DCHECK(base::FeatureList::IsEnabled(
         blink::features::kFledgeTrustedSignalsKVv2Support));
@@ -2055,11 +2091,15 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     scoped_refptr<TrustedSignals::Result> result,
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  DCHECK(task->waiting_for_signals_fetch);
 
+  task->waiting_for_signals_fetch = false;
   task->trusted_bidding_signals_fetch_failed = !result ? true : false;
   task->trusted_scoring_signals_result = std::move(result);
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
-  // Clean up single-use object, now that it has done its job.
+  // Clean up single-use object, now that it has done its job. Still need to
+  // keep `trusted_scoring_signals_kvv2_request` alive, if non-null, to allow
+  // reusing the cached data.
   task->trusted_scoring_signals_request.reset();
 
   task->wait_trusted_signals =
@@ -2118,7 +2158,7 @@ bool SellerWorklet::IsReadyToScoreAd(const ScoreAdTask& task) const {
   // The first check should be implied by IsCodeReady(), but best to be safe.
   return trusted_signals_relation_ !=
              SignalsOriginRelation::kUnknownPermissionCrossOriginSignals &&
-         !task.trusted_scoring_signals_request &&
+         !task.waiting_for_signals_fetch &&
          !task.direct_from_seller_request_seller_signals &&
          !task.direct_from_seller_request_auction_signals && IsCodeReady();
 }

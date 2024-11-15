@@ -353,8 +353,8 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
   auto seller_worklet = std::make_unique<SellerWorklet>(
       std::move(v8_helpers), std::move(shared_storage_hosts),
       pause_for_debugger_on_start, std::move(pending_url_loader_factory),
-      std::move(auction_network_events_handler), decision_logic_url,
-      trusted_scoring_signals_url, top_window_origin,
+      std::move(auction_network_events_handler), GetTrustedSignalsKVv2Manager(),
+      decision_logic_url, trusted_scoring_signals_url, top_window_origin,
       std::move(permissions_policy_state), experiment_group_id,
       std::move(public_key),
       base::BindRepeating(

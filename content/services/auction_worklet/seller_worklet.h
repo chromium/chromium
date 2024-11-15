@@ -32,6 +32,7 @@
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -87,6 +88,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   };
 
   // Starts loading the worklet script on construction.
+  //
+  // `trusted_signals_kvv2_manager` must remain valid for the lifetime of the
+  // SellerWorklet.
   SellerWorklet(
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
@@ -96,6 +100,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
           pending_url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
+      TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
       const GURL& decision_logic_url,
       const std::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
@@ -235,7 +240,19 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_scoring_signals_request;
+
+    // Used when there's a KVv2 request managed by the
+    // TrustedSignalsKVv2Manager. Not cleared until the scoreBid() call is
+    // complete, to keep the signals cached in the manager.
+    std::unique_ptr<TrustedSignalsKVv2Manager::Request>
+        trusted_scoring_signals_kvv2_request;
+
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals_result;
+
+    // Set to true while waiting a signals fetch (either
+    // `trusted_scoring_signals_request` or
+    // `trusted_scoring_signals_kvv2_request`).
+    bool waiting_for_signals_fetch = false;
 
     // True if failed loading valid trusted scoring signals.
     bool trusted_bidding_signals_fetch_failed = false;
@@ -610,6 +627,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  // Owned by the AuctionWorkletService that owns `this`.
+  raw_ptr<TrustedSignalsKVv2Manager> trusted_signals_kvv2_manager_;
 
   const GURL script_source_url_;
   mojom::TrustedSignalsPublicKeyPtr public_key_;
