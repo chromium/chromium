@@ -33,6 +33,8 @@ constexpr std::array<uint8_t, 32> kIwaKeyDistributionPublicKeySHA256 = {
     0x2e, 0x40, 0xaf, 0x4e, 0x07, 0x18, 0xfa, 0xae, 0x6e, 0x0e, 0xdb,
     0x46, 0xfc, 0xc9, 0x36, 0x50, 0xcf, 0x38, 0xfa, 0xf9, 0xab};
 
+constexpr std::string_view kPreloadedKey = "is_preloaded";
+
 }  // namespace
 
 namespace component_updater {
@@ -82,9 +84,12 @@ void IwaKeyDistributionComponentInstallerPolicy::ComponentReady(
   if (install_dir.empty() || !version.IsValid()) {
     return;
   }
+
   VLOG(1) << "Iwa Key Distribution Component ready, version " << version
           << " in " << install_dir;
-  on_component_ready_.Run(version, install_dir.Append(kDataFileName));
+  on_component_ready_.Run(
+      version, install_dir.Append(kDataFileName),
+      /*is_preloaded=*/manifest.FindBool(kPreloadedKey).value_or(false));
 }
 
 base::FilePath

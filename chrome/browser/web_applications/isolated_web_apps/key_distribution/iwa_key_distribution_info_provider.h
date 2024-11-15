@@ -82,7 +82,8 @@ class IwaKeyDistributionInfoProvider {
   // upon success and if `component_version` is greater than the stored one, and
   // informs observers about the operation result.
   void LoadKeyDistributionData(const base::Version& component_version,
-                               const base::FilePath& file_path);
+                               const base::FilePath& file_path,
+                               bool is_preloaded);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -97,20 +98,27 @@ class IwaKeyDistributionInfoProvider {
 
   base::Value AsDebugValue() const;
 
+  bool IsPreloadedForTesting() const;
+
  private:
   struct ComponentData {
-    ComponentData(base::Version version, KeyRotations key_rotations);
+    ComponentData(base::Version version,
+                  KeyRotations key_rotations,
+                  bool is_preloaded);
     ~ComponentData();
     ComponentData(const ComponentData&);
 
     base::Version version;
     KeyRotations key_rotations;
+
+    bool is_preloaded = false;
   };
 
   IwaKeyDistributionInfoProvider();
 
   void OnKeyDistributionDataLoaded(
       const base::Version& version,
+      bool is_preloaded,
       base::expected<KeyRotations, ComponentUpdateError>);
 
   void DispatchComponentUpdateSuccess(
