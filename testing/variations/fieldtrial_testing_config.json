@@ -5134,6 +5134,24 @@
             ]
         }
     ],
+    "ChromnientMoreTranslateLanguages": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "MoreTranslateLanguagesEnabled",
+                    "enable_features": [
+                        "LensOverlayTranslateLanguages"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientPostLaunchTranslate": [
         {
             "platforms": [
