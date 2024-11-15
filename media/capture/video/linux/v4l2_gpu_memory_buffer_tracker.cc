@@ -39,9 +39,7 @@ gfx::BufferUsage GetBufferUsage(gfx::BufferFormat format) {
 
 V4L2GpuMemoryBufferTracker::V4L2GpuMemoryBufferTracker() = default;
 V4L2GpuMemoryBufferTracker::~V4L2GpuMemoryBufferTracker() {
-  if (is_valid_) {
-    VideoCaptureGpuChannelHost::GetInstance().RemoveObserver(this);
-  }
+  VideoCaptureGpuChannelHost::GetInstance().RemoveObserver(this);
 }
 
 bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
