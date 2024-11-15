@@ -74,6 +74,9 @@ declare_args() {
   # Enable background fetch mode for app refresh.
   ios_enable_background_mode = true
 
+  # Enable iOS 17 widgets improvements to support multi profile.
+  ios_enable_widgets_for_mim = false
+
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
   # Apple developer documentation
