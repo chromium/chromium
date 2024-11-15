@@ -7,12 +7,14 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
@@ -91,9 +93,17 @@
     return;
   }
 
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  if (!accountManagerService->HasIdentities()) {
+  bool hasAccountOnDevice = false;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(profile);
+    hasAccountOnDevice = !identityManager->GetAccountsOnDevice().empty();
+  } else {
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile);
+    hasAccountOnDevice = accountManagerService->HasIdentities();
+  }
+  if (!hasAccountOnDevice) {
     signin_metrics::RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT,
@@ -243,6 +253,8 @@
 
 // Starts the sign-in flow.
 - (void)startSignInOnlyFlow {
+  // TODO(crbug.com/375605482): Handle the case where the chosen identity is
+  // assigned to a different profile.
   [self showActivityOverlay];
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   // If this was triggered by the user tapping the default button in the sign-in
