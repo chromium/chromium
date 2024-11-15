@@ -446,10 +446,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
-      "modulesHeaderIconEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpModulesHeaderIcon));
-
-  source->AddBoolean(
       "modulesOverflowScrollbarEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesOverflowScrollbar));
 

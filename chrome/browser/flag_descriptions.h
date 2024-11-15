@@ -3015,9 +3015,6 @@ extern const char kForceNtpMobilePromoDescription[];
 extern const char kNtpModulesDragAndDropName[];
 extern const char kNtpModulesDragAndDropDescription[];
 
-extern const char kNtpModulesHeaderIconName[];
-extern const char kNtpModulesHeaderIconDescription[];
-
 extern const char kNtpModulesRedesignedName[];
 extern const char kNtpModulesRedesignedDescription[];
 

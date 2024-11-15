@@ -5237,10 +5237,6 @@ const char kNtpModulesDragAndDropDescription[] =
     "Enables modules to be reordered via dragging and dropping on the "
     "New Tab Page.";
 
-const char kNtpModulesHeaderIconName[] = "NTP Modules Header Icon";
-const char kNtpModulesHeaderIconDescription[] =
-    "Shows icons in NTP module headers.";
-
 const char kNtpModulesRedesignedName[] = "NTP Modules Redesigned";
 const char kNtpModulesRedesignedDescription[] =
     "Shows the redesigned modules on the New Tab Page.";

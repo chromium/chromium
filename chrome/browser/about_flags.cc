@@ -6972,10 +6972,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
 #endif
 
-    {"ntp-modules-header-icon", flag_descriptions::kNtpModulesHeaderIconName,
-     flag_descriptions::kNtpModulesHeaderIconDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesHeaderIcon)},
-
     {"ntp-middle-slot-promo-dismissal",
      flag_descriptions::kNtpMiddleSlotPromoDismissalName,
      flag_descriptions::kNtpMiddleSlotPromoDismissalDescription, kOsDesktop,

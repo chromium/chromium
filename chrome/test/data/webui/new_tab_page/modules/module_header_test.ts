@@ -4,7 +4,6 @@
 
 import {ModuleHeaderElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertStyle, capture, render} from '../test_support.js';
@@ -91,10 +90,6 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
   });
 
   suite('module header icon', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({modulesHeaderIconEnabled: true});
-    });
-
     test('icon appears', () => {
       // Act.
       moduleHeader.iconSrc = 'icons/module_logo.svg';
