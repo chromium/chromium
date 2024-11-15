@@ -146,14 +146,22 @@ public interface BottomSheetController {
 
     /**
      * @return The height of the bottom sheet's container in px. This will return 0 if the sheet has
-     *         not been initialized (content has not been requested).
+     *     not been initialized (content has not been requested).
      */
     int getContainerHeight();
 
     /**
+     * @return The maximum width of the bottom sheet. This will return 0 if the sheet has not been
+     *     initialized (content has not been requested). Can be used to measure content if needed in
+     *     {@link BottomSheetContent#getHalfHeightRatio()} and {@link
+     *     BottomSheetContent#getFullHeightRatio()}.
+     */
+    int getMaxSheetWidth();
+
+    /**
      * @return The srcim's coordinator. This can be used to customize the bottom sheet's interaction
-     *         with the scrim if the default behavior is not desired -- fading in behind the sheet
-     *         as the sheet is expanded.
+     *     with the scrim if the default behavior is not desired -- fading in behind the sheet as
+     *     the sheet is expanded.
      */
     ScrimCoordinator getScrimCoordinator();
 

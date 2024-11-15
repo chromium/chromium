@@ -1087,8 +1087,10 @@ class BottomSheet extends FrameLayout
         return mContainerHeight;
     }
 
-    /** @return The maximum width of the bottom sheet based on its current state and container. */
-    private int getMaxSheetWidth() {
+    /**
+     * @return The maximum width of the bottom sheet based on its current state and container.
+     */
+    public int getMaxSheetWidth() {
         if (!mAlwaysFullWidth) {
             int narrowWidthThreshold =
                     getResources()
