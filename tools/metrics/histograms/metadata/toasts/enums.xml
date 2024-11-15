@@ -48,6 +48,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Added to comparison table"/>
   <int value="7" label="Clear Browsing Data"/>
   <int value="8" label="Automatic plus address replacement during Autofill"/>
+  <int value="9"
+      label="ESB value was synced to 'turned on' - for non security settings
+             page"/>
+  <int value="10"
+      label="ESB value was synced to 'turned on' - for security settings page"/>
+  <int value="11" label="ESB value is synced to 'turned off'"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

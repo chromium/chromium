@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
@@ -27,6 +28,8 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/menus/simple_menu_model.h"
@@ -130,6 +133,57 @@ void ToastService::RegisterToasts(
 #endif
             IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MESSAGE)
             .AddMenu()
+            .Build());
+  }
+
+  // ESB as a synced setting.
+  if (base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
+    toast_registry_->RegisterToast(
+        ToastId::kSyncEsbOn,
+        ToastSpecification::Builder(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            vector_icons::kGshieldIcon,
+#else
+            kSecurityIcon,
+#endif
+            IDS_SETTINGS_SAFEBROWSING_ENHANCED_ON_TOAST_MESSAGE)
+            .AddActionButton(
+                IDS_SETTINGS_SETTINGS,
+                base::BindRepeating(
+                    [](BrowserWindowInterface* window) {
+                      window->OpenGURL(
+                          GURL("chrome://settings/security"),
+                          WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                    },
+                    base::Unretained(browser_window_interface)))
+            .AddCloseButton()
+            .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kSyncEsbOnWithoutActionButton,
+        ToastSpecification::Builder(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            vector_icons::kGshieldIcon,
+#else
+            kSecurityIcon,
+#endif
+            IDS_SETTINGS_SAFEBROWSING_ENHANCED_ON_TOAST_MESSAGE)
+            .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kSyncEsbOff,
+        ToastSpecification::Builder(
+            kInfoIcon, IDS_SETTINGS_SAFEBROWSING_ENHANCED_OFF_TOAST_MESSAGE)
+            .AddActionButton(
+                IDS_SETTINGS_SAFEBROWSING_TURN_ON_ENHANCED_TOAST_BUTTON,
+                base::BindRepeating(
+                    [](BrowserWindowInterface* window) {
+                      Profile* profile = window->GetProfile();
+                      if (profile) {
+                        profile->GetPrefs()->SetBoolean(
+                            prefs::kSafeBrowsingEnhanced, true);
+                      }
+                    },
+                    base::Unretained(browser_window_interface)))
+            .AddCloseButton()
             .Build());
   }
 }

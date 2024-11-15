@@ -26,6 +26,12 @@ std::string GetToastName(ToastId toast_id) {
       return "ClearBrowsingData";
     case ToastId::kPlusAddressOverride:
       return "PlusAddressOverride";
+    case ToastId::kSyncEsbOn:
+      return "SyncEsbOn";
+    case ToastId::kSyncEsbOnWithoutActionButton:
+      return "SyncEsbOnWithoutActionButton";
+    case ToastId::kSyncEsbOff:
+      return "SyncEsbOff";
   }
 
   NOTREACHED();
