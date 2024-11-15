@@ -18,7 +18,7 @@
 GlicButton::GlicButton(TabStripController* tab_strip_controller)
     : TabStripControlButton(tab_strip_controller,
                             PressedCallback(),
-                            vector_icons::kMagicButtonIcon) {
+                            vector_icons::kErrorOutlineIcon) {
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
 
   // TODO(iwells): Replace the values here, values are required to compile.
