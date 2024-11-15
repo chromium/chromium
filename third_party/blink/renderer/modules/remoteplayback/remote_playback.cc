@@ -242,6 +242,13 @@ ScriptPromise<IDLUndefined> RemotePlayback::prompt(
     return EmptyPromise();
   }
 
+  if (!RuntimeEnabledFeatures::RemotePlaybackBackendEnabled()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The RemotePlayback API is disabled on this platform.");
+    return EmptyPromise();
+  }
+
   if (availability_ == mojom::ScreenAvailability::UNAVAILABLE) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
                                       "No remote playback devices found.");
@@ -307,7 +314,8 @@ void RemotePlayback::PromptInternal() {
 
 int RemotePlayback::WatchAvailabilityInternal(
     AvailabilityCallbackWrapper* callback) {
-  if (IsBackgroundAvailabilityMonitoringDisabled()) {
+  if (RuntimeEnabledFeatures::RemotePlaybackBackendEnabled() &&
+      IsBackgroundAvailabilityMonitoringDisabled()) {
     return kWatchAvailabilityNotSupported;
   }
 
@@ -441,7 +449,8 @@ void RemotePlayback::SourceChanged(const KURL& source,
 
 void RemotePlayback::UpdateAvailabilityUrlsAndStartListening() {
   if (is_background_availability_monitoring_disabled_for_testing_ ||
-      IsBackgroundAvailabilityMonitoringDisabled()) {
+      IsBackgroundAvailabilityMonitoringDisabled() ||
+      !RuntimeEnabledFeatures::RemotePlaybackBackendEnabled()) {
     return;
   }
 
@@ -520,6 +529,7 @@ void RemotePlayback::StateChangedForTesting(bool is_connected) {
 
 bool RemotePlayback::RemotePlaybackAvailable() const {
   if (IsBackgroundAvailabilityMonitoringDisabled() &&
+      RuntimeEnabledFeatures::RemotePlaybackBackendEnabled() &&
       !media_element_->currentSrc().IsEmpty()) {
     return true;
   }

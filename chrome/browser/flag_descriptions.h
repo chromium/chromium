@@ -1143,6 +1143,9 @@ extern const char kForceUiDirectionDescription[];
 extern const char kMediaRemotingWithoutFullscreenName[];
 extern const char kMediaRemotingWithoutFullscreenDescription[];
 
+extern const char kRemotePlaybackBackendName[];
+extern const char kRemotePlaybackBackendDescription[];
+
 #if !BUILDFLAG(IS_CHROMEOS)
 extern const char kGlobalMediaControlsUpdatedUIName[];
 extern const char kGlobalMediaControlsUpdatedUIDescription[];

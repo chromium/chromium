@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -53,9 +54,10 @@ class MockPresentationController final : public PresentationController {
 };
 }  // namespace
 
-class RemotePlaybackTest : public testing::Test {
+class RemotePlaybackTest : public testing::Test,
+                           private ScopedRemotePlaybackBackendForTest {
  public:
-  RemotePlaybackTest() = default;
+  RemotePlaybackTest() : ScopedRemotePlaybackBackendForTest(true) {}
 
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
@@ -314,6 +316,37 @@ TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
   // Verify mock expectations explicitly as the mock objects are garbage
   // collected.
   testing::Mock::VerifyAndClear(callback_function);
+}
+
+TEST_F(RemotePlaybackTest, PromptThrowsWhenBackendDisabled) {
+  ScopedRemotePlaybackBackendForTest remote_playback_backend(false);
+  V8TestingScope scope;
+  RemotePlayback& remote_playback = get_remote_playback();
+
+  NotifyUserActivationTest();
+  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(RemotePlaybackTest, WatchAvailabilityWorksWhenBackendDisabled) {
+  ScopedRemotePlaybackBackendForTest remote_playback_backend(false);
+  V8TestingScope scope;
+  RemotePlayback& remote_playback = get_remote_playback();
+
+  MockFunctionScope funcs(scope.GetScriptState());
+
+  V8RemotePlaybackAvailabilityCallback* availability_callback =
+      V8RemotePlaybackAvailabilityCallback::Create(
+          funcs.ExpectNoCall()->ToV8Function(scope.GetScriptState()));
+
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(), remote_playback.watchAvailability(
+                                  scope.GetScriptState(), availability_callback,
+                                  scope.GetExceptionState()));
+
+  // Runs pending promises.
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
 TEST_F(RemotePlaybackTest, IsListening) {
