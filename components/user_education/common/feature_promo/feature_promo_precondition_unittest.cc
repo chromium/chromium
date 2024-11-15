@@ -5,10 +5,13 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/test/gtest_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education {
 
@@ -25,7 +28,54 @@ constexpr FeaturePromoResult::Failure kPrecondFailure3 =
 constexpr char kPrecondName[] = "Precond";
 constexpr char kPrecondName2[] = "Precond2";
 constexpr char kPrecondName3[] = "Precond3";
+
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(int, kIntegerData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(std::string, kStringData);
 }  // namespace
+
+TEST(FeaturePromoPreconditionTest, SetAndGetCachedData) {
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
+                                           kPrecondName, false);
+  precond1.InitCache(kIntegerData);
+  precond1.InitCache(kStringData);
+  EXPECT_EQ(0, precond1.GetCachedData(kIntegerData));
+  EXPECT_EQ("", precond1.GetCachedData(kStringData));
+  precond1.GetCachedData(kIntegerData) = 2;
+  precond1.GetCachedData(kStringData) = "3";
+  EXPECT_EQ(2, precond1.GetCachedData(kIntegerData));
+  EXPECT_EQ("3", precond1.GetCachedData(kStringData));
+}
+
+TEST(FeaturePromoPreconditionTest, GetCachedDataCrashesIfDataNotPresent) {
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
+                                           kPrecondName, false);
+  EXPECT_CHECK_DEATH(precond1.GetCachedData(kIntegerData));
+}
+
+TEST(FeaturePromoPreconditionTest, ExtractCachedData) {
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
+                                           kPrecondName, false);
+  precond1.InitCache(kIntegerData, kStringData);
+  precond1.GetCachedData(kIntegerData) = 2;
+  precond1.GetCachedData(kStringData) = "3";
+
+  internal::PreconditionData::Collection coll;
+  precond1.ExtractCachedData(coll);
+  EXPECT_EQ(2, *internal::PreconditionData::Get(coll, kIntegerData));
+  EXPECT_EQ("3", *internal::PreconditionData::Get(coll, kStringData));
+}
+
+TEST(FeaturePromoPreconditionTest, GetAfterExtractCachedDataFails) {
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
+                                           kPrecondName, false);
+  precond1.InitCache(kIntegerData, kStringData);
+  precond1.GetCachedData(kIntegerData) = 2;
+  precond1.GetCachedData(kStringData) = "3";
+
+  internal::PreconditionData::Collection coll;
+  precond1.ExtractCachedData(coll);
+  EXPECT_CHECK_DEATH(precond1.GetCachedData(kIntegerData));
+}
 
 TEST(FeaturePromoPreconditionTest, CachingFeaturePromoPrecondition) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,

@@ -271,6 +271,7 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
   explicit SafeElementReference(TrackedElement* element);
   SafeElementReference(SafeElementReference&& other);
   SafeElementReference(const SafeElementReference& other);
+  SafeElementReference& operator=(TrackedElement* element);
   SafeElementReference& operator=(SafeElementReference&& other);
   SafeElementReference& operator=(const SafeElementReference& other);
   ~SafeElementReference();

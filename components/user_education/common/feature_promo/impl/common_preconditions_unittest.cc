@@ -9,6 +9,7 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/test/mock_anchor_element_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,6 +121,47 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(nullptr));
   EXPECT_FALSE(precond.IsAllowed());
+}
+
+TEST(CommonPreconditionsTest,
+     AnchorElementPrecondition_ExtractCachedDataReturnsElement) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId);
+  static const ui::ElementContext kTestContext(1);
+  ui::test::TestElement el(kTestId, kTestContext);
+  el.Show();
+
+  test::MockAnchorElementProvider provider;
+  AnchorElementPrecondition precond(provider, kTestContext);
+
+  EXPECT_CALL(provider, GetAnchorElement(kTestContext))
+      .WillOnce(testing::Return(&el));
+  EXPECT_TRUE(precond.IsAllowed());
+
+  internal::PreconditionData::Collection coll;
+  precond.ExtractCachedData(coll);
+  auto* data = internal::PreconditionData::Get(
+      coll, AnchorElementPrecondition::kAnchorElement);
+  ASSERT_NE(nullptr, data);
+  EXPECT_EQ(&el, data->get());
+}
+
+TEST(CommonPreconditionsTest,
+     AnchorElementPrecondition_ExtractCachedDataReturnsNull) {
+  static const ui::ElementContext kTestContext(1);
+
+  test::MockAnchorElementProvider provider;
+  AnchorElementPrecondition precond(provider, kTestContext);
+
+  EXPECT_CALL(provider, GetAnchorElement(kTestContext))
+      .WillOnce(testing::Return(nullptr));
+  EXPECT_FALSE(precond.IsAllowed());
+
+  internal::PreconditionData::Collection coll;
+  precond.ExtractCachedData(coll);
+  auto* data = internal::PreconditionData::Get(
+      coll, AnchorElementPrecondition::kAnchorElement);
+  ASSERT_NE(nullptr, data);
+  EXPECT_EQ(nullptr, data->get());
 }
 
 }  // namespace user_education

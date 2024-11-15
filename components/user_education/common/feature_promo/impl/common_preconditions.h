@@ -10,6 +10,8 @@
 #include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education {
 
@@ -60,6 +62,9 @@ class MeetsFeatureEngagementCriteriaPrecondition
 // Represents the requirement that an anchor element is present and visible.
 class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
  public:
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(ui::SafeElementReference,
+                                       kAnchorElement);
+
   explicit AnchorElementPrecondition(const AnchorElementProvider& provider,
                                      ui::ElementContext default_context);
   ~AnchorElementPrecondition() override;

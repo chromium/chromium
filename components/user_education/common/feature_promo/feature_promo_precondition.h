@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace user_education {
@@ -40,12 +42,19 @@ class FeaturePromoPrecondition {
   // Gets whether the precondition is met and promos are allowed.
   virtual bool IsAllowed() const = 0;
 
+  // Extracts any cached data from this precondition and adds it to `to_add_to`;
+  // future calls to this object may fail. Cached data likely reflects the most
+  // recent time `IsAllowed()` was called, and therefore that method should
+  // always be called first.
+  virtual void ExtractCachedData(
+      internal::PreconditionData::Collection& to_add_to) {}
+
  protected:
   FeaturePromoPrecondition() = default;
 };
 
 // Same as `FeaturePromoPrecondition`, but stores values for identifier,
-// failure, and description.
+// failure, and description, along with optional cached data.
 class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
  public:
   using Identifier = ui::ElementIdentifier;
@@ -57,6 +66,8 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
   Identifier GetIdentifier() const override;
   FeaturePromoResult::Failure GetFailure() const override;
   const std::string& GetDescription() const override;
+  void ExtractCachedData(
+      internal::PreconditionData::Collection& to_add_to) override;
 
   void set_failure(FeaturePromoResult::Failure failure) { failure_ = failure; }
 
@@ -65,10 +76,46 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
                                FeaturePromoResult::Failure failure,
                                std::string description);
 
+  // Use this method to initialize the various types of data the precondition
+  // will support by passing in appropriate typed identifiers.
+  //
+  // Can be called any number of times with unique typed identifiers, or all
+  // at once.
+  template <typename... Args>
+  void InitCache(internal::PreconditionData::TypedIdentifier<Args>... args) {
+    (data_.emplace(
+         args.identifier(),
+         std::make_unique<internal::TypedPreconditionData<Args>>(args)),
+     ...);
+  }
+
+  // Retrieve a reference to cached data held by the precondition, which can be
+  // used to get or set the value. InitCache() must have been called with
+  // the same `id`, and `ExtractData()` must not have been called.
+  //
+  // The data returned is mutable even thought the method is const, because it
+  // is expected to be used to cache data.
+  template <typename T>
+  T& GetCachedData(internal::PreconditionData::TypedIdentifier<T> id) const {
+    auto* const result = internal::PreconditionData::Get<T>(data_, id);
+    CHECK(result);
+    return *result;
+  }
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest, SetAndGetCachedData);
+  FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
+                           GetCachedDataCrashesIfDataNotPresent);
+  FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest, ExtractCachedData);
+  FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
+                           GetAfterExtractCachedDataFails);
+
   const Identifier identifier_;
   FeaturePromoResult::Failure failure_;
   const std::string description_;
+
+  // Mutable so that data can be cached during retrieval.
+  mutable internal::PreconditionData::Collection data_;
 };
 
 // Represents a precondition that returns a cached value that is updated as it

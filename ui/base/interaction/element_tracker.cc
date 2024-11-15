@@ -527,6 +527,14 @@ SafeElementReference::SafeElementReference(const SafeElementReference& other)
   Subscribe();
 }
 
+SafeElementReference& SafeElementReference::operator=(TrackedElement* el) {
+  if (element_ != el) {
+    element_ = el;
+    Subscribe();
+  }
+  return *this;
+}
+
 SafeElementReference& SafeElementReference::operator=(
     SafeElementReference&& other) {
   if (&other != this) {

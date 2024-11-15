@@ -35,6 +35,7 @@ source_set("common") {
     "feature_promo/impl/feature_promo_queue.h",
     "feature_promo/impl/feature_promo_queue_set.cc",
     "feature_promo/impl/feature_promo_queue_set.h",
+    "feature_promo/impl/precondition_data.h",
     "feature_promo/impl/precondition_list_provider.cc",
     "feature_promo/impl/precondition_list_provider.h",
     "help_bubble/help_bubble.cc",

@@ -32,6 +32,16 @@ const std::string& FeaturePromoPreconditionBase::GetDescription() const {
   return description_;
 }
 
+void FeaturePromoPreconditionBase::ExtractCachedData(
+    internal::PreconditionData::Collection& to_add_to) {
+  for (auto& [id, data] : data_) {
+    const auto result = to_add_to.emplace(id, std::move(data));
+    CHECK(result.second) << "Two different providers for precondition data: "
+                         << id;
+  }
+  data_.clear();
+}
+
 CachingFeaturePromoPrecondition::CachingFeaturePromoPrecondition(
     Identifier identifier,
     FeaturePromoResult::Failure failure,

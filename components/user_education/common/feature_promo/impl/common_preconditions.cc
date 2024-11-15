@@ -8,6 +8,8 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education {
 
@@ -75,6 +77,10 @@ bool MeetsFeatureEngagementCriteriaPrecondition::IsAllowed() const {
   return true;
 }
 
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(AnchorElementPrecondition,
+                                    ui::SafeElementReference,
+                                    kAnchorElement);
+
 AnchorElementPrecondition::AnchorElementPrecondition(
     const AnchorElementProvider& provider,
     ui::ElementContext default_context)
@@ -82,12 +88,16 @@ AnchorElementPrecondition::AnchorElementPrecondition(
                                    FeaturePromoResult::kBlockedByUi,
                                    "Anchor Element Visible"),
       provider_(provider),
-      default_context_(default_context) {}
+      default_context_(default_context) {
+  InitCache(kAnchorElement);
+}
 
 AnchorElementPrecondition::~AnchorElementPrecondition() = default;
 
 bool AnchorElementPrecondition::IsAllowed() const {
-  return nullptr != provider_->GetAnchorElement(default_context_);
+  auto* const element = provider_->GetAnchorElement(default_context_);
+  GetCachedData(kAnchorElement) = element;
+  return element != nullptr;
 }
 
 }  // namespace user_education

@@ -138,6 +138,7 @@ component("base") {
     "interaction/framework_specific_implementation.h",
     "interaction/interaction_sequence.cc",
     "interaction/interaction_sequence.h",
+    "interaction/typed_identifier.h",
     "l10n/formatter.cc",
     "l10n/formatter.h",
     "l10n/l10n_font_util.cc",
