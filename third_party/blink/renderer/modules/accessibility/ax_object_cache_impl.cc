@@ -803,6 +803,7 @@ static std::string TreeUpdateReasonAsDebugString(
     DEBUG_STRING_CASE(kEditableTextContentChanged);
     DEBUG_STRING_CASE(kFocusableChanged);
     DEBUG_STRING_CASE(kIdChanged);
+    DEBUG_STRING_CASE(kMaybeDisallowImplicitSelection);
     DEBUG_STRING_CASE(kNodeIsAttached);
     DEBUG_STRING_CASE(kNodeGainedFocus);
     DEBUG_STRING_CASE(kNodeLostFocus);
@@ -1469,6 +1470,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // Give the AXObject its ID and initialize.
   AssociateAXID(new_obj, axid);
   new_obj->Init(parent);
+  MaybeDisallowImplicitSelectionWithCleanLayout(new_obj);
 
 #if DCHECK_IS_ON()
   Element* element = DynamicTo<Element>(node);
@@ -3744,6 +3746,9 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     case TreeUpdateReason::kDidShowMenuListPopup:
       HandleUpdateMenuListPopupWithCleanLayout(node, /*did_show*/ true);
       break;
+    case TreeUpdateReason::kMaybeDisallowImplicitSelection:
+      MaybeDisallowImplicitSelectionWithCleanLayout(ax_object);
+      break;
     case TreeUpdateReason::kEditableTextContentChanged:
       HandleEditableTextContentChangedWithCleanLayout(node);
       break;
@@ -4024,6 +4029,62 @@ void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(Node* node) {
     PostNotification(node, ax::mojom::blink::Event::kCheckedStateChanged);
 }
 
+void AXObjectCacheImpl::MaybeDisallowImplicitSelectionWithCleanLayout(
+    AXObject* subwidget) {
+  bool do_notify = false;
+  switch (subwidget->RoleValue()) {
+    case ax::mojom::blink::Role::kTab:
+      if (subwidget->HasAriaAttribute(html_names::kAriaExpandedAttr) ||
+          subwidget->HasAriaAttribute(html_names::kAriaSelectedAttr)) {
+        do_notify = true;
+      }
+      break;
+    case ax::mojom::blink::Role::kListBoxOption:
+    case ax::mojom::blink::Role::kMenuListOption:
+    case ax::mojom::blink::Role::kTreeItem:
+      if (subwidget->HasAriaAttribute(html_names::kAriaSelectedAttr) ||
+          subwidget->HasAriaAttribute(html_names::kAriaCheckedAttr)) {
+        do_notify = true;
+      }
+      break;
+    default:
+      return;
+  }
+  if (!do_notify) {
+    return;
+  }
+
+  if (AXObject* container = subwidget->ContainerWidget()) {
+    if (containers_disallowing_implicit_selection_
+            .insert(container->AXObjectID())
+            .is_new_entry) {
+      if (subwidget->RoleValue() == ax::mojom::blink::Role::kTab) {
+        // Tabs are a special case, because tab selection can be implicit via
+        // focus of an element inside the tab panel it controls. For these, mark
+        // all of the child tabs within the containing tablist dirty.
+        for (const auto& child : container->CachedChildrenIncludingIgnored()) {
+          AddDirtyObjectToSerializationQueue(child);
+        }
+        return;
+      }
+      // The active descendant or focus may lose its implicit selected state.
+      AXObject* ax_focus = FocusedObject();
+      if (ax_focus == container) {
+        if (AXObject* activedescendant = container->ActiveDescendant()) {
+          AddDirtyObjectToSerializationQueue(activedescendant);
+        }
+      }
+      AddDirtyObjectToSerializationQueue(ax_focus);
+    }
+  }
+}
+
+bool AXObjectCacheImpl::IsImplicitSelectionAllowed(const AXObject* container) {
+  DCHECK(container);
+  return !containers_disallowing_implicit_selection_.Contains(
+      container->AXObjectID());
+}
+
 // In single selection containers, selection follows focus, so a selection
 // changed event must be fired. This ensures the AT is notified that the
 // selected state has changed, so that it does not read "unselected" as
@@ -4246,12 +4307,27 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       TextChanged(element);
     } else if (attr_name == html_names::kAriaCheckedAttr) {
       PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
+      DeferTreeUpdate(TreeUpdateReason::kMaybeDisallowImplicitSelection,
+                      element);
     } else if (attr_name == html_names::kAriaPressedAttr) {
       DeferTreeUpdate(TreeUpdateReason::kAriaPressedChanged, element);
     } else if (attr_name == html_names::kAriaSelectedAttr) {
       DeferTreeUpdate(TreeUpdateReason::kAriaSelectedChanged, element);
+      DeferTreeUpdate(TreeUpdateReason::kMaybeDisallowImplicitSelection,
+                      element);
+    } else if (attr_name == html_names::kAriaMultiselectableAttr) {
+      if (element == FocusedNode()) {
+        // Even though active descendant didn't necessarily change, we want
+        // to mark it dirty, because it could lose an implicit selected state.
+        DeferTreeUpdate(TreeUpdateReason::kActiveDescendantChanged, element);
+      } else {
+        MarkElementDirty(FocusedNode());
+      }
+      MarkElementDirty(element);
     } else if (attr_name == html_names::kAriaExpandedAttr) {
       DeferTreeUpdate(TreeUpdateReason::kAriaExpandedChanged, element);
+      DeferTreeUpdate(TreeUpdateReason::kMaybeDisallowImplicitSelection,
+                      element);
     } else if (attr_name == html_names::kAriaHiddenAttr) {
       // Removing the subtree will also notify its parent that children changed,
       // causing the subtree to recursively be rebuilt with correct cached
@@ -4772,6 +4848,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kDelayEventFromPostNotification:
     case TreeUpdateReason::kFocusableChanged:
     case TreeUpdateReason::kIdChanged:
+    case TreeUpdateReason::kMaybeDisallowImplicitSelection:
     case TreeUpdateReason::kNodeIsAttached:
     case TreeUpdateReason::kPostNotificationFromHandleLoadStart:
     case TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor:

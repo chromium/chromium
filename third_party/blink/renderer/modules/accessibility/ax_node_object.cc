@@ -2811,35 +2811,29 @@ bool AXNodeObject::IsSelectedFromFocusSupported() const {
   if (!ui::IsSelectRequiredOrImplicit(RoleValue()))
     return false;
 
-  // https://www.w3.org/TR/wai-aria-1.1/#aria-selected
-  // Any explicit assignment of aria-selected takes precedence over the implicit
-  // selection based on focus.
-  bool is_selected;
-  if (AriaBooleanAttribute(html_names::kAriaSelectedAttr, &is_selected)) {
+  // Selection follows focus only when in a single selection container.
+  const AXObject* container = ContainerWidget();
+  if (!container || container->IsMultiSelectable()) {
     return false;
   }
 
-  // Selection follows focus only when in a single selection container.
-  const AXObject* container = ContainerWidget();
-  if (!container || container->IsMultiSelectable())
+  // Certain properties inside the container widget mean that implicit selection
+  // must be turned off.
+  if (!AXObjectCache().IsImplicitSelectionAllowed(container)) {
     return false;
+  }
 
-  // TODO(crbug.com/1143451): https://www.w3.org/TR/wai-aria-1.1/#aria-selected
-  // If any DOM element in the widget is explicitly marked as selected, the user
-  // agent MUST NOT convey implicit selection for the widget.
   return true;
 }
 
 // In single selection containers, selection follows focus unless aria_selected
 // is set to false. This is only valid for a subset of elements.
 bool AXNodeObject::IsSelectedFromFocus() const {
-  if (!IsSelectedFromFocusSupported())
-    return false;
-
   // A tab item can also be selected if it is associated to a focused tabpanel
   // via the aria-labelledby attribute.
-  if (IsTabItem() && IsTabItemSelected())
+  if (IsTabItem() && IsSelectedFromFocusSupported() && IsTabItemSelected()) {
     return true;
+  }
 
   // If this object is not accessibility focused, then it is not selected from
   // focus.
@@ -2848,7 +2842,7 @@ bool AXNodeObject::IsSelectedFromFocus() const {
       (!focused_object || focused_object->ActiveDescendant() != this))
     return false;
 
-  return true;
+  return IsSelectedFromFocusSupported();
 }
 
 // Returns true if the object is marked user-select:none

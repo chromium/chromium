@@ -2,9 +2,9 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 
-<div role="listbox" id="listbox" tabindex="0" aria-activedescendant="opt3">
+<div role="listbox" id="listbox" tabindex="0" aria-activedescendant="opt3" aria-multiselectable="true">
     <div id="opt1" role="option">Option 1</div>
-    <div id="opt2" role="option" aria-selected="false">Option 2</div>
+    <div id="opt2" role="option">Option 2</div>
     <div id="opt3" role="option">Option 3</div>
 </div>
 
@@ -12,9 +12,20 @@
     <div id="opt2.1" role="option">Option 2.1</div>
 </div>
 
+<div role="listbox" id="listbox3" tabindex="0" aria-activedescendant="opt3.1">
+    <div id="opt3.1" role="option">Option 1</div>
+    <div id="opt3.2" role="option">Option 2</div>
+    <div id="opt3.3" role="option" aria-checked="true">Option 3</div>
+</div>
+
 <div role="tree" id="tree">
     <div id="treeitem1" role="treeitem" tabindex="-1">Tree item 1</div>
     <div id="treeitem2" role="treeitem">Tree item 2</div>
+    <div role="none">
+        <div role="group">
+            <div id="treeitem3" role="treeitem">Tree item 3</div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -26,16 +37,22 @@ function axElementById(id) {
 
 test(function(t) {
     listbox.focus();
-    var axOption1 = axElementById("opt1");
-    assert_equals(axOption1.isSelectable, true);
-}, "Descendant widgets are selectable in a single selection container");
+    var axOption3 = axElementById("opt3");
+    assert_equals(axOption3.isSelectable, true);
+    assert_equals(axOption3.isSelected, false);
+    listbox.setAttribute('aria-multiselectable', 'false');
+    assert_equals(axOption3.isSelectable, true);
+    assert_equals(axOption3.isSelected, true);
+}, "Descendant widgets are selectable/selected in a single selection container");
 
 test(function(t) {
     listbox.focus();
     listbox.setAttribute("aria-activedescendant", "opt1");
     var axOption1 = axElementById("opt1");
     assert_equals(axOption1.isSelected, true);
-}, "Selection follows activedescendant in a single selection container");
+    document.getElementById("opt3").ariaSelected = "true";
+    assert_equals(axOption1.isSelected, false);
+}, "Selection follows activedescendant in a single selection container, unless aria-selected is explicitly set on any subwidget");
 
 test(function(t) {
   var axOption = axElementById("opt2.1");
@@ -43,29 +60,18 @@ test(function(t) {
 }, "Options are selectable even if it is not clear they can be from markup");
 
 test(function(t) {
-    listbox.focus();
-    listbox.setAttribute("aria-activedescendant", "opt2");
-    var axOption2 = axElementById("opt2");
-    assert_equals(axOption2.isSelected, false);
-}, "Selection doesn't follow activedescendant when aria-selected=false");
-
-test(function(t) {
-    listbox.focus();
-    listbox.setAttribute("aria-activedescendant", "opt2");
-    var axOption1 = axElementById("opt1");
-    assert_equals(axOption1.isSelected, false);
-}, "Only focused item is marked as selected in a single selection container");
+    var listbox3 = document.getElementById("listbox3");
+    listbox3.focus();
+    var axOption31 = axElementById("opt3.1");
+    assert_equals(axOption31.isSelected, false);
+}, "Selection does not follow activedescendant in a single selection container when aria-checked is set on a subwidget");
 
 test(function(t) {
     document.getElementById('treeitem1').focus();
     var treeitem1 = axElementById("treeitem1");
     assert_equals(treeitem1.isSelected, true);
-}, "Selection follows tabindex focus in a single selection container");
-
-test(function(t) {
-    document.getElementById('treeitem2').focus();
-    var treeitem2 = axElementById("treeitem2");
-    assert_equals(treeitem2.isSelected, false);
-}, "Selection doesn't follow focus when aria-selected=false");
+    document.getElementById('treeitem3').ariaChecked = 'true';
+    assert_equals(treeitem1.isSelected, false);
+}, "Selection follows tabindex focus in a single selection tree, unless aria-checked is set on a subwidget");
 
 </script>

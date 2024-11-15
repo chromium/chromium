@@ -179,10 +179,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   }
   bool IsFrozen() const override { return frozen_count_; }
 
-  //
-  // Iterators.
-  //
-
   void SelectionChanged(Node*) override;
 
   // Uses the relation cache to check whether the current element is pointed to
@@ -217,6 +213,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void DiscardBadAriaHiddenBecauseOfFocus(AXObject& focus);
   // Mark an aria-hidden usage as bad/discarded when used on <body>/<html>/etc.
   void DiscardBadAriaHiddenBecauseOfElement(const AXObject& obj);
+
+  // Implicit selection aka "selection follows focus" is not allowed on
+  // containers with subwidgets that have had checked or selected, or expanded
+  // in the case of tabs.
+  bool IsImplicitSelectionAllowed(const AXObject* container);
 
   void ImageLoaded(const LayoutObject*) override;
 
@@ -709,6 +710,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     kEditableTextContentChanged,
     kFocusableChanged,
     kIdChanged,
+    kMaybeDisallowImplicitSelection,
     kNodeIsAttached,
     kNodeGainedFocus,
     kNodeLostFocus,
@@ -952,6 +954,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Helper that clears children up to the first included ancestor and returns
   // the ancestor if a children changed notification should be fired on it.
   AXObject* InvalidateChildren(AXObject* obj);
+
+  // Implicit selection aka "selection follows focus" is not allowed on
+  // containers with subwidgets that have had checked or selected, or expanded
+  // in the case of tabs.
+  void MaybeDisallowImplicitSelectionWithCleanLayout(AXObject* subwidget);
 
   // Helper method for `ComputeNodesOnLine()`. Given a `line_object` which is
   // the last LayoutObject of a line and that is a child of `block_flow`,
@@ -1253,6 +1260,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   Vector<ui::AXEvent> pending_events_to_serialize_;
 
   HashMap<DOMNodeId, bool> whitespace_ignored_map_;
+
+  // Any tree, tab or listbox that disallows implicit "selection from focus".
+  HashSet<AXID> containers_disallowing_implicit_selection_;
 
   // Make sure the next serialization sends everything.
   bool mark_all_dirty_ = false;

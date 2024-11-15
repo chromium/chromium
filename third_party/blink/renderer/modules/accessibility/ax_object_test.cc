@@ -1409,9 +1409,7 @@ TEST_F(AccessibilityTest, IsSelectedFromFocusSupported) {
   EXPECT_FALSE(option2->IsSelectedFromFocusSupported());
   EXPECT_FALSE(option3->IsSelectedFromFocusSupported());
   EXPECT_FALSE(option4->IsSelectedFromFocusSupported());
-  // TODO(crbug.com/1143451): #option5 should not support selection from focus
-  // because #option4 is explicitly selected.
-  EXPECT_TRUE(option5->IsSelectedFromFocusSupported());
+  EXPECT_FALSE(option5->IsSelectedFromFocusSupported());
 }
 
 TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
