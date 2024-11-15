@@ -269,6 +269,9 @@ void TableView::SetModel(ui::TableModel* model) {
   } else {
     ClearVirtualAccessibilityChildren();
   }
+  // When the model changes, the rows have probably changed, so update the
+  // focus ring.
+  UpdateFocusRings();
 }
 
 void TableView::SetColumns(const std::vector<ui::TableColumn>& columns) {
@@ -1573,7 +1576,11 @@ void TableView::RebuildVirtualAccessibilityChildren() {
   for (size_t index = 0; index < GetRowCount(); ++index) {
     GetViewAccessibility().AddVirtualChildView(
         CreateRowAccessibilityView(index));
-    UpdateAccessibleNameForIndex(/* start */ index, /* length */ 1);
+
+    // Don't update accessible name for the indices here since
+    // SortItemsAndUpdateMapping will do this subsequently. Updating these early
+    // will cause ViewToModel() to hit a DCHECK, since the mapping is not
+    // updated yet.
   }
 
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);

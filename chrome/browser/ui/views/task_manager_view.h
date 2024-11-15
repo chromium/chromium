@@ -36,8 +36,6 @@ class View;
 
 namespace task_manager {
 
-enum class FilterCategory : uint8_t { kTabs = 0, kExtensions = 1, kSystem = 2 };
-
 // The new task manager UI container.
 class TaskManagerView : public TableViewDelegate,
                         public views::DialogDelegateView,
@@ -51,7 +49,7 @@ class TaskManagerView : public TableViewDelegate,
  public:
   struct FilterTab {
     int title_id;
-    FilterCategory associated_category;
+    DisplayCategory associated_category;
     raw_ptr<const gfx::VectorIcon> icon;
   };
 
@@ -115,16 +113,32 @@ class TaskManagerView : public TableViewDelegate,
   static TaskManagerView* GetInstanceForTests();
 
  private:
+  // Used for the TaskManagerDesktopRefresh.
+  // Determines how the UI for the TaskManager is rendered. Each boolean
+  // controls a specific deviation from the original TaskManager UI.
+  // TODO(crbug.com/364926055): Remove after feature is enabled by default.
+  struct TableConfigs {
+    bool table_has_border;
+    bool header_padding;
+    bool scroll_view_rounded;
+    bool layout_refresh;
+    bool dialog_button_disabled;
+  };
+
   friend class TaskManagerViewTest;
 
   TaskManagerView();
 
+  // Returns flags that describe how the TaskManagerView should be rendered.
+  static TableConfigs GetTableConfigs();
+
   // Creates the header for the view.
   void CreateHeader(const ChromeLayoutProvider* provider);
 
-  // Requests that the sorted_task_ids_ returned by TaskManagerTableModel are
-  // filtered by a FilterCategory.
-  void PerformFilter(FilterCategory category);
+  // Creates a new TableModel which only operates on the subset of tasks
+  // associated with the DisplayCategory (e.g. kTabs means only Tab processes
+  // are displayed).
+  void PerformFilter(DisplayCategory category);
 
   // Creates all corresponding subcomponents for the header.
   std::unique_ptr<views::View> CreateTabbedPane();

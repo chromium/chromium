@@ -86,17 +86,17 @@ TaskManagerView* g_task_manager_view = nullptr;
 const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
     {{
          .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_NAME,
-         .associated_category = FilterCategory::kTabs,
+         .associated_category = DisplayCategory::kTabs,
          .icon = &views::kNewTabIcon,
      },
      {
          .title_id = IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME,
-         .associated_category = FilterCategory::kExtensions,
+         .associated_category = DisplayCategory::kExtensions,
          .icon = &vector_icons::kExtensionChromeRefreshIcon,
      },
      {
          .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
-         .associated_category = FilterCategory::kSystem,
+         .associated_category = DisplayCategory::kSystem,
          .icon = &vector_icons::kSettingsOutlineIcon,
      }});
 
@@ -367,9 +367,35 @@ TaskManagerView* TaskManagerView::GetInstanceForTests() {
   return g_task_manager_view;
 }
 
-void TaskManagerView::PerformFilter(FilterCategory category) {
-  // TODO(https://crbug.com/373928508):
-  // Send a request to the Table Model to update the displayed rows.
+// static
+TaskManagerView::TableConfigs TaskManagerView::GetTableConfigs() {
+  const bool tm_refresh_enabled =
+      base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
+  return TableConfigs{
+      .table_has_border = !tm_refresh_enabled,
+      .header_padding = tm_refresh_enabled,
+      .scroll_view_rounded = tm_refresh_enabled,
+      .layout_refresh = tm_refresh_enabled,
+      .dialog_button_disabled = tm_refresh_enabled,
+  };
+}
+
+void TaskManagerView::PerformFilter(DisplayCategory category) {
+  // Clear the old model.
+  tab_table_->SetModel(nullptr);
+
+  // Create and set the new model.
+  table_model_ = std::make_unique<TaskManagerTableModel>(this, category);
+  tab_table_->SetModel(table_model_.get());
+
+  // Columns are already retrieved, however since the table model changed, the
+  // refresh types for this model need to be set for each column. Otherwise, the
+  // values for each column will stop updating.
+  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable();
+
+  // Redraw the table immediately by scheduling a paint since the rows most
+  // likely changed in between switching models.
+  tab_table_->OnItemsChanged(/*start=*/0, table_model_->RowCount());
 }
 
 void TaskManagerView::TabSelectedAt(int index) {
@@ -494,6 +520,8 @@ std::unique_ptr<views::ScrollView> TaskManagerView::CreateProcessView(
 }
 
 void TaskManagerView::Init() {
+  const auto table_config = GetTableConfigs();
+
   // Create the table columns.
   for (size_t i = 0; i < kColumnsSize; ++i) {
     const auto& col_data = kColumns[i];
@@ -508,7 +536,9 @@ void TaskManagerView::Init() {
   auto tab_table = std::make_unique<views::TableView>(
       nullptr, columns_, views::TableType::kIconAndText, false);
   tab_table_ = tab_table.get();
-  table_model_ = std::make_unique<TaskManagerTableModel>(this);
+  table_model_ = std::make_unique<TaskManagerTableModel>(
+      this, table_config.layout_refresh ? DisplayCategory::kTabs
+                                        : DisplayCategory::kAll);
   tab_table->SetModel(table_model_.get());
   tab_table->SetGrouper(this);
   tab_table->SetSortOnPaint(true);
@@ -516,19 +546,7 @@ void TaskManagerView::Init() {
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
-  const auto* provider = ChromeLayoutProvider::Get();
-  const bool tm_refresh_enabled =
-      base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
-
-  // Has a border if the feature is disabled, since the redesign version doesn't
-  // have a border.
-  bool table_has_border = !tm_refresh_enabled,
-       header_padding = tm_refresh_enabled,
-       scroll_view_rounded = tm_refresh_enabled,
-       layout_refresh = tm_refresh_enabled,
-       dialog_button_disabled = tm_refresh_enabled;
-
-  if (dialog_button_disabled) {
+  if (table_config.dialog_button_disabled) {
     SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   } else {
     SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
@@ -536,7 +554,7 @@ void TaskManagerView::Init() {
                    l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
   }
 
-  if (header_padding) {
+  if (table_config.header_padding) {
     views::TableHeaderStyle header_style = {
         .cell_vertical_padding = 16,
         .cell_horizontal_padding = 12,
@@ -545,6 +563,8 @@ void TaskManagerView::Init() {
         .font_weight = gfx::Font::Weight::MEDIUM};
     tab_table->SetHeaderStyle(header_style);
   }
+
+  const auto* provider = ChromeLayoutProvider::Get();
 
   // Margins around all contents
   const gfx::Insets dialog_insets =
@@ -559,7 +579,7 @@ void TaskManagerView::Init() {
   SetBorder(views::CreateEmptyBorder(content_insets));
 
   // Setup Layout Manager for Dialog
-  if (layout_refresh) {
+  if (table_config.layout_refresh) {
     views::FlexLayout* content_layout =
         SetLayoutManager(std::make_unique<views::FlexLayout>());
     content_layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -570,10 +590,11 @@ void TaskManagerView::Init() {
   }
 
   // Add Process List (a.k.a Scroll View)
-  tab_table_parent_ = AddChildView(CreateProcessView(
-      std::move(tab_table), table_has_border, layout_refresh));
+  tab_table_parent_ = AddChildView(
+      CreateProcessView(std::move(tab_table), table_config.table_has_border,
+                        table_config.layout_refresh));
 
-  if (scroll_view_rounded) {
+  if (table_config.scroll_view_rounded) {
     tab_table_parent_->SetPaintToLayer(ui::LAYER_TEXTURED);
     ui::Layer* scroll_view_layer = tab_table_parent_->layer();
 
