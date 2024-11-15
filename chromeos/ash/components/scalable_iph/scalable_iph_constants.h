@@ -7,8 +7,6 @@
 
 #include <ostream>
 
-#include "base/component_export.h"
-
 namespace scalable_iph {
 
 inline constexpr char16_t kNotificationSummaryText[] = u"Welcome Tips";
@@ -40,12 +38,12 @@ inline constexpr char kAndroidGooglePhotosAppId[] =
 // Android app ids can be found in
 // //chrome/browser/ash/app_list/arc/arc_app_utils.cc. We cannot include the
 // file from this directory same with the above web_app_id_constants.h.
-inline constexpr char kAndroidAppGooglePhotosAppId[] =
+constexpr char kAndroidAppGooglePhotosAppId[] =
     "fdbkkojdbojonckghlanfaopfakedeca";
-inline constexpr char kAndroidAppGooglePlayStoreAppId[] =
+constexpr char kAndroidAppGooglePlayStoreAppId[] =
     "cnbgggchhmkkdmeppjobngjoejnihlei";
 
-enum class COMPONENT_EXPORT(SCALABLE_IPH_CONSTANTS) ActionType {
+enum class ActionType {
   // `kInvalid` is reserved to be used as an initial value or when the server
   // side config cannot be parsed.
   kInvalid = 0,
@@ -67,7 +65,6 @@ enum class COMPONENT_EXPORT(SCALABLE_IPH_CONSTANTS) ActionType {
   kLastAction = kOpenChromebookPerksMinecraftRealms2023,
 };
 
-COMPONENT_EXPORT(SCALABLE_IPH_CONSTANTS)
 std::ostream& operator<<(std::ostream& out, ActionType action_type);
 
 // Constants for action types, has 1 to 1 mapping with the ActionType.
@@ -128,9 +125,9 @@ inline constexpr char kEventNameAppListItemActivationGoogleDocs[] =
     "ScalableIphAppListItemActivationGoogleDocs";
 inline constexpr char kEventNameAppListItemActivationGooglePhotosWeb[] =
     "ScalableIphAppListItemActivationGooglePhotosWeb";
-inline constexpr char kEventNameAppListItemActivationGooglePlayStore[] =
+constexpr char kEventNameAppListItemActivationGooglePlayStore[] =
     "ScalableIphAppListItemActivationOpenGooglePlayStore";
-inline constexpr char kEventNameAppListItemActivationGooglePhotosAndroid[] =
+constexpr char kEventNameAppListItemActivationGooglePhotosAndroid[] =
     "ScalableIphAppListItemActivationOpenGooglePhotosAndroid";
 
 // Constants for shelf item activation.
@@ -149,8 +146,7 @@ inline constexpr char kEventNameShelfItemActivationGooglePlay[] =
 inline constexpr char kEventNameOpenPersonalizationApp[] =
     "ScalableIphOpenPersonalizationApp";
 // Recorded when a print job is created.
-inline constexpr char kEventNamePrintJobCreated[] =
-    "ScalableIphPrintJobCreated";
+constexpr char kEventNamePrintJobCreated[] = "ScalableIphPrintJobCreated";
 
 // Recorded when a game window is opened.
 inline constexpr char kEventNameGameWindowOpened[] =
@@ -237,7 +233,7 @@ inline constexpr char kCustomUiTypeValueNotification[] = "Notification";
 inline constexpr char kCustomUiTypeValueBubble[] = "Bubble";
 inline constexpr char kCustomUiTypeValueNone[] = "None";
 
-enum class COMPONENT_EXPORT(SCALABLE_IPH_CONSTANTS) UiType {
+enum class UiType {
   kNotification,
   kBubble,
   kNone,

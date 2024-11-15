@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -30,7 +29,7 @@ namespace scalable_iph {
 // stores logs in memory. Note that logs are also sent to DLOG(WARNING). It
 // means that logs can be stored on a disk or other places. You can access logs
 // from chrome-untrusted://scalable-iph-debug/logs.txt.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) Logger {
+class Logger {
  public:
   static bool IsEnabled();
 
@@ -50,7 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) Logger {
   std::vector<std::string> logs_;
 };
 
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) LogMessage {
+class LogMessage {
  public:
   LogMessage(Logger* logger, base::Location location);
   ~LogMessage();

@@ -24,5 +24,6 @@ static_library("scalable_iph") {
     "//base",
     "//chrome/browser/ash/scalable_iph",
     "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/components/scalable_iph:logger",
   ]
 }
