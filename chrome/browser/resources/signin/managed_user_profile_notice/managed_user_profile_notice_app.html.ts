@@ -65,7 +65,7 @@ ${this.useUpdatedUi_ ? html`
   <div class="action-container tangible-sync-style"
     id="${this.showTimeout_ ? 'timeout-action-container' : ''}">
     <cr-button id="proceed-button" class="action-button"
-        @click="${this.onProceed_}" ?autofocus="${this.isModalDialog_}"
+        @click="${this.onProceed_}"
         ?disabled="${!this.allowProceedButton_()}"
         ?hidden="${this.showProcessing_}">
       ${this.proceedLabel_}

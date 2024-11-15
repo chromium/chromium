@@ -70,6 +70,10 @@ main {
   margin: 0;
 }
 
+.title:focus {
+  outline: none;
+}
+
 .disclaimer-container {
   box-sizing: border-box;
   flex: 1 1 auto;
