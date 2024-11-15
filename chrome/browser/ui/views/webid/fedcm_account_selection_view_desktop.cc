@@ -622,7 +622,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   DCHECK(state_ != State::AUTO_REAUTHN);
 
   if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
-      account_selection_view_->IsOccluded()) {
+      is_occluded_by_pip_) {
     return;
   }
 
@@ -664,7 +664,7 @@ void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
                                               const GURL& url,
                                               const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
-      account_selection_view_->IsOccluded()) {
+      is_occluded_by_pip_) {
     return;
   }
   ShowUrl(link_type, url);
@@ -699,7 +699,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
   // Because the close button is a safe button to click and may be visible
   // even when the widget is (partially) occluded, we do not check
-  // IsOccluded here.
+  // `is_occluded_by_pip_` here.
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
@@ -733,7 +733,7 @@ void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
                                              const GURL& idp_login_url,
                                              const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
-      account_selection_view_->IsOccluded()) {
+      is_occluded_by_pip_) {
     return;
   }
 
@@ -755,7 +755,7 @@ void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
 
 void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
-      account_selection_view_->IsOccluded()) {
+      is_occluded_by_pip_) {
     return;
   }
 
@@ -764,7 +764,7 @@ void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
 
 void FedCmAccountSelectionView::OnMoreDetails(const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
-      account_selection_view_->IsOccluded()) {
+      is_occluded_by_pip_) {
     return;
   }
 
@@ -865,6 +865,12 @@ void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
                          /*is_choose_an_account=*/true);
   base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
                             true);
+}
+
+void FedCmAccountSelectionView::PostWidgetCreate(views::Widget* widget) {
+  pip_occlusion_observation_ =
+      std::make_unique<ScopedPictureInPictureOcclusionObservation>(this);
+  pip_occlusion_observation_->Observe(widget);
 }
 
 void FedCmAccountSelectionView::WillDiscardContents(
@@ -984,6 +990,7 @@ void FedCmAccountSelectionView::Close() {
     return;
   }
 
+  pip_occlusion_observation_.reset();
   GetDialogWidget()->Close();
   OnDismiss(DismissReason::kOther);
 }
@@ -1150,4 +1157,14 @@ void FedCmAccountSelectionView::ShowMultiAccountPicker(
   last_multi_account_is_choose_an_account_ = is_choose_an_account;
   account_selection_view_->ShowMultiAccountPicker(
       accounts, idp_list, show_back_button, is_choose_an_account);
+}
+
+void FedCmAccountSelectionView::OnOcclusionStateChanged(bool occluded) {
+  if (GetDialogWidget()) {
+    GetDialogWidget()->GetContentsView()->SetEnabled(!occluded);
+  }
+  // SetEnabled does not always seem sufficient for unknown reasons, so we
+  // also set this boolean to ignore input. But we still call SetEnabled
+  // to visually indicate that input is disabled where possible.
+  is_occluded_by_pip_ = occluded;
 }

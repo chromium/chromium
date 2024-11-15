@@ -11,8 +11,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
-#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -202,7 +200,7 @@ class AccountHoverButtonSecondaryView : public views::View {
 };
 
 // Base class for interacting with FedCM account selection dialog.
-class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
+class AccountSelectionViewBase {
  public:
   AccountSelectionViewBase(
       content::WebContents* web_contents,
@@ -211,10 +209,7 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::u16string rp_for_display);
   AccountSelectionViewBase();
-  ~AccountSelectionViewBase() override;
-
-  // PictureInPictureOcclusionObserver:
-  void OnOcclusionStateChanged(bool occluded) override;
+  virtual ~AccountSelectionViewBase();
 
   // Creates and sets the appropriate dialog widget, depending on whether the
   // dialog is bubble or modal.
@@ -299,8 +294,6 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   virtual void DidShowWidget();
   virtual void DidHideWidget();
 
-  bool IsOccluded() const { return is_occluded_; }
-
  protected:
   void SetLabelProperties(views::Label* label);
 
@@ -356,11 +349,6 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
 
   // The description of the RP to be used in the dialog.
   std::u16string rp_for_display_;
-
-  // Whether the widget is occluded (and therefore we should ignore inputs.
-  bool is_occluded_{false};
-
-  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 
   // Used to ensure that callbacks are not run if the AccountSelectionViewBase
   // is destroyed.

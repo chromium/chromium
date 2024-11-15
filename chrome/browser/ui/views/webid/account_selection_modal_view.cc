@@ -209,7 +209,12 @@ void AccountSelectionModalView::InitDialogWidget() {
   }
 
   dialog_widget_ = widget->GetWeakPtr();
-  occlusion_observation_.Observe(widget);
+
+  // TODO(https://crbug.com/377803489): Get rid of this and move all of
+  // InitDialogWidget() into FedCmAccountSelectionView.
+  if (owner_) {
+    owner_->PostWidgetCreate(widget);
+  }
 }
 
 std::unique_ptr<views::View>

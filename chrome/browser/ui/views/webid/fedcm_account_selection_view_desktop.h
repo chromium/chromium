@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
@@ -44,6 +46,7 @@ class TabInterface;
 class FedCmAccountSelectionView : public AccountSelectionView,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
+                                  public PictureInPictureOcclusionObserver,
                                   views::WidgetObserver {
  public:
   // safe_zone_diameter/icon_size as defined in
@@ -163,6 +166,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Called when the user clicks on the 'Choose an account' button
   void OnChooseAnAccountClicked();
+
+  // TODO(https://crbug.com/377803489): Get rid of this and move all of
+  // InitDialogWidget() into this class.
+  void PostWidgetCreate(views::Widget* widget);
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
@@ -362,6 +369,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       bool show_back_button,
       bool is_choose_an_account);
 
+  // PictureInPictureOcclusionObserver:
+  void OnOcclusionStateChanged(bool occluded) override;
+
   std::vector<IdentityProviderDataPtr> idp_list_;
 
   std::vector<IdentityRequestAccountPtr> accounts_;
@@ -440,6 +450,14 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // otherwise returns an AccountSelectionViewBase to render modal dialogs
   // for button flows.
   raw_ptr<AccountSelectionViewBase> account_selection_view_;
+
+  // Whether the widget is occluded by PIP (and therefore we should ignore
+  // inputs).
+  bool is_occluded_by_pip_{false};
+
+  // Observer for widget occlusion.
+  std::unique_ptr<ScopedPictureInPictureOcclusionObservation>
+      pip_occlusion_observation_;
 
   // The tab hosting the associated UI.
   // This class is owned by IdentityDialogController and thus can outlive the
