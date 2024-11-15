@@ -60,6 +60,7 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="Lens permission declined"/>
   <int value="28" label="Low memory"/>
   <int value="29" label="Network issue"/>
+  <int value="30" label="Escape key press on preselection toast"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
