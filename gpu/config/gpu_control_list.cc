@@ -117,17 +117,6 @@ bool StringMismatch(const std::string& input, const char* pattern) {
   return StringMismatch(input, pattern_string);
 }
 
-bool ProcessANGLEGLRenderer(const std::string& gl_renderer,
-                            std::string* vendor,
-                            std::string* renderer,
-                            std::string* version) {
-  DCHECK(vendor);
-  DCHECK(renderer);
-  DCHECK(version);
-  return RE2::FullMatch(gl_renderer, "ANGLE \\((.*), (.*), (.*)\\)", vendor,
-                        renderer, version);
-}
-
 }  // namespace
 
 bool GpuControlList::Version::Contains(const std::string& version_string,
@@ -856,6 +845,23 @@ GpuControlList::OsType GpuControlList::GetOsType() {
 #else
   return kOsAny;
 #endif
+}
+
+// static
+bool GpuControlList::ProcessANGLEGLRenderer(const std::string& gl_renderer,
+                                            std::string* vendor,
+                                            std::string* renderer,
+                                            std::string* version) {
+  DCHECK(vendor);
+  DCHECK(renderer);
+  DCHECK(version);
+  if (gl_renderer.find("OpenGL") == std::string::npos) {
+    // Angle with vulkan implementation will not contain OpenGL version.
+    return false;
+  }
+
+  return RE2::FullMatch(gl_renderer, "ANGLE \\((.*), (.*), (.*)\\)", vendor,
+                        renderer, version);
 }
 
 void GpuControlList::AddSupportedFeature(

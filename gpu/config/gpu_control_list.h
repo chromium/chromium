@@ -350,8 +350,15 @@ class GPU_EXPORT GpuControlList {
                                    size_t total_entries);
 
  private:
+  // Returns false if we cannot process the |gl_renderer| string as GL.
+  static bool ProcessANGLEGLRenderer(const std::string& gl_renderer,
+                                     std::string* vendor,
+                                     std::string* renderer,
+                                     std::string* version);
+
   friend class GpuControlListEntryTest;
   friend class VersionInfoTest;
+  friend class GpuControlListTest;
 
   // Gets the current OS type.
   static OsType GetOsType();
