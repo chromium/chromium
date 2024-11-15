@@ -25,7 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/new_tab_page_resources.h"
+#include "chrome/grit/new_tab_page_untrusted_resources.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/common/url_constants.h"

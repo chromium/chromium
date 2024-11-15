@@ -43,6 +43,7 @@ group("resources") {
       "lens/shared:resources",
       "management:resources",
       "new_tab_page:resources",
+      "new_tab_page/untrusted:resources",
       "new_tab_page_instant:resources",
       "new_tab_page_third_party:resources",
       "omnibox_popup:resources",

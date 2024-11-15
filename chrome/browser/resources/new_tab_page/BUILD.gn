@@ -20,11 +20,6 @@ build_webui("build") {
   static_files = [
     "new_tab_page.html",
     "shared_vars.css",
-    "untrusted/background_image.html",
-    "untrusted/background_image.js",
-    "untrusted/image.html",
-    "untrusted/one_google_bar.html",
-    "untrusted/one_google_bar.js",
   ]
 
   extra_grdp_files = [
