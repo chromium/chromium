@@ -83,11 +83,7 @@ try_.builder(
         ],
     ),
     builderless = False,
-    tryjob = try_.job(
-        # TODO: b/350582436 - Remove after confirming bot pool can handle load
-        # and checking CQ cycle time impact.
-        experiment_percentage = 50,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.builder(
