@@ -39,13 +39,6 @@ class GifTenorApiFetcher {
           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
           const GURL& url,
           const net::NetworkTrafficAnnotationTag& annotation_tag)>;
-
-  GifTenorApiFetcher();
-
-  explicit GifTenorApiFetcher(EndpointFetcherCreator endpoint_fetcher_creator);
-
-  ~GifTenorApiFetcher();
-
   using GetCategoriesCallback =
       base::OnceCallback<void(tenor::mojom::Status,
                               const std::vector<std::string>& categories)>;
@@ -55,6 +48,10 @@ class GifTenorApiFetcher {
   using GetGifsByIdsCallback = base::OnceCallback<void(
       tenor::mojom::Status,
       std::vector<tenor::mojom::GifResponsePtr> selected_gifs)>;
+
+  GifTenorApiFetcher();
+  explicit GifTenorApiFetcher(EndpointFetcherCreator endpoint_fetcher_creator);
+  ~GifTenorApiFetcher();
 
   // Fetch tenor API Categories endpoint
   void FetchCategories(
@@ -91,33 +88,29 @@ class GifTenorApiFetcher {
       const std::vector<std::string>& ids);
 
  private:
-  const EndpointFetcherCreator endpoint_fetcher_creator_;
-  base::WeakPtrFactory<GifTenorApiFetcher> weak_ptr_factory_{this};
-
   void FetchCategoriesResponseHandler(
       GetCategoriesCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
-
   void OnCategoriesJsonParsed(GetCategoriesCallback callback,
                               data_decoder::DataDecoder::ValueOrError result);
-
   void TenorGifsApiResponseHandler(
       TenorGifsApiCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
-
   void OnGifsJsonParsed(TenorGifsApiCallback callback,
                         data_decoder::DataDecoder::ValueOrError result);
-
   void FetchGifsByIdsResponseHandler(
       GetGifsByIdsCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
-
   void OnGifsByIdsJsonParsed(GetGifsByIdsCallback callback,
                              data_decoder::DataDecoder::ValueOrError result);
+
+  const EndpointFetcherCreator endpoint_fetcher_creator_;
+  base::WeakPtrFactory<GifTenorApiFetcher> weak_ptr_factory_{this};
 };
+
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_EMOJI_GIF_TENOR_API_FETCHER_H_
