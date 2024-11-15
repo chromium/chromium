@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_constants.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -27,12 +29,15 @@
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 id<GREYMatcher> IdentityButtonMatcherForIdentity(id<SystemIdentity> identity) {
-  NSString* accessibility_label = [NSString
-      stringWithFormat:@"%@, %@", identity.userFullName, identity.userEmail];
+  NSString* accessibility_label = l10n_util::GetNSStringF(
+      IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL,
+      base::SysNSStringToUTF16(identity.userFullName),
+      base::SysNSStringToUTF16(identity.userEmail));
   return grey_allOf(grey_accessibilityID(kIdentityButtonControlIdentifier),
                     grey_accessibilityLabel(accessibility_label), nil);
 }

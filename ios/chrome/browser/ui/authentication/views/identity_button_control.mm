@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 
 #import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
@@ -12,6 +13,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -95,11 +98,14 @@ const CGFloat kArrowDownMargin = 12.;
   DCHECK(email);
   if (!name.length) {
     [self.identityView setTitle:email subtitle:nil];
-    self.accessibilityLabel = email;
+    self.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL,
+        base::SysNSStringToUTF16(email));
   } else {
     [self.identityView setTitle:name subtitle:email];
-    self.accessibilityLabel =
-        [NSString stringWithFormat:@"%@, %@", name, email];
+    self.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL,
+        base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
   }
 }
 
