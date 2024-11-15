@@ -13,6 +13,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
+#include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
@@ -505,13 +506,13 @@ void AccountHoverButton::ReplaceSecondaryViewWithSpinner() {
 
 AccountSelectionViewBase::AccountSelectionViewBase(
     content::WebContents* web_contents,
-    AccountSelectionViewBase::Observer* observer,
+    FedCmAccountSelectionView* owner,
     views::WidgetObserver* widget_observer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::u16string rp_for_display)
     : web_contents_(web_contents->GetWeakPtr()),
       widget_observer_(widget_observer),
-      observer_(observer),
+      owner_(owner),
       rp_for_display_(rp_for_display) {
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
       std::make_unique<ImageDecoderImpl>(), std::move(url_loader_factory));
@@ -628,10 +629,9 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     // We can pass crefs to OnAccountSelected because the `observer_` owns the
     // data.
     auto row = std::make_unique<AccountHoverButton>(
-        base::BindRepeating(
-            &AccountSelectionViewBase::Observer::OnAccountSelected,
-            base::Unretained(observer_), std::cref(account),
-            std::cref(idp_data)),
+        base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
+                            base::Unretained(owner_), std::cref(account),
+                            std::cref(idp_data)),
         std::move(avatar_view),
         /*title=*/account.is_filtered_out ? base::UTF8ToUTF16(account.email)
                                           : base::UTF8ToUTF16(account.name),
@@ -762,9 +762,8 @@ AccountSelectionViewBase::CreateDisclosureLabel(
     disclosure_label->AddStyleRange(
         gfx::Range(offsets[offset_index], offsets[offset_index + 1]),
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &AccountSelectionViewBase::Observer::OnLinkClicked,
-            base::Unretained(observer_), link_data_item.first,
-            link_data_item.second)));
+            &FedCmAccountSelectionView::OnLinkClicked, base::Unretained(owner_),
+            link_data_item.first, link_data_item.second)));
     offset_index += 2;
   }
 

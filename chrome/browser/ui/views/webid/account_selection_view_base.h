@@ -34,6 +34,8 @@ using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
 
+class FedCmAccountSelectionView;
+
 namespace content {
 class IdentityRequestAccount;
 }  // namespace content
@@ -202,54 +204,9 @@ class AccountHoverButtonSecondaryView : public views::View {
 // Base class for interacting with FedCM account selection dialog.
 class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
  public:
-  // Used to observe changes to the account selection dialog.
-  class Observer {
-   public:
-    // Called when a user either selects the account from the multi-account
-    // chooser or clicks the "continue" button.
-    // Takes `account` as well as `idp_data` since passing `account_id`
-    // is insufficient in the multiple IDP case. The caller should pass a cref,
-    // as these objects are owned by the observer.
-    virtual void OnAccountSelected(
-        const content::IdentityRequestAccount& account,
-        const content::IdentityProviderData& idp_data,
-        const ui::Event& event) = 0;
-
-    // Called when the user clicks "privacy policy" or "terms of service" link.
-    virtual void OnLinkClicked(
-        content::IdentityRequestDialogController::LinkType link_type,
-        const GURL& url,
-        const ui::Event& event) = 0;
-
-    // Called when the user clicks "back" button.
-    virtual void OnBackButtonClicked() = 0;
-
-    // Called when the user clicks "close" button.
-    virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
-
-    // Called when the user clicks the "continue" button on the sign-in
-    // failure dialog or wants to sign in to another account.
-    virtual void OnLoginToIdP(const GURL& idp_config_url,
-                              const GURL& idp_login_url,
-                              const ui::Event& event) = 0;
-
-    // Called when the user clicks "got it" button.
-    virtual void OnGotIt(const ui::Event& event) = 0;
-
-    // Called when the user clicks the "more details" button on the error
-    // dialog.
-    virtual void OnMoreDetails(const ui::Event& event) = 0;
-
-    // Called when the accounts UI is displayed.
-    virtual void OnAccountsDisplayed() = 0;
-
-    // Called when the user clicks on the 'Choose an account' button
-    virtual void OnChooseAnAccountClicked() = 0;
-  };
-
   AccountSelectionViewBase(
       content::WebContents* web_contents,
-      AccountSelectionViewBase::Observer* observer,
+      FedCmAccountSelectionView* owner,
       views::WidgetObserver* widget_observer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::u16string rp_for_display);
@@ -395,7 +352,7 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
 
   // Observes events on AccountSelectionBubbleView.
   // Dangling when running Chromedriver's run_py_tests.py test suite.
-  raw_ptr<Observer, DanglingUntriaged> observer_{nullptr};
+  raw_ptr<FedCmAccountSelectionView, DanglingUntriaged> owner_{nullptr};
 
   // The description of the RP to be used in the dialog.
   std::u16string rp_for_display_;

@@ -44,7 +44,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       content::WebContents* web_contents,
       views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AccountSelectionViewBase::Observer* observer,
+      FedCmAccountSelectionView* owner,
       views::WidgetObserver* widget_observer);
   ~AccountSelectionBubbleView() override;
 

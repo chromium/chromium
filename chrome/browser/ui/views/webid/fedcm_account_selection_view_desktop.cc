@@ -367,10 +367,6 @@ bool FedCmAccountSelectionView::Show(
   return true;
 }
 
-void FedCmAccountSelectionView::OnAccountsDisplayed() {
-  delegate_->OnAccountsDisplayed();
-}
-
 bool FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& rp_for_display,
     const std::string& idp_etld_plus_one,
@@ -612,6 +608,10 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
           ? DismissReason::kCloseButton
           : DismissReason::kOther;
   OnDismiss(dismiss_reason);
+}
+
+void FedCmAccountSelectionView::OnAccountsDisplayed() {
+  delegate_->OnAccountsDisplayed();
 }
 
 void FedCmAccountSelectionView::OnAccountSelected(

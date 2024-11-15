@@ -171,7 +171,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     content::WebContents* web_contents,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AccountSelectionViewBase::Observer* observer,
+    FedCmAccountSelectionView* owner,
     views::WidgetObserver* widget_observer)
     : views::BubbleDialogDelegateView(
           anchor_view,
@@ -182,7 +182,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
           views::BubbleBorder::DIALOG_SHADOW,
           /*autosize=*/true),
       AccountSelectionViewBase(web_contents,
-                               observer,
+                               owner,
                                widget_observer,
                                std::move(url_loader_factory),
                                rp_for_display),
@@ -364,8 +364,8 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
-                          base::Unretained(observer_), idp_metadata.config_url,
+      base::BindRepeating(&FedCmAccountSelectionView::OnLoginToIdP,
+                          base::Unretained(owner_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE), this, idp_metadata,
       /*extra_accessible_text=*/std::nullopt);
@@ -436,16 +436,16 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   // Add more details button.
   if (error && !error->url.is_empty()) {
     auto more_details_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&AccountSelectionViewBase::Observer::OnMoreDetails,
-                            base::Unretained(observer_)),
+        base::BindRepeating(&FedCmAccountSelectionView::OnMoreDetails,
+                            base::Unretained(owner_)),
         l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON));
     button_row->AddChildView(std::move(more_details_button));
   }
 
   // Add got it button.
   auto got_it_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&AccountSelectionViewBase::Observer::OnGotIt,
-                          base::Unretained(observer_)),
+      base::BindRepeating(&FedCmAccountSelectionView::OnGotIt,
+                          base::Unretained(owner_)),
       l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
   button_row->AddChildView(std::move(got_it_button));
 
@@ -604,9 +604,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
   back_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(
-              &AccountSelectionViewBase::Observer::OnBackButtonClicked,
-              base::Unretained(observer_)),
+          base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
+                              base::Unretained(owner_)),
           vector_icons::kArrowBackIcon));
   views::InstallCircleHighlightPathGenerator(back_button_.get());
   back_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
@@ -633,9 +632,9 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
   // Add the close button.
   std::unique_ptr<views::Button> close_button =
-      views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
-          &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
-          base::Unretained(observer_)));
+      views::BubbleFrameView::CreateCloseButton(
+          base::BindRepeating(&FedCmAccountSelectionView::OnCloseButtonClicked,
+                              base::Unretained(owner_)));
   close_button->SetVisible(true);
   header->AddChildView(std::move(close_button));
   return header;
@@ -661,9 +660,9 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // We can pass crefs to OnAccountSelected because the `observer_` owns the
   // data.
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(
-          &AccountSelectionViewBase::Observer::OnAccountSelected,
-          base::Unretained(observer_), std::cref(account), std::cref(idp_data)),
+      base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
+                          base::Unretained(owner_), std::cref(account),
+                          std::cref(idp_data)),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)),
       this, idp_metadata, base::UTF8ToUTF16(account.email));
@@ -920,8 +919,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
   ConfigureBrandImageView(image_view.get(), idp_metadata.brand_icon_url);
 
   auto button = std::make_unique<HoverButton>(
-      base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
-                          base::Unretained(observer_), idp_metadata.config_url,
+      base::BindRepeating(&FedCmAccountSelectionView::OnLoginToIdP,
+                          base::Unretained(owner_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       std::move(image_view),
       l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT,
@@ -947,8 +946,8 @@ AccountSelectionBubbleView::CreateUseOtherAccountButton(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           kOpenInNewIcon, ui::kColorMenuIcon, kIdpLoginIconSize));
   auto button = std::make_unique<HoverButton>(
-      base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
-                          base::Unretained(observer_), idp_metadata.config_url,
+      base::BindRepeating(&FedCmAccountSelectionView::OnLoginToIdP,
+                          base::Unretained(owner_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       std::move(icon_view), title);
   button->SetIconHorizontalMargins(icon_margin, icon_margin);
@@ -1006,9 +1005,8 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           kPersonIcon, ui::kColorMenuIcon, kMultiIdpIconSize));
   auto button = std::make_unique<HoverButton>(
-      base::BindOnce(
-          &AccountSelectionViewBase::Observer::OnChooseAnAccountClicked,
-          base::Unretained(observer_)),
+      base::BindOnce(&FedCmAccountSelectionView::OnChooseAnAccountClicked,
+                     base::Unretained(owner_)),
       std::move(icon_view),
       /*title=*/
       l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON),

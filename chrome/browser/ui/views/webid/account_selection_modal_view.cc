@@ -144,10 +144,10 @@ AccountSelectionModalView::AccountSelectionModalView(
     blink::mojom::RpContext rp_context,
     content::WebContents* web_contents,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AccountSelectionViewBase::Observer* observer,
+    FedCmAccountSelectionView* owner,
     views::WidgetObserver* widget_observer)
     : AccountSelectionViewBase(web_contents,
-                               observer,
+                               owner,
                                widget_observer,
                                std::move(url_loader_factory),
                                rp_for_display) {
@@ -282,9 +282,8 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
 
   std::unique_ptr<views::MdTextButton> cancel_button =
       std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
-              base::Unretained(observer_)),
+          base::BindRepeating(&FedCmAccountSelectionView::OnCloseButtonClicked,
+                              base::Unretained(owner_)),
           l10n_util::GetStringUTF16(IDS_CANCEL));
   cancel_button_ = cancel_button.get();
   // When a continue button is present, the cancel button should be more
@@ -438,8 +437,8 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   if (idp_list[0]->idp_metadata.supports_add_account ||
       idp_list[0]->idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
-        &AccountSelectionViewBase::Observer::OnLoginToIdP,
-        base::Unretained(observer_), idp_list[0]->idp_metadata.config_url,
+        &FedCmAccountSelectionView::OnLoginToIdP, base::Unretained(owner_),
+        idp_list[0]->idp_metadata.config_url,
         idp_list[0]->idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
@@ -597,9 +596,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
   if (idp_data.idp_metadata.supports_add_account ||
       idp_data.idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
-        &AccountSelectionViewBase::Observer::OnLoginToIdP,
-        base::Unretained(observer_), idp_data.idp_metadata.config_url,
-        idp_data.idp_metadata.idp_login_url);
+        &FedCmAccountSelectionView::OnLoginToIdP, base::Unretained(owner_),
+        idp_data.idp_metadata.config_url, idp_data.idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                std::move(use_other_account_callback)));
@@ -639,16 +637,16 @@ void AccountSelectionModalView::ShowErrorDialog(
   // Add more details button.
   if (error && !error->url.is_empty()) {
     auto more_details_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&AccountSelectionViewBase::Observer::OnMoreDetails,
-                            base::Unretained(observer_)),
+        base::BindRepeating(&FedCmAccountSelectionView::OnMoreDetails,
+                            base::Unretained(owner_)),
         l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON));
     button_container->AddChildView(std::move(more_details_button));
   }
 
   // Add got it button.
   auto got_it_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&AccountSelectionViewBase::Observer::OnGotIt,
-                          base::Unretained(observer_)),
+      base::BindRepeating(&FedCmAccountSelectionView::OnGotIt,
+                          base::Unretained(owner_)),
       l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
   got_it_button->SetStyle(ui::ButtonStyle::kProminent);
 
@@ -723,9 +721,8 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
                           base::Unretained(this), std::cref(account),
                           std::cref(idp_data)),
       /*use_other_account_callback=*/std::nullopt,
-      base::BindRepeating(
-          &AccountSelectionViewBase::Observer::OnBackButtonClicked,
-          base::Unretained(observer_))));
+      base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
+                          base::Unretained(owner_))));
 
   InitDialogWidget();
 }
@@ -734,7 +731,7 @@ void AccountSelectionModalView::OnContinueButtonClicked(
     const content::IdentityRequestAccount& account,
     const content::IdentityProviderData& idp_data,
     const ui::Event& event) {
-  observer_->OnAccountSelected(account, idp_data, event);
+  owner_->OnAccountSelected(account, idp_data, event);
   has_spinner_ = true;
 
   ReplaceButtonWithSpinner(continue_button_,

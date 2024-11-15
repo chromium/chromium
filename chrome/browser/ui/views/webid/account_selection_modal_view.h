@@ -33,7 +33,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       blink::mojom::RpContext rp_context,
       content::WebContents* web_contents,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AccountSelectionViewBase::Observer* observer,
+      FedCmAccountSelectionView* owner,
       views::WidgetObserver* widget_observer);
   ~AccountSelectionModalView() override;
   AccountSelectionModalView(const AccountSelectionModalView&) = delete;

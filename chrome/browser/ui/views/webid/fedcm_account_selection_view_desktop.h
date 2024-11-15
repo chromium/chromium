@@ -42,7 +42,6 @@ class TabInterface;
 //  asynchronous.
 //  * All methods to show UI early exit if the tab no longer exists.
 class FedCmAccountSelectionView : public AccountSelectionView,
-                                  public AccountSelectionViewBase::Observer,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
                                   views::WidgetObserver {
@@ -91,7 +90,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                          const std::string& idp_etld_plus_one,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode) override;
-  void OnAccountsDisplayed() override;
 
   void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
@@ -126,6 +124,45 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Called when the associated tab will enter the background.
   // Public for testing.
   void TabWillEnterBackground(tabs::TabInterface* tab);
+
+  // Called when the accounts UI is displayed.
+  void OnAccountsDisplayed();
+
+  // Called when a user either selects the account from the multi-account
+  // chooser or clicks the "continue" button.
+  // Takes `account` as well as `idp_data` since passing `account_id`
+  // is insufficient in the multiple IDP case.
+  void OnAccountSelected(const content::IdentityRequestAccount& account,
+                         const content::IdentityProviderData& idp_data,
+                         const ui::Event& event);
+
+  // Called when the user clicks "privacy policy" or "terms of service" link.
+  void OnLinkClicked(
+      content::IdentityRequestDialogController::LinkType link_type,
+      const GURL& url,
+      const ui::Event& event);
+
+  // Called when the user clicks "back" button.
+  void OnBackButtonClicked();
+
+  // Called when the user clicks "close" button.
+  void OnCloseButtonClicked(const ui::Event& event);
+
+  // Called when the user clicks the "continue" button on the sign-in
+  // failure dialog or wants to sign in to another account.
+  void OnLoginToIdP(const GURL& idp_config_url,
+                    const GURL& idp_login_url,
+                    const ui::Event& event);
+
+  // Called when the user clicks "got it" button.
+  void OnGotIt(const ui::Event& event);
+
+  // Called when the user clicks the "more details" button on the error
+  // dialog.
+  void OnMoreDetails(const ui::Event& event);
+
+  // Called when the user clicks on the 'Choose an account' button
+  void OnChooseAnAccountClicked();
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
@@ -269,22 +306,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
-
-  // AccountSelectionBubbleView::Observer:
-  void OnAccountSelected(const Account& account,
-                         const content::IdentityProviderData& idp_data,
-                         const ui::Event& event) override;
-  void OnLinkClicked(LinkType link_type,
-                     const GURL& url,
-                     const ui::Event& event) override;
-  void OnBackButtonClicked() override;
-  void OnCloseButtonClicked(const ui::Event& event) override;
-  void OnLoginToIdP(const GURL& idp_config_url,
-                    const GURL& idp_login_url,
-                    const ui::Event& event) override;
-  void OnGotIt(const ui::Event& event) override;
-  void OnMoreDetails(const ui::Event& event) override;
-  void OnChooseAnAccountClicked() override;
 
   // Called when the tab's WebContents is discarded.
   void WillDiscardContents(tabs::TabInterface* tab,
