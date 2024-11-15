@@ -1274,12 +1274,14 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
   // are disabled on iOS.
   return u"";
 #else
-  if (!history_embeddings::kOmniboxScoped.Get())
+  if (!history_embeddings::GetFeatureParameters().omnibox_scoped) {
     return u"";
+  }
 
   const TemplateURL* t_url = GetTemplateURL(template_url_service, false);
-  if (!t_url)
+  if (!t_url) {
     return u"";
+  }
   int message_id;
   switch (t_url->starter_pack_id()) {
     case TemplateURLStarterPackData::kBookmarks:

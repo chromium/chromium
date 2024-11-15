@@ -98,7 +98,7 @@ void HistoryEmbeddingsHandler::Search(
   CHECK(service);
   last_result_ = service->Search(
       &last_result_, query->query, query->time_range_start,
-      history_embeddings::kSearchResultItemCount.Get(),
+      history_embeddings::GetFeatureParameters().search_result_item_count,
       base::BindRepeating(&HistoryEmbeddingsHandler::OnReceivedSearchResult,
                           weak_ptr_factory_.GetWeakPtr()));
   VLOG(3) << "HistoryEmbeddingsHandler::Search started for '"
@@ -143,8 +143,8 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
         scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch();
     item->url_for_display =
         base::UTF16ToUTF8(history_clusters::ComputeURLForDisplay(
-            scored_url_row.row.url(),
-            history_embeddings::kTrimAfterHostInResults.Get()));
+            scored_url_row.row.url(), history_embeddings::GetFeatureParameters()
+                                          .trim_after_host_in_results));
     if (has_answer && i == native_search_result.AnswerIndex()) {
       item->answer_data = history_embeddings::mojom::AnswerData::New();
       item->answer_data->answer_text_directives.assign(
@@ -152,7 +152,7 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
           native_search_result.answerer_result.text_directives.end());
     }
 
-    if (history_embeddings::kShowSourcePassages.Get()) {
+    if (history_embeddings::GetFeatureParameters().show_source_passages) {
       item->source_passage = scored_url_row.GetBestPassage();
     }
 

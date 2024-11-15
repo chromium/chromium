@@ -1134,7 +1134,7 @@ bool AutocompleteController::ShouldRunProvider(
       return is_cros_launcher_;
 #if !BUILDFLAG(IS_IOS)
     case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
-      return history_embeddings::kOmniboxUnscoped.Get();
+      return history_embeddings::GetFeatureParameters().omnibox_unscoped;
 #endif
     default:
       break;

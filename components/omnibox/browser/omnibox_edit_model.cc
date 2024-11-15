@@ -1272,7 +1272,7 @@ bool OmniboxEditModel::MaybeAccelerateKeywordSelection(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Only check for acceleration when the current input text is "@" exactly.
   if (input_text.size() != 1 || !input_text.starts_with('@') ||
-      !history_embeddings::kAtKeywordAcceleration.Get()) {
+      !history_embeddings::GetFeatureParameters().at_keyword_acceleration) {
     return false;
   }
   TemplateURLService* turl_service =

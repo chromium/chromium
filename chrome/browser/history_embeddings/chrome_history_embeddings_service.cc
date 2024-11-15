@@ -41,7 +41,7 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
 ChromeHistoryEmbeddingsService::~ChromeHistoryEmbeddingsService() = default;
 
 bool ChromeHistoryEmbeddingsService::IsAnswererUseAllowed() const {
-  if (kForceAnswererUseAllowed.Get()) {
+  if (GetFeatureParameters().force_answerer_use_allowed) {
     return true;
   }
   if (!optimization_guide_service_) {

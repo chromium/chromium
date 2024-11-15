@@ -79,8 +79,8 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       AutocompleteProvider::TYPE_HISTORY_FUZZY |
       AutocompleteProvider::TYPE_CALCULATOR |
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      (history_embeddings::kOmniboxScoped.Get() ||
-               history_embeddings::kOmniboxUnscoped.Get()
+      (history_embeddings::GetFeatureParameters().omnibox_scoped ||
+               history_embeddings::GetFeatureParameters().omnibox_unscoped
            ? AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS
            : 0)
 #else

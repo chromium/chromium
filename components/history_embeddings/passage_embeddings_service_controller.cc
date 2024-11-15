@@ -159,7 +159,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
         base::BindOnce(&PassageEmbeddingsServiceController::OnDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
     embedder_remote_.set_idle_handler(
-        history_embeddings::kEmbeddingsServiceTimeout.Get(),
+        history_embeddings::GetFeatureParameters().embeddings_service_timeout,
         base::BindRepeating(&PassageEmbeddingsServiceController::ResetRemotes,
                             weak_ptr_factory_.GetWeakPtr()));
   }

@@ -70,7 +70,7 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableHistoryEmbeddings",
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile) &&
-          history_embeddings::kEnableSidePanel.Get());
+          history_embeddings::GetFeatureParameters().enable_side_panel);
   history_embeddings::PopulateSourceForWebUI(source, profile);
 
   webui::SetupWebUIDataSource(

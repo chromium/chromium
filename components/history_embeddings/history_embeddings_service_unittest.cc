@@ -89,12 +89,14 @@ class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
 class HistoryEmbeddingsServiceTest : public testing::Test {
  public:
   void SetUp() override {
+    FeatureParameters feature_parameters = GetFeatureParameters();
+    feature_parameters.search_passage_minimum_word_count = 3;
+    feature_parameters.word_match_min_embedding_score = 0;
+    feature_parameters.word_match_required_term_ratio = 0;
+    feature_parameters.scroll_tags_enabled = true;
+    SetFeatureParametersForTesting(feature_parameters);
     feature_list_.InitWithFeaturesAndParameters(
-        {{kHistoryEmbeddings,
-          {{"SearchPassageMinimumWordCount", "3"},
-           {"WordMatchMinEmbeddingScore", "0"},
-           {"ScrollTagsEnabled", "true"},
-           {"WordMatchRequiredTermRatio", "0"}}},
+        {{kHistoryEmbeddings, {}},
          {kHistoryEmbeddingsAnswers, {}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
@@ -464,11 +466,11 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
   {
     // Should use the feature param threshold when it's set, even if the
     // metadata is also set.
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kHistoryEmbeddings, {{"SearchPassageMinimumWordCount", "3"},
-                             {"SearchScoreThreshold", "0.5"},
-                             {"WordMatchMinEmbeddingScore", "0"}});
+    FeatureParameters feature_parameters = GetFeatureParameters();
+    feature_parameters.search_passage_minimum_word_count = 3;
+    feature_parameters.word_match_min_embedding_score = 0;
+    feature_parameters.search_score_threshold = 0.5;
+    SetFeatureParametersForTesting(feature_parameters);
     base::test::TestFuture<SearchResult> future;
     service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
                                 scored_url_rows);
@@ -729,15 +731,14 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchDoesNotWordMatchBoostLongQueries) {
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
-  auto set_ratio = [this](float ratio) {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kHistoryEmbeddings,
-        {{"SearchPassageMinimumWordCount", "3"},
-         {"SearchScoreThreshold", "0.5"},
-         {"WordMatchMinEmbeddingScore", "0"},
-         {"WordMatchMaxTermCount", "4"},
-         {"WordMatchRequiredTermRatio", base::NumberToString(ratio)}});
+  auto set_ratio = [](float ratio) {
+    FeatureParameters feature_parameters = GetFeatureParameters();
+    feature_parameters.search_passage_minimum_word_count = 3;
+    feature_parameters.search_score_threshold = 0.5;
+    feature_parameters.word_match_min_embedding_score = 0;
+    feature_parameters.word_match_max_term_count = 4;
+    feature_parameters.word_match_required_term_ratio = ratio;
+    SetFeatureParametersForTesting(feature_parameters);
   };
   AddTestHistoryPage("http://test1.com");
   OverrideVisibilityScoresForTesting({

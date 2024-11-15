@@ -50,8 +50,9 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
                      history_embeddings::IsHistoryEmbeddingsAnswersEnabled() &&
                          history_embeddings_service &&
                          history_embeddings_service->IsAnswererUseAllowed());
-  source->AddBoolean("enableHistoryEmbeddingsImages",
-                     history_embeddings::kEnableImagesForResults.Get());
+  source->AddBoolean(
+      "enableHistoryEmbeddingsImages",
+      history_embeddings::GetFeatureParameters().enable_images_for_results);
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
@@ -76,7 +77,8 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
-                     history_embeddings::kSearchQueryMinimumWordCount.Get());
+                     history_embeddings::GetFeatureParameters()
+                         .search_query_minimum_word_count);
 #if !BUILDFLAG(IS_ANDROID)
   source->AddString("historyEmbeddingsSettingsUrl",
                     base::FeatureList::IsEnabled(

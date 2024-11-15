@@ -128,7 +128,7 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   std::unique_ptr<history_embeddings::Answerer> answerer;
   if (history_embeddings::IsHistoryEmbeddingsAnswersEnabled()) {
-    if (history_embeddings::kUseMlAnswerer.Get()) {
+    if (history_embeddings::GetFeatureParameters().use_ml_answerer) {
       answerer = std::make_unique<history_embeddings::MlAnswerer>(
           optimization_guide_keyed_service);
     } else {
@@ -137,8 +137,8 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   std::unique_ptr<history_embeddings::IntentClassifier> intent_classifier;
-  if (history_embeddings::kEnableIntentClassifier.Get()) {
-    if (history_embeddings::kUseMlIntentClassifier.Get()) {
+  if (history_embeddings::GetFeatureParameters().enable_intent_classifier) {
+    if (history_embeddings::GetFeatureParameters().use_ml_intent_classifier) {
       intent_classifier =
           std::make_unique<history_embeddings::MlIntentClassifier>(
               optimization_guide_keyed_service);

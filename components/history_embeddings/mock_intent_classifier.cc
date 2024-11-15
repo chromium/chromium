@@ -48,7 +48,8 @@ void MockIntentClassifier::ComputeQueryIntent(
       FROM_HERE,
       base::BindOnce(std::move(callback), ComputeIntentStatus::SUCCESS,
                      is_query_answerable),
-      base::Milliseconds(kMockIntentClassifierDelayMS.Get()));
+      base::Milliseconds(
+          GetFeatureParameters().mock_intent_classifier_delay_ms));
 }
 
 }  // namespace history_embeddings

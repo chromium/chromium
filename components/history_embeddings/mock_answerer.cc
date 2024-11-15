@@ -24,9 +24,9 @@ void MockAnswerer::ComputeAnswer(std::string query,
   optimization_guide::proto::Answer answer;
   answer.set_text(std::string("This is the answer to query '") + query +
                   std::string("'."));
-  AnswererResult result(
-      static_cast<ComputeAnswerStatus>(kMockAnswererStatus.Get()), query,
-      answer, {}, "url.com", {});
+  AnswererResult result(static_cast<ComputeAnswerStatus>(
+                            GetFeatureParameters().mock_answerer_status),
+                        query, answer, {}, "url.com", {});
 
   // Set URL and passage citation if available.
   auto it = context.url_passages_map.begin();
@@ -40,7 +40,7 @@ void MockAnswerer::ComputeAnswer(std::string query,
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)),
-      base::Milliseconds(kMockAnswererDelayMS.Get()));
+      base::Milliseconds(GetFeatureParameters().mock_answerer_delay_ms));
 }
 
 }  // namespace history_embeddings

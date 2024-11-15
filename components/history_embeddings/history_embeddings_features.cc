@@ -312,6 +312,36 @@ FeatureParameters& FeatureParameters::operator=(const FeatureParameters&) =
     default;
 FeatureParameters& FeatureParameters::operator=(FeatureParameters&&) = default;
 
+////////////////////////////////////////////////////////////////////////////////
+
+int ScopedFeatureParametersForTesting::instance_count_ = 0;
+
+ScopedFeatureParametersForTesting::ScopedFeatureParametersForTesting()
+    : original_parameters_(GetFeatureParameters()) {}
+
+ScopedFeatureParametersForTesting::ScopedFeatureParametersForTesting(
+    base::OnceCallback<void(FeatureParameters&)> change_parameters)
+    : original_parameters_(GetFeatureParameters()) {
+  CHECK_EQ(instance_count_, 0) << "Use only one instance at a time to avoid "
+                                  "possibility of A,B,~A,~B side effects.";
+  instance_count_++;
+
+  FeatureParameters changed = original_parameters_;
+  std::move(change_parameters).Run(changed);
+  GetFeatureParametersMutable() = changed;
+}
+
+ScopedFeatureParametersForTesting::~ScopedFeatureParametersForTesting() {
+  GetFeatureParametersMutable() = original_parameters_;
+  instance_count_--;
+}
+
+FeatureParameters& ScopedFeatureParametersForTesting::Get() {
+  return GetFeatureParametersMutable();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 const FeatureParameters& GetFeatureParameters() {
   return GetFeatureParametersMutable();
 }

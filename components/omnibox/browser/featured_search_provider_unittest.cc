@@ -194,10 +194,13 @@ TEST_F(FeaturedSearchProviderTest, NonAtPrefix) {
 }
 
 TEST_F(FeaturedSearchProviderTest, DoesNotSupportMatchesOnFocus) {
+  history_embeddings::ScopedFeatureParametersForTesting feature_parameters(
+      base::BindOnce([](history_embeddings::FeatureParameters& parameters) {
+        parameters.omnibox_scoped = false;
+      }));
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kOmniboxScoped.name, "false"}}}},
+      {{history_embeddings::kHistoryEmbeddings, {}}},
       {omnibox::kStarterPackIPH});
 
   AutocompleteInput input(u"@tabs", metrics::OmniboxEventProto::OTHER,
@@ -385,10 +388,13 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
 
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestStarterPackIPHSuggestion_DeleteMatch) {
+  history_embeddings::ScopedFeatureParametersForTesting feature_parameters(
+      base::BindOnce([](history_embeddings::FeatureParameters& parameters) {
+        parameters.omnibox_scoped = false;
+      }));
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kOmniboxScoped.name, "false"}}},
+      {{history_embeddings::kHistoryEmbeddings, {}},
        {omnibox::kStarterPackIPH, {}}},
       {});
   PrefService* prefs = client_->GetPrefs();
@@ -459,10 +465,13 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
 
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestFeaturedSearchIPHSuggestion_DeleteMatch) {
+  history_embeddings::ScopedFeatureParametersForTesting feature_parameters(
+      base::BindOnce([](history_embeddings::FeatureParameters& parameters) {
+        parameters.omnibox_scoped = false;
+      }));
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kOmniboxScoped.name, "false"}}},
+      {{history_embeddings::kHistoryEmbeddings, {}},
        {omnibox::kStarterPackExpansion, {}}},
       {omnibox::kStarterPackIPH});
 
@@ -503,10 +512,13 @@ TEST_F(FeaturedSearchProviderTest,
 
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestStarerPackIPHAfterFeaturedSearchIPHDeleted) {
+  history_embeddings::ScopedFeatureParametersForTesting feature_parameters(
+      base::BindOnce([](history_embeddings::FeatureParameters& parameters) {
+        parameters.omnibox_scoped = false;
+      }));
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kOmniboxScoped.name, "false"}}},
+      {{history_embeddings::kHistoryEmbeddings, {}},
        {omnibox::kStarterPackExpansion, {}},
        {omnibox::kStarterPackIPH, {}}},
       {});
@@ -587,155 +599,173 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
   };
 
   // No IPH is shown when the feature is disabled.
-  base::test::ScopedFeatureList disabled_features;
-  disabled_features.InitAndEnableFeatureWithParameters(
-      history_embeddings::kHistoryEmbeddings,
-      {{history_embeddings::kOmniboxScoped.name, "false"}});
   {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(zero_input, {});
-  }
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(non_zero_input, {});
-  }
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(scope_input, {});
+    history_embeddings::ScopedFeatureParametersForTesting feature_parameters(
+        base::BindOnce([](history_embeddings::FeatureParameters& parameters) {
+          parameters.omnibox_scoped = false;
+        }));
+    base::test::ScopedFeatureList disabled_features;
+    disabled_features.InitAndEnableFeatureWithParameters(
+        history_embeddings::kHistoryEmbeddings, {});
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(zero_input, {});
+    }
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(non_zero_input, {});
+    }
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(scope_input, {});
+    }
   }
 
   // '@history' promo is shown when embeddings is not opted-in (even if the
   // feature is enabled).
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {{history_embeddings::kHistoryEmbeddings},
-       {optimization_guide::features::kAiSettingsPageRefresh}},
-      {});
-  mock_setting(false, false);
   {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(zero_input,
-                    {{IphType::kHistoryScopePromo,
-                      u"Type @history to search your browsing history"}});
-  }
-  // Not shown for non-zero input.
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(non_zero_input, {});
-  }
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        {{history_embeddings::kHistoryEmbeddings},
+         {optimization_guide::features::kAiSettingsPageRefresh}},
+        {});
+    mock_setting(false, false);
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(zero_input,
+                      {{IphType::kHistoryScopePromo,
+                        u"Type @history to search your browsing history"}});
+    }
+    // Not shown for non-zero input.
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(non_zero_input, {});
+    }
 
-  // '@history' AI promo is shown when embeddings is opted-in.
-  mock_setting(true, true);
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(
-        zero_input,
-        {{IphType::kHistoryEmbeddingsScopePromo,
-          u"Type @history to search your browsing history, powered by AI"}});
-  }
-  // Not shown for non-zero input.
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(non_zero_input, {});
-  }
+    // '@history' AI promo is shown when embeddings is opted-in.
+    mock_setting(true, true);
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(
+          zero_input,
+          {{IphType::kHistoryEmbeddingsScopePromo,
+            u"Type @history to search your browsing history, powered by AI"}});
+    }
+    // Not shown for non-zero input.
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(non_zero_input, {});
+    }
 
-  // chrome://settings/ai/historySearch promo shown when not opted-in and in
-  // @history scope.
-  mock_setting(true, false);
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(
-        scope_input,
-        {{IphType::kHistoryEmbeddingsSettingsPromo,
-          // Should end with whitespace since there's a link following it.
-          u"For a more powerful way to search your browsing history, turn on ",
-          u"History search, powered by AI",
-          GURL("chrome://settings/ai/historySearch")}});
-  }
-  // Not shown for unscoped inputs. Zero input will show the '@history' promo
-  // tested above, so just test `non_zero_input` here.
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(non_zero_input, {});
-  }
-  // Not shown if the setting isn't available.
-  mock_setting(false, false);
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(scope_input, {});
-  }
+    // chrome://settings/ai/historySearch promo shown when not opted-in and in
+    // @history scope.
+    mock_setting(true, false);
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(
+          scope_input,
+          {{IphType::kHistoryEmbeddingsSettingsPromo,
+            // Should end with whitespace since there's a link following it.
+            u"For a more powerful way to search your browsing history, turn "
+            u"on ",
+            u"History search, powered by AI",
+            GURL("chrome://settings/ai/historySearch")}});
+    }
+    // Not shown for unscoped inputs. Zero input will show the '@history' promo
+    // tested above, so just test `non_zero_input` here.
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(non_zero_input, {});
+    }
+    // Not shown if the setting isn't available.
+    mock_setting(false, false);
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(scope_input, {});
+    }
 
-  // Disclaimer shown when opted-in and in @history scope.
-  mock_setting(true, true);
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(
-        scope_input,
-        {{IphType::kHistoryEmbeddingsDisclaimer,
-          // Should end with whitespace since there's a link following it.
-          u"Your searches, best matches, and their page contents are sent to "
-          u"Google and may be seen by human reviewers to improve this feature. "
-          u"This is an experimental feature and won't always get it right. ",
-          u"Learn more", GURL("chrome://settings/ai/historySearch")}});
-  }
-  // Not shown for unscoped inputs. Zero input will show the '@history' AI promo
-  // tested above, so just test `non_zero_input` here.
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(non_zero_input, {});
+    // Disclaimer shown when opted-in and in @history scope.
+    mock_setting(true, true);
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(
+          scope_input,
+          {{IphType::kHistoryEmbeddingsDisclaimer,
+            // Should end with whitespace since there's a link following it.
+            u"Your searches, best matches, and their page contents are sent to "
+            u"Google and may be seen by human reviewers to improve this "
+            u"feature. "
+            u"This is an experimental feature and won't always get it right. ",
+            u"Learn more", GURL("chrome://settings/ai/historySearch")}});
+    }
+    // Not shown for unscoped inputs. Zero input will show the '@history' AI
+    // promo tested above, so just test `non_zero_input` here.
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(non_zero_input, {});
+    }
   }
 
   // Not shown if omnibox entry is disabled, even if embeddings is overall
   // enabled.
-  base::test::ScopedFeatureList features_without_omnibox;
-  features_without_omnibox.InitAndEnableFeatureWithParameters(
-      history_embeddings::kHistoryEmbeddings,
-      {{history_embeddings::kOmniboxScoped.name, "false"}});
   {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(zero_input, {});
-  }
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(non_zero_input, {});
-  }
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(scope_input, {});
+    history_embeddings::ScopedFeatureParametersForTesting feature_parameters(
+        base::BindOnce([](history_embeddings::FeatureParameters& parameters) {
+          parameters.omnibox_scoped = false;
+        }));
+    base::test::ScopedFeatureList features_without_omnibox;
+    features_without_omnibox.InitAndEnableFeatureWithParameters(
+        history_embeddings::kHistoryEmbeddings, {});
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(zero_input, {});
+    }
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(non_zero_input, {});
+    }
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(scope_input, {});
+    }
   }
 
   // TODO(crbug.com/362225975): Remove after AiSettingsPageRefresh is launched.
   //   History Embeddings Promo points to chrome://settings/historySearch when
   //   AI refresh flag is disabled.
-  base::test::ScopedFeatureList features_without_ai_refresh;
-  features_without_ai_refresh.InitWithFeatures(
-      {history_embeddings::kHistoryEmbeddings},
-      {optimization_guide::features::kAiSettingsPageRefresh});
-  mock_setting(true, false);
   {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(
-        scope_input,
-        {{IphType::kHistoryEmbeddingsSettingsPromo,
-          // Should end with whitespace since there's a link following it.
-          u"For a more powerful way to search your browsing history, turn on ",
-          u"History search, powered by AI",
-          GURL("chrome://settings/historySearch")}});
-  }
+    base::test::ScopedFeatureList features_without_ai_refresh;
+    features_without_ai_refresh.InitWithFeatures(
+        {history_embeddings::kHistoryEmbeddings},
+        {optimization_guide::features::kAiSettingsPageRefresh});
+    mock_setting(true, false);
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(
+          scope_input,
+          {{IphType::kHistoryEmbeddingsSettingsPromo,
+            // Should end with whitespace since there's a link following it.
+            u"For a more powerful way to search your browsing history, turn "
+            u"on ",
+            u"History search, powered by AI",
+            GURL("chrome://settings/historySearch")}});
+    }
 
-  // History Embeddings Disclaimer points to chrome://settings/historySearch
-  // when AI refresh flag is disabled.
-  mock_setting(true, true);
-  {
-    SCOPED_TRACE("");
-    RunAndVerifyIph(
-        scope_input,
-        {{IphType::kHistoryEmbeddingsDisclaimer,
-          // Should end with whitespace since there's a link following it.
-          u"Your searches, best matches, and their page contents are sent to "
-          u"Google and may be seen by human reviewers to improve this feature. "
-          u"This is an experimental feature and won't always get it right. ",
-          u"Learn more", GURL("chrome://settings/historySearch")}});
+    // History Embeddings Disclaimer points to chrome://settings/historySearch
+    // when AI refresh flag is disabled.
+    mock_setting(true, true);
+    {
+      SCOPED_TRACE("");
+      RunAndVerifyIph(
+          scope_input,
+          {{IphType::kHistoryEmbeddingsDisclaimer,
+            // Should end with whitespace since there's a link following it.
+            u"Your searches, best matches, and their page contents are sent to "
+            u"Google and may be seen by human reviewers to improve this "
+            u"feature. "
+            u"This is an experimental feature and won't always get it right. ",
+            u"Learn more", GURL("chrome://settings/historySearch")}});
+    }
   }
 }
 

@@ -79,8 +79,10 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
 
   int num_terms =
       history_embeddings::CountWords(base::UTF16ToUTF8(adjusted_input.text()));
-  if (num_terms < history_embeddings::kSearchQueryMinimumWordCount.Get())
+  if (num_terms < history_embeddings::GetFeatureParameters()
+                      .search_query_minimum_word_count) {
     return;
+  }
 
   history_embeddings::HistoryEmbeddingsService* service =
       client()->GetHistoryEmbeddingsService();
@@ -138,8 +140,9 @@ void HistoryEmbeddingsProvider::OnReceivedSearchResult(
     matches_.push_back(CreateMatch(scored_url_row));
   }
 
-  bool answers_enabled = history_embeddings::kAnswersInOmniboxScoped.Get() &&
-                         input_.InKeywordMode();
+  bool answers_enabled =
+      history_embeddings::GetFeatureParameters().answers_in_omnibox_scoped &&
+      input_.InKeywordMode();
   if (answers_enabled) {
     auto optional_match = CreateAnswerMatch(
         search_result.answerer_result,
@@ -219,8 +222,8 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
       answer_match.destination_url =
           GURL{"chrome://history/?q=" + answerer_result.query};
       std::u16string source = history_clusters::ComputeURLForDisplay(
-          scored_url_row.row.url(),
-          history_embeddings::kTrimAfterHostInResults.Get());
+          scored_url_row.row.url(), history_embeddings::GetFeatureParameters()
+                                        .trim_after_host_in_results);
       answer_match.contents = AutocompleteMatch::SanitizeString(
           source + u"  •  " +
           l10n_util::GetStringFUTF16(

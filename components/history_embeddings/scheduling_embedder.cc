@@ -106,7 +106,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
     }
     job_index++;
   }
-  if (kEraseNonAsciiCharacters.Get()) {
+  if (GetFeatureParameters().erase_non_ascii_characters) {
     EraseNonAsciiCharacters(passages);
   }
   embedder_->ComputePassagesEmbeddings(

@@ -463,7 +463,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsSettingsPromoIphMatch()
   // - The user has not deleted the IPH suggestion.
   return client_->IsHistoryEmbeddingsSettingVisible() &&
          !client_->IsHistoryEmbeddingsEnabled() &&
-         history_embeddings::kOmniboxScoped.Get() &&
+         history_embeddings::GetFeatureParameters().omnibox_scoped &&
          ShouldShowIPH(IphType::kHistoryEmbeddingsSettingsPromo);
 }
 
@@ -487,7 +487,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsDisclaimerIphMatch()
   // by `ShouldShowIPH()` (i.e. shown count or dismissal) because this is a
   // disclaimer.
   return client_->IsHistoryEmbeddingsEnabled() &&
-         history_embeddings::kOmniboxScoped.Get();
+         history_embeddings::GetFeatureParameters().omnibox_scoped;
 }
 
 void FeaturedSearchProvider::AddHistoryEmbeddingsDisclaimerIphMatch() {
@@ -512,7 +512,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryScopePromoIphMatch(
   // directly related to embeddings so it's ok to show to users who can't opt-in
   // to embeddings.
   return input.IsZeroSuggest() && !client_->IsHistoryEmbeddingsEnabled() &&
-         history_embeddings::kOmniboxScoped.Get() &&
+         history_embeddings::GetFeatureParameters().omnibox_scoped &&
          !client_->IsOffTheRecord() &&
          ShouldShowIPH(IphType::kHistoryScopePromo);
 }
@@ -528,7 +528,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsScopePromoIphMatch(
   // Shown in the zero state when history embeddings is enabled (& opted-in) for
   // the omnibox.
   return input.IsZeroSuggest() && client_->IsHistoryEmbeddingsEnabled() &&
-         history_embeddings::kOmniboxScoped.Get() &&
+         history_embeddings::GetFeatureParameters().omnibox_scoped &&
          ShouldShowIPH(IphType::kHistoryEmbeddingsScopePromo);
 }
 

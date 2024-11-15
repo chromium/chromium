@@ -39,7 +39,7 @@ AnswererResult& AnswererResult::operator=(AnswererResult&&) = default;
 
 void AnswererResult::PopulateScrollToTextFragment(
     const std::vector<std::string>& passages) {
-  if (!kScrollTagsEnabled.Get()) {
+  if (!GetFeatureParameters().scroll_tags_enabled) {
     return;
   }
   for (int citation_index = 0; citation_index < answer.citations_size();

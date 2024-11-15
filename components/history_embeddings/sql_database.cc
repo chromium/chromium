@@ -188,11 +188,11 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir,
 
     bool delete_embeddings =
         model_version != embedder_metadata_->model_version ||
-        kDeleteEmbeddings.Get();
+        GetFeatureParameters().delete_embeddings;
 
     // TODO(crbug.com/375502129): Remove this guard and the related guard below
     //  for more complete data version handling.
-    if (kEraseNonAsciiCharacters.Get()) {
+    if (GetFeatureParameters().erase_non_ascii_characters) {
       int embeddings_data_version = 0;
       meta_table.GetValue(kKeyEmbeddingsDataVersion, &embeddings_data_version);
       delete_embeddings |= embeddings_data_version != kEmbeddingsDataVersion;
@@ -211,7 +211,7 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir,
       // doing so will result in the embeddings being rebuilt with the
       // non-ASCII character changes.
       // TODO(crbug.com/375502129): See above TODO comment; remove this guard.
-      if (kEraseNonAsciiCharacters.Get() &&
+      if (GetFeatureParameters().erase_non_ascii_characters &&
           !meta_table.SetValue(kKeyEmbeddingsDataVersion,
                                kEmbeddingsDataVersion)) {
         return sql::InitStatus::INIT_FAILURE;

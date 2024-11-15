@@ -186,10 +186,12 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
 
   // Short queries should be blocked.
+  auto feature_parameters = history_embeddings::GetFeatureParameters();
+  feature_parameters.search_query_minimum_word_count = 3;
+  history_embeddings::SetFeatureParametersForTesting(feature_parameters);
   base::test::ScopedFeatureList enabled_feature;
   enabled_feature.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kSearchQueryMinimumWordCount.name, "3"}}},
+      {{history_embeddings::kHistoryEmbeddings, {}},
 #if BUILDFLAG(IS_CHROMEOS)
        {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -306,10 +308,12 @@ TEST_F(HistoryEmbeddingsProviderTest,
 
 TEST_F(HistoryEmbeddingsProviderTest,
        Start_MultipleParallelSearchesWithIneligibleQuery) {
+  auto feature_parameters = history_embeddings::GetFeatureParameters();
+  feature_parameters.search_query_minimum_word_count = 3;
+  history_embeddings::SetFeatureParametersForTesting(feature_parameters);
   base::test::ScopedFeatureList enabled_feature;
   enabled_feature.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kSearchQueryMinimumWordCount.name, "3"}}},
+      {{history_embeddings::kHistoryEmbeddings, {}},
 #if BUILDFLAG(IS_CHROMEOS)
        {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -437,11 +441,14 @@ TEST_F(HistoryEmbeddingsProviderTest,
 
 TEST_F(HistoryEmbeddingsProviderTest,
        OnReceivedSearchResult_CreatesScopedAutocompleteAnswerMatches) {
+  auto feature_parameters = history_embeddings::GetFeatureParameters();
+  feature_parameters.answers_in_omnibox_scoped = true;
+  feature_parameters.trim_after_host_in_results = true;
+  history_embeddings::SetFeatureParametersForTesting(feature_parameters);
+
   base::test::ScopedFeatureList enabled_feature;
   enabled_feature.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kAnswersInOmniboxScoped.name, "true"},
-         {history_embeddings::kTrimAfterHostInResults.name, "true"}}},
+      {{history_embeddings::kHistoryEmbeddings, {}},
 #if BUILDFLAG(IS_CHROMEOS)
        {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)

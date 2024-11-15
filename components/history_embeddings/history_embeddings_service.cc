@@ -134,13 +134,15 @@ size_t CountWords(const std::string& s) {
 // the threshold if necessary while ensuring different users with different
 // models are all using the correct threshold for their model.
 float GetScoreThreshold(const EmbedderMetadata& embedder_metadata) {
-  if (kSearchScoreThreshold.Get() >= 0)
-    return kSearchScoreThreshold.Get();
-  if (embedder_metadata.search_score_threshold.has_value())
+  if (GetFeatureParameters().search_score_threshold >= 0) {
+    return GetFeatureParameters().search_score_threshold;
+  }
+  if (embedder_metadata.search_score_threshold.has_value()) {
     return *embedder_metadata.search_score_threshold;
+  }
   // 0.9 was the correct threshold for the original model before the threshold
   // was added to the metadata.
-  return .9;
+  return 0.9;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -254,9 +256,9 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       optimization_guide_decider_(optimization_guide_decider),
-      embedder_(
-          std::make_unique<SchedulingEmbedder>(std::move(embedder),
-                                               kScheduledEmbeddingsMax.Get())),
+      embedder_(std::make_unique<SchedulingEmbedder>(
+          std::move(embedder),
+          GetFeatureParameters().scheduled_embeddings_max)),
       answerer_(std::move(answerer)),
       intent_classifier_(std::move(intent_classifier)),
       query_id_(0u),
@@ -301,7 +303,7 @@ HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;
 
 bool HistoryEmbeddingsService::IsEligible(const GURL& url) {
   bool eligible;
-  if (!kUseUrlFilter.Get() || !optimization_guide_decider_) {
+  if (!GetFeatureParameters().use_url_filter || !optimization_guide_decider_) {
     eligible = true;
   } else {
     eligible = optimization_guide_decider_->CanApplyOptimization(
@@ -332,7 +334,7 @@ void HistoryEmbeddingsService::OnOsCryptAsyncReady(
   storage_.AsyncCall(&Storage::SetEmbedderMetadata)
       .WithArgs(metadata, std::move(encryptor));
 
-  if (kRebuildEmbeddings.Get()) {
+  if (GetFeatureParameters().rebuild_embeddings) {
     storage_.AsyncCall(&Storage::CollectPassagesWithoutEmbeddings)
         .Then(base::BindOnce(&HistoryEmbeddingsService::RebuildAbsentEmbeddings,
                              weak_ptr_factory_.GetWeakPtr()));
@@ -351,7 +353,7 @@ void HistoryEmbeddingsService::RetrievePassages(
     return;
   }
 
-  if (kUseDatabaseBeforeEmbedder.Get()) {
+  if (GetFeatureParameters().use_database_before_embedder) {
     base::Time time_before_database_access = base::Time::Now();
     storage_.AsyncCall(&Storage::GetUrlData)
         .WithArgs(url_id)
@@ -396,7 +398,8 @@ SearchResult HistoryEmbeddingsService::Search(
   result.count = count;
 
   SearchParams search_params;
-  search_params.erase_non_ascii = kEraseNonAsciiCharacters.Get();
+  search_params.erase_non_ascii =
+      GetFeatureParameters().erase_non_ascii_characters;
   if (search_params.erase_non_ascii) {
     EraseNonAsciiCharacters(query);
   }
@@ -411,14 +414,16 @@ SearchResult HistoryEmbeddingsService::Search(
     return result;
   }
   search_params.word_match_minimum_embedding_score =
-      kWordMatchMinEmbeddingScore.Get();
+      GetFeatureParameters().word_match_min_embedding_score;
   search_params.word_match_score_boost_factor =
-      kWordMatchScoreBoostFactor.Get();
-  search_params.word_match_limit = kWordMatchLimit.Get();
-  search_params.word_match_smoothing_factor = kWordMatchSmoothingFactor.Get();
-  search_params.word_match_max_term_count = kWordMatchMaxTermCount.Get();
+      GetFeatureParameters().word_match_score_boost_factor;
+  search_params.word_match_limit = GetFeatureParameters().word_match_limit;
+  search_params.word_match_smoothing_factor =
+      GetFeatureParameters().word_match_smoothing_factor;
+  search_params.word_match_max_term_count =
+      GetFeatureParameters().word_match_max_term_count;
   search_params.word_match_required_term_ratio =
-      kWordMatchRequiredTermRatio.Get();
+      GetFeatureParameters().word_match_required_term_ratio;
 
   embedder_->ComputePassagesEmbeddings(
       PassageKind::QUERY, {std::move(query)},
@@ -472,7 +477,8 @@ void HistoryEmbeddingsService::SendQualityLog(
     optimization_guide::proto::UserFeedback user_feedback,
     optimization_guide::proto::UiSurface ui_surface) {
   // Exit early if logging is not enabled.
-  if (!kSendQualityLog.Get() || !embedder_metadata_.has_value()) {
+  if (!GetFeatureParameters().send_quality_log ||
+      !embedder_metadata_.has_value()) {
     return;
   }
 
@@ -535,7 +541,7 @@ void HistoryEmbeddingsService::SendQualityLog(
 
       // Log the top passages that may be used as context for the Answerer.
       for (size_t passage_index : scored_url_row.GetBestScoreIndices(
-               0, kContextPassagesMinimumWordCount.Get())) {
+               0, GetFeatureParameters().context_passages_minimum_word_count)) {
         optimization_guide::proto::PassageData* passage_data =
             document_shown->add_passages();
         passage_data->set_text(
@@ -567,7 +573,7 @@ void HistoryEmbeddingsService::SendQualityLog(
   }
 
   // V2 HistoryAnswerLoggingData:
-  if (kSendQualityLogV2.Get()) {
+  if (GetFeatureParameters().send_quality_log_v2) {
     // Take the entry out from the SearchResult so that it will log on
     // destruction at the end of this block.
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
@@ -835,7 +841,7 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(
     }
   }
   size_t old_size = passages.size();
-  if (old_size > 0 && kUseDatabaseBeforeEmbedder.Get()) {
+  if (old_size > 0 && GetFeatureParameters().use_database_before_embedder) {
     // Erase all the blanks that were cleared by cache check above.
     std::erase(passages, "");
     size_t new_size = passages.size();
@@ -992,7 +998,7 @@ void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
       // Note, if threshold is configured at exactly zero then it's
       // intentionally allowing everything through.
       if (annotation_result.visibility_score().value_or(0.0) <
-          kContentVisibilityThreshold.Get()) {
+          GetFeatureParameters().content_visibility_threshold) {
         url_rows_it = scored_url_rows.erase(url_rows_it);
       } else {
         ++url_rows_it;
@@ -1069,11 +1075,12 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
   for (size_t url_index = 0;
        url_index <
        std::min(result.scored_url_rows.size(),
-                static_cast<size_t>(kMaxAnswererContextUrlCount.Get()));
+                static_cast<size_t>(
+                    GetFeatureParameters().max_answerer_context_url_count));
        url_index++) {
     const ScoredUrlRow& scored_url_row = result.scored_url_rows[url_index];
     std::vector<size_t> best_indices = scored_url_row.GetBestScoreIndices(
-        0, kContextPassagesMinimumWordCount.Get());
+        0, GetFeatureParameters().context_passages_minimum_word_count);
     std::vector<std::string>& best_passages =
         context.url_passages_map[scored_url_row.row.url().spec()];
     best_passages.reserve(best_indices.size());
@@ -1178,7 +1185,7 @@ void HistoryEmbeddingsService::RetrievePassagesWithUrlData(
     return;
   }
 
-  if (kUseDatabaseBeforeEmbedder.Get()) {
+  if (GetFeatureParameters().use_database_before_embedder) {
     base::TimeDelta database_access_time =
         base::Time::Now() - time_before_database_access;
     base::UmaHistogramTimes(
@@ -1192,9 +1199,11 @@ void HistoryEmbeddingsService::RetrievePassagesWithUrlData(
       agent.BindNewPipeAndPassReceiver());
   auto params = blink::mojom::InnerTextParams::New();
   params->max_words_per_aggregate_passage =
-      std::max(0, kPassageExtractionMaxWordsPerAggregatePassage.Get());
-  params->max_passages = kMaxPassagesPerPage.Get();
-  params->min_words_per_passage = kSearchPassageMinimumWordCount.Get();
+      std::max(0, GetFeatureParameters()
+                      .passage_extraction_max_words_per_aggregate_passage);
+  params->max_passages = GetFeatureParameters().max_passages_per_page;
+  params->min_words_per_passage =
+      GetFeatureParameters().search_passage_minimum_word_count;
   auto* agent_ptr = agent.get();
   agent_ptr->GetInnerText(
       std::move(params),
@@ -1217,7 +1226,7 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
   }
   const std::unordered_set<uint32_t>& stop_words_hashes =
       SearchStringsUpdateListener::GetInstance()->stop_words_hashes();
-  size_t min_term_length = kWordMatchMinTermLength.Get();
+  size_t min_term_length = GetFeatureParameters().word_match_min_term_length;
   std::vector<std::string> query_terms =
       SplitQueryToTerms(stop_words_hashes, raw_query, min_term_length);
   const std::unordered_set<uint32_t>& filter_words_hashes =

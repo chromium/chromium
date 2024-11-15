@@ -37,7 +37,7 @@ std::string GetPassageIdStr(size_t id) {
 }
 
 float GetMlAnswerScoreThreshold() {
-  return kMlAnswererMinScore.Get();
+  return GetFeatureParameters().ml_answerer_min_score;
 }
 
 }  // namespace

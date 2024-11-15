@@ -59,7 +59,8 @@ namespace passage_embeddings {
 PassageEmbedder::PassageEmbedder(
     mojo::PendingReceiver<mojom::PassageEmbedder> receiver)
     : receiver_(this, std::move(receiver)),
-      embeddings_cache_(history_embeddings::kEmbedderCacheSize.Get()) {}
+      embeddings_cache_(
+          history_embeddings::GetFeatureParameters().embedder_cache_size) {}
 
 PassageEmbedder::~PassageEmbedder() = default;
 
@@ -166,7 +167,8 @@ bool PassageEmbedder::BuildExecutionTask() {
   int num_threads;
   switch (current_priority_) {
     case mojom::PassagePriority::kUserInitiated:
-      num_threads = history_embeddings::kEmbedderNumThreads.Get();
+      num_threads =
+          history_embeddings::GetFeatureParameters().embedder_num_threads;
       break;
     case mojom::PassagePriority::kPassive:
       num_threads = 1;
