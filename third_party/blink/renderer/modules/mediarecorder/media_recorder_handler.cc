@@ -340,14 +340,18 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
   std::vector<std::string> codecs_list;
   media::SplitCodecs(web_codecs.Utf8(), &codecs_list);
 
-  // Only the mp4a.40.2 codec for aac is supported by the platform,
-  // it retains the entire input string when dealing with an mp4 container.
-  if (!mp4_mime_type) {
-    media::StripCodecs(&codecs_list);
-  }
-
   for (const auto& codec : codecs_list) {
+    // For `video/x-matroska`, `video/webm`, and `audio/webm`, trim the content
+    // after first '.' to do the case insensitive match based on historical
+    // logic. For `video/mp4`, and `audio/mp4`, preserve the whole string to do
+    // the case sensitive match.
     String codec_string = String::FromUTF8(codec);
+    if (!mp4_mime_type) {
+      auto str_index = codec.find_first_of('.');
+      if (str_index != std::string::npos) {
+        codec_string = String::FromUTF8(codec.substr(0, str_index));
+      }
+    }
 
     bool match =
         std::any_of(relevant_codecs_begin, relevant_codecs_end,
@@ -359,18 +363,28 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                       }
                     });
 
-    if (!match && mp4_mime_type && video) {
+    if (video) {
+      // Currently `video/x-matroska` is not supported by mime util, replace to
+      // `video/mp4` instead.
+      //
+      // TODO(crbug.com/40276507): rework MimeUtil such that clients can inject
+      // their own supported mime+codec types.
+      std::string mime_type = EqualIgnoringASCIICase(type, "video/x-matroska")
+                                  ? "video/mp4"
+                                  : type.Ascii();
       // It supports full qualified string for `avc1`, `hvc1`, and `av01`
       // codecs, e.g.
       //  `avc1.<profile>.<level>`,
       //  `hvc1.<profile>.<profile_compatibility>.<tier and level>.*`,
       //  `av01.<profile>.<level>.<color depth>.*`.
       auto parsed_result =
-          media::ParseVideoCodecString(type.Ascii(), codec_string.Ascii(),
+          media::ParseVideoCodecString(mime_type, codec,
                                        /*allow_ambiguous_matches=*/false);
-      match =
-          parsed_result && (parsed_result->codec == media::VideoCodec::kH264 ||
-                            parsed_result->codec == media::VideoCodec::kAV1);
+      if (!match && mp4_mime_type) {
+        match = parsed_result &&
+                (parsed_result->codec == media::VideoCodec::kH264 ||
+                 parsed_result->codec == media::VideoCodec::kAV1);
+      }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       // Only support HEVC main profile with `hvc1` tag instead of `hev1` tag
@@ -378,11 +392,23 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
       // support playing `hvc1` tag mp4 videos, and Apple only recommend using
       // `hvc1` for HLS.
       // https://developer.apple.com/documentation/http-live-streaming/hls-authoring-specification-for-apple-devices#2969487
-      if (parsed_result &&
-          parsed_result->profile ==
-              media::VideoCodecProfile::HEVCPROFILE_MAIN &&
-          codec_string.StartsWith("hvc1", kTextCaseASCIIInsensitive)) {
-        match = true;
+      if (codec_string.StartsWith("hvc1", kTextCaseASCIIInsensitive)) {
+        const bool is_legacy_type = codec == "hvc1";
+        match =
+            // If the profile can be parsed, ensure it must be HEVC main
+            // profile, otherwise ensure codec strictly equals to `hvc1`.
+            ((parsed_result &&
+              parsed_result->profile ==
+                  media::VideoCodecProfile::HEVCPROFILE_MAIN) ||
+             is_legacy_type) &&
+            // Only if the feature is enabled.
+            base::FeatureList::IsEnabled(media::kMediaRecorderHEVCSupport) &&
+            // Only `mkv` and `mp4` are supported, `webm` is not supported.
+            !EqualIgnoringASCIICase(type, "video/webm") &&
+            // Only if there are platform HEVC main profile support.
+            media::IsEncoderSupportedVideoType(
+                {media::VideoCodec::kHEVC,
+                 media::VideoCodecProfile::HEVCPROFILE_MAIN});
       }
 #endif
     }
@@ -395,19 +421,6 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
         !media::MojoAudioEncoder::IsSupported(media::AudioCodec::kAAC)) {
       return false;
     }
-
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    if (codec_string.StartsWith("hvc1", kTextCaseASCIIInsensitive) &&
-        (!base::FeatureList::IsEnabled(media::kMediaRecorderHEVCSupport) ||
-         // Only `mkv` and `mp4` are supported, `webm` is not supported.
-         EqualIgnoringASCIICase(type, "video/webm") ||
-         // Only if there are platform HEVC main profile support.
-         !media::IsEncoderSupportedVideoType(
-             {media::VideoCodec::kHEVC,
-              media::VideoCodecProfile::HEVCPROFILE_MAIN}))) {
-      return false;
-    }
-#endif
 
     if (codec_string == "av01" || codec_string == "av1") {
       base::UmaHistogramBoolean("Media.MediaRecorder.HasCorrectAV1CodecString",
