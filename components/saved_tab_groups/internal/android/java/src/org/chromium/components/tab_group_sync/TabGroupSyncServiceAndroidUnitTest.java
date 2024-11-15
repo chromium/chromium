@@ -67,7 +67,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public void testSavedTabGroupConversion(SavedTabGroup group) {
+    public void testSavedTabGroupConversionNativeToJava(SavedTabGroup group) {
         Assert.assertNotNull(group);
         Assert.assertNotNull(group.syncId);
         Assert.assertNull(group.localId);
@@ -94,6 +94,22 @@ public class TabGroupSyncServiceAndroidUnitTest {
         Assert.assertEquals(new GURL(null), tab3.url);
         Assert.assertEquals("creator_cache_guid", tab3.creatorCacheGuid);
         Assert.assertEquals("last_updater_cache_guid", tab3.lastUpdaterCacheGuid);
+    }
+
+    @CalledByNative
+    public long testSavedTabGroupConversionJavaToNative() throws TimeoutException {
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = LOCAL_TAB_GROUP_ID_1;
+        savedTabGroup.title = TEST_GROUP_TITLE;
+        savedTabGroup.color = TabGroupColorId.CYAN;
+
+        SavedTabGroupTab tab1 = new SavedTabGroupTab();
+        tab1.localId = LOCAL_TAB_ID_1;
+        tab1.url = new GURL(TEST_URL);
+        tab1.title = TEST_TAB_TITLE;
+        savedTabGroup.savedTabs.add(tab1);
+
+        return TabGroupSyncConversionsBridge.convertToNativeSavedTabGroup(savedTabGroup);
     }
 
     @CalledByNative

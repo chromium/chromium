@@ -18,6 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/saved_tab_groups/public/conversion_utils_jni_headers/TabGroupSyncConversionsBridge_jni.h"
 
+using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
@@ -88,6 +89,59 @@ ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
 }
 
 }  // namespace
+
+// Java-to-native conversion helper methods.
+
+// static
+jlong JNI_TabGroupSyncConversionsBridge_CreateGroup(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_group_id) {
+  LocalTabGroupID group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
+
+  // Create an empty SavedTabGroup. Only set field is the local tab group ID.
+  std::unique_ptr<SavedTabGroup> group = std::make_unique<SavedTabGroup>(
+      std::u16string(), tab_groups::TabGroupColorId::kGrey,
+      std::vector<SavedTabGroupTab>(), std::nullopt, std::nullopt, group_id);
+  return reinterpret_cast<jlong>(group.release());
+}
+
+// static
+void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
+    JNIEnv* env,
+    jlong j_group_ptr,
+    const JavaParamRef<jstring>& j_title,
+    jint j_color) {
+  // Set visuals on the given SavedTabGroup.
+  SavedTabGroup* group = reinterpret_cast<SavedTabGroup*>(j_group_ptr);
+  if (j_title) {
+    group->SetTitle(ConvertJavaStringToUTF16(env, j_title));
+  }
+  group->SetColor(static_cast<tab_groups::TabGroupColorId>(j_color));
+}
+
+// static
+void JNI_TabGroupSyncConversionsBridge_AddTab(
+    JNIEnv* env,
+    jlong j_group_ptr,
+    jint j_tab_id,
+    const JavaParamRef<jstring>& j_title,
+    const JavaParamRef<jobject>& j_url) {
+  SavedTabGroup* group = reinterpret_cast<SavedTabGroup*>(j_group_ptr);
+
+  // Add a tab to the given SavedTabGroup.
+  LocalTabID tab_id = FromJavaTabId(j_tab_id);
+  std::u16string title =
+      j_title ? ConvertJavaStringToUTF16(env, j_title) : std::u16string();
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+
+  SavedTabGroupTab tab(url, title, group->saved_guid(),
+                       /*position=*/std::nullopt,
+                       /*saved_tab_guid=*/std::nullopt, tab_id);
+  group->AddTabLocally(std::move(tab));
+}
+
+// Native-to-Java conversion helper methods.
 
 // static
 ScopedJavaLocalRef<jobject> TabGroupSyncConversionsBridge::CreateGroup(

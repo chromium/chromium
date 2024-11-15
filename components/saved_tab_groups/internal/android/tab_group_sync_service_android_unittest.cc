@@ -120,7 +120,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, TabIdConversion) {
             tab_id);
 }
 
-TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion) {
+TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion_NativeToJava) {
   auto* env = AttachCurrentThread();
   SavedTabGroup group = test::CreateTestSavedTabGroup();
   group.SetTitle(kTestGroupTitle);
@@ -134,8 +134,32 @@ TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion) {
                         "creator_cache_guid", "last_updater_cache_guid");
   group.AddTabLocally(tab3);
   auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group);
-  Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupConversion(
-      AttachCurrentThread(), j_test_, j_group);
+  Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupConversionNativeToJava(
+      env, j_test_, j_group);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion_JavaToNative) {
+  auto* env = AttachCurrentThread();
+  long native_group_ptr =
+      Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupConversionJavaToNative(
+          env, j_test_);
+  EXPECT_NE(native_group_ptr, 0);
+
+  // Verify the converted group.
+  auto retrieved_group =
+      base::WrapUnique(reinterpret_cast<SavedTabGroup*>(native_group_ptr));
+  EXPECT_EQ(kTestGroupTitle, retrieved_group->title());
+  EXPECT_EQ(TabGroupColorId::kCyan, retrieved_group->color());
+  EXPECT_EQ(test_tab_group_id_, retrieved_group->local_group_id());
+
+  // Verify the tabs in the group.
+  EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
+  SavedTabGroupTab tab1 = retrieved_group->saved_tabs()[0];
+  EXPECT_EQ(kTabId1, tab1.local_tab_id());
+  EXPECT_EQ(GURL(kTestUrl), tab1.url());
+  EXPECT_EQ(kTestTabTitle, tab1.title());
+  // The tab position is its index in the SavedTabGroup, not the position field.
+  EXPECT_EQ(0, tab1.position());
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupAdded) {
