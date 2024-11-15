@@ -57,47 +57,31 @@ def _native_method(sb, native, method_fqn):
   sb(f'private static native {return_type} {method_fqn}({params});\n')
 
 
-def _get_method(sb, ctx):
-  sb(f'\npublic static {ctx.interface_name} get()')
-  with sb.block():
-    if not ctx.per_file_natives:
-      sb(f"""\
-if ({ctx.gen_jni_class.name}.TESTING_ENABLED) {{
-  if (testInstance != null) {{
-    return testInstance;
-  }}
-  if ({ctx.gen_jni_class.name}.REQUIRE_MOCK) {{
-    throw new UnsupportedOperationException(
-        "No mock found for the native implementation of {ctx.interface_name}. "
-        + "The current configuration requires implementations be mocked.");
-  }}
-}}
-""")
-    sb(f"""\
-NativeLibraryLoadedStatus.checkLoaded();
-return new {ctx.proxy_class.name}();
-""")
-
-
 def _class_body(sb, ctx):
   sb(f"""\
-private static {ctx.interface_name} testInstance;
+private static JniOverrideHolder sOverride;
 
-public static final JniStaticTestMocker<{ctx.interface_name}> TEST_HOOKS =
-    new JniStaticTestMocker<{ctx.interface_name}>()""")
-  with sb.block(after=';'):
-    sb(f"""\
-@Override
-public void setInstanceForTesting({ctx.interface_name} instance)""")
-    with sb.block():
-      if not ctx.per_file_natives:
-        sb(f"""\
-if (!{ctx.gen_jni_class.name}.TESTING_ENABLED) {{
-  throw new RuntimeException(
-      "Tried to set a JNI mock when mocks aren't enabled!");
+public static {ctx.interface_name} get() {{
+  JniOverrideHolder holder = sOverride;
+  if (holder != null && holder.value != null) {{
+    return ({ctx.interface_name}) holder.value;
+  }}
+  NativeLibraryLoadedStatus.checkLoaded();
+  return new {ctx.proxy_class.name}();
 }}
+
+public static void setInstanceForTesting({ctx.interface_name} impl) {{
+  if (sOverride == null) {{
+    sOverride = JniOverrideHolder.create();
+  }}
+  sOverride.value = impl;
+}}
+
+// TODO(crbug.com/329069277): Delete.
+public static final JniStaticTestMocker TEST_HOOKS = \
+x -> setInstanceForTesting(({ctx.interface_name}) x);
+
 """)
-      sb('testInstance = instance;\n')
 
   for native in ctx.jni_obj.proxy_natives:
     if ctx.per_file_natives:
@@ -109,14 +93,13 @@ if (!{ctx.gen_jni_class.name}.TESTING_ENABLED) {{
     if ctx.per_file_natives:
       _native_method(sb, native, method_fqn)
 
-  _get_method(sb, ctx)
-
 
 def _imports(sb, ctx):
   classes = {
       'org.jni_zero.CheckDiscard',
       'org.jni_zero.JniStaticTestMocker',
       'org.jni_zero.NativeLibraryLoadedStatus',
+      'org.jni_zero.internal.JniOverrideHolder',
   }
   if not ctx.per_file_natives:
     classes.add(ctx.gen_jni_class.full_name_with_dots)

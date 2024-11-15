@@ -119,12 +119,6 @@ template("_invoke_jni_zero") {
 #   manual_jni_registration: Manually do JNI registration - required for feature
 #     splits which provide their own native library. (optional)
 #   namespace: Registration functions will be wrapped into this. (optional)
-#   require_native_mocks: Enforce that any native calls using
-#     org.jni_zero.NativeMethods must have a mock set
-#     (optional).
-#   enable_native_mocks: Allow native calls using
-#     org.jni_zero.NativeMethods to be mocked in tests
-#     (optional).
 #   priority_java_targets: List of java targets that, if using multiplexing,
 #     will always be placed first in the sequential switch numbers. (optional)
 #
@@ -216,15 +210,6 @@ template("generate_jni_registration") {
 
     if (use_hashed_jni_names) {
       args += [ "--use-proxy-hash" ]
-    }
-
-    if (defined(invoker.enable_native_mocks) && invoker.enable_native_mocks) {
-      args += [ "--enable-proxy-mocks" ]
-
-      if (defined(invoker.require_native_mocks) &&
-          invoker.require_native_mocks) {
-        args += [ "--require-mocks" ]
-      }
     }
 
     if (defined(invoker.remove_uncalled_jni) && invoker.remove_uncalled_jni) {
@@ -584,7 +569,6 @@ template("native_with_jni") {
       native_deps = invoker.deps
 
       if (defined(invoker.testonly) && invoker.testonly) {
-        enable_native_mocks = true
         if (!defined(invoker.add_stubs_for_missing_jni)) {
           add_stubs_for_missing_jni = true
         }

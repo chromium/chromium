@@ -58,11 +58,9 @@ class CliOptions:
     self.extra_include = None if is_final else _EXTRA_INCLUDES
     self.module_name = None
     self.add_stubs_for_missing_native = False
-    self.enable_proxy_mocks = False
     self.include_test_only = False
     self.manual_jni_registration = False
     self.remove_uncalled_methods = False
-    self.require_mocks = False
     self.__dict__.update(kwargs)
 
   def to_args(self):
@@ -89,8 +87,6 @@ class CliOptions:
       ret += ['--extra-include', self.extra_include]
     if self.add_stubs_for_missing_native:
       ret.append('--add-stubs-for-missing-native')
-    if self.enable_proxy_mocks:
-      ret.append('--enable-proxy-mocks')
     if self.header_path:
       ret += ['--header-path', self.header_path]
     if self.include_test_only:
@@ -101,8 +97,6 @@ class CliOptions:
       ret += ['--module-name', self.module_name]
     if self.remove_uncalled_methods:
       ret.append('--remove-uncalled-methods')
-    if self.require_mocks:
-      ret.append('--require-mocks')
     return ret
 
 
@@ -475,14 +469,6 @@ class Tests(BaseTest):
     self._TestEndToEndRegistration(['SampleProxyEdgeCases.java'],
                                    enable_jni_multiplexing=True,
                                    include_test_only=False)
-
-  def testProxyMocks(self):
-    self._TestEndToEndRegistration(['TinySample.java'], enable_proxy_mocks=True)
-
-  def testRequireProxyMocks(self):
-    self._TestEndToEndRegistration(['TinySample.java'],
-                                   enable_proxy_mocks=True,
-                                   require_mocks=True)
 
   def testPackagePrefixGenerator(self):
     self._TestEndToEndGeneration(['SampleForTests.java'],

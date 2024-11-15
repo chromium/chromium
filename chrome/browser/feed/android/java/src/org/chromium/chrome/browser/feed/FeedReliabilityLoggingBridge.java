@@ -27,8 +27,7 @@ public class FeedReliabilityLoggingBridge {
     private boolean mRenderingStarted;
     private DiscoverLaunchResult mLaunchResult;
 
-    public static org.jni_zero.JniStaticTestMocker<FeedReliabilityLoggingBridge.Natives>
-            getTestHooksForTesting() {
+    public static org.jni_zero.JniStaticTestMocker getTestHooksForTesting() {
         return FeedReliabilityLoggingBridgeJni.TEST_HOOKS;
     }
 

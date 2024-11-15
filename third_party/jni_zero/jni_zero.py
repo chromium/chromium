@@ -99,19 +99,6 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
     group.add_argument(
         '--namespace',
         help='Native namespace to wrap the registration functions into.')
-    # TODO(crbug.com/898261) hook these flags up to the build config to enable
-    # mocking in instrumentation tests
-    group.add_argument(
-        '--enable-proxy-mocks',
-        default=False,
-        action='store_true',
-        help='Allows proxy native impls to be mocked through Java.')
-    group.add_argument(
-        '--require-mocks',
-        default=False,
-        action='store_true',
-        help='Requires all used native implementations to have a mock set when '
-        'called. Otherwise an exception will be thrown.')
     group.add_argument('--manual-jni-registration',
                        action='store_true',
                        help='Generate a call to RegisterNatives()')

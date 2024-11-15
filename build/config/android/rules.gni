@@ -1230,8 +1230,6 @@ if (!is_robolectric && enable_java_templates) {
         import("//third_party/jni_zero/jni_zero.gni")
         _jni_srcjar_target_name = "${target_name}__final_jni"
         generate_jni_registration(_jni_srcjar_target_name) {
-          enable_native_mocks = true
-          require_native_mocks = true
           java_targets = [ ":$_java_binary_target_name" ]
           add_stubs_for_missing_jni = true
         }

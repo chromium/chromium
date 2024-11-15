@@ -15,6 +15,7 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.internal.util.AndroidRunnerParams;
 
+import org.jni_zero.JniTestOverrides;
 import org.junit.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
@@ -152,6 +153,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     protected final RestrictionSkipCheck mRestrictionSkipCheck = new RestrictionSkipCheck();
     private long mTestStartTimeMs;
     private String mFailedBatchTestName;
+    private JniTestOverrides mJniZeroSnapshot;
 
     /**
      * Create a BaseJUnit4ClassRunner to run {@code klass} and initialize values.
@@ -461,9 +463,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         if (firstTestMethod) {
             BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext
                     .createSharedPreferencesSnapshot();
+            mJniZeroSnapshot = JniTestOverrides.snapshotOverridesForTesting();
         } else {
             BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext
                     .restoreSharedPreferencesSnapshot();
+            JniTestOverrides.restoreSnapshotForTesting(mJniZeroSnapshot);
         }
 
         // TODO: Might be slow to do this before every test.
@@ -486,6 +490,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         Class<?> testClass = getTestClass().getJavaClass();
         ResettersForTesting.beforeClassHooksWillExecute();
         BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext.resetSharedPreferences();
+        JniTestOverrides.clearAllForTesting();
 
         CommandLineFlags.reset(testClass.getAnnotations(), null);
         TestAnimations.reset(testClass, null);

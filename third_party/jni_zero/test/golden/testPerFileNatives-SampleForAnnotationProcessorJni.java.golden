@@ -9,18 +9,31 @@ import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForAnnotationProcessor;
+import org.jni_zero.internal.JniOverrideHolder;
 import org.stubs.MyClass;
 
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
-  private static SampleForAnnotationProcessor.Natives testInstance;
+  private static JniOverrideHolder sOverride;
 
-  public static final JniStaticTestMocker<SampleForAnnotationProcessor.Natives> TEST_HOOKS =
-      new JniStaticTestMocker<SampleForAnnotationProcessor.Natives>() {
-    @Override
-    public void setInstanceForTesting(SampleForAnnotationProcessor.Natives instance) {
-      testInstance = instance;
+  public static SampleForAnnotationProcessor.Natives get() {
+    JniOverrideHolder holder = sOverride;
+    if (holder != null && holder.value != null) {
+      return (SampleForAnnotationProcessor.Natives) holder.value;
     }
-  };
+    NativeLibraryLoadedStatus.checkLoaded();
+    return new SampleForAnnotationProcessorJni();
+  }
+
+  public static void setInstanceForTesting(SampleForAnnotationProcessor.Natives impl) {
+    if (sOverride == null) {
+      sOverride = JniOverrideHolder.create();
+    }
+    sOverride.value = impl;
+  }
+
+  // TODO(crbug.com/329069277): Delete.
+  public static final JniStaticTestMocker TEST_HOOKS = x -> setInstanceForTesting((SampleForAnnotationProcessor.Natives) x);
+
 
   @Override
   public SampleForAnnotationProcessor bar(SampleForAnnotationProcessor sample) {
@@ -188,9 +201,4 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
         convertedObjects);
   }
   private static native void nativeTestSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
-
-  public static SampleForAnnotationProcessor.Natives get() {
-    NativeLibraryLoadedStatus.checkLoaded();
-    return new SampleForAnnotationProcessorJni();
-  }
 }
