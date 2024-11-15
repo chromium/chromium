@@ -275,42 +275,6 @@ class WTF_EXPORT StringBuilder {
   bool has_buffer_ = false;
 };
 
-template <typename CharType>
-bool Equal(const StringBuilder& s, const CharType* buffer, unsigned length) {
-  if (s.length() != length)
-    return false;
-
-  if (s.Is8Bit())
-    return Equal(s.Span8().data(), buffer, length);
-
-  return Equal(s.Span16().data(), buffer, length);
-}
-
-template <typename CharType>
-bool DeprecatedEqualIgnoringCase(const StringBuilder& s,
-                                 const CharType* buffer,
-                                 unsigned length) {
-  if (s.length() != length)
-    return false;
-
-  if (s.Is8Bit())
-    return DeprecatedEqualIgnoringCase(s.Span8().data(), buffer, length);
-
-  return DeprecatedEqualIgnoringCase(s.Span16().data(), buffer, length);
-}
-
-// Unicode aware case insensitive string matching. Non-ASCII characters might
-// match to ASCII characters. This function is rarely used to implement web
-// platform features.
-// This function is deprecated. We should introduce EqualIgnoringASCIICase() or
-// EqualIgnoringUnicodeCase(). See crbug.com/627682
-inline bool DeprecatedEqualIgnoringCase(const StringBuilder& s,
-                                        const char* string) {
-  return DeprecatedEqualIgnoringCase(
-      s, reinterpret_cast<const LChar*>(string),
-      base::checked_cast<wtf_size_t>(strlen(string)));
-}
-
 template <typename StringType>
 bool Equal(const StringBuilder& a, const StringType& b) {
   if (a.length() != b.length())
