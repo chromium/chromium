@@ -25415,7 +25415,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileSyncEncryptionSettingsClose">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <description>
     Sync Encryption Settings UI was dismissed. iOS only.
   </description>
@@ -25423,7 +25423,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileSyncPassphraseSettingsClose">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <description>
     Sync Passphrase Settings UI was dismissed. iOS only.
   </description>
@@ -34579,14 +34579,14 @@ should be able to be added at any place in this file.
 
 <action name="Settings.GoogleServices">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <description>
     Reported when user navigates to Google Services Settings. iOS only.
   </description>
 </action>
 
 <action name="Settings.GoogleServices.FromSigninNotificationInfobar">
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <description>
     Reported when user navigates to Google Services Settings from the sign-in
     notification infobar. iOS only.
@@ -34641,7 +34641,7 @@ should be able to be added at any place in this file.
 
 <action name="Settings.MyAccount">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the user taps on the account item in the settings. Recorded
@@ -35684,7 +35684,7 @@ should be able to be added at any place in this file.
 
 <action name="Settings.Sync">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <description>
     Reported when user navigates to Google Sync Settings. iOS only.
   </description>
@@ -38282,7 +38282,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Interrupt_Signin">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the user chooses to interrupt the sign in process. It closes

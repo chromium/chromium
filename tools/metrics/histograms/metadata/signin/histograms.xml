@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Signin.AccountCapabilities.GetFromSystemLibraryDuration{Caller}"
     units="ms" expires_after="2025-04-20">
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Signin.AccountCapabilities.GetFromSystemLibraryResult"
     enum="AccountCapabilitiesGetFromSystemLibraryResult"
     expires_after="2025-07-10">
-  <owner>fernandex@chromium.org</owner>
+  <owner>fernandex@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
