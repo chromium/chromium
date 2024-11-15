@@ -624,6 +624,10 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [5060],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tts_engine/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [5070],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/usb_internals/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [5080],

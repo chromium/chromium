@@ -119,6 +119,7 @@ group("resources") {
       "app_settings:resources",
       "browser_switch:resources",
       "on_device_translation_internals:resources",
+      "tts_engine:resources",
     ]
   }
 
