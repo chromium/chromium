@@ -944,7 +944,8 @@ public class ToolbarManager
                             new LocationBarEmbedderUiOverrides(),
                             baseChromeLayout,
                             bottomWindowPaddingSupplier,
-                            onLongClickListener);
+                            onLongClickListener,
+                            mBrowserControlsSizer);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;
