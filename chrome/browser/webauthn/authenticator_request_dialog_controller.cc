@@ -2400,7 +2400,11 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
       }
     }
     // If one of the passkeys is a valid default, go to that.
-    if (!multiple_distinct_creds && best_cred.has_value()) {
+    if (!multiple_distinct_creds && best_cred.has_value() &&
+        (best_cred->second->source != AuthenticatorType::kEnclave ||
+         CanDefaultToEnclave(Profile::FromBrowserContext(
+                                 GetRenderFrameHost()->GetBrowserContext())
+                                 ->GetOriginalProfile()))) {
       return best_cred->first;
     }
   }

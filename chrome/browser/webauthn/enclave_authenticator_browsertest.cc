@@ -3616,10 +3616,13 @@ IN_PROC_BROWSER_TEST_P(HybridParamEnclaveAuthenticatorWithoutPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
 
-  // Passkeys from GPM should not be present anymore.
-  EXPECT_FALSE(base::ranges::any_of(
+  // Passkeys from GPM should still be present, but they should not be the
+  // default.
+  EXPECT_TRUE(base::ranges::any_of(
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
 }
 
 INSTANTIATE_TEST_SUITE_P(HybridLinkingEnabled,

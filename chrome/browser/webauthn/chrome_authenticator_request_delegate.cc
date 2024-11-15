@@ -1564,15 +1564,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
   device::AuthenticatorType type;
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials;
 
-  int enclave_bootstrap_limit_reached =
-      Profile::FromBrowserContext(GetBrowserContext())
-          ->GetOriginalProfile()
-          ->GetPrefs()
-          ->GetInteger(
-              webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount) >=
-      device::enclave::kMaxGPMBootstrapPrompts;
-  if (enclave_controller_ && !enclave_bootstrap_limit_reached &&
-      enclave_controller_->is_active()) {
+  if (enclave_controller_ && enclave_controller_->is_active()) {
     credentials = enclave_controller_->creds();
     type = device::AuthenticatorType::kEnclave;
   } else {
