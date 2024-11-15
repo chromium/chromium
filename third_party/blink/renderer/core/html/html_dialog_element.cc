@@ -32,11 +32,13 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -160,6 +162,7 @@ void HTMLDialogElement::close(const String& return_value,
   SetBooleanAttribute(html_names::kOpenAttr, false);
   bool was_modal = IsModal();
   SetIsModal(false);
+  GetDocument().AllOpenDialogs().erase(this);
 
   // If this dialog is open as a non-modal dialog and open as a popover at the
   // same time, then we shouldn't remove it from the top layer because it is
@@ -245,27 +248,79 @@ void HTMLDialogElement::setClosedBy(const String& new_value) {
   setAttribute(html_names::kClosedbyAttr, AtomicString(new_value));
 }
 
+namespace {
+
+const HTMLDialogElement* FindNearestDialog(const Node& target_node,
+                                           const PointerEvent& pointer_event) {
+  // First check if this is a click on a dialog's backdrop, which will show up
+  // as a click on the dialog directly.
+  if (auto* dialog = DynamicTo<HTMLDialogElement>(target_node);
+      dialog && dialog->IsOpen() && dialog->IsModal()) {
+    DOMRect* dialog_rect =
+        const_cast<HTMLDialogElement*>(dialog)->GetBoundingClientRect();
+    if (!dialog_rect->IsPointInside(pointer_event.clientX(),
+                                    pointer_event.clientY())) {
+      CHECK(dialog->GetPseudoElement(kPseudoIdBackdrop));
+      return nullptr;  // Return nullptr for a backdrop click.
+    }
+  }
+  // Otherwise, walk up the tree looking for an open dialog.
+  for (const Node* node = &target_node; node;
+       node = FlatTreeTraversal::Parent(*node)) {
+    if (auto* dialog = DynamicTo<HTMLDialogElement>(node);
+        dialog && dialog->IsOpen()) {
+      return dialog;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 // static
+// https://html.spec.whatwg.org/interactive-elements.html#light-dismiss-open-dialogs
 void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
                                                  const Node& target_node) {
-  // TODO(crbug.com/376516550): Implement spec behavior:
-  // 1. Assert: event's isTrusted attribute is true.
-  // 2. Let target be event's target.
-  // 3. Let document be target's node document.
-  // 4. If document's light dismissible dialog list is empty, then return.
-  // 5. If event is a PointerEvent and event's type is "pointerdown", then: set
-  //    document's dialog pointerdown target to the result of running topmost
-  //    clicked dialog given target.
-  // 6. If event is a PointerEvent and event's type is " pointerup ", then:
-  //  1. Let clickedDialog be the result of running topmost clicked dialog given
-  //     target.
-  //  2. Let topDialog be document's light dismissible dialog list's last
-  //     element.
-  //  3. Let sameTarget be true if clickedDialog is dialog pointerdown target.
-  //  4. Let clickedTopDialog be true if clickedDialog is topDialog ,
-  //  5. Set document's dialog pointerdown target to null.
-  //  6. If clickedTopDialog is true or sameTarget is false, then return.
-  //  7. Perform request to close the dialog given topDialog.
+  if (!RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
+    return;
+  }
+  CHECK(event.isTrusted());
+  auto& document = target_node.GetDocument();
+  if (document.AllOpenDialogs().empty()) {
+    return;
+  }
+
+  const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
+  if (!pointer_event) {
+    return;
+  }
+  // PointerEventManager will call this function before actually dispatching
+  // the event.
+  CHECK(!event.HasEventPath());
+  CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
+  const AtomicString& event_type = event.type();
+  const HTMLDialogElement* ancestor_dialog =
+      FindNearestDialog(target_node, *pointer_event);
+  if (event_type == event_type_names::kPointerdown) {
+    document.SetDialogPointerdownTarget(ancestor_dialog);
+  } else if (event_type == event_type_names::kPointerup) {
+    // See the comment in HTMLElement::HandlePopoverLightDismiss() for details
+    // on why this works the way it does.
+    bool same_target = ancestor_dialog == document.DialogPointerdownTarget();
+    document.SetDialogPointerdownTarget(nullptr);
+    if (!same_target) {
+      return;
+    }
+    // Make a copy of the list, because closed dialogs will be removed as we go.
+    VectorOf<HTMLDialogElement> dialog_list{document.AllOpenDialogs()};
+    for (auto index = dialog_list.size(); index-- != 0;) {
+      auto& dialog = dialog_list.at(index);
+      if (dialog != ancestor_dialog &&
+          dialog->ClosedBy() == ClosedByState::kAny) {
+        dialog->requestClose();
+      }
+    }
+  }
 }
 
 bool HTMLDialogElement::IsValidBuiltinCommand(HTMLElement& invoker,
@@ -346,6 +401,8 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
     return;
   }
   SetBooleanAttribute(html_names::kOpenAttr, true);
+  DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
+  GetDocument().AllOpenDialogs().insert(this);
 
   if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
     CreateCloseWatcher();
@@ -355,10 +412,8 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   // Element::isFocusable, which requires an up-to-date layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  // Proposed new behavior: top layer elements like dialogs and fullscreen
-  // elements can be nested inside popovers.
-  // Old/existing behavior: showing a modal dialog or fullscreen
-  // element should hide all open popovers.
+  // Top layer elements like dialogs and fullscreen elements can be nested
+  // inside popovers.
   auto* hide_until = HTMLElement::TopLayerElementPopoverAncestor(
       *this, TopLayerElementType::kDialog);
   HTMLElement::HideAllPopoversUntil(
@@ -480,6 +535,8 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   document.AddToTopLayer(this);
   SetBooleanAttribute(html_names::kOpenAttr, true);
   SetIsModal(true);
+  DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
+  GetDocument().AllOpenDialogs().insert(this);
 
   // Refresh the AX cache first, because most of it is changing.
   InertSubtreesChanged(document, old_modal_dialog);

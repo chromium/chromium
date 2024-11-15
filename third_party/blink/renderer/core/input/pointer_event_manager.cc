@@ -190,8 +190,11 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   if (Node* target_node = target->ToNode()) {
     if (event_type == event_type_names::kPointerdown ||
         event_type == event_type_names::kPointerup) {
-      HTMLDialogElement::HandleDialogLightDismiss(*pointer_event, *target_node);
+      // Per spec, run the popover light dismiss actions first, which will take
+      // care of light dismissing popovers, including nested popovers. Then run
+      // dialog light dismiss.
       HTMLElement::HandlePopoverLightDismiss(*pointer_event, *target_node);
+      HTMLDialogElement::HandleDialogLightDismiss(*pointer_event, *target_node);
     }
   }
 

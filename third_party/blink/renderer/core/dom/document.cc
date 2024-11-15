@@ -8742,6 +8742,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(dialog_pointerdown_target_);
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(all_open_popovers_);
+  visitor->Trace(all_open_dialogs_);
   visitor->Trace(document_part_root_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);

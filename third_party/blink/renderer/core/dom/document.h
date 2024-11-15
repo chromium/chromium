@@ -1654,6 +1654,10 @@ class CORE_EXPORT Document : public ContainerNode,
   const HTMLDialogElement* DialogPointerdownTarget() const;
   void SetDialogPointerdownTarget(const HTMLDialogElement*);
 
+  HeapLinkedHashSet<Member<HTMLDialogElement>>& AllOpenDialogs() {
+    return all_open_dialogs_;
+  }
+
   // https://crbug.com/1453291
   // The DOM Parts API:
   // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
@@ -2707,13 +2711,17 @@ class CORE_EXPORT Document : public ContainerNode,
   // The dialog (if any) that received the most recent pointerdown event. This
   // is distinct from popover_pointerdown_target_ because the same pointer
   // action could trigger light dismiss on a containing popover and not a
-  // containing dialog, or vice versa.
+  // containing dialog, or vice versa. This will be nullptr for a click on
+  // the ::backdrop pseudo element for a dialog.
   Member<const HTMLDialogElement> dialog_pointerdown_target_;
   // A set of popovers for which hidePopover() has been called, but animations
   // are still running.
   HeapHashSet<Member<HTMLElement>> popovers_waiting_to_hide_;
   // A set of all open popovers, of all types.
   HeapHashSet<Member<HTMLElement>> all_open_popovers_;
+
+  // The ordered list of currently-open dialogs, in order they were opened.
+  HeapLinkedHashSet<Member<HTMLDialogElement>> all_open_dialogs_;
 
   Member<DocumentPartRoot> document_part_root_;
 

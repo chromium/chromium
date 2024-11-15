@@ -2231,36 +2231,37 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
     return;
   }
 
-  const AtomicString& event_type = event.type();
-  if (IsA<PointerEvent>(event)) {
-    // PointerEventManager will call this function before actually dispatching
-    // the event.
-    CHECK(!event.HasEventPath());
-    CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
+  if (!IsA<PointerEvent>(event)) {
+    return;
+  }
 
-    if (event_type == event_type_names::kPointerdown) {
-      document.SetPopoverPointerdownTarget(
-          FindTopmostRelatedPopover(target_node));
-    } else if (event_type == event_type_names::kPointerup) {
-      // Hide everything up to the clicked element. We do this on pointerup,
-      // rather than pointerdown or click, primarily for accessibility concerns.
-      // See
-      // https://www.w3.org/WAI/WCAG21/Understanding/pointer-cancellation.html
-      // for more information on why it is better to perform potentially
-      // destructive actions (including hiding a popover) on pointer-up rather
-      // than pointer-down. To properly handle the use case where a user starts
-      // a pointer-drag on a popover, and finishes off the popover (to highlight
-      // text), the ancestral popover is stored in pointerdown and compared
-      // here.
-      auto* ancestor_popover = FindTopmostRelatedPopover(target_node);
-      bool same_target =
-          ancestor_popover == document.PopoverPointerdownTarget();
-      document.SetPopoverPointerdownTarget(nullptr);
-      if (same_target) {
-        HideAllPopoversUntil(
-            ancestor_popover, document, HidePopoverFocusBehavior::kNone,
-            HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
-      }
+  // PointerEventManager will call this function before actually dispatching
+  // the event.
+  CHECK(!event.HasEventPath());
+  CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
+
+  const AtomicString& event_type = event.type();
+  if (event_type == event_type_names::kPointerdown) {
+    document.SetPopoverPointerdownTarget(
+        FindTopmostRelatedPopover(target_node));
+  } else if (event_type == event_type_names::kPointerup) {
+    // Hide everything up to the clicked element. We do this on pointerup,
+    // rather than pointerdown or click, primarily for accessibility concerns.
+    // See
+    // https://www.w3.org/WAI/WCAG21/Understanding/pointer-cancellation.html
+    // for more information on why it is better to perform potentially
+    // destructive actions (including hiding a popover) on pointer-up rather
+    // than pointer-down. To properly handle the use case where a user starts
+    // a pointer-drag on a popover, and finishes off the popover (to highlight
+    // text), the ancestral popover is stored in pointerdown and compared
+    // here.
+    auto* ancestor_popover = FindTopmostRelatedPopover(target_node);
+    bool same_target = ancestor_popover == document.PopoverPointerdownTarget();
+    document.SetPopoverPointerdownTarget(nullptr);
+    if (same_target) {
+      HideAllPopoversUntil(
+          ancestor_popover, document, HidePopoverFocusBehavior::kNone,
+          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
     }
   }
 }
