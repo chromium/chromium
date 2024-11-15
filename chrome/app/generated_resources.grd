@@ -275,24 +275,25 @@ are declared in tools/grit/grit_rule.gni.
     <file path="resources/generated_resources_zu.xtb" lang="zu" />
   </translations>
   <release seq="1">
+    <!-- IMPORTANT: .grdp files must be in the same directory as this file -->
     <messages fallback_to_english="true">
       <!-- Access Code Cast specific strings -->
       <part file="access_code_cast_strings.grdp" />
 
-      <!-- Bookmarks specific strings -->
-      <part file="bookmarks_strings.grdp" />
-
       <!-- App Management specific strings -->
       <part file="app_management_strings.grdp" />
 
-      <!-- Media Router specific strings -->
-      <part file="media_router_strings.grdp" />
+      <!-- Bookmarks specific strings -->
+      <part file="bookmarks_strings.grdp" />
 
       <!-- Global Media Controls specific strings -->
       <part file="gmc_strings.grdp" />
 
       <!-- Media live preview specific strings -->
       <part file="media_live_preview_strings.grdp" />
+
+      <!-- Media Router specific strings -->
+      <part file="media_router_strings.grdp" />
 
       <!-- Profiles specific strings -->
       <part file="profiles_strings.grdp" />

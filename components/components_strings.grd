@@ -280,19 +280,19 @@
     <file path="strings/components_strings_zu.xtb" lang="zu" />
   </translations>
   <release seq="1">
+    <!-- IMPORTANT: .grdp files must be in the same directory as this file -->
     <messages fallback_to_english="true">
       <part file="arc_strings.grdp" />
       <part file="autofill_payments_strings.grdp" />
       <part file="autofill_prediction_improvements_strings.grdp" />
       <part file="autofill_strings.grdp" />
+      <part file="blocked_content_strings.grdp" />
       <part file="bookmark_bar_strings.grdp" />
       <part file="bookmark_component_strings.grdp" />
-      <part file="blocked_content_strings.grdp" />
       <part file="browsing_data_strings.grdp" />
       <part file="commerce_strings.grdp" />
-      <part file="compose_strings.grdp" />
-      <part file="live_caption_strings.grdp" />
       <part file="components_settings_strings.grdp" />
+      <part file="compose_strings.grdp" />
       <part file="crash_strings.grdp" />
       <part file="dialog_strings.grdp" />
       <part file="dom_distiller_strings.grdp" />
@@ -303,8 +303,10 @@
       <part file="fullscreen_control_strings.grdp" />
       <part file="global_media_controls_strings.grdp" />
       <part file="heavy_ad_intervention_strings.grdp" />
+      <part file="history_clusters_strings.grdp" />
       <part file="history_strings.grdp" />
       <part file="javascript_dialogs_strings.grdp" />
+      <part file="live_caption_strings.grdp" />
       <part file="login_dialog_strings.grdp" />
       <part file="management_strings.grdp" />
       <part file="media_message_center_strings.grdp" />
@@ -332,14 +334,13 @@
       <part file="subresource_filter_strings.grdp" />
       <part file="supervised_user_strings.grdp" />
       <part file="sync_ui_strings.grdp" />
-      <part file="translate_strings.grdp" />
       <part file="tab_groups_strings.grdp" />
       <part file="tab_resume_strings.grdp" />
+      <part file="translate_strings.grdp" />
       <part file="undo_strings.grdp" />
       <part file="user_education_strings.grdp" />
       <part file="version_ui_strings.grdp" />
       <part file="webapps_strings.grdp" />
-      <part file="history_clusters_strings.grdp" />
       <if expr="is_android">
         <part file="android_system_error_page_strings.grdp" />
         <part file="external_intents_strings.grdp" />
