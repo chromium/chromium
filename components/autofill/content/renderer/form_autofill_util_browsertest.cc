@@ -2520,5 +2520,347 @@ TEST_F(FormAutofillUtilsTest, GetOwnedFormControlsRequiresConnectedness) {
   EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f), IsEmpty());
 }
 
+// Tests that final-checkout-amount extraction extracts the
+// final-checkout-amount if the label node is in the subtree that is only one
+// ancestor up.
+TEST_F(FormAutofillUtilsTest, ExtractFinalCheckoutAmountFromDom_OneAncestorUp) {
+  std::vector<std::string> matches;
+  LoadHTML(R"(
+    <body>
+      <div>
+        <span>Total</span>
+        <div>$448.60</div>
+      </div>
+    </body>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.448.60$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/6),
+            "$448.60");
+}
+
+// Tests that final-checkout-amount extraction extracts the
+// final-checkout-amount if the label node is in the subtree that is many
+// ancestors up.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_ManyAncestorsUp) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>Total</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/6),
+            "$56.70");
+}
+
+// Tests that final-checkout-amount extraction extracts the
+// final-checkout-amount if the label node is in the subtree that is many
+// ancestors down.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_ManyAncestorsDown) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>$56.70</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>
+                <div>Total</div>
+              </span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/2),
+            "$56.70");
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if the label node is more than
+// `number_of_ancestor_levels_to_search` up from the final-checkout-amount node.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_TooManyAncestorsUp_DoesNotMatch) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>Total</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/3)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction returns the first
+// final-checkout-amount match if there are multiple possible matches.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_MultiplePriceNodes_MatchesFirstOne) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+              <span>Total</span>
+            </span>
+            <span>
+              <span>$56.71</span>
+              <span>Total</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  std::string final_checkout_amount = ExtractFinalCheckoutAmountFromDom(
+      document, price_regex, label_regex,
+      /*number_of_ancestor_levels_to_search=*/6);
+  EXPECT_TRUE(final_checkout_amount == "$56.70" ||
+              final_checkout_amount == "$56.71");
+}
+
+// Tests that final-checkout-amount extraction returns the closest final
+// checkout amount match if there are multiple possible matches. The closest
+// match is based on the lowest common ancestor between price node and label
+// node.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_MultiplePriceNodes_MatchesClosestOne) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>
+                <span>$56.70</span>
+              </span>
+              <span>Total</span>
+            </span>
+            <span>
+              <span>$56.71</span>
+              <span>Total</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/6),
+            "$56.71");
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if there are price nodes in the ancestor searches
+// containing the label node.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_MultiplePriceNodes_DoesNotMatch) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>Total</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+            </span>
+            <span>
+              <span>$56.71</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/6)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if the ancestor search of one price node contains
+// multiple price nodes, and the ancestor search of the other one does not
+// contain the label node.
+TEST_F(
+    FormAutofillUtilsTest,
+    ExtractFinalCheckoutAmountFromDom_MultiplePriceNodesInAncestorSearchOfOne_DoesNotMatch) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <span>$56.71</span>
+      <span>
+        <div>Total</div>
+        <span>
+          <div>
+            <div>
+              <span>$56.70</span>
+            </div>
+          </div>
+        </span>
+      </span>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/3)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction matches a final-checkout-amount
+// if the ancestor search of one price node contains multiple price nodes, and
+// the ancestor search of the other one contains the label node and only one
+// price node.
+TEST_F(
+    FormAutofillUtilsTest,
+    ExtractFinalCheckoutAmountFromDom_MultiplePriceNodesInAncestorSearchOfOne_OtherAncestorPathOnlyHasOne_Matches) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <span>$56.71</span>
+      <div>
+        <div>
+          <span>
+            <div>Total</div>
+            <span>
+              <span>$56.70</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/6),
+            "$56.70");
+}
+
+// Tests that the final-checkout-amount extraction does not extract a final
+// checkout amount if there is no label node.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_NoLabelNode_DoesNotMatch) {
+  LoadHTML(R"(
+    <div>
+      <div>Not a label</div>
+      <span>$56.70</span>
+    </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/6)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if there are no price nodes.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_NoPriceNodes_DoesNotMatch) {
+  LoadHTML(R"(
+  <div>
+      <div>Total</div>
+      <div>Not a final-checkout-amount</div>
+    </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/6)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if there are no label nodes and no price nodes.
+TEST_F(
+    FormAutofillUtilsTest,
+    ExtractFinalCheckoutAmountFromDom_NoPriceNodesAndNoLabelNodes_DoesNotMatch) {
+  LoadHTML(R"(
+    <div>
+      <div>Not a total node</div>
+      <div>Not a final-checkout-amount</div>
+    </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/6)
+                  .empty());
+}
+
 }  // namespace
 }  // namespace autofill::form_util

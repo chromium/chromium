@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -256,6 +257,67 @@ void TraverseDomForFourDigitCombinations(
     const blink::WebDocument& document,
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches);
+
+// This algorithm attempts to extract the final-checkout-amount using regex
+// matching. Since the document may list the prices of individual items, a
+// second regex is used to identify order-total labels. It is assumed that the
+// true final-checkout-amount node is the price node that is the shortest
+// distance to a label node. The distance of a price node to a label node is
+// measured by the length of the path from the price node to their lowest common
+// ancestor. If there are multiple such nodes, returning the first match is
+// fine. The returned string is empty if a final-checkout-amount is not found,
+// and a string (including dollar signs, periods, and commas) of the
+// final-checkout-amount text node value if one is found. The
+// final-checkout-amount-text-node is the text node that is deemed to contain
+// the final-checkout-amount of the checkout page (ex: a text node containing
+// the text "$100.00").
+//
+// `price_regex` is a regex that is used to check if a text node is a price node
+// (and all price nodes are potential final-checkout-amount-nodes).
+// `label_regex` is a regex that is used to check if a text node is a label
+// node. Label nodes are nodes that, if found near price nodes, are deemed to
+// label that price node as a final-checkout-amount. They contain text that
+// implies a final-checkout-amount, such as "Order total" or "Total amount".
+// `number_of_ancestor_levels_to_search` denotes how many levels of ancestors of
+// price nodes should be searched to look for a label node.
+//
+// Some features in Payments Autofill need to know the final-checkout-amount of
+// a page to work properly, for example BNPL. This algorithm attempts to extract
+// the final-checkout-amount from the page. It will not always be reliable, but
+// from manual testing it works 90%+ of the time.
+//
+// Example:
+// <div>
+//   <div>
+//     <span>
+//       <span>$56.70</span>
+//     </span>
+//     <span>
+//       <span>Total amount:</span>
+//     </span>
+//   </div>
+//   <div>
+//     <div>
+//       <div>
+//         <span>
+//           <span>$100.00</span>
+//         </span>
+//       </div>
+//     </div>
+//   </div>
+// </div>
+//
+// In the example above, the search will start at the price nodes "$56.70" and
+// "$100.00", then go up and search the subtrees of their ancestors. 2 ancestor
+// levels up from the "$56.70" price node, it will reach the 2nd <div> block,
+// and find the label node "Total amount:" in its subtree, thus returning the
+// final-checkout-amount-node's value as "$56.70". Since the $100.00 price node
+// is further away, it will not be considered as the final-checkout-amount.
+std::string ExtractFinalCheckoutAmountFromDom(
+    const blink::WebDocument& document,
+    std::string_view price_regex,
+    std::string_view label_regex,
+    size_t number_of_ancestor_levels_to_search);
 
 // Attempts to update `FormFieldData::user_input_` of `field`, whose DOM element
 // is identified by `element_id`, using `field_data_manager`.

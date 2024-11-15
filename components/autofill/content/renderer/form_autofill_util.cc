@@ -2844,6 +2844,98 @@ void TraverseDomForFourDigitCombinations(
       .Run(std::vector<std::string>(matches.begin(), matches.end()));
 }
 
+std::string ExtractFinalCheckoutAmountFromDom(
+    const blink::WebDocument& document,
+    std::string_view price_regex,
+    std::string_view label_regex,
+    size_t number_of_ancestor_levels_to_search) {
+  WebVector<WebNode> price_nodes =
+      document.FindAllTextNodesMatchingRegex(WebString::FromUTF8(price_regex));
+
+  if (price_nodes.empty()) {
+    return "";
+  }
+
+  WebVector<WebNode> label_nodes =
+      document.FindAllTextNodesMatchingRegex(WebString::FromUTF8(label_regex));
+
+  if (label_nodes.empty()) {
+    return "";
+  }
+
+  // Used later to check efficiently if a given ancestor contains a label node
+  // in its subtree.
+  std::set<WebNode> all_ancestors_of_label_nodes;
+  for (WebNode& label_node : label_nodes) {
+    WebNode parent = label_node.ParentNode();
+    while (parent && all_ancestors_of_label_nodes.insert(parent).second) {
+      parent = parent.ParentNode();
+    }
+  }
+
+  // Used later to efficiently check if a given ancestor contains more than 1
+  // price node under it.
+  std::map<WebNode, size_t> count_of_price_nodes_under_ancestors;
+
+  // Pairs of price nodes to their current ancestor to be checked. These pairs
+  // will be used during the search, and the second value in each pair will
+  // be updated to its parent if the search on the current ancestor does not
+  // return a final-checkout-amount.
+  std::vector<std::pair<WebNode, WebNode>> price_to_current_ancestor;
+  price_to_current_ancestor.reserve(price_nodes.size());
+
+  // Build both `count_of_price_nodes_under_ancestors` and
+  // `price_to_current_ancestor`.
+  for (WebNode& price_node : price_nodes) {
+    WebNode parent = price_node.ParentNode();
+
+    // Set the initial parent as the parent to be searched.
+    price_to_current_ancestor.emplace_back(price_node, parent);
+    while (parent) {
+      ++count_of_price_nodes_under_ancestors[parent];
+
+      parent = parent.ParentNode();
+    }
+  }
+
+  // Now that `price_to_current_ancestor` is fully built, start
+  // doing the checks on ancestors to find label nodes.
+  for (size_t current_ancestor_level = 0;
+       current_ancestor_level < number_of_ancestor_levels_to_search;
+       ++current_ancestor_level) {
+    for (auto& [price_node, current_ancestor] : price_to_current_ancestor) {
+      if (!current_ancestor) {
+        // Stop searching ancestors of this price node since there are no more
+        // ancestors to check. This can occur if the current price node is very
+        // close to the root of the DOM. The mechanism for the stoppage is the
+        // `current_ancestor` for this `price_node` does not get updated, so on
+        // every future level this `price_node` will just continue instead of
+        // checking a new level's ancestor.
+        continue;
+      }
+
+      if (count_of_price_nodes_under_ancestors[current_ancestor] > 1) {
+        // Stop searching ancestors of this checkout amount node since more than
+        // 1 price node was found under this node, `current_ancestor`.
+        current_ancestor.Reset();
+        continue;
+      }
+
+      if (all_ancestors_of_label_nodes.contains(current_ancestor)) {
+        // An ancestor was found that contains a label node in its
+        // subtree, and has only one price node under it. Thus this price node
+        // is the final-checkout-amount node. Return its value.
+        return price_node.NodeValue().Utf8();
+      }
+
+      current_ancestor = current_ancestor.ParentNode();
+    }
+  }
+
+  // Notify the caller that no final-checkout-amount was found.
+  return "";
+}
+
 void MaybeUpdateUserInput(FormFieldData& field,
                           FieldRendererId element_id,
                           const FieldDataManager& field_data_manager) {
