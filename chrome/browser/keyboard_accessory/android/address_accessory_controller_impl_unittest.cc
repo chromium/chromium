@@ -499,6 +499,7 @@ TEST_F(AddressAccessoryControllerTest,
 }
 
 TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
+  base::UserActionTester user_action_tester;
   FieldGlobalId field_id = test::MakeFieldGlobalId();
   EXPECT_CALL(mock_manual_filling_controller_, GetLastFocusedFieldId)
       .WillOnce(Return(field_id));
@@ -516,6 +517,10 @@ TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
                                base::UTF8ToUTF16(plus_address)));
   controller()->OnOptionSelected(
       AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(
+          "PlusAddresses.CreateSuggestionOnAddressManualFallbackSelected"),
+      1);
 }
 
 TEST_F(AddressAccessoryControllerTest, TriggersManagePlusAddress) {

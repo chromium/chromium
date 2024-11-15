@@ -464,6 +464,9 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
             base::BindOnce(
                 &PasswordAccessoryControllerImpl::OnPlusAddressCreated,
                 weak_ptr_factory_.GetWeakPtr()));
+        base::RecordAction(base::UserMetricsAction(
+            "PlusAddresses."
+            "CreateSuggestionOnPasswordManualFallbackSelected"));
         GetManualFillingController()->Hide();
       }
       return;

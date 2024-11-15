@@ -181,6 +181,9 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
                 &AddressAccessoryControllerImpl::OnPlusAddressCreated,
                 weak_ptr_factory_.GetWeakPtr(),
                 GetManualFillingController()->GetLastFocusedFieldId()));
+        base::RecordAction(base::UserMetricsAction(
+            "PlusAddresses."
+            "CreateSuggestionOnAddressManualFallbackSelected"));
         GetManualFillingController()->Hide();
       }
       return;

@@ -1863,6 +1863,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
 // corresponding action is triggered.
 TEST_F(PasswordAccessoryControllerTest,
        TriggersPlusAddressCreationBottomSheet) {
+  base::UserActionTester user_action_tester;
   CreateSheetController();
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -1883,6 +1884,10 @@ TEST_F(PasswordAccessoryControllerTest,
 
   controller()->OnOptionSelected(
       autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(
+          "PlusAddresses.CreateSuggestionOnPasswordManualFallbackSelected"),
+      1);
 }
 
 // Verify that when WebAuthnCredentialsDelegate::SelectPasskey can be invoked
