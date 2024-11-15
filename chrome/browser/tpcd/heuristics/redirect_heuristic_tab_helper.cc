@@ -6,6 +6,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/dips_service_impl.h"
@@ -98,13 +99,26 @@ void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
 
   CHECK(dips_service_);
   CHECK(!dips_service_->storage()->is_null());
+
+  auto callback = base::BindOnce(
+      [](base::WeakPtr<RedirectHeuristicTabHelper> service,
+         const ukm::SourceId& first_party_source_id,
+         const ukm::SourceId& third_party_source_id,
+         const content::CookieAccessDetails& details,
+         const size_t sites_passed_count, bool is_current_interaction,
+         std::pair<std::optional<base::Time>, bool> range) {
+        return service->RecordRedirectHeuristic(
+            first_party_source_id, third_party_source_id, details,
+            sites_passed_count, is_current_interaction, range.second,
+            range.first);
+      },
+      weak_factory_.GetWeakPtr(), first_party_source_id, third_party_source_id,
+      details, sites_passed_count, is_current_interaction);
+
   dips_service_->storage()
-      ->AsyncCall(&DIPSStorage::LastUserActivationOrAuthnAssertionTime)
+      ->AsyncCall(&DIPSStorage::LastInteractionTimeAndType)
       .WithArgs(details.url)
-      .Then(base::BindOnce(&RedirectHeuristicTabHelper::RecordRedirectHeuristic,
-                           weak_factory_.GetWeakPtr(), first_party_source_id,
-                           third_party_source_id, details, sites_passed_count,
-                           is_current_interaction));
+      .Then(std::move(callback));
 }
 
 void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
@@ -113,6 +127,7 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
     const content::CookieAccessDetails& details,
     const size_t sites_passed_count,
     bool is_current_interaction,
+    bool is_user_activation_interaction,
     std::optional<base::Time> last_user_interaction_time) {
   // This function can only be reached if the redirect heuristic is satisfied
   // for the previous recorded redirect.
@@ -121,12 +136,16 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
       clock_->Now() - last_commit_timestamp_.value(), base::Minutes(15),
       base::BindRepeating(&base::TimeDelta::InMilliseconds));
 
+  InteractionType interaction_type = InteractionType::NoInteraction;
   int hours_since_last_interaction = -1;
   if (last_user_interaction_time.has_value()) {
     hours_since_last_interaction = Bucketize3PCDHeuristicTimeDelta(
         clock_->Now() - last_user_interaction_time.value(), base::Days(60),
         base::BindRepeating(&base::TimeDelta::InHours)
             .Then(base::BindRepeating([](int64_t t) { return t; })));
+    interaction_type = is_user_activation_interaction
+                           ? InteractionType::UserActivation
+                           : InteractionType::Authentication;
   }
 
   OptionalBool has_same_site_iframe =
@@ -149,6 +168,7 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
       .SetSitesPassedCount(sites_passed_count)
       .SetDoesFirstPartyPrecedeThirdParty(first_party_precedes_third_party)
       .SetIsCurrentInteraction(is_current_interaction)
+      .SetInteractionType(static_cast<int64_t>(interaction_type))
       .Record(ukm::UkmRecorder::Get());
 
   ukm::builders::RedirectHeuristic_CookieAccessThirdParty2(

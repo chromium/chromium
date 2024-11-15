@@ -18960,6 +18960,14 @@ be describing additional metrics about the same event.
       never been a user interaction from the tracking site.
     </summary>
   </metric>
+  <metric name="InteractionType" enum="CookieHeuristicInteractionType">
+    <summary>
+      Records the source of the interaction with the popup.
+      &quot;Authentication&quot; for web authentications,
+      &quot;UserActivation&quot; for mouse clicks, touch events, etc., and
+      &quot;NoInteraction&quot; for when there was no user interaction.
+    </summary>
+  </metric>
   <metric name="IsAdTagged" enum="IsAdTagged">
     <summary>
       Whether the cookie access attempt was tagged as an ad cookie, and thus
