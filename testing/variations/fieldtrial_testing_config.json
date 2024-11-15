@@ -1907,26 +1907,6 @@
             ]
         }
     ],
-    "AutofillEnableVirtualCardOnFile": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillParseVcnCardOnFileStandaloneCvcFields",
-                        "SyncAutofillWalletUsageData"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillFixCachingOnJavaScriptChanges": [
         {
             "platforms": [
