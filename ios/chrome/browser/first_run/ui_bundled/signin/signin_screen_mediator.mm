@@ -89,11 +89,13 @@
       _logger = [[FirstRunSigninLogger alloc]
             initWithAccessPoint:accessPoint
                     promoAction:promoAction
+                identityManager:identityManager
           accountManagerService:accountManagerService];
     } else {
       _logger =
           [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
                                             promoAction:promoAction
+                                        identityManager:identityManager
                                   accountManagerService:accountManagerService];
     }
     _ignoreDismissGesture =

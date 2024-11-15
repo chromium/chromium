@@ -11,6 +11,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -18,11 +19,13 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -49,23 +52,32 @@ NSSet<NSString*>* GaiaIdSetWithIdentities(
   return [gaia_id_set copy];
 }
 
+// Converts an array of AccountInfos to a set of gaia ids.
+NSSet<NSString*>* GaiaIdSetWithAccountInfos(
+    const std::vector<AccountInfo>& account_infos) {
+  NSMutableSet* gaia_id_set = [NSMutableSet set];
+  for (const AccountInfo& account_info : account_infos) {
+    [gaia_id_set addObject:base::SysUTF8ToNSString(account_info.gaia)];
+  }
+  return [gaia_id_set copy];
+}
+
 // Returns whether the gaia ids `recorded_gaia_ids` is a strict subset of the
-// current `identities` (i.e. all the gaia ids are in identities but there is
-// at least one new identity).
+// current `identities_on_device_gaia_ids` (i.e. all the recorded gaia IDs are
+// (still) on the device, but there is at least one new identity on the device).
 bool IsStrictSubset(NSArray<NSString*>* recorded_gaia_ids,
-                    NSArray<id<SystemIdentity>>* identities) {
+                    NSSet<NSString*>* identities_on_device_gaia_ids) {
   // Optimisation for the case of a nil or empty `recorded_gaia_ids`.
   // This allow not special casing the construction of the NSSet (as
   // -[NSSet setWithArray:] does not support nil for the array).
-  if (recorded_gaia_ids.count == 0)
-    return identities.count > 0;
+  if (recorded_gaia_ids.count == 0) {
+    return identities_on_device_gaia_ids.count > 0;
+  }
 
   NSSet<NSString*>* recorded_gaia_ids_set =
       [NSSet setWithArray:recorded_gaia_ids];
-  NSSet<NSString*>* identities_gaia_ids_set =
-      GaiaIdSetWithIdentities(identities);
-  return [recorded_gaia_ids_set isSubsetOfSet:identities_gaia_ids_set] &&
-         ![recorded_gaia_ids_set isEqualToSet:identities_gaia_ids_set];
+  return [recorded_gaia_ids_set isSubsetOfSet:identities_on_device_gaia_ids] &&
+         ![recorded_gaia_ids_set isEqualToSet:identities_on_device_gaia_ids];
 }
 
 }  // namespace
@@ -94,8 +106,9 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   DCHECK(profile);
   DCHECK(current_version.IsValid());
 
-  if (tests_hook::DisableUpgradeSigninPromo())
+  if (tests_hook::DisableUpgradeSigninPromo()) {
     return false;
+  }
 
   if (profile->IsOffTheRecord()) {
     return false;
@@ -103,8 +116,9 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
 
   // There will be an error shown if the user chooses to sign in or select
   // another account while offline.
-  if (net::NetworkChangeNotifier::IsOffline())
+  if (net::NetworkChangeNotifier::IsOffline()) {
     return false;
+  }
 
   // Sign-in can be disabled by policy or through user Settings.
   AuthenticationService* authentication_service =
@@ -154,12 +168,21 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   // Don't show the promo if there are no identities. This should be tested
   // before ForceStartupSigninPromo() to avoid any DCHECK failures if
   // ForceStartupSigninPromo() returns true.
-  ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  NSArray<id<SystemIdentity>>* identities =
-      account_manager_service->GetAllIdentities();
-  if (identities.count == 0)
+  NSSet<NSString*>* identities_on_device_gaia_ids;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    identities_on_device_gaia_ids =
+        GaiaIdSetWithAccountInfos(identity_manager->GetAccountsOnDevice());
+  } else {
+    ChromeAccountManagerService* account_manager_service =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile);
+    identities_on_device_gaia_ids =
+        GaiaIdSetWithIdentities(account_manager_service->GetAllIdentities());
+  }
+  if (identities_on_device_gaia_ids.count == 0) {
     return false;
+  }
 
   // Used for testing purposes only.
   if (signin::ForceStartupSigninPromo() ||
@@ -189,13 +212,14 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   // The sign-in promo should be shown twice, even if no account has been added.
   NSInteger display_count =
       [defaults integerForKey:kSigninPromoViewDisplayCountKey];
-  if (display_count <= 1)
+  if (display_count <= 1) {
     return true;
+  }
 
   // Otherwise, it can be shown only if a new account has been added.
   NSArray<NSString*>* last_known_gaia_id_list =
       [defaults arrayForKey:kLastShownAccountGaiaIdVersionKey];
-  return IsStrictSubset(last_known_gaia_id_list, identities);
+  return IsStrictSubset(last_known_gaia_id_list, identities_on_device_gaia_ids);
 }
 
 bool ShouldPresentWebSignin(ProfileIOS* profile) {
@@ -246,18 +270,27 @@ bool ShouldPresentWebSignin(ProfileIOS* profile) {
 }
 
 void RecordUpgradePromoSigninStarted(
+    signin::IdentityManager* identity_manager,
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version) {
+  DCHECK(identity_manager);
   DCHECK(account_manager_service);
   DCHECK(current_version.IsValid());
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                forKey:kDisplayedSSORecallForMajorVersionKey];
-  NSArray<id<SystemIdentity>>* identities =
-      account_manager_service->GetAllIdentities();
-  NSSet<NSString*>* gaia_id_set = GaiaIdSetWithIdentities(identities);
-  [defaults setObject:gaia_id_set.allObjects
+  NSSet<NSString*>* gaia_id_on_device_set;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    std::vector<AccountInfo> account_infos =
+        identity_manager->GetAccountsOnDevice();
+    gaia_id_on_device_set = GaiaIdSetWithAccountInfos(account_infos);
+  } else {
+    NSArray<id<SystemIdentity>>* identities =
+        account_manager_service->GetAllIdentities();
+    gaia_id_on_device_set = GaiaIdSetWithIdentities(identities);
+  }
+  [defaults setObject:gaia_id_on_device_set.allObjects
                forKey:kLastShownAccountGaiaIdVersionKey];
   NSInteger display_count =
       [defaults integerForKey:kSigninPromoViewDisplayCountKey];

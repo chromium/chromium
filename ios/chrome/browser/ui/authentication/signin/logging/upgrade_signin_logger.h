@@ -7,6 +7,10 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/logging/user_signin_logger.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 // Logs metrics for Chrome upgrade operations.
 @interface UpgradeSigninLogger : UserSigninLogger
 
@@ -16,6 +20,8 @@
 // This method records metrics and preferences related to the upgrade promo.
 // If `accountManagerService` is `nullptr`, this method is a nop.
 + (void)logSigninStartedWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+                        identityManager:
+                            (signin::IdentityManager*)identityManager
                   accountManagerService:
                       (ChromeAccountManagerService*)accountManagerService;
 // Called when the upgrade promo is done. This method records metrics and

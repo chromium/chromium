@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/upgrade_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
@@ -69,11 +70,14 @@ using base::UserMetricsAction;
   [super start];
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(
             self.browser->GetProfile());
     // TODO(crbug.com/41352590): Need to add `CHECK(accountManagerService)`.
     [UpgradeSigninLogger logSigninStartedWithAccessPoint:self.accessPoint
+                                         identityManager:identityManager
                                    accountManagerService:accountManagerService];
   }
   _screenProvider = [[UnoSigninScreenProvider alloc] init];

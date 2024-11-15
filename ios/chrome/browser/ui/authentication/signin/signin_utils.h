@@ -21,6 +21,8 @@ class Version;
 
 namespace signin {
 
+class IdentityManager;
+
 // Returns the maximum allowed waiting time for the Account Capabilities API.
 base::TimeDelta GetWaitThresholdForCapabilities();
 
@@ -39,6 +41,7 @@ bool ShouldPresentWebSignin(ProfileIOS* profile);
 //   + Gaia ids list.
 // Separated out into a discrete function to allow overriding when testing.
 void RecordUpgradePromoSigninStarted(
+    signin::IdentityManager* identity_manager,
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version);
 

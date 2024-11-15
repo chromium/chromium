@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -55,6 +56,7 @@ class SigninUtilsTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
     account_manager_service_ =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
@@ -93,6 +95,7 @@ class SigninUtilsTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
@@ -114,8 +117,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplaySameVersion) {
   FakeSystemIdentity* fake_identity2 = [FakeSystemIdentity fakeIdentity2];
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_0));
 }
@@ -128,8 +131,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMinorVersion) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
   const base::Version version_1_1("1.1");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_1));
 }
@@ -142,8 +145,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayTwoMinorVersions) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
   const base::Version version_1_2("1.2");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_2));
 }
@@ -156,8 +159,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMajorVersion) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
   const base::Version version_2_0("2.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_2_0));
 }
@@ -170,8 +173,8 @@ TEST_F(SigninUtilsTest, TestWillDisplayTwoMajorVersions) {
   fake_system_identity_manager()->AddIdentity(fake_identity2);
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   EXPECT_TRUE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
 }
@@ -188,10 +191,10 @@ TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnly) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_3_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_3_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
 }
@@ -205,10 +208,10 @@ TEST_F(SigninUtilsTest, TestWillShowForNewAccountAdded) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_3_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_3_0);
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
   EXPECT_TRUE(
@@ -227,10 +230,10 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
   const base::Version version_5_0("5.0");
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_3_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_3_0);
   fake_system_identity_manager()->ForgetIdentity(fake_identity,
                                                  base::DoNothing());
   EXPECT_FALSE(
@@ -246,10 +249,10 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_4_0("4.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_3_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_3_0);
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
   EXPECT_FALSE(
@@ -264,8 +267,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
 TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersionBis) {
   const base::Version version_1_0("1.0");
   const base::Version version_2_0("2.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
   EXPECT_FALSE(
@@ -276,8 +279,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersionBis) {
 TEST_F(SigninUtilsTest, TestWillNotShowIfFirstRunAfterPostRestore) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
   ASSERT_TRUE(
@@ -295,8 +298,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfFirstRunAfterPostRestore) {
 TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
@@ -317,8 +320,8 @@ TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
 
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   EXPECT_TRUE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
 }
@@ -342,8 +345,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfSignedInWithHistoryOptIn) {
 
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
-  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
-                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_3_0));
 }

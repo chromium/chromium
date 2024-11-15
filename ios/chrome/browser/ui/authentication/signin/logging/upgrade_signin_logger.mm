@@ -7,7 +7,9 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "net/base/network_change_notifier.h"
@@ -22,17 +24,19 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
 #pragma mark - Public
 
 + (void)logSigninStartedWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+                        identityManager:
+                            (signin::IdentityManager*)identityManager
                   accountManagerService:
                       (ChromeAccountManagerService*)accountManagerService {
-  if (!accountManagerService) {
+  if (!identityManager || !accountManagerService) {
     return;
   }
   RecordSigninUserActionForAccessPoint(accessPoint);
 
   // Records in user defaults that the promo has been shown as well as the
   // number of times it's been displayed.
-  signin::RecordUpgradePromoSigninStarted(accountManagerService,
-                                          version_info::GetVersion());
+  signin::RecordUpgradePromoSigninStarted(
+      identityManager, accountManagerService, version_info::GetVersion());
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
   int promoSeenCount =
       [standardDefaults integerForKey:kDisplayedSSORecallPromoCountKey];
@@ -40,8 +44,16 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
   [standardDefaults setInteger:promoSeenCount
                         forKey:kDisplayedSSORecallPromoCountKey];
 
-  NSArray* identities = accountManagerService->GetAllIdentities();
-  UMA_HISTOGRAM_COUNTS_100(kUMASSORecallAccountsAvailable, [identities count]);
+  NSArray* identitiesOnDevice;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    identitiesOnDevice =
+        accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(
+            identityManager->GetAccountsOnDevice());
+  } else {
+    identitiesOnDevice = accountManagerService->GetAllIdentities();
+  }
+  UMA_HISTOGRAM_COUNTS_100(kUMASSORecallAccountsAvailable,
+                           [identitiesOnDevice count]);
   UMA_HISTOGRAM_COUNTS_100(kUMASSORecallPromoSeenCount, promoSeenCount);
 }
 
@@ -74,6 +86,7 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
   [super logSigninStarted];
   [UpgradeSigninLogger
       logSigninStartedWithAccessPoint:self.accessPoint
+                      identityManager:self.identityManager
                 accountManagerService:self.accountManagerService];
 }
 
