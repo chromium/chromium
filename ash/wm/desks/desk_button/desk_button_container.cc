@@ -285,6 +285,10 @@ void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
   event->StopPropagation();
 }
 
+void DeskButtonContainer::InitializeAccessibleProperties() {
+  desk_button()->UpdateAccessiblePreviousAndNextFocus();
+}
+
 BEGIN_METADATA(DeskButtonContainer)
 END_METADATA
 

@@ -365,6 +365,10 @@ void DeskButtonWidget::MaybeFocusOut(bool reverse) {
   views[next]->RequestFocus();
 }
 
+void DeskButtonWidget::InitializeAccessibleProperties() {
+  delegate_view()->desk_button_container()->InitializeAccessibleProperties();
+}
+
 bool DeskButtonWidget::OnNativeWidgetActivationChanged(bool active) {
   if (!Widget::OnNativeWidgetActivationChanged(active)) {
     return false;
