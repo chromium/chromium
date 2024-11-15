@@ -1904,6 +1904,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kQRCodeGeneratorEnabled, true);
 
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
+#endif
+
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }

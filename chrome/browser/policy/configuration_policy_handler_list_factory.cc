@@ -159,6 +159,7 @@
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
+#include "components/enterprise/browser/data_region/data_region_policy_handler.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -3211,12 +3212,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
-      std::make_unique<IntRangePolicyHandler>(key::kChromeDataRegionSetting,
-                                              prefs::kChromeDataRegionSetting,
-                                              /*min=*/0,
-                                              /*max=*/2,
-                                              /*clamp=*/false)));
+  handlers->AddHandler(std::make_unique<DataRegionPolicyHandler>(
+      key::kChromeDataRegionSetting, prefs::kChromeDataRegionSetting));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
