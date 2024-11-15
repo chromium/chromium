@@ -932,6 +932,9 @@ void PasswordAccessoryControllerImpl::OnPlusAddressSelected(
     driver->FillIntoFocusedField(/*is_password=*/false,
                                  base::UTF8ToUTF16(plus_address.value()));
   }
+  base::RecordAction(base::UserMetricsAction(
+      "PlusAddresses."
+      "StandaloneFillSuggestionOnPasswordManualFallbackAccepted"));
 }
 
 void PasswordAccessoryControllerImpl::RefreshSuggestions() {

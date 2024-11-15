@@ -119,6 +119,11 @@ class PasswordAccessoryControllerImpl
       security_state::SecurityLevel security_level) {
     security_level_for_testing_ = security_level;
   }
+
+  plus_addresses::AllPlusAddressesBottomSheetController*
+  GetAllPlusAddressesControllerForTesting() {
+    return all_plus_addresses_bottom_sheet_controller_.get();
+  }
 #endif
  protected:
   // This constructor can also be used by |CreateForWebContentsForTesting|

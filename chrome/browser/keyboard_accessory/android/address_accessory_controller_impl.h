@@ -73,6 +73,12 @@ class AddressAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller);
 
+#if defined(UNIT_TEST)
+  plus_addresses::AllPlusAddressesBottomSheetController*
+  GetAllPlusAddressesControllerForTesting() {
+    return all_plus_addresses_bottom_sheet_controller_.get();
+  }
+#endif
  private:
   friend class content::WebContentsUserData<AddressAccessoryControllerImpl>;
 

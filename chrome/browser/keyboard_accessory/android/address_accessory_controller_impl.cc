@@ -353,6 +353,9 @@ void AddressAccessoryControllerImpl::OnPlusAddressSelected(
   if (plus_address) {
     FillValueIntoField(focused_field_id,
                        base::UTF8ToUTF16(plus_address.value()));
+    base::RecordAction(base::UserMetricsAction(
+        "PlusAddresses."
+        "StandaloneFillSuggestionOnAddressManualFallbackAccepted"));
   }
   all_plus_addresses_bottom_sheet_controller_.reset();
 }

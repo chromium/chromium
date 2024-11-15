@@ -30,6 +30,7 @@
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -2152,6 +2153,27 @@ TEST_F(PasswordAccessoryControllerTest, TriggersSelectPlusAddressMenu) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "PlusAddresses."
                 "SelectPlusAddressOptionOnPasswordManualFallbackSelected"),
+            1);
+}
+
+TEST_F(PasswordAccessoryControllerTest, SelectPlusAddressItemFromMenu) {
+  base::UserActionTester user_action_tester;
+  CreateSheetController();
+  plus_addresses::PlusProfile plus_profile =
+      plus_addresses::test::CreatePlusProfile();
+  plus_address_service().add_plus_profile(plus_profile);
+  plus_address_service().set_is_plus_address_filling_enabled(true);
+
+  EXPECT_CALL(mock_manual_filling_controller_, Hide());
+
+  controller()->OnOptionSelected(
+      AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+  controller()
+      ->GetAllPlusAddressesControllerForTesting()
+      ->OnPlusAddressSelected(plus_profile.plus_address.value());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses."
+                "StandaloneFillSuggestionOnPasswordManualFallbackAccepted"),
             1);
 }
 
