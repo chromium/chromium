@@ -508,7 +508,10 @@ function testRecordWithTransparency(mimeType) {
     return logSuccess();
   }
   const ON_DATA_AVAILABLE_THRESHOLD = 10;
-  const NUMBER_OF_EVENTS_TO_RECORD = 5;
+  // When mimetype is mp4, it only has a possible chance to flush when an
+  // IDR frame output. Therefore, the `ondataavailable` callback is not
+  // triggered precisely based on the timeslice parameter value.
+  const NUMBER_OF_EVENTS_TO_RECORD = mimeType.startsWith('video/mp4') ? 1 : 5;
 
   var canvas = document.createElement('canvas');
   canvas.width = 640;
