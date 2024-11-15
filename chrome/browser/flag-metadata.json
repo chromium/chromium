@@ -1477,7 +1477,7 @@
   {
     "name": "clear-undecryptable-passwords",
     "owners": [ "sygiet@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "click-to-call",
@@ -7817,11 +7817,6 @@
   {
     "name": "screenlock-reauth",
     "owners": ["hardikgoyal@google.com", "iscsi@chromium.org"],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "screenlock-reauth-promo-card",
-    "owners": ["sygiet@google.com", "vasilii@chromium.org"],
     "expiry_milestone": 133
   },
   {

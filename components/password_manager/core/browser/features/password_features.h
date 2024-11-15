@@ -114,12 +114,6 @@ BASE_DECLARE_FEATURE(kReuseDetectionBasedOnPasswordHashes);
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables promo card in settings encouraging users to enable screenlock reauth
-// before filling passwords.
-BASE_DECLARE_FEATURE(kScreenlockReauthPromoCard);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables biometric authentication on for Password Autofill on ChromeOS.
 BASE_DECLARE_FEATURE(kBiometricsAuthForPwdFill);

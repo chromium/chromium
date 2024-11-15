@@ -120,12 +120,6 @@ BASE_FEATURE(kRestartToGainAccessToKeychain,
 #endif
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kScreenlockReauthPromoCard,
-             "ScreenlockReauthPromoCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kBiometricsAuthForPwdFill,
              "BiometricsAuthForPwdFill",

@@ -7954,14 +7954,6 @@ const char kScreenlockReauthCardDescription[] =
     "in password manager settings. The default for setting is turned off.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-const char kScreenlockReauthPromoCardName[] =
-    "Enables screenlock reauth before filling promo card in settings";
-const char kScreenlockReauthPromoCardDescription[] =
-    "Enables promo card in settings encouraging users to enable screenlock "
-    "reauth before filling passwords.";
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 const char kChromeWideEchoCancellationName[] = "Chrome-wide echo cancellation";
 const char kChromeWideEchoCancellationDescription[] =

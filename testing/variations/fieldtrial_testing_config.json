@@ -21419,22 +21419,6 @@
             ]
         }
     ],
-    "ScreenlockReauthPromoCard": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScreenlockReauthPromoCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScriptStreamingForNonHTTP": [
         {
             "platforms": [
