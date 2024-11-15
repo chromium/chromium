@@ -39,9 +39,10 @@ ArcInitialOptInMetricsRecorderFactory::ArcInitialOptInMetricsRecorderFactory()
 ArcInitialOptInMetricsRecorderFactory::
     ~ArcInitialOptInMetricsRecorderFactory() = default;
 
-KeyedService* ArcInitialOptInMetricsRecorderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ArcInitialOptInMetricsRecorderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new ArcInitialOptInMetricsRecorder(browser_context);
+  return std::make_unique<ArcInitialOptInMetricsRecorder>(browser_context);
 }
 
 }  // namespace arc

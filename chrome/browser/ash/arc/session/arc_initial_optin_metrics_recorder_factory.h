@@ -33,7 +33,7 @@ class ArcInitialOptInMetricsRecorderFactory
   ~ArcInitialOptInMetricsRecorderFactory() override;
 
   // ProfileKeyedServiceFactory overrides.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
 };
 
