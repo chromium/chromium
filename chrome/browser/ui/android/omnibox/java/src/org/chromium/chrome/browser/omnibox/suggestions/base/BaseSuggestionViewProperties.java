@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -21,20 +20,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** The base set of properties for most omnibox suggestions. */
 public @interface BaseSuggestionViewProperties {
-
-    /** Describes density of the suggestions. */
-    @IntDef({Density.DEFAULT, Density.COMPACT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Density {
-        int DEFAULT = 0;
-        int COMPACT = 1;
-    }
 
     /** Describes the content and behavior of the interactive Action Icon. */
     public static final class Action {
@@ -109,10 +98,6 @@ public @interface BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
             new WritableObjectPropertyKey<>();
 
-    /** Specifies how densely suggestions should be packed. */
-    @VisibleForTesting
-    public static final WritableIntPropertyKey DENSITY = new WritableIntPropertyKey();
-
     /** Callback invoked when user clicks the suggestion. */
     @VisibleForTesting
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
@@ -146,7 +131,6 @@ public @interface BaseSuggestionViewProperties {
                 ICON,
                 ACTION_BUTTONS,
                 ON_FOCUS_VIA_SELECTION,
-                DENSITY,
                 ON_CLICK,
                 ON_LONG_CLICK,
                 ON_TOUCH_DOWN_EVENT,
