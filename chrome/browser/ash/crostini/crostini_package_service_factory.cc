@@ -41,10 +41,11 @@ CrostiniPackageServiceFactory::CrostiniPackageServiceFactory()
 
 CrostiniPackageServiceFactory::~CrostiniPackageServiceFactory() = default;
 
-KeyedService* CrostiniPackageServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CrostiniPackageServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new CrostiniPackageService(profile);
+  return std::make_unique<CrostiniPackageService>(profile);
 }
 
 }  // namespace crostini

@@ -38,10 +38,11 @@ CrostiniPortForwarderFactory::CrostiniPortForwarderFactory()
 
 CrostiniPortForwarderFactory::~CrostiniPortForwarderFactory() = default;
 
-KeyedService* CrostiniPortForwarderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CrostiniPortForwarderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new CrostiniPortForwarder(profile);
+  return std::make_unique<CrostiniPortForwarder>(profile);
 }
 
 }  // namespace crostini

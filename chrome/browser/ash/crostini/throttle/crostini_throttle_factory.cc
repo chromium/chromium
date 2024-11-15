@@ -38,9 +38,10 @@ CrostiniThrottleFactory::CrostiniThrottleFactory()
 
 CrostiniThrottleFactory::~CrostiniThrottleFactory() = default;
 
-KeyedService* CrostiniThrottleFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CrostiniThrottleFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new CrostiniThrottle(context);
+  return std::make_unique<CrostiniThrottle>(context);
 }
 
 }  // namespace crostini

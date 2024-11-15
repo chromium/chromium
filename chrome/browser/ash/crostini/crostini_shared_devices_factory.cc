@@ -38,10 +38,11 @@ CrostiniSharedDevicesFactory::CrostiniSharedDevicesFactory()
 
 CrostiniSharedDevicesFactory::~CrostiniSharedDevicesFactory() = default;
 
-KeyedService* CrostiniSharedDevicesFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CrostiniSharedDevicesFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new CrostiniSharedDevices(profile);
+  return std::make_unique<CrostiniSharedDevices>(profile);
 }
 
 }  // namespace crostini

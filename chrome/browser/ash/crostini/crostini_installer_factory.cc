@@ -41,10 +41,11 @@ CrostiniInstallerFactory::CrostiniInstallerFactory()
 
 CrostiniInstallerFactory::~CrostiniInstallerFactory() = default;
 
-KeyedService* CrostiniInstallerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CrostiniInstallerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new CrostiniInstaller(profile);
+  return std::make_unique<CrostiniInstaller>(profile);
 }
 
 }  // namespace crostini

@@ -40,10 +40,11 @@ CrostiniUpgraderFactory::CrostiniUpgraderFactory()
 
 CrostiniUpgraderFactory::~CrostiniUpgraderFactory() = default;
 
-KeyedService* CrostiniUpgraderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CrostiniUpgraderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new CrostiniUpgrader(profile);
+  return std::make_unique<CrostiniUpgrader>(profile);
 }
 
 }  // namespace crostini

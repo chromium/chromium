@@ -43,10 +43,11 @@ CrostiniExportImportFactory::CrostiniExportImportFactory()
 
 CrostiniExportImportFactory::~CrostiniExportImportFactory() = default;
 
-KeyedService* CrostiniExportImportFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CrostiniExportImportFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new CrostiniExportImport(profile);
+  return std::make_unique<CrostiniExportImport>(profile);
 }
 
 }  // namespace crostini
