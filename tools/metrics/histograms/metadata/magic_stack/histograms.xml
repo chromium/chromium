@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.Segmentation.FetchRankingResultsDurationMs"
-    units="ms" expires_after="2024-12-15">
+    units="ms" expires_after="2025-06-15">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
