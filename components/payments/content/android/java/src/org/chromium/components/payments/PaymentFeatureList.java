@@ -16,6 +16,8 @@ import org.jni_zero.JNINamespace;
 @JNINamespace("payments::android")
 public abstract class PaymentFeatureList {
     /** Alphabetical: */
+    public static final String ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS =
+            "AndroidPaymentIntentsOmitDeprecatedParameters";
     public static final String ENFORCE_FULL_DELEGATION = "EnforceFullDelegation";
     public static final String GOOGLE_PAY_VIA_ANDROID_INTENTS = "GooglePayViaAndroidIntents";
     public static final String GPAY_APP_DYNAMIC_UPDATE = "GPayAppDynamicUpdate";

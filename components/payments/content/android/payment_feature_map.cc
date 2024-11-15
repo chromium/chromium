@@ -4,6 +4,8 @@
 
 #include "components/payments/content/android/payment_feature_map.h"
 
+#include <jni.h>
+
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -32,6 +34,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGPayAppDynamicUpdate,
     &features::kWebPaymentsExperimentalFeatures,
     &features::kWebPaymentsSingleAppUiSkip,
+    &kAndroidPaymentIntentsOmitDeprecatedParameters,
     &kGooglePayViaAndroidIntents,
     &kOmitParametersInReadyToPay,
     &kShowReadyToPayDebugInfo,
@@ -52,6 +55,9 @@ static jlong JNI_PaymentFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 // Android only features.
+BASE_FEATURE(kAndroidPaymentIntentsOmitDeprecatedParameters,
+             "AndroidPaymentIntentsOmitDeprecatedParameters",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGooglePayViaAndroidIntents,
              "GooglePayViaAndroidIntents",
              base::FEATURE_DISABLED_BY_DEFAULT);

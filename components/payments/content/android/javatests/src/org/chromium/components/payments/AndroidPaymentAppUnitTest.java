@@ -131,7 +131,8 @@ public class AndroidPaymentAppUnitTest {
                         /* isIncognito= */ false,
                         /* appToHide= */ null,
                         new SupportedDelegations(),
-                        showReadyToPayDebugInfo);
+                        showReadyToPayDebugInfo,
+                        /* removeDeprecatedFields= */ false);
         app.addMethodName("https://company.com/pay");
         return app;
     }

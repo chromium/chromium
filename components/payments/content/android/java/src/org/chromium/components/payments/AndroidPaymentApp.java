@@ -57,6 +57,7 @@ public class AndroidPaymentApp extends PaymentApp
     @Nullable private final String mPaymentDetailsUpdateServiceName;
     private final SupportedDelegations mSupportedDelegations;
     private final boolean mShowReadyToPayDebugInfo;
+    private final boolean mRemoveDeprecatedFields;
 
     private IsReadyToPayCallback mIsReadyToPayCallback;
     private InstrumentDetailsCallback mInstrumentDetailsCallback;
@@ -233,6 +234,7 @@ public class AndroidPaymentApp extends PaymentApp
      * @param supportedDelegations Delegations which this app can support.
      * @param showReadyToPayDebugInfo Whether IS_READY_TO_PAY intent should be displayed in a debug
      *     dialog.
+     * @param removeDeprecatedFields Whether intents should omit deprecated fields.
      */
     public AndroidPaymentApp(
             Launcher launcher,
@@ -245,7 +247,8 @@ public class AndroidPaymentApp extends PaymentApp
             boolean isIncognito,
             @Nullable String appToHide,
             SupportedDelegations supportedDelegations,
-            boolean showReadyToPayDebugInfo) {
+            boolean showReadyToPayDebugInfo,
+            boolean removeDeprecatedFields) {
         super(packageName, label, null, icon);
         ThreadUtils.assertOnUiThread();
         mHandler = new Handler();
@@ -265,6 +268,7 @@ public class AndroidPaymentApp extends PaymentApp
         mApplicationIdentifierToHide = appToHide;
         mSupportedDelegations = supportedDelegations;
         mShowReadyToPayDebugInfo = showReadyToPayDebugInfo;
+        mRemoveDeprecatedFields = removeDeprecatedFields;
         mIsPreferred = false;
     }
 
@@ -358,7 +362,8 @@ public class AndroidPaymentApp extends PaymentApp
                                 methodDataMap),
                         // TODO(crbug.com/40212375): Re-enable clearing of identity for
                         // IS_READY_TO_PAY
-                        /* clearIdFields= */ false);
+                        /* clearIdFields= */ false,
+                        mRemoveDeprecatedFields);
         if (mBypassIsReadyToPayServiceInTest) {
             respondToIsReadyToPayQuery(true);
             return;
@@ -513,7 +518,8 @@ public class AndroidPaymentApp extends PaymentApp
                                 modifiers),
                         mPaymentOptions,
                         WebPaymentIntentHelperTypeConverter.fromMojoShippingOptionList(
-                                shippingOptions));
+                                shippingOptions),
+                        mRemoveDeprecatedFields);
 
         mLauncher.launchPaymentApp(
                 payIntent, this::notifyErrorInvokingPaymentApp, this::onIntentCompleted);
