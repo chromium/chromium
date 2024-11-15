@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Koden er scannet</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} fane}one{{count} fane}other{{count} faner}}</translation>
 <translation id="1084365883616172403">Opslag delt på Facebook.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åbnes</translation>
 <translation id="1096992026380844478">Dine indstillinger for synkronisering gendannes på baggrund af din seneste sikkerhedskopi. <ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Synkronisering af historik</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Nej tak</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
 <translation id="2321086116217818302">Forbereder adgangskoder…</translation>
+<translation id="2323697864063408084">Få notifikationer på din låseskærm og som bannere, så du aldrig går glip af de vigtigste ting</translation>
 <translation id="2326302612031521902">Enhedsvælger</translation>
 <translation id="2330607597130465898">Ingen beskyttelse</translation>
 <translation id="233375395665273385">Slet, og log ud</translation>
@@ -384,6 +386,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2673508731173059946">Gå til kopieret link</translation>
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
+<translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i brug</translation>
 <translation id="2691653761409724435">Ikke tilgængelig offline</translation>
 <translation id="2696180352517415858">Du bliver ikke logget ud af din Google-konto. <ph name="BEGIN_LINK" />Andre former for aktivitet<ph name="END_LINK" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.
@@ -636,6 +639,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3986739045730058129">Gå til fane</translation>
 <translation id="3992684624889376114">Om denne side</translation>
 <translation id="3994422733891749358">Vælg de notifikationer, du gerne vil modtage</translation>
+<translation id="3994522032746736727">Log ind som <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Statuslinje for sideindlæsning, <ph name="EMAIL" /> er indlæst.</translation>
 <translation id="3997522473364371632">Din administrator har deaktiveret deling af adgangskoder.</translation>
 <translation id="4002066346123236978">Titel</translation>
@@ -843,6 +847,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4936354130727646074">Flyt aldrig</translation>
 <translation id="4937410517508563815">Gem adgangskoder på kontoen</translation>
 <translation id="4938338714234463591">Dette giver dig mulighed for at bruge stemmestyring til bestemte funktioner på websites.</translation>
+<translation id="4938716880833771969">Dine notifikationer sendes uden lyd</translation>
 <translation id="4941089862236492464">Beklager, men der opstod et problem med at dele dit element.</translation>
 <translation id="4944543191714094452">Find på siden…</translation>
 <translation id="4945756290001680296">Få adgang til indstillinger for adgangskode</translation>
@@ -1609,6 +1614,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8319076807703933069">Ny søgning</translation>
 <translation id="8343993175958086504">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed.</translation>
 <translation id="8349305172487531364">Bogmærkelinje</translation>
+<translation id="8364563001733875155">Hvis du vil ændre din pinkode, skal du først oprette en adgangskode på din enhed.</translation>
 <translation id="8366466717204352506">Der er aldrig kørt et tjek</translation>
 <translation id="8368001212524806591">Overvåg pris</translation>
 <translation id="8370406443343902172">Gå til Indstillinger…</translation>

@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Кодот е скениран</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} картичка}one{{count} картичка}other{{count} картички}}</translation>
 <translation id="1084365883616172403">Објавата на Facebook е завршена.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> не можеше да се отвори</translation>
 <translation id="1096992026380844478">Поставките за синхронизација ќе се вратат согласно со последниот бекап. <ph name="BEGIN_LINK" />Погледнете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Синхронизација на историја</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Не, фала</translation>
 <translation id="2320166752086256636">Сoкриј ја тастатурата</translation>
 <translation id="2321086116217818302">Се подготвуваат лозинките…</translation>
+<translation id="2323697864063408084">Добивајте известувања на вашиот заклучен екран и како банери за да не ги пропуштите никогаш работите што ви се важни</translation>
 <translation id="2326302612031521902">Избирач на единици</translation>
 <translation id="2330607597130465898">Без заштита</translation>
 <translation id="233375395665273385">Избриши и одјави се</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">Сподели ја групата</translation>
 <translation id="2673508731173059946">Отворете го копираниот линк</translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
+<translation id="2688535388040882469">Банери</translation>
 <translation id="2690858294534178585">Камерата е во употреба</translation>
 <translation id="2691653761409724435">Не се достапни офлајн</translation>
 <translation id="2696180352517415858">Нема да се одјавите од сметката на Google. Кога сте најавени, може да се зачувуваат <ph name="BEGIN_LINK" />други форми на активност<ph name="END_LINK" /> во вашата сметка на Google. Може да ги избришете во секое време.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">Одете во картичката</translation>
 <translation id="3992684624889376114">За оваа страница</translation>
 <translation id="3994422733891749358">Изберете кои известувања сакате да ги добивате</translation>
+<translation id="3994522032746736727">Најавете се како <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Лента за напредокот на вчитувањето на страницата. Вчитано: <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Вашиот администратор го оневозможил споделувањето лозинки</translation>
 <translation id="4002066346123236978">Наслов</translation>
@@ -843,6 +847,7 @@
 <translation id="4936354130727646074">Никогаш не преместувај</translation>
 <translation id="4937410517508563815">Зачувување лозинка во сметка</translation>
 <translation id="4938338714234463591">Ова ќе ви дозволи да го користите гласот со одредени функции на веб-сајтовите.</translation>
+<translation id="4938716880833771969">Вашите известувања се доставуваат тивко</translation>
 <translation id="4941089862236492464">Се извинуваме, настана проблем при споделување на ставката.</translation>
 <translation id="4944543191714094452">Најди на страницата…</translation>
 <translation id="4945756290001680296">Пристапете до поставките за лозинка</translation>
@@ -1609,6 +1614,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8319076807703933069">Ново пребарување</translation>
 <translation id="8343993175958086504">Направете бекап од вашите работи и користете ги на сите уреди.</translation>
 <translation id="8349305172487531364">Лента со обележувачи</translation>
+<translation id="8364563001733875155">За да го промените PIN-кодот, прво поставете код за најавување на уредот.</translation>
 <translation id="8366466717204352506">Никогаш не е извршена проверка</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>
 <translation id="8370406443343902172">Одете во „Поставки“…</translation>

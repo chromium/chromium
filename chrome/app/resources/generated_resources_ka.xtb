@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">არჩეული ჩანართის ჩამაგრება</translation>
 <translation id="1297175357211070620">დანიშნულება</translation>
 <translation id="129770436432446029">გამოგვეხმაურეთ, როგორია <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;მოდიფიკაციები</translation>
 <translation id="130097046531636712">ეს ფუნქცია ახანგრძლივებს ბატარეის მუშაობას ვიზუალური ეფექტებისა (მაგალითად, ლივლივა გადაადგილების) და ფონური აქტივობის შეზღუდვის გზით</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" />-ს შეუძლია მითითებული ფაილების რედაქტირება</translation>
 <translation id="130174306655812048">ცადეთ, იკითხოთ: „Ok Google, რა სიმღერაა?“</translation>
@@ -1770,6 +1771,7 @@
 <translation id="2214018885812055163">გაზიარებული საქაღალდეები</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ხაზი არ არის ნაჩვენები&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ხაზი არ არის ნაჩვენები&gt;}}</translation>
 <translation id="2215070081105889450">აუდიოს გასაზიარებლად გააზიარეთ ჩანართი ან ეკრანი</translation>
+<translation id="2217208085547223783">ნდობის სტატუსი</translation>
 <translation id="2218019600945559112">მაუსი და სენსორული პანელი</translation>
 <translation id="2218515861914035131">ჩასმა ჩვეულებრივი ტექსტის სახით</translation>
 <translation id="221872881068107022">უკუგადაადგილება</translation>
@@ -2501,6 +2503,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">სტუმრის პროფილის გახსნა</translation>
 <translation id="2723819893410108315">ლიმონისფერი</translation>
+<translation id="2724822892847436256">დაბრკოლებები</translation>
 <translation id="2724841811573117416">WebRTC ჟურნალი</translation>
 <translation id="272488616838512378">საზომი ერთეულების გადაყვანა</translation>
 <translation id="2725200716980197196">ქსელური კავშირი აღდგენილია</translation>
@@ -3461,6 +3464,7 @@
 <translation id="3421835120203732951">ახალი პროფილის დამატება</translation>
 <translation id="3423111258700187173">„<ph name="FOLDER_TITLE" />“-ში ნაპოვნი შედეგები</translation>
 <translation id="3423226218833787854">შეიტყვეთ მეტი ხელოვნური ინტელექტის ამ ფუნქციის შესახებ</translation>
+<translation id="3423275441470187644">ნდობა</translation>
 <translation id="3423463006624419153">თქვენს „<ph name="PHONE_NAME_1" />“-სა და „<ph name="PHONE_NAME_2" />“-ზე:</translation>
 <translation id="3423858849633684918">გთხოვთ ხელახლა გაუშვით <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">აღწერეთ, რას აკეთებდით, როცა ჩანართი ავარიულად გაითიშა</translation>
@@ -4590,6 +4594,7 @@
 <translation id="4195643157523330669">ახალ ჩანართში გახსნა</translation>
 <translation id="4195814663415092787">გააგრძელეთ იქიდან, სადაც შეჩერდით</translation>
 <translation id="4198268995694216131">დამატებითი საიტები</translation>
+<translation id="4198420883535766848">ჩანართის ამოშლა სიიდან</translation>
 <translation id="4200609364258658652">ვიდეოს კადრის კო&amp;პირება</translation>
 <translation id="4200689466366162458">მორგებული სიტყვები</translation>
 <translation id="4200983522494130825">ახალი &amp;ჩანართი</translation>
@@ -5153,6 +5158,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{წაიშალოს ჩანართების ჯგუფი?}other{წაიშალოს ჩანართების ჯგუფები?}}</translation>
 <translation id="4608500690299898628">ძ&amp;ებნა…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-ს შეექმნა ხარვეზი</translation>
+<translation id="4610493438923139095">არასანდო</translation>
 <translation id="4610637590575890427">ხომ არ გსურდათ <ph name="SITE" />-ზე შესვლა?</translation>
 <translation id="4611114513649582138">ხელმისაწვდომია მობილური ინტერნეტი</translation>
 <translation id="4611759022973144129">ამ პაროლის გამოყენებით შეგიძლიათ თქვენს <ph name="DEVICE_TYPE" />-ში შესვლა.</translation>
@@ -5178,6 +5184,7 @@
 <translation id="4627442949885028695">სხვა მოწყობილობიდან გაგრძელება</translation>
 <translation id="4628762811416793313">Linux კონტეინერის დაყენება არ დასრულებულა. გთხოვთ, ცადოთ ხელახლა.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" />-ის პროფილის გახსნა</translation>
+<translation id="4629803160911640220">სანდო</translation>
 <translation id="4631955550884380853">ფოკუსირებული ხმა</translation>
 <translation id="4632655012900268062">ბარათების მორგება</translation>
 <translation id="4633003931260532286">გაფართოებას სჭირდება „<ph name="IMPORT_NAME" />“ მინიმალური ვერსიით „<ph name="IMPORT_VERSION" />“, თუმცა დაინსტალირებულია მხოლოდ ვერსია „<ph name="INSTALLED_VERSION" />“</translation>
@@ -6834,6 +6841,7 @@
 <translation id="5842497610951477805">Bluetooth-ის ჩართვა</translation>
 <translation id="5844284118433003733">როცა სისტემაში შესული ხართ, ეს მონაცემები მიებმება თქვენს Google ანგარიშს, რომ დაცული იყოთ Google სერვისების ფარგლებში, მაგალითად, უსაფრთხოებასთან დაკავშირებული ინციდენტის შემდეგ გაძლიერდება დაცვა Gmail-ში.</translation>
 <translation id="5844574845205796324">გასაცნობი ახალი კონტენტის შემოთავაზება</translation>
+<translation id="5844685625984052392">მინიშნება</translation>
 <translation id="5846200638699387931">კავშირის სინტაქსის შეცდომა: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">ჩრდილის გარეშე</translation>
 <translation id="5846504156837627898">საიტების ნებართვების მართვა</translation>

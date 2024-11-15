@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1191518099344003522">L'APN està activat.</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
+<translation id="1196264380943975940">No es pot resumir. Prova-ho amb una transcripció més llarga.</translation>
 <translation id="1196959502276349371">Versió <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reprodueix / Posa en pausa</translation>
 <translation id="1201402288615127009">Següent</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
 <translation id="467715984478005772">Possible tallafoc</translation>
+<translation id="4678534708181186163">No es pot resumir. Prova-ho amb una transcripció més curta.</translation>
 <translation id="4683762547447150570">Toca el botó per enfocar l'assignació de tecles</translation>
 <translation id="4691278870498629773">S'ha aturat: no es troba la safata</translation>
 <translation id="469379815867856270">Intensitat del senyal</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Estat de la bateria</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="517075088756846356">Desendolla i torna a endollar el cable d'alimentació del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
+<translation id="5178021559562393163">No es poden crear noms. Prova-ho amb una transcripció més curta.</translation>
 <translation id="5180108905184566358">baobabs</translation>
 <translation id="5180712487038406644">Expressiu</translation>
 <translation id="5190187232518914472">Reviu els teus records preferits. Per afegir o editar àlbums, ves a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Identitat</translation>
 <translation id="5317780077021120954">Desa</translation>
+<translation id="5318310531701770497">No es poden crear noms. Prova-ho amb una transcripció més llarga.</translation>
 <translation id="5318334351163689047">Errors en la sol·licitud de TCP</translation>
 <translation id="53196409393069519">Vols activar la transcripció?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

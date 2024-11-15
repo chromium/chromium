@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">تم مسح الرمز ضوئيًا</translation>
 <translation id="1081932398873105675">{count,plural, =1{علامة تبويب واحدة ({count})}zero{‫{count} علامة تبويب}two{علامتا تبويب ({count})}few{‫{count} علامات تبويب}many{‫{count} علامة تبويب}other{‫{count} علامة تبويب}}</translation>
 <translation id="1084365883616172403">‏اكتمل النشر على Facebook.</translation>
+<translation id="1085677983426914530">تعذَّر فتح ملف <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">ستتم استعادة إعدادات المزامنة استنادًا إلى آخر نسخة احتياطية. <ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">لا، شكرًا</translation>
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
 <translation id="2321086116217818302">جارٍ تحضير كلمات المرور…</translation>
+<translation id="2323697864063408084">يمكنك تلقّي الإشعارات على شاشة القفل وعلى شكل بانرات حتى لا تفوتك الأحداث المهمّة</translation>
 <translation id="2326302612031521902">مُحدِّد الوحدات</translation>
 <translation id="2330607597130465898">بلا حماية</translation>
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">مشاركة المجموعة</translation>
 <translation id="2673508731173059946">الانتقال إلى الرابط المنسوخ</translation>
 <translation id="2687403674020088961">حظر كل ملفات تعريف الارتباط (لا ننصح بهذا الخيار)</translation>
+<translation id="2688535388040882469">بانرات</translation>
 <translation id="2690858294534178585">الكاميرا قيد الاستخدام</translation>
 <translation id="2691653761409724435">غير متاح بلا اتصال</translation>
 <translation id="2696180352517415858">‏لن يتم تسجيل خروجك من حساب Google. قد يتم حفظ <ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google وأنت مسجِّل الدخول إليه. ويمكنك حذفها في أي وقت.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">الانتقال إلى علامة التبويب</translation>
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
 <translation id="3994422733891749358">اختيار الإشعارات التي تريد تلقّيها</translation>
+<translation id="3994522032746736727">تسجيل الدخول بحساب <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">شريط تقدُّم تحميل الصفحة، تم تحميل <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">أوقَفَ المشرف ميزة "مشاركة كلمات المرور".</translation>
 <translation id="4002066346123236978">العنوان</translation>
@@ -777,6 +781,7 @@
 <translation id="4645575059429386691">يديره والداك</translation>
 <translation id="4647758699119474035">‏تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني المستخدَم هو <ph name="USER_EMAIL" />. حدث خطأ في حساب Google. يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="4650125387981512669">المتابعة بحساب "<ph name="FIRST_RUN_ACCOUNT_NAME" />"</translation>
+<translation id="4651927776207937667">{count,plural, =1{إخفاء علامات التبويب بعد دقيقة واحدة}zero{إخفاء علامات التبويب بعد {count} دقيقة}two{إخفاء علامات التبويب بعد دقيقتَين ({count})}few{إخفاء علامات التبويب بعد {count} دقائق}many{إخفاء علامات التبويب بعد {count} دقيقة}other{إخفاء علامات التبويب بعد {count} دقيقة}}</translation>
 <translation id="4652817563047461855">يُرجى التأكّد من أنّ كلمات المرور الخاصة بك آمنة، وتحديد ما إذا تم اختراقها، والحصول على نصائح للمساعدة في حماية نفسك على الإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">حفظ</translation>
 <translation id="4668929960204016307">،</translation>
@@ -843,6 +848,7 @@
 <translation id="4936354130727646074">عدم النقل مطلقًا</translation>
 <translation id="4937410517508563815">حفظ كلمات المرور في الحساب</translation>
 <translation id="4938338714234463591">يتيح لك هذا الإجراء استخدام صوتك مع ميزات معيّنة على المواقع الإلكترونية.</translation>
+<translation id="4938716880833771969">يتم حاليًا عرض الإشعارات بدون إزعاج</translation>
 <translation id="4941089862236492464">عذرًا، حدثت مشكلة أثناء مشاركة العنصر.</translation>
 <translation id="4944543191714094452">البحث في الصفحة…</translation>
 <translation id="4945756290001680296">الوصول إلى إعدادات كلمات المرور</translation>
@@ -1611,6 +1617,7 @@
 <translation id="8319076807703933069">بحث جديد</translation>
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="8349305172487531364">شريط الإشارات</translation>
+<translation id="8364563001733875155">لتغيير رقم التعريف الشخصي، عليك أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="8366466717204352506">تعذّر التحقُّق من كلمات المرور</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>
 <translation id="8370406443343902172">جارٍ الانتقال إلى الإعدادات...</translation>

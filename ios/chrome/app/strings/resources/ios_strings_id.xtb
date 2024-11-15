@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Kode telah dipindai</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
 <translation id="1084365883616172403">Kirim Facebook selesai.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> tidak dapat dibuka</translation>
 <translation id="1096992026380844478">Setelan sinkronisasi akan dipulihkan berdasarkan cadangan terakhir Anda. <ph name="BEGIN_LINK" />Lihat apa saja yang dapat Anda sinkronkan<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Sinkronisasi histori</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Lain kali</translation>
 <translation id="2320166752086256636">Sembunyikan keyboard</translation>
 <translation id="2321086116217818302">Mempersiapkan sandi…</translation>
+<translation id="2323697864063408084">Dapatkan notifikasi di Layar Kunci dan sebagai Banner agar Anda tidak melewatkan hal penting</translation>
 <translation id="2326302612031521902">Pemilih satuan</translation>
 <translation id="2330607597130465898">Tidak ada perlindungan</translation>
 <translation id="233375395665273385">Hapus dan logout</translation>
@@ -384,6 +386,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2671423594960767771">Bagikan grup</translation>
 <translation id="2673508731173059946">Buka link yang disalin</translation>
 <translation id="2687403674020088961">Blokir semua cookie (tidak direkomendasikan)</translation>
+<translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia secara offline</translation>
 <translation id="2696180352517415858">Anda tidak akan logout dari Akun Google Anda. <ph name="BEGIN_LINK" />Bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.
@@ -636,6 +639,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3986739045730058129">Buka tab</translation>
 <translation id="3992684624889376114">Tentang halaman ini</translation>
 <translation id="3994422733891749358">Pilih notifikasi yang ingin diterima</translation>
+<translation id="3994522032746736727">Login sebagai <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Status progres pemuatan halaman, <ph name="EMAIL" /> telah dimuat.</translation>
 <translation id="3997522473364371632">Berbagi sandi dinonaktifkan oleh administrator Anda.</translation>
 <translation id="4002066346123236978">Judul</translation>
@@ -777,6 +781,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
 <translation id="4647758699119474035">Login sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Terjadi error pada Akun Google. Buka menu akun.</translation>
 <translation id="4650125387981512669">Lanjutkan sebagai <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Sembunyikan setelah 1 menit}other{Sembunyikan setelah {count} menit}}</translation>
 <translation id="4652817563047461855">Pastikan sandi Anda aman, cari tahu apakah sandi telah dibobol, dan dapatkan saran untuk membantu melindungi diri Anda saat online. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Simpan</translation>
 <translation id="4668929960204016307">,</translation>
@@ -843,6 +848,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4936354130727646074">Jangan pindahkan</translation>
 <translation id="4937410517508563815">Simpan sandi di akun</translation>
 <translation id="4938338714234463591">Tindakan ini akan memungkinkan Anda menggunakan suara Anda dengan fitur tertentu di situs.</translation>
+<translation id="4938716880833771969">Notifikasi Anda dikirimkan tanpa suara</translation>
 <translation id="4941089862236492464">Maaf, terjadi error saat berbagi item Anda.</translation>
 <translation id="4944543191714094452">Cari di Halaman…</translation>
 <translation id="4945756290001680296">Akses setelan sandi</translation>
@@ -1609,6 +1615,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8319076807703933069">Penelusuran Baru</translation>
 <translation id="8343993175958086504">Cadangkan data Anda dan gunakan di perangkat mana pun.</translation>
 <translation id="8349305172487531364">Bilah bookmark</translation>
+<translation id="8364563001733875155">Untuk mengubah PIN, siapkan kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="8366466717204352506">Pemeriksaan tidak pernah dijalankan</translation>
 <translation id="8368001212524806591">Pantau harga</translation>
 <translation id="8370406443343902172">Buka Setelan...</translation>

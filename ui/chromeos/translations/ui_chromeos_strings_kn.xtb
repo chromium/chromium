@@ -175,7 +175,7 @@
 <translation id="2377319039870049694">ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2377590462528165447">Linux ನೊಂದಿಗೆ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="2379576081295865700">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ… 1 ಐಟಂ ಪತ್ತೆಯಾಗಿದೆ</translation>
-<translation id="2383454254762599978">ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಿ</translation>
+<translation id="2383454254762599978">ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="2387458720915042159">ಪ್ರಾಕ್ಸಿ ಪ್ರಕಾರ ಸಂಪರ್ಕ</translation>
 <translation id="2389832672041313158">ಬರ್ಮೀಸ್/ಮ್ಯಾನ್ಮಾರ್</translation>
 <translation id="2392369802118427583">ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -422,6 +422,7 @@
 <translation id="4387004326333427325">ದೃಢೀಕರಣ ಪ್ರಮಾಣಪತ್ರವನ್ನು ರಿಮೋಟ್ ಆಗಿ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="4394214039309501350">ಬಾಹ್ಯ ಲಿಂಕ್</translation>
 <translation id="4394980935660306080">ಈ ವಾರದ ಆರಂಭದಲ್ಲಿ</translation>
+<translation id="4397435965699247285">ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗ OneDrive ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="4398096759193130964">ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ ಅಥವಾ ಅವುಗಳನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="4401287888955153199">ಎಲ್ಲವನ್ನೂ ಸಂಗ್ರಹಿಸಿ</translation>
 <translation id="4410695710508688828">ಬೇರ್ಪಡಿಸುವಿಕೆ ಕಾರ್ಯಾಚರಣೆ ವಿಫಲವಾಗಿದೆ. <ph name="ERROR_MESSAGE" /></translation>

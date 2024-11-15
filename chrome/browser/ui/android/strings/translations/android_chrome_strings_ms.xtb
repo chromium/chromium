@@ -127,6 +127,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="1513858653616922153">Padam kata laluan</translation>
 <translation id="1521774566618522728">Aktif hari ini</translation>
 <translation id="153446405401665083">Versi baharu Chrome tersedia</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 penanda halaman disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam Google Account anda, <ph name="ACCOUNT_EMAIL" />.}other{# penanda halaman disimpan pada peranti ini sahaja. Untuk menggunakan penanda halaman dan item ini pada peranti anda yang lain, simpan penanda halaman dan item tersebut dalam Google Account anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Kaedah pembayaran dan alamat tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.
 Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Untuk mengurus Google Account anda, ketik butang "Urus akaun"</translation>
@@ -142,6 +143,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1598163867407640634">Gunakan <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Apabila dihidupkan, gunakan dan simpan data dalam Google Account anda. Apabila dimatikan, data disimpan pada peranti ini sahaja.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alih keluar 1 item yang dipilih}other{Alih keluar # item yang dipilih}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 penanda halaman dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan penanda halaman dan item ini pada peranti anda yang lain, simpan kata laluan dan item tersebut dalam Google Account anda, <ph name="ACCOUNT_EMAIL" />.}other{# penanda halaman dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan penanda halaman dan item ini pada peranti anda yang lain, simpan penanda halaman dan item tersebut dalam Google Account anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="164269334534774161">Anda sedang melihat salinan luar talian halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Sejarah</translation>

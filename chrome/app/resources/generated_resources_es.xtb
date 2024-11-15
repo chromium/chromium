@@ -5435,6 +5435,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
 <translation id="481689174647911539">Este archivo podría ser un virus o malware.<ph name="LINE_BREAK" />Puedes enviarlo a Navegación segura de Google para comprobar su seguridad. Los análisis suelen tardar unos segundos.</translation>
 <translation id="4816900689218414104">Crear una llave de acceso en un teléfono o tablet</translation>
+<translation id="481917177323309377">Pestañas que no has usado en <ph name="COUNT" /> o más días</translation>
 <translation id="4819323978093861656">{0,plural, =0{Cerrando}=1{Se cerrarán en 1 segundo}other{Se cerrarán en # segundos}}</translation>
 <translation id="4819607494758673676">Notificaciones del Asistente de Google</translation>
 <translation id="4819818293886748542">Obtén un enlace a la herramienta de asistencia</translation>

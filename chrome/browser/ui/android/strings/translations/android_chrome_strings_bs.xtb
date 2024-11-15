@@ -127,6 +127,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="1513858653616922153">Izbriši lozinku</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="153446405401665083">Dostupna je nova verzija Chromea</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 oznaka je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na Google računu <ph name="ACCOUNT_EMAIL" />.}one{# oznaka je sačuvana samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}few{# oznake su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}other{# oznaka je sačuvano samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Načini plaćanja i adrese se neće šifrirati. Historija pregledanja iz Chromea se neće sinhronizirati.
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga on pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Za upravljanje Google računom, dodirnite dugme "Upravljaj računom"</translation>
@@ -142,6 +143,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="1598163867407640634">Koristite web lokaciju <ph name="SITE_ETLD_PLUS_ONE" /> s pružaocem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Kada je ovo uključeno, koristit ćete i pohranjivati podatke na Google računu. Kada je isključeno, podaci će se pohranjivati samo na uređaju.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ukloni 1 odabranu stavku}one{Ukloni # odabranu stavku}few{Ukloni # odabrane stavke}other{Ukloni # odabranih stavki}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}one{# oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}few{# oznake i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}other{# oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Sigurno pregledanje</translation>
 <translation id="164269334534774161">Prikazana vam je kopija ove stranice bez mreže od <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historija</translation>
@@ -802,7 +804,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4769632191812288342">Dobijate standardnu zaštitu</translation>
 <translation id="4775646243557794597">Izbrisano: <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Još uvijek nema ništa za prikaz</translation>
-<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> je vaša zadana tražilica</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> je zadani pretraživač</translation>
 <translation id="4787736314074622408">Želite li izbrisati fajl <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1041,7 +1043,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5885378508678660271">Obavještenja <ph name="SEPARATOR" /> Chrome je uklonio odobrenja jer je web lokacija opasna</translation>
 <translation id="5895834791314695851">Lozinke će možda uskoro prestati funkcionirati na ovom uređaju. Da i dalje koristite svoje lozinke, ažurirajte Google Play usluge. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Nijedna tabela pristupnih ključeva nije zatvorena</translation>
-<translation id="5907542076239273525">Oznaka je spremljena u mapu <ph name="FOLDER_NAME" /></translation>
+<translation id="5907542076239273525">Oznaka je sačuvana u folder <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5919204609460789179">Ažurirajte proizvod <ph name="PRODUCT_NAME" /> da započnete sinhronizaciju</translation>
 <translation id="5938820472109305350">Dodavanje: <ph name="INTEREST" /></translation>

@@ -127,6 +127,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="153446405401665083">Hai unha versión de Chrome máis recente</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Hai 1 marcador gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Hai # marcadores gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chrome.
 Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se a esqueces ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para xestionar a túa conta de Google, toca o botón Xestionar conta</translation>
@@ -142,6 +143,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Se esta opción está activada, podes utilizar e gardar os datos na túa Conta de Google. Cando está desactivada, os datos gárdanse só no dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{Hai 1 marcador e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Hai # marcadores e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -802,6 +804,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4769632191812288342">Estás usando a protección estándar</translation>
 <translation id="4775646243557794597">Eliminouse o seguinte período: <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Aínda non hai contido</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> é o teu buscador predeterminado</translation>
 <translation id="4787736314074622408">Queres eliminar <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Descubre como te protexe Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1043,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5885378508678660271">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque este sitio é perigoso</translation>
 <translation id="5895834791314695851">Os contrasinais poden deixar de funcionar en breve neste dispositivo. Para poder seguir usándoos, actualiza os servizos de Google Play. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Non se pechou ningunha folla de claves de acceso</translation>
+<translation id="5907542076239273525">O marcador gardouse en <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5919204609460789179">Actualiza <ph name="PRODUCT_NAME" /> para iniciar a sincronización</translation>
 <translation id="5938820472109305350">Engadir <ph name="INTEREST" /></translation>

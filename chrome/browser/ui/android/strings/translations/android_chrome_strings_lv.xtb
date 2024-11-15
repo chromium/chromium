@@ -802,6 +802,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4769632191812288342">Jums ir pieejama standarta aizsardzība.</translation>
 <translation id="4775646243557794597">Tika izdzēsts šāds laika periods: <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Vēl nav nekāda satura</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> ir jūsu noklusējuma meklētājprogramma.</translation>
 <translation id="4787736314074622408">Vai vēlaties dzēst failu <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Uzziniet, kā Chrome rūpējas par jūsu drošību</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1041,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5885378508678660271">Paziņojumi <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo šī vietne ir bīstama</translation>
 <translation id="5895834791314695851">Drīz var tikt pārtraukta paroļu darbība šajā ierīcē. Lai turpinātu izmantot paroles, atjauniniet Google Play pakalpojumus. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="5899667542927581604">Lapa “Nav piekļuves atslēgu” tika aizvērta</translation>
+<translation id="5907542076239273525">Grāmatzīme tika saglabāta mapē <ph name="FOLDER_NAME" />.</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5919204609460789179">Lai sāktu sinhronizēšanu, atjauniniet <ph name="PRODUCT_NAME" /></translation>
 <translation id="5938820472109305350">Pievienot interesi “<ph name="INTEREST" />”</translation>

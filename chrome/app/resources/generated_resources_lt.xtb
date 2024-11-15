@@ -451,6 +451,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1296911687402551044">Prisegti pasirinktą skirtuką</translation>
 <translation id="1297175357211070620">Paskirties vieta</translation>
 <translation id="129770436432446029">Siųsti atsiliepimus apie eksperimentą „<ph name="EXPERIMENT_NAME" />“</translation>
+<translation id="129808599775632797">&amp;Pakeitimai</translation>
 <translation id="130097046531636712">Pailginamas akumuliatoriaus veikimo laikas apribojant veiklą fone ir vaizdo efektus, pvz., sklandų slinkimą</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> gali redaguoti toliau nurodytus failus</translation>
 <translation id="130174306655812048">Pabandykite pasakyti „Hey Google, what song is this?“ („Ok Google“, kokia tai yra daina?)</translation>
@@ -1783,6 +1784,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2214018885812055163">Bendrinami aplankai</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 nerodoma eilutė&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> nerodoma eilutė&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> nerodomos eilutės&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> nerodomos eilutės&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> nerodomų eilučių&gt;}}</translation>
 <translation id="2215070081105889450">Jei norite bendrinti garso įrašą, bendrinkite skirtuką ar ekrano vaizdą</translation>
+<translation id="2217208085547223783">Patikimumo būsena</translation>
 <translation id="2218019600945559112">Pelė ir jutiklinė dalis</translation>
 <translation id="2218515861914035131">Įklijuoti kaip grynąjį tekstą</translation>
 <translation id="221872881068107022">Atvirkštinis slinkimas</translation>
@@ -2517,6 +2519,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Atidaryti svečio profilį</translation>
 <translation id="2723819893410108315">Citronų</translation>
+<translation id="2724822892847436256">Apribojimai</translation>
 <translation id="2724841811573117416">„WebRTC“ žurnalai</translation>
 <translation id="272488616838512378">Matavimo vienetų konvertavimas</translation>
 <translation id="2725200716980197196">Tinklo ryšys atkurtas</translation>
@@ -3477,6 +3480,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3421835120203732951">Pridėti naują profilį</translation>
 <translation id="3423111258700187173">Rezultatai rasti aplanke „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="3423226218833787854">Sužinokite daugiau apie šią DI funkciją</translation>
+<translation id="3423275441470187644">Patikimumas</translation>
 <translation id="3423463006624419153">Telefonuose „<ph name="PHONE_NAME_1" />“ ir „<ph name="PHONE_NAME_2" />“:</translation>
 <translation id="3423858849633684918">Iš naujo paleiskite „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="3424969259347320884">Apibūdinkite, ką darėte, kai skirtukas užstrigo</translation>
@@ -4606,6 +4610,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4195814663415092787">Tęskite ten, kur baigėte</translation>
 <translation id="4198268995694216131">Papildomos svetainės</translation>
+<translation id="4198420883535766848">Pašalinti skirtuką iš sąrašo</translation>
 <translation id="4200609364258658652">Kopijuot&amp;i vaizdo įrašo rėmelį</translation>
 <translation id="4200689466366162458">Tinkinti žodžiai</translation>
 <translation id="4200983522494130825">Naujas &amp;skirtukas</translation>
@@ -5169,6 +5174,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ištrinti skirtukų grupę?}one{Ištrinti skirtukų grupes?}few{Ištrinti skirtukų grupes?}many{Ištrinti skirtukų grupes?}other{Ištrinti skirtukų grupes?}}</translation>
 <translation id="4608500690299898628">Rasti...</translation>
 <translation id="4610162781778310380">Įvyko papildinio „<ph name="PLUGIN_NAME" />“ klaida</translation>
+<translation id="4610493438923139095">Nepatikimas</translation>
 <translation id="4610637590575890427">Ar norėjote eiti į <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Pasiekiamas duomenų ryšys</translation>
 <translation id="4611759022973144129">Naudodami šį slaptažodį galite prisijungti prie „<ph name="DEVICE_TYPE" />“.</translation>
@@ -5194,6 +5200,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4627442949885028695">Tęsiama kitu įrenginiu</translation>
 <translation id="4628762811416793313">Nepavyko užbaigti „Linux“ sudėtinio rodinio. Bandykite dar kartą.</translation>
 <translation id="4629521233550547305">Atidaryti <ph name="PROFILE_NAME" /> profilį</translation>
+<translation id="4629803160911640220">Patikimas</translation>
 <translation id="4631955550884380853">Fokusuotas balsas</translation>
 <translation id="4632655012900268062">Tinkinti korteles</translation>
 <translation id="4633003931260532286">Norint naudoti plėtinį reikalinga bent <ph name="IMPORT_VERSION" /> versijos „<ph name="IMPORT_NAME" />“, bet įdiegta tik <ph name="INSTALLED_VERSION" /> versija</translation>
@@ -5444,6 +5451,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4816336393325437908">{COUNT,plural, =1{Ištrinta 1 žymė}one{Ištrinta {COUNT} žymė}few{Ištrintos {COUNT} žymės}many{Ištrinta {COUNT} žymės}other{Ištrinta {COUNT} žymių}}</translation>
 <translation id="481689174647911539">Šis failas gali būti virusas arba kenkėjiška programa.<ph name="LINE_BREAK" />Galite nusiųsti jį „Google“ saugaus naršymo paslaugai, kad patikrintumėte, ar jis nesaugus. Nuskaitymas paprastai trunka kelias sekundes.</translation>
 <translation id="4816900689218414104">Slaptažodžio kūrimas telefonu ar planšetiniu kompiuteriu</translation>
+<translation id="481917177323309377">Skirtukai, kurių nenaudojote <ph name="COUNT" /> ar daugiau dienų</translation>
 <translation id="4819323978093861656">{0,plural, =0{Uždaroma dabar.}=1{Bus uždaryta po: vienos sekundės}one{Bus uždaryta po: # sekundės}few{Bus uždaryta po: # sekundžių}many{Bus uždaryta po: # sekundės}other{Bus uždaryta po: # sekundžių}}</translation>
 <translation id="4819607494758673676">„Google“ padėjėjo pranešimai</translation>
 <translation id="4819818293886748542">Gauti palaikymo įrankio nuorodą</translation>
@@ -6850,6 +6858,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5842497610951477805">„Bluetooth“ įgalinimas</translation>
 <translation id="5844284118433003733">Kai esate prisijungę, šie duomenys susiejami su jūsų „Google“ paskyra, siekiant apsaugoti jus „Google“ paslaugose, pvz., užtikrinant didesnę apsaugą sistemoje „Gmail“ po saugos incidento.</translation>
 <translation id="5844574845205796324">Siūlyti naują naršytiną turinį</translation>
+<translation id="5844685625984052392">Užuomina</translation>
 <translation id="5846200638699387931">Ryšio sintaksės klaida: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Be šešėlio</translation>
 <translation id="5846504156837627898">Tvarkyti svetainių leidimus</translation>

@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1191518099344003522">APN įgalintas.</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
+<translation id="1196264380943975940">Nepavyko apibendrinti. Išbandykite ilgesnį transkribuotą tekstą.</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> versija</translation>
 <translation id="1199355487114804640">Leisti / pristabdyti</translation>
 <translation id="1201402288615127009">Kitas</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Gamintojas</translation>
 <translation id="467510802200863975">Slaptažodžiai neatitinka</translation>
 <translation id="467715984478005772">Įtariama užkarda</translation>
+<translation id="4678534708181186163">Nepavyko apibendrinti. Išbandykite trumpesnį transkribuotą tekstą.</translation>
 <translation id="4683762547447150570">Palieskite mygtuką, kad suaktyvintumėte klavišo priskyrimą</translation>
 <translation id="4691278870498629773">Sustabdyta – nėra dėklo</translation>
 <translation id="469379815867856270">Signalo stiprumas</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Akumuliatoriaus būsena</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="517075088756846356">Jei norite tęsti atnaujinimo procesą, atjunkite ir vėl prijunkite „<ph name="DEVICE_NAME" />“ maitinimo laidą</translation>
+<translation id="5178021559562393163">Nepavyko sukurti pavadinimų. Išbandykite trumpesnį transkribuotą tekstą.</translation>
 <translation id="5180108905184566358">baobabai</translation>
 <translation id="5180712487038406644">Išraiškinga</translation>
 <translation id="5190187232518914472">Atgaivinkite mėgstamiausius prisiminimus. Norėdami pridėti ar redaguoti albumus, eikite į <ph name="LINK_BEGIN" />„Google“ nuotraukas<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Tapatybė</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
+<translation id="5318310531701770497">Nepavyko sukurti pavadinimų. Išbandykite ilgesnį transkribuotą tekstą.</translation>
 <translation id="5318334351163689047">Nepavyko pateikti TCP užklausų</translation>
 <translation id="53196409393069519">Įjungti transkribavimą?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

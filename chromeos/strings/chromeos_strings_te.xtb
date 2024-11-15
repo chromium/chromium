@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1191518099344003522">APN ఎనేబుల్ చేయబడింది.</translation>
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
+<translation id="1196264380943975940">సారాంశాన్ని అందించడం సాధ్యం కాదు. టైప్ చేసిన మాటలు గల పెద్ద ఫైల్‌ను ట్రై చేయండి.</translation>
 <translation id="1196959502276349371">వెర్షన్ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ప్లే చేయండి/పాజ్ చేయండి</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">తయారీదారు</translation>
 <translation id="467510802200863975">పాస్‌వర్డ్‌లు సరిపోలడం లేదు</translation>
 <translation id="467715984478005772">ఫైర్‌వాల్‌తో సమస్య ఉన్నట్టుగా ఉంది</translation>
+<translation id="4678534708181186163">సారాంశాన్ని అందించడం సాధ్యం కాదు. టైప్ చేసిన మాటలు గల చిన్న ఫైల్‌ను ట్రై చేయండి.</translation>
 <translation id="4683762547447150570">కీ అసైన్‌మెంట్‌పై ఫోకస్ చేయడానికి బటన్‌పై ట్యాప్ చేయండి</translation>
 <translation id="4691278870498629773">ఆగిపోయింది - ట్రే అందుబాటులో లేదు</translation>
 <translation id="469379815867856270">సిగ్నల్ సామర్థ్యం</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">బ్యాటరీ సామర్థ్యం</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="517075088756846356">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" /> పవర్ కేబుల్‌ను అన్‌ప్లగ్ చేసి, మళ్లీ ప్లగ్ చేయండి</translation>
+<translation id="5178021559562393163">పేర్లను క్రియేట్ చేయడం సాధ్యం కాదు. టైప్ చేసిన మాటలు గల చిన్న ఫైల్‌ను ట్రై చేయండి.</translation>
 <translation id="5180108905184566358">బెయొబాబ్ చెట్లు</translation>
 <translation id="5180712487038406644">స్పష్టంగా ఉండే రంగు</translation>
 <translation id="5190187232518914472">మీకు ఇష్టమైన మధుర జ్ఞాపకాలను మళ్లీ ఆస్వాదించండి. ఆల్బమ్‌లను జోడించడానికి లేదా ఎడిట్ చేయడానికి, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />కు వెళ్లండి.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">గుర్తింపు</translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
+<translation id="5318310531701770497">పేర్లను క్రియేట్ చేయడం సాధ్యం కాదు. టైప్ చేసిన మాటలు గల పెద్ద ఫైల్‌ను ట్రై చేయండి.</translation>
 <translation id="5318334351163689047">TCP రిక్వెస్ట్ వైఫల్యాలు</translation>
 <translation id="53196409393069519">మాటల టైపింగ్‌ను ఆన్ చేయాలా?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">Xóa mật khẩu</translation>
 <translation id="1521774566618522728">Hoạt động hôm nay</translation>
 <translation id="153446405401665083">Đã có phiên bản Chrome mới</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 dấu trang chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# dấu trang chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="1544084554881119930">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Để quản lý Tài khoản Google của bạn, hãy nhấn vào nút "Quản lý tài khoản"</translation>
@@ -142,6 +143,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1598163867407640634">Sử dụng <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Khi bật, tính năng này sẽ sử dụng và lưu dữ liệu trong Tài khoản Google của bạn. Khi tắt, dữ liệu chỉ được lưu vào thiết bị này.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 dấu trang và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# dấu trang và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Nhật ký</translation>
@@ -802,6 +804,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4769632191812288342">Bạn đang sử dụng chế độ bảo vệ tiêu chuẩn</translation>
 <translation id="4775646243557794597">Đã xoá <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Chưa có nội dung nào để hiển thị</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> là công cụ tìm kiếm mặc định</translation>
 <translation id="4787736314074622408">Bạn có muốn xoá <ph name="ITEM_TITLE" /> không?</translation>
 <translation id="4793679854893018356">Tìm hiểu cách Chrome bảo vệ bạn</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Na-scan na ang code</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}one{{count} tab}other{{count} na tab}}</translation>
 <translation id="1084365883616172403">Kumpleto na ang pag-post sa Facebook.</translation>
+<translation id="1085677983426914530">Hindi mabuksan ang <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">Ire-restore ang iyong mga setting ng pag-sync batay sa huli mong backup. <ph name="BEGIN_LINK" />Tingnan kung ano ang puwede mong i-sync<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Pag-sync ng history</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Hindi, salamat</translation>
 <translation id="2320166752086256636">Itago ang keyboard</translation>
 <translation id="2321086116217818302">Inihahanda ang mga password…</translation>
+<translation id="2323697864063408084">Makatanggap ng mga notification sa Lock Screen mo at bilang Mga Banner para hindi mapalampas ang mahalaga sa iyo</translation>
 <translation id="2326302612031521902">Selector ng unit</translation>
 <translation id="2330607597130465898">Walang proteksyon</translation>
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
@@ -384,6 +386,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2673508731173059946">Bisitahin ang kinopyang link</translation>
 <translation id="2687403674020088961">I-block ang lahat ng cookies (hindi inirerekomenda)</translation>
+<translation id="2688535388040882469">Mga Banner</translation>
 <translation id="2690858294534178585">Ginagamit ang camera</translation>
 <translation id="2691653761409724435">Hindi available offline</translation>
 <translation id="2696180352517415858">Hindi ka masa-sign out sa iyong Google Account. Posibleng ma-save sa iyong Google Account ang <ph name="BEGIN_LINK" />iba pang anyo ng aktibidad<ph name="END_LINK" /> kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.
@@ -636,6 +639,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3986739045730058129">Pumunta sa tab</translation>
 <translation id="3992684624889376114">Tungkol sa page na ito</translation>
 <translation id="3994422733891749358">Piliin ang mga notification na gusto mong matanggap</translation>
+<translation id="3994522032746736727">Mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Progress bar ng pag-load ng page, na-load ang <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Na-disable ng iyong administrator ang pag-share ng password.</translation>
 <translation id="4002066346123236978">Pamagat</translation>
@@ -843,6 +847,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4936354130727646074">Huwag kailanman ilipat</translation>
 <translation id="4937410517508563815">I-save ang mga password sa account</translation>
 <translation id="4938338714234463591">Magbibigay-daan ito sa iyong gamitin ang boses mo sa ilang partikular na feature sa mga website.</translation>
+<translation id="4938716880833771969">Tahimik na ipinapadala ang iyong mga notification</translation>
 <translation id="4941089862236492464">Paumanhin, nagkaroon ng problema sa pagbabahagi ng item mo.</translation>
 <translation id="4944543191714094452">Hanapin sa Page…</translation>
 <translation id="4945756290001680296">I-access ang mga setting ng password</translation>
@@ -1609,6 +1614,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8319076807703933069">Bagong Paghahanap</translation>
 <translation id="8343993175958086504">I-back up ang iyong mga file at gamitin ito sa anumang device.</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
+<translation id="8364563001733875155">Para palitan ang iyong PIN, mag-set up muna ng passcode sa device mo.</translation>
 <translation id="8366466717204352506">Hindi kailanman nagpatakbo ng pagsusuri</translation>
 <translation id="8368001212524806591">Subaybayan ang presyo</translation>
 <translation id="8370406443343902172">Pumunta sa Mga Setting...</translation>

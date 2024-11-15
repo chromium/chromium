@@ -451,6 +451,7 @@
 <translation id="1296911687402551044">Замацаваць выбраную ўкладку</translation>
 <translation id="1297175357211070620">Аб’ект прызначэння</translation>
 <translation id="129770436432446029">Адправіць водгук пра эксперымент "<ph name="EXPERIMENT_NAME" />".</translation>
+<translation id="129808599775632797">Змяненні</translation>
 <translation id="130097046531636712">Гэты рэжым падаўжае час працы ад акумулятара, абмяжоўваючы дзеянні ў фонавым рэжыме і візуальныя эфекты (напрыклад, плаўнае прагортванне)</translation>
 <translation id="1301135395320604080">Сайт <ph name="ORIGIN" /> можа змяняць наступныя файлы</translation>
 <translation id="130174306655812048">Спытайце: "Ok Google, што гэта за песня?"</translation>
@@ -1771,6 +1772,7 @@
 <translation id="2214018885812055163">Абагуленыя папкі</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 радок не паказваецца&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> радок не паказваецца&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> радкі не паказваецца&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> радкоў не паказваецца&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> радка не паказваецца&gt;}}</translation>
 <translation id="2215070081105889450">Каб абагуліць аўдыя, абагульце ўкладку ці экран</translation>
+<translation id="2217208085547223783">Статус даверу</translation>
 <translation id="2218019600945559112">Мыш і сэнсарная панэль</translation>
 <translation id="2218515861914035131">Уставіць як звычайны тэкст</translation>
 <translation id="221872881068107022">Адваротная прагортка</translation>
@@ -2502,6 +2504,7 @@
 <translation id="2722547199758472013">Ідэнтыфікатар: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Адкрыць гасцявы профіль</translation>
 <translation id="2723819893410108315">Лімонная цэдра</translation>
+<translation id="2724822892847436256">Абмежаванні</translation>
 <translation id="2724841811573117416">Журналы WebRTC</translation>
 <translation id="272488616838512378">Перавод адзінак вымярэння</translation>
 <translation id="2725200716980197196">Падключэнне да сеткі адноўлена</translation>
@@ -3462,6 +3465,7 @@
 <translation id="3421835120203732951">Дадаць новы профіль</translation>
 <translation id="3423111258700187173">Вынікі знойдзены ў папцы "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423226218833787854">Даведацца больш пра гэту функцыю на аснове штучнага інтэлекту</translation>
+<translation id="3423275441470187644">Даверанае</translation>
 <translation id="3423463006624419153">На тэлефонах "<ph name="PHONE_NAME_1" />" і "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Перазапусціце <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Апішыце, што вы рабілі, калі ўкладка дала збой</translation>
@@ -4589,6 +4593,7 @@
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4195814663415092787">Працягнуць з месца, дзе вы спыніліся</translation>
 <translation id="4198268995694216131">Дадатковыя сайты</translation>
+<translation id="4198420883535766848">Выдаліць укладку са спіса</translation>
 <translation id="4200609364258658652">Кап&amp;іраваць кадр відэа</translation>
 <translation id="4200689466366162458">Словы, дададзеныя карыстальнікам</translation>
 <translation id="4200983522494130825">Новая &amp;ўкладка</translation>
@@ -5152,6 +5157,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Выдаліць групу ўкладак?}one{Выдаліць групы ўкладак?}few{Выдаліць групы ўкладак?}many{Выдаліць групы ўкладак?}other{Выдаліць групы ўкладак?}}</translation>
 <translation id="4608500690299898628">&amp;Пошук...</translation>
 <translation id="4610162781778310380">У <ph name="PLUGIN_NAME" /> выяўлена памылка</translation>
+<translation id="4610493438923139095">Падазроны</translation>
 <translation id="4610637590575890427">Магчыма, вы хацелі перайсці на <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Даступнае падключэнне перадачы даных</translation>
 <translation id="4611759022973144129">Выкарыстоўвайце гэты пароль для ўваходу ва ўліковы запіс на прыладзе "<ph name="DEVICE_TYPE" />".</translation>
@@ -5177,6 +5183,7 @@
 <translation id="4627442949885028695">Працягніце з іншай прылады</translation>
 <translation id="4628762811416793313">Наладжванне кантэйнера Linux не завершана. Паўтарыце спробу.</translation>
 <translation id="4629521233550547305">Адкрыць профіль "<ph name="PROFILE_NAME" />"</translation>
+<translation id="4629803160911640220">Давераны</translation>
 <translation id="4631955550884380853">Сфакусіраваны голас</translation>
 <translation id="4632655012900268062">Наладзіць карткі</translation>
 <translation id="4633003931260532286">Для пашырэння патрабуецца <ph name="IMPORT_NAME" /> версіі <ph name="IMPORT_VERSION" /> і вышэй, але ўсталявана толькі версія <ph name="INSTALLED_VERSION" /></translation>
@@ -5427,6 +5434,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Выдалена 1 закладка}one{Выдалена {COUNT} закладка}few{Выдалена {COUNT} закладкі}many{Выдалена {COUNT} закладак}other{Выдалена {COUNT} закладкі}}</translation>
 <translation id="481689174647911539">Гэты файл можа быць вірусам або шкоднай праграмай.<ph name="LINE_BREAK" />Вы можаце адправіць яго на праверку ў Google Бяспечны прагляд. Сканіраванне звычайна займае некалькі секунд.</translation>
 <translation id="4816900689218414104">Стварыце ключ доступу на тэлефоне або планшэце</translation>
+<translation id="481917177323309377">Укладкі, якія не выкарыстоўваліся <ph name="COUNT" /> ці больш дзён</translation>
 <translation id="4819323978093861656">{0,plural, =0{Браўзер закрываецца}=1{Браўзер будзе закрыты праз 1 секунду}one{Браўзер будзе закрыты праз # секунду}few{Браўзер будзе закрыты праз # секунды}many{Браўзер будзе закрыты праз # секунд}other{Браўзер будзе закрыты праз # секунды}}</translation>
 <translation id="4819607494758673676">Апавяшчэнні Памочніка Google</translation>
 <translation id="4819818293886748542">Атрымаць спасылку на інструмент падтрымкі</translation>
@@ -6831,6 +6839,7 @@
 <translation id="5842497610951477805">Bluetooth уключаны</translation>
 <translation id="5844284118433003733">Даныя будуць звязаны з Уліковым запісам Google, у які вы ўвайшлі. Гэта дазволіць абараніць вас у сэрвісах Google (напрыклад, узмацніць абарону ў Gmail пасля парушэння бяспекі).</translation>
 <translation id="5844574845205796324">Прапаноўваць для азнаямлення новае змесціва</translation>
+<translation id="5844685625984052392">Неправераны</translation>
 <translation id="5846200638699387931">Памылка сінтаксісу суаднясення: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Без ценю</translation>
 <translation id="5846504156837627898">Кіраваць дазволамі сайтаў</translation>

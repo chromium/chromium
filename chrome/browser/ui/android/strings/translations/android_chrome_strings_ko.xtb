@@ -706,7 +706,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4355272626458588338">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">안전 정보 한눈에 보기</translation>
-<translation id="4378154925671717803">전화기</translation>
+<translation id="4378154925671717803">전화</translation>
 <translation id="4380055775103003110">이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
 <translation id="4384468725000734951">검색할 때 Sogou 사용</translation>
 <translation id="4387647248986092471">자동차 프로필 잠금 만들기</translation>
@@ -804,6 +804,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4769632191812288342">표준 보호 모드를 사용 중입니다</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> 동안의 데이터 삭제됨</translation>
 <translation id="4778653490315793244">표시할 콘텐츠 없음</translation>
+<translation id="4782929588435725897">기본 검색엔진은 <ph name="SEARCH_ENGINE" />입니다.</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" /> 파일을 삭제하시겠습니까?</translation>
 <translation id="4793679854893018356">Chrome이 사용자를 안전하게 보호하는 방법 알아보기</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

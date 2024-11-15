@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1191518099344003522">APNa gaituta dago.</translation>
 <translation id="1195447618553298278">Errore ezezaguna.</translation>
+<translation id="1196264380943975940">Ezin da laburbildu. Probatu transkripzio luzeago batekin.</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> bertsioa</translation>
 <translation id="1199355487114804640">Erreproduzitzeko/Pausatzeko tekla</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">Editatu eta ezabatzeko menua</translation>
 <translation id="2597774443162333062">Google-ra bidaliko dira fitxategiak, bertan araztu ahal izateko</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
+<translation id="261322795497077164">Hizlarien identifikazioa</translation>
 <translation id="2617397783536231890">kotoia</translation>
 <translation id="2618015542787108131">Hondarrezko duna</translation>
 <translation id="2619761439309613843">Freskatu egunero</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">elurrarekin</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> gailuan soilik</translation>
 <translation id="315116470104423982">Datu-konexioa</translation>
+<translation id="3153094818810437149">Aldatzeko, itzuli geroago grabagailuaren ezarpenetara</translation>
 <translation id="3156511682997763015">Aurreratu 10 segundo</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. orria eskaneatzen…</translation>
 <translation id="315738237743207937">Sare-zerbitzuaren atari bat hauteman da</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">pixel-artea</translation>
 <translation id="3799381533888781854">Desaktibatuta. Administratzaileak ezarpen hau kudeatzen du.</translation>
 <translation id="380097101658023925">RGB koloreak kontrolatzeko aukerak</translation>
+<translation id="380493988330050229">Ezin da sortu laburpenik transkripzio-hizkuntza honetan</translation>
 <translation id="38114475217616659">Garbitu historia guztia</translation>
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
 <translation id="382043424867370667">Ilunabarra erakusten duen horma-papera</translation>
@@ -733,6 +737,7 @@
 <translation id="458794348635939462">Ezin izan da ebatzi ostalari bat ere</translation>
 <translation id="4593212453765072419">Proxy-autentifikazioa behar da</translation>
 <translation id="4594021849294327751">Sortu transkripzioa</translation>
+<translation id="4594541568452132351">Hautatu transkripzio-hizkuntza eta deskargatu eredua</translation>
 <translation id="4607282946861182308">Ezin da sortu horren irudirik. Probatu beste eskaera-mezu batekin.</translation>
 <translation id="4609350030397390689">Teklatuaren distira jaisteko tekla</translation>
 <translation id="4623061655523261501">Sortu dira grabaketen izenak</translation>
@@ -748,6 +753,7 @@
 <translation id="4665014895760275686">Fabrikatzailea</translation>
 <translation id="467510802200863975">Pasahitzak ez datoz bat</translation>
 <translation id="467715984478005772">suebaki bat dagoela dirudi</translation>
+<translation id="4678534708181186163">Ezin da laburbildu. Probatu transkripzio laburrago batekin.</translation>
 <translation id="4683762547447150570">Sakatu botoia teklaren esleipenak fokuratzeko</translation>
 <translation id="4691278870498629773">Geldituta: erretilua falta da</translation>
 <translation id="469379815867856270">Seinalearen indarra</translation>
@@ -850,6 +856,7 @@
 <translation id="5168185087976003268">Bateriaren egoera</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="517075088756846356">Eguneratzen jarraitzeko, deskonektatu eta konektatu berriro <ph name="DEVICE_NAME" /> gailuaren korronte-kablea</translation>
+<translation id="5178021559562393163">Ezin da sortu izenik. Probatu transkripzio laburrago batekin.</translation>
 <translation id="5180108905184566358">baobabak</translation>
 <translation id="5180712487038406644">Adierazkorra</translation>
 <translation id="5190187232518914472">Ekarri gogora gogoko oroitzapenak. Albumak gehitu edo editatzeko, joan <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzura.</translation>
@@ -884,6 +891,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitatea</translation>
 <translation id="5317780077021120954">Gorde</translation>
+<translation id="5318310531701770497">Ezin da sortu izenik. Probatu transkripzio luzeago batekin.</translation>
 <translation id="5318334351163689047">TCP bidezko eskaeren hutsegiteak</translation>
 <translation id="53196409393069519">Transkripzioak aktibatu nahi dituzu?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="COMPLETION_STATUS" /></translation>
@@ -1095,8 +1103,9 @@
 <translation id="6352210854422428614">beste planeta bat</translation>
 <translation id="6359706544163531585">Desgaitu gai argia</translation>
 <translation id="6359919876285606596">Ezin da desegin ekintza</translation>
-<translation id="6368342879959028556">"Sortu AA bidez" hautatzen duzunean, idatzi eskaera-mezu pertsonalizatu bat. Bestela, hautatu "AAko horma-paperak" gai bat aukeratzeko, eta, gero, hautatu azpimarratutako hitzak AAko horma-papera pertsonalizatzeko.</translation>
+<translation id="6368342879959028556">"Sortu AA bidez" hautatzen duzunean, idatzi eskaera-mezu pertsonalizatu bat. Bestela, hautatu "AA bidezko horma-paperak" gai bat aukeratzeko, eta, gero, hautatu azpimarratutako hitzak AA bidezko horma-papera pertsonalizatzeko.</translation>
 <translation id="636850387210749493">Erregistratu erakundean</translation>
+<translation id="6369221585240879141">Ezin da sortu grabaketen izenik transkripzio-hizkuntza honetan</translation>
 <translation id="6373461326814131011">Urmael</translation>
 <translation id="6379086450106841622">Ukipen-pantaila</translation>
 <translation id="6381741036071372448">Probatu teklatua</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">Sarbide-puntuaren izena (APNa)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Izenen zerbitzaria}other{Izenen zerbitzariak}}</translation>
 <translation id="7135814714616751706">Bilatu lasterbideak</translation>
+<translation id="7138614237884624401">Testu sinplifikatua</translation>
 <translation id="7141470099673912333">Eduki-transferentzia</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
@@ -1691,6 +1701,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="9100765901046053179">Ezarpen aurreratuak</translation>
 <translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen txartela</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. orria eskaneatzen</translation>
+<translation id="9108856746036501072">Grabagailuak ahotsak dituzten grabaketen transkripzioak egin ditzake. Hurrengo urratsean, transkripzio-hizkuntza hautatu behar duzu, eta eredua deskargatu (100 MB gehienez).</translation>
 <translation id="9111102763498581341">Desblokeatu</translation>
 <translation id="9122492456897874028">Laburbildu edukia, lortu definizioak eta abar</translation>
 <translation id="9122602430962285795">Berriro konektatzeko, joan ezarpenetara</translation>

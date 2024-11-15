@@ -362,6 +362,7 @@
 <translation id="2589921777872778654">Menu "Editar e excluir"</translation>
 <translation id="2597774443162333062">Os arquivos vão ser enviados ao Google para depuração</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}one{Digitalização concluída. {NUMBER_OF_PAGES} página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
+<translation id="261322795497077164">Identificação do locutor</translation>
 <translation id="2617397783536231890">algodão</translation>
 <translation id="2618015542787108131">duna</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
@@ -442,6 +443,7 @@
 <translation id="3140130301071865159">neve</translation>
 <translation id="3146655726035122603">Exclusivo do <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dados do celular</translation>
+<translation id="3153094818810437149">Você pode mudar isso mais tarde nas configurações do Gravador</translation>
 <translation id="3156511682997763015">Avançar 10 segundos</translation>
 <translation id="3156846309055100599">Digitalizando a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portal cativo detectado</translation>
@@ -564,6 +566,7 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">DESATIVADA: essa configuração é gerenciada pelo administrador.</translation>
 <translation id="380097101658023925">controles de RGB</translation>
+<translation id="380493988330050229">Não é possível criar um resumo para este idioma de transcrição</translation>
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="382043424867370667">Plano de fundo Pôr do sol</translation>
@@ -736,6 +739,7 @@
 <translation id="458794348635939462">Falha na resolução de todos os hosts</translation>
 <translation id="4593212453765072419">Autenticação de proxy necessária</translation>
 <translation id="4594021849294327751">Criar transcrição</translation>
+<translation id="4594541568452132351">Selecione o idioma de transcrição e baixe o modelo</translation>
 <translation id="4607282946861182308">Não é possível criar imagens desse comando. Tente outro comando.</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
 <translation id="4623061655523261501">Os nomes das gravações foram gerados</translation>
@@ -1104,6 +1108,7 @@
 <translation id="6359919876285606596">Esta ação é permanente e não pode ser desfeita</translation>
 <translation id="6368342879959028556">Ao selecionar "Criar com IA", escreva um comando personalizado. Você também pode selecionar "Planos de fundo de IA" para escolher um tema e, em seguida, as palavras sublinhadas para personalizar o plano de fundo.</translation>
 <translation id="636850387210749493">Registro da empresa</translation>
+<translation id="6369221585240879141">Não é possível criar nomes de gravações para este idioma de transcrição</translation>
 <translation id="6373461326814131011">Lagoa</translation>
 <translation id="6379086450106841622">Tela touchscreen</translation>
 <translation id="6381741036071372448">Testar o teclado</translation>
@@ -1278,6 +1283,7 @@
 <translation id="7130438335435247835">Nome do ponto de acesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Pesquisar atalhos</translation>
+<translation id="7138614237884624401">Texto simplificado</translation>
 <translation id="7141470099673912333">Transferência de conteúdo</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
@@ -1699,6 +1705,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="9100765901046053179">Configurações avançadas</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">O Gravador pode criar transcrições de gravações com fala. Na próxima etapa, você precisará selecionar o idioma de transcrição e baixar o modelo (até 100 MB).</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9122492456897874028">Resuma conteúdos, confira definições e muito mais</translation>
 <translation id="9122602430962285795">Para se reconectar, acesse as Configurações</translation>

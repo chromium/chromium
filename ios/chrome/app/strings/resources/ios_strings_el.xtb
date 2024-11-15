@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Ο κώδικας σαρώθηκε</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} καρτέλα}other{{count} καρτέλες}}</translation>
 <translation id="1084365883616172403">Η ανάρτηση στο Facebook ολοκληρώθηκε.</translation>
+<translation id="1085677983426914530">Δεν ήταν δυνατό το άνοιγμα του αρχείου <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">Θα γίνει επαναφορά των ρυθμίσεων συγχρονισμού με βάση την τελευταία δημιουργία αντιγράφων ασφαλείας. <ph name="BEGIN_LINK" />Δείτε τι μπορείτε να συγχρονίσετε<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Να μεταφράζονται πάντα τα <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Συγχρονισμός ιστορικού</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Όχι, ευχαριστώ</translation>
 <translation id="2320166752086256636">Απόκρυψη πληκτρολογίου</translation>
 <translation id="2321086116217818302">Προετοιμασία κωδικών πρόσβασης…</translation>
+<translation id="2323697864063408084">Λάβετε ειδοποιήσεις στην οθόνη κλειδώματος και ως banner, για να μην χάσετε ποτέ αυτό που σας ενδιαφέρει</translation>
 <translation id="2326302612031521902">Επιλογέας μονάδας</translation>
 <translation id="2330607597130465898">Χωρίς προστασία</translation>
 <translation id="233375395665273385">Διαγραφή και αποσύνδεση</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">Κοινοποίηση ομάδας</translation>
 <translation id="2673508731173059946">Μετάβαση στον αντιγραμμένο σύνδεσμο</translation>
 <translation id="2687403674020088961">Αποκλεισμός όλων των cookie (δεν συνιστάται)</translation>
+<translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">Η κάμερα χρησιμοποιείται</translation>
 <translation id="2691653761409724435">Μη διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="2696180352517415858">Δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google. <ph name="BEGIN_LINK" />Άλλες μορφές δραστηριότητας<ph name="END_LINK" /> ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google όταν είστε συνδεδεμένοι. Μπορείτε να τις διαγράψετε ανά πάσα στιγμή.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">Μετάβαση στην καρτέλα</translation>
 <translation id="3992684624889376114">Σχετικά με αυτήν τη σελίδα</translation>
 <translation id="3994422733891749358">Επιλέξτε τις ειδοποιήσεις που θέλετε να λαμβάνετε</translation>
+<translation id="3994522032746736727">Σύνδεση ως <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Γραμμή προόδου φόρτωσης σελίδας, φορτώθηκε το <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Η κοινοποίηση κωδικού πρόσβασης έχει απενεργοποιηθεί από τον διαχειριστή σας.</translation>
 <translation id="4002066346123236978">Τίτλος</translation>
@@ -777,6 +781,7 @@
 <translation id="4645575059429386691">Διαχειρίζεται από τους γονείς σου</translation>
 <translation id="4647758699119474035">Συνδεθήκατε ως <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Σφάλμα Λογαριασμού Google. Άνοιγμα μενού λογαριασμού.</translation>
 <translation id="4650125387981512669">Συνέχεια ως <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Απόκρυψη μετά από 1 λεπτό}other{Απόκρυψη μετά από {count} λεπτά}}</translation>
 <translation id="4652817563047461855">Βεβαιωθείτε ότι οι κωδικοί πρόσβασης είναι ασφαλείς, μάθετε εάν έχουν παραβιαστεί και λάβετε συμβουλές για να προστατευτείτε στο διαδίκτυο. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Αποθήκευση</translation>
 <translation id="4668929960204016307">,</translation>
@@ -843,6 +848,7 @@
 <translation id="4936354130727646074">Να μην γίνεται ποτέ μετακίνηση</translation>
 <translation id="4937410517508563815">Αποθήκευση κωδικών πρόσβασης στον λογαριασμό</translation>
 <translation id="4938338714234463591">Με αυτόν τον τρόπο, θα μπορείτε να χρησιμοποιείτε τη φωνή σας με ορισμένες λειτουργίες σε ιστοτόπους.</translation>
+<translation id="4938716880833771969">Οι ειδοποιήσεις σας παραδίδονται αθόρυβα</translation>
 <translation id="4941089862236492464">Παρουσιάστηκε πρόβλημα με την κοινοποίηση του στοιχείου σας.</translation>
 <translation id="4944543191714094452">Εύρεση στη σελίδα…</translation>
 <translation id="4945756290001680296">Πρόσβαση στις ρυθμίσεις κωδικού πρόσβασης</translation>
@@ -1610,6 +1616,7 @@
 <translation id="8319076807703933069">Νέα αναζήτηση</translation>
 <translation id="8343993175958086504">Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας και χρησιμοποιήστε τα σε οποιαδήποτε συσκευή.</translation>
 <translation id="8349305172487531364">Γραμμή σελιδοδεικτών</translation>
+<translation id="8364563001733875155">Για να αλλάξετε το PIN, ορίστε πρώτα έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
 <translation id="8366466717204352506">Δεν εκτελέστηκε έλεγχος ποτέ</translation>
 <translation id="8368001212524806591">Παρακολούθηση τιμής</translation>
 <translation id="8370406443343902172">Μετάβαση στις Ρυθμίσεις…</translation>

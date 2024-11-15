@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">固定已選取的分頁</translation>
 <translation id="1297175357211070620">目標</translation>
 <translation id="129770436432446029">提供您對「<ph name="EXPERIMENT_NAME" />」的意見。</translation>
+<translation id="129808599775632797">修改項目(&amp;M)</translation>
 <translation id="130097046531636712">在此模式下，系統會限制背景活動和視覺效果 (例如平滑捲動) 以延長電池電量</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可編輯以下檔案</translation>
 <translation id="130174306655812048">請嘗試說：「Ok Google，呢首係咩歌？」</translation>
@@ -1780,6 +1781,7 @@
 <translation id="2214018885812055163">共用的資料夾</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;有 1 行代碼未有顯示&gt;}other{&lt;有 <ph name="NUMBER_OF_LINES" /> 行代碼未顯示&gt;}}</translation>
 <translation id="2215070081105889450">如要分享音訊，請改為分享分頁或畫面</translation>
+<translation id="2217208085547223783">信任狀態</translation>
 <translation id="2218019600945559112">滑鼠和觸控板</translation>
 <translation id="2218515861914035131">以純文字貼上</translation>
 <translation id="221872881068107022">反向捲動</translation>
@@ -2514,6 +2516,7 @@
 <translation id="2722547199758472013">ID：<ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">開啟「訪客設定檔」</translation>
 <translation id="2723819893410108315">青檸色</translation>
+<translation id="2724822892847436256">限制</translation>
 <translation id="2724841811573117416">WebRTC 記錄</translation>
 <translation id="272488616838512378">單位轉換</translation>
 <translation id="2725200716980197196">網絡連線已恢復</translation>
@@ -3471,6 +3474,7 @@
 <translation id="3421835120203732951">新增個人檔案</translation>
 <translation id="3423111258700187173">在「<ph name="FOLDER_TITLE" />」中找到的結果</translation>
 <translation id="3423226218833787854">進一步了解呢項 AI 功能</translation>
+<translation id="3423275441470187644">信任</translation>
 <translation id="3423463006624419153">在您的「<ph name="PHONE_NAME_1" />」和「<ph name="PHONE_NAME_2" />」上：</translation>
 <translation id="3423858849633684918">請重新啟動 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">請說明分頁當機時您正在執行的動作</translation>
@@ -4593,6 +4597,7 @@
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4195814663415092787">開啟上次瀏覽的內容</translation>
 <translation id="4198268995694216131">其他網站</translation>
+<translation id="4198420883535766848">從清單移除分頁</translation>
 <translation id="4200609364258658652">複製影片影格(&amp;Y)</translation>
 <translation id="4200689466366162458">自訂字詞</translation>
 <translation id="4200983522494130825">新分頁(&amp;T)</translation>
@@ -5156,6 +5161,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要刪除分頁群組嗎？}other{要刪除分頁群組嗎？}}</translation>
 <translation id="4608500690299898628">尋找(&amp;F)…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> 發生錯誤</translation>
+<translation id="4610493438923139095">不信任</translation>
 <translation id="4610637590575890427">您的意思是想瀏覽 <ph name="SITE" /> 嗎？</translation>
 <translation id="4611114513649582138">可使用數據連線</translation>
 <translation id="4611759022973144129">你可使用此密碼登入 <ph name="DEVICE_TYPE" />。</translation>
@@ -5181,6 +5187,7 @@
 <translation id="4627442949885028695">先前在其他裝置瀏覽的網頁</translation>
 <translation id="4628762811416793313">未完成 Linux 容器設定。請再試一次。</translation>
 <translation id="4629521233550547305">開啟 <ph name="PROFILE_NAME" /> 設定檔</translation>
+<translation id="4629803160911640220">可信任</translation>
 <translation id="4631955550884380853">集中收音</translation>
 <translation id="4632655012900268062">自訂資訊卡</translation>
 <translation id="4633003931260532286">此擴充程式要求 <ph name="IMPORT_NAME" /> <ph name="IMPORT_VERSION" /> 或以上，但現有版本僅為 <ph name="INSTALLED_VERSION" /></translation>
@@ -5431,6 +5438,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
 <translation id="481689174647911539">此檔案可能是病毒或惡意軟件。<ph name="LINE_BREAK" />你可將此檔案傳送至「Google 安全瀏覽」，檢查是否不安全。掃瞄通常需時幾秒鐘。</translation>
 <translation id="4816900689218414104">在手機或平板電腦上建立密鑰</translation>
+<translation id="481917177323309377">至少 <ph name="COUNT" /> 天未用過的分頁</translation>
 <translation id="4819323978093861656">{0,plural, =0{立即關閉。}=1{關閉時間：1 秒後}other{關閉時間：# 秒後}}</translation>
 <translation id="4819607494758673676">「Google 助理」通知</translation>
 <translation id="4819818293886748542">取得「支援工具」連結</translation>
@@ -6832,6 +6840,7 @@
 <translation id="5842497610951477805">藍牙開關</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
 <translation id="5844574845205796324">建議可探索的新內容</translation>
+<translation id="5844685625984052392">提示</translation>
 <translation id="5846200638699387931">關聯語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">沒有陰影</translation>
 <translation id="5846504156837627898">管理網站權限</translation>

@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. <ph name="USER_EMAIL" />. Google ಖಾತೆಯ ದೋಷ. ಖಾತೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ಆಗಿ ಮುಂದುವರಿಸಿ</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 ನಿಮಿಷದ ನಂತರ ಮರೆಮಾಡಿ}one{{count} ನಿಮಿಷಗಳ ನಂತರ ಮರೆಮಾಡಿ}other{{count} ನಿಮಿಷಗಳ ನಂತರ ಮರೆಮಾಡಿ}}</translation>
 <translation id="4652817563047461855">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಸುರಕ್ಷಿತವಾಗಿವೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ, ಅವುಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆಯೇ ಎಂಬುದನ್ನು ಕಂಡುಕೊಳ್ಳಿ ಮತ್ತು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಿಕೊಳ್ಳಲು ಸಲಹೆಯನ್ನು ಪಡೆಯಿರಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="4668929960204016307">,</translation>

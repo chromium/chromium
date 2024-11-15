@@ -4850,7 +4850,7 @@
 <translation id="4377058670119819762">탭 표시줄이 탭으로 가득 찼을 때 좌우로 스크롤할 수 있도록 합니다.</translation>
 <translation id="4377363674125277448">서버의 인증서에 문제가 발생했습니다.</translation>
 <translation id="437809255587011096">텍스트 읽기 스타일 지정</translation>
-<translation id="4378154925671717803">전화기</translation>
+<translation id="4378154925671717803">전화</translation>
 <translation id="4378308539633073595">앞으로 스크롤</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4378556263712303865">기기 요청</translation>
@@ -5449,6 +5449,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{북마크 1개 삭제됨}other{북마크 {COUNT}개 삭제됨}}</translation>
 <translation id="481689174647911539">바이러스 또는 멀웨어일 수 있는 파일입니다.<ph name="LINE_BREAK" />안전하지 않은 파일인지 확인하기 위해 이 파일을 Google 세이프 브라우징에 전송할 수 있습니다. 검사는 일반적으로 몇 초 정도 걸립니다.</translation>
 <translation id="4816900689218414104">휴대전화 또는 태블릿에서 패스키 만들기</translation>
+<translation id="481917177323309377"><ph name="COUNT" />일 이상 사용하지 않은 탭</translation>
 <translation id="4819323978093861656">{0,plural, =0{지금 종료 중입니다.}=1{1초 후 종료됨}other{#초 후 종료됨}}</translation>
 <translation id="4819607494758673676">Google 어시스턴트 알림</translation>
 <translation id="4819818293886748542">지원 도구 링크 가져오기</translation>

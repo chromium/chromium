@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">იმართება თქვენი მშობლის მიერ</translation>
 <translation id="4647758699119474035">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google ანგარიშის შეცდომა. ანგარიშის მენიუს გახსნა.</translation>
 <translation id="4650125387981512669">გაგრძელება, როგორც <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{დამალვა 1 წუთის შემდეგ}other{დამალვა {count} წუთის შემდეგ}}</translation>
 <translation id="4652817563047461855">შეამოწმეთ პაროლების დაცულობის ხარისხი, შეიტყვეთ მათი შესაძლო გატეხის შესახებ და მიიღეთ რჩევები ონლაინუსაფრთხოებასთან დაკავშირებით. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">შენახვა</translation>
 <translation id="4668929960204016307">.</translation>

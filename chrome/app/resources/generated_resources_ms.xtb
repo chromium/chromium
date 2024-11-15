@@ -448,6 +448,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1296911687402551044">Sematkan Tab yang Dipilih</translation>
 <translation id="1297175357211070620">Destinasi</translation>
 <translation id="129770436432446029">Hantar maklum balas untuk <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Pengubahsuaian</translation>
 <translation id="130097046531636712">Ciri ini memanjangkan kuasa bateri dengan mengehadkan aktiviti latar dan kesan visual seperti penatalan lancar</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> boleh mengedit fail yang berikut</translation>
 <translation id="130174306655812048">Cuba tanya, “Ok Google, apakah tajuk lagu ini?”</translation>
@@ -1780,6 +1781,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2214018885812055163">Folder kongsi</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 garisan tidak ditunjukkan&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> garisan tidak ditunjukkan&gt;}}</translation>
 <translation id="2215070081105889450">Kongsi tab atau skrin untuk berkongsi audio</translation>
+<translation id="2217208085547223783">Keadaan Amanah</translation>
 <translation id="2218019600945559112">Tetikus dan pad sentuh</translation>
 <translation id="2218515861914035131">Tampalkan sebagai teks kosong</translation>
 <translation id="221872881068107022">Penatalan songsang</translation>
@@ -2514,6 +2516,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Buka Profil tetamu</translation>
 <translation id="2723819893410108315">Kuning Sitron</translation>
+<translation id="2724822892847436256">Kekangan</translation>
 <translation id="2724841811573117416">Log WebRTC</translation>
 <translation id="272488616838512378">Penukaran Unit</translation>
 <translation id="2725200716980197196">Sambungan rangkaian dipulihkan</translation>
@@ -3474,6 +3477,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3421835120203732951">Tambahkan Profil Baharu</translation>
 <translation id="3423111258700187173">Hasil carian ditemukan dalam <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Ketahui lebih lanjut tentang ciri AI ini</translation>
+<translation id="3423275441470187644">Amanah</translation>
 <translation id="3423463006624419153">Pada '<ph name="PHONE_NAME_1" />' dan '<ph name="PHONE_NAME_2" />' anda:</translation>
 <translation id="3423858849633684918">Sila Lancarkan Semula <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Terangkan Perkara Yang Sedang Anda Lakukan Semasa Ranap Tab Berlaku</translation>
@@ -4603,6 +4607,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
 <translation id="4195814663415092787">Sambung semula dari tempat anda berhenti</translation>
 <translation id="4198268995694216131">Laman tambahan</translation>
+<translation id="4198420883535766848">Alih keluar tab daripada senarai</translation>
 <translation id="4200609364258658652">Salin bingkai video</translation>
 <translation id="4200689466366162458">Perkataan tersuai</translation>
 <translation id="4200983522494130825">Tab &amp;baharu</translation>
@@ -5166,6 +5171,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Padamkan kumpulan tab?}other{Padamkan kumpulan tab?}}</translation>
 <translation id="4608500690299898628">&amp;Cari...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> telah mengalami ralat</translation>
+<translation id="4610493438923139095">Tidak Dipercayai</translation>
 <translation id="4610637590575890427">Adakah anda maksudkan pergi ke <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Sambungan data tersedia</translation>
 <translation id="4611759022973144129">Anda boleh menggunakan kata laluan ini untuk log masuk ke <ph name="DEVICE_TYPE" /> anda.</translation>
@@ -5191,6 +5197,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4627442949885028695">Teruskan daripada peranti lain</translation>
 <translation id="4628762811416793313">Penyediaan bekas Linux tidak lengkap. Sila cuba lagi.</translation>
 <translation id="4629521233550547305">Buka profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Dipercayai</translation>
 <translation id="4631955550884380853">Suara yang difokuskan</translation>
 <translation id="4632655012900268062">Sesuaikan kad</translation>
 <translation id="4633003931260532286">Sambungan memerlukan "<ph name="IMPORT_NAME" />" dengan versi minimum "<ph name="IMPORT_VERSION" />", tetapi hanya versi "<ph name="INSTALLED_VERSION" />" yang ada dipasang</translation>
@@ -6847,6 +6854,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5842497610951477805">Bluetooth didayakan</translation>
 <translation id="5844284118433003733">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="5844574845205796324">Cadangkan kandungan baharu untuk diterokai</translation>
+<translation id="5844685625984052392">Pembayang</translation>
 <translation id="5846200638699387931">Ralat sintaks hubungan: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Tiada bebayang</translation>
 <translation id="5846504156837627898">Urus Kebenaran Laman</translation>

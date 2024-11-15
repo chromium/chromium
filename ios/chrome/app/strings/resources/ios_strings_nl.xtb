@@ -781,6 +781,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4647758699119474035">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fout in Google-account. Accountmenu openen.</translation>
 <translation id="4650125387981512669">Doorgaan als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Verbergen na 1 minuut}other{Verbergen na {count} minuten}}</translation>
 <translation id="4652817563047461855">Zorg dat je wachtwoorden veilig zijn, ga na of ze zijn gehackt en krijg advies om je online te beschermen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Opslaan</translation>
 <translation id="4668929960204016307">,</translation>
@@ -813,7 +814,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4802185666270672526">Desktopsite opvragen verbergen</translation>
 <translation id="4803185665210547709">Beheerd door je organisatie.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
-<translation id="4807098396393229769">Naam op pas</translation>
+<translation id="4807098396393229769">Naam op kaart</translation>
 <translation id="4808646838864186379">Je bezorging is geannuleerd</translation>
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4813345808229079766">Verbinding</translation>

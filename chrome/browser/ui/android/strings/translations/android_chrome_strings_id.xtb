@@ -127,6 +127,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="1513858653616922153">Hapus sandi</translation>
 <translation id="1521774566618522728">Aktif hari ini</translation>
 <translation id="153446405401665083">Chrome versi baru telah tersedia</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan bookmark di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{# bookmark hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan bookmark di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Metode pembayaran dan alamat tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.
 Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Untuk mengelola akun Google Anda, ketuk tombol "Kelola akun"</translation>
@@ -142,6 +143,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1598163867407640634">Gunakan <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Jika diaktifkan, data akan digunakan dan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hapus 1 item yang dipilih}other{Hapus # item yang dipilih}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bookmark dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan bookmark dan item lainnya di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{# bookmark dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan bookmark dan item lainnya di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Anda melihat salinan offline halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histori</translation>
@@ -802,6 +804,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4769632191812288342">Anda mendapatkan perlindungan standar</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> dihapus</translation>
 <translation id="4778653490315793244">Belum ada yang dapat ditampilkan</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> adalah mesin telusur default Anda</translation>
 <translation id="4787736314074622408">Ingin menghapus <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Pelajari cara Chrome menjaga keamanan Anda</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1043,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5885378508678660271">Notifikasi <ph name="SEPARATOR" /> Chrome menghapus izin ini karena situs ini berbahaya</translation>
 <translation id="5895834791314695851">Sandi mungkin segera berhenti berfungsi di perangkat ini. Untuk tetap menggunakan sandi Anda, update layanan Google Play. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Sheet tidak ada kunci sandi ditutup</translation>
+<translation id="5907542076239273525">Bookmark disimpan ke <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5919204609460789179">Perbarui <ph name="PRODUCT_NAME" /> untuk memulai sinkronisasi</translation>
 <translation id="5938820472109305350">Tambahkan <ph name="INTEREST" /></translation>

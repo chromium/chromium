@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">Эцэг, эх нь хариуцаж байна</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" />-р нэвтэрсэн. <ph name="USER_EMAIL" />. Google Бүртгэлийн алдаа. Бүртгэлийн цэсийг нээнэ үү.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" />-р үргэлжлүүлэх</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 минутын дараа нуух}other{{count} минутын дараа нуух}}</translation>
 <translation id="4652817563047461855">Таны нууц үгнүүд аюулгүй эсэхийг шалгах, тэдгээр нь алдагдсан эсэхийг олж мэдэх болон өөрийгөө онлайн орчинд хамгаалахад туслах зөвлөгөөг аваарай. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Хадгалах</translation>
 <translation id="4668929960204016307">,</translation>

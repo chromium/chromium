@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰিছে। <ph name="USER_EMAIL" />। Google একাউণ্ট সম্পৰ্কীয় আসোঁৱাহ। একাউণ্টৰ মেনু খোলক।</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
+<translation id="4651927776207937667">{count,plural, =1{১ মিনিটৰ পাছত লুকুৱাওক}one{{count} মিনিটৰ পাছত লুকুৱাওক}other{{count} মিনিটৰ পাছত লুকুৱাওক}}</translation>
 <translation id="4652817563047461855">আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিত হৈ থকাটো নিশ্চিত কৰক, পাছৱৰ্ড হেক কৰা হৈছেনে নাই চাওক আৰু আপুনি নিজকে অনলাইনত সুৰক্ষিত কৰি ৰখাৰ সম্পৰ্কে উপদেশ পাওক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">ছেভ কৰক</translation>
 <translation id="4668929960204016307">,</translation>

@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">删除密码</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{有 # 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="1544084554881119930">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
 只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="1544826120773021464">要管理您的 Google 账号，请点按“管理账号”按钮</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">当此设置处于开启状态时，系统会将数据保存在您的 Google 账号中并使用这些数据。当此设置处于关闭状态时，数据只会保存在此设备上。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 个所选项}other{移除 # 个所选项}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{有 1 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{有 # 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="164269334534774161">您目前浏览的是此网页的离线副本（创建时间：<ph name="CREATION_TIME" />）</translation>
 <translation id="1644574205037202324">历史记录</translation>
@@ -802,6 +804,7 @@
 <translation id="4769632191812288342">您已获享标准保护</translation>
 <translation id="4775646243557794597">已删除<ph name="TIME_PERIOD" />内的浏览记录</translation>
 <translation id="4778653490315793244">尚无可显示的内容</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" />是默认搜索引擎</translation>
 <translation id="4787736314074622408">是否要删除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1043,7 @@
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为此网站具有危险性</translation>
 <translation id="5895834791314695851">此设备上的密码可能即将失效。如需继续使用这些密码，请更新 Google Play 服务。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">未关闭任何通行密钥表格</translation>
+<translation id="5907542076239273525">书签已保存到“<ph name="FOLDER_NAME" />”中。</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5919204609460789179">需更新 <ph name="PRODUCT_NAME" />，才能开始同步</translation>
 <translation id="5938820472109305350">添加“<ph name="INTEREST" />”</translation>

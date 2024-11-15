@@ -449,6 +449,7 @@
 <translation id="1296911687402551044">ಆಯ್ಕೆ ಮಾಡಲಾದ ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="1297175357211070620">ಗಮ್ಯಸ್ಥಾನ</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> ಗಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
+<translation id="129808599775632797">ಮಾರ್ಪಾಡುಗಳು</translation>
 <translation id="130097046531636712">ಹಿನ್ನೆಲೆ ಚಟುವಟಿಕೆ ಮತ್ತು ಸ್ಮೂತ್ ಸ್ಕ್ರಾಲಿಂಗ್‌ನಂತಹ ವಿಶುವಲ್ ಎಫೆಕ್ಟ್‌ಗಳನ್ನು ಸೀಮಿತಗೊಳಿಸುವ ಮೂಲಕ ಇದು ಬ್ಯಾಟರಿ ಪವರ್ ಅನ್ನು ವಿಸ್ತರಿಸುತ್ತದೆ</translation>
 <translation id="1301135395320604080">ಈ ಮುಂದಿನ ಫೈಲ್‌ಗಳನ್ನು <ph name="ORIGIN" /> ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="130174306655812048">"Ok Google, ಇದು ಯಾವ ಹಾಡು?" ಎಂದು ಹೇಳಲು ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -1773,6 +1774,7 @@
 <translation id="2214018885812055163">ಹಂಚಿದ ಫೋಲ್ಡರ್‌ಗಳು</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ಸಾಲನ್ನು ತೋರಿಸಿಲ್ಲ&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ಸಾಲುಗಳನ್ನು ತೋರಿಸಿಲ್ಲ&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ಸಾಲುಗಳನ್ನು ತೋರಿಸಿಲ್ಲ&gt;}}</translation>
 <translation id="2215070081105889450">ಆಡಿಯೋ ಹಂಚಿಕೊಳ್ಳಲು, ಬದಲಿಗೆ ಟ್ಯಾಬ್ ಅಥವಾ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
+<translation id="2217208085547223783">ವಿಶ್ವಾಸಾರ್ಹತೆಯ ಸ್ಥಿತಿ</translation>
 <translation id="2218019600945559112">ಮೌಸ್ ಮತ್ತು ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="2218515861914035131">ಸಾಮಾನ್ಯ ಪಠ್ಯವನ್ನಾಗಿ ಅಂಟಿಸು</translation>
 <translation id="221872881068107022">ಹಿಮ್ಮುಖ ಸ್ಕ್ರಾಲ್ ಮಾಡುವಿಕೆ</translation>
@@ -2507,6 +2509,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">ಅತಿಥಿ ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2723819893410108315">ಸಿಟ್ರನ್</translation>
+<translation id="2724822892847436256">ನಿರ್ಬಂಧಗಳು</translation>
 <translation id="2724841811573117416">WebRTC ಲಾಗ್‌ಗಳು</translation>
 <translation id="272488616838512378">ಯೂನಿಟ್ ಪರಿವರ್ತನೆ</translation>
 <translation id="2725200716980197196">ನೆಟ್‌ವರ್ಕ್‌ ಸಂಪರ್ಕತೆಯನ್ನು ಮರುಸ್ಥಾಪಿಲಾಗಿದೆ</translation>
@@ -3465,6 +3468,7 @@
 <translation id="3421835120203732951">ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> ನಲ್ಲಿ ಕಂಡುಬಂದ ಫಲಿತಾಂಶಗಳು</translation>
 <translation id="3423226218833787854">ಈ AI ಫೀಚರ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="3423275441470187644">ವಿಶ್ವಾಸಾರ್ಹತೆ</translation>
 <translation id="3423463006624419153">ನಿಮ್ಮ '<ph name="PHONE_NAME_1" />' ಮತ್ತು '<ph name="PHONE_NAME_2" />' ನಲ್ಲಿ:</translation>
 <translation id="3423858849633684918">ದಯವಿಟ್ಟು <ph name="PRODUCT_NAME" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="3424969259347320884">ಟ್ಯಾಬ್ ಕ್ರ್ಯಾಶ್ ಆದಾಗ ನೀವೇನು ಮಾಡುತ್ತಿದ್ದಿರಿ ಎನ್ನುವುದನ್ನು ವಿವರಿಸಿ</translation>
@@ -4595,6 +4599,7 @@
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4195814663415092787">ಎಲ್ಲಿ ಬಿಡಲಾಗಿದೆಯೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರೆಯಿರಿ</translation>
 <translation id="4198268995694216131">ಹೆಚ್ಚುವರಿ ಸೈಟ್‌ಗಳು</translation>
+<translation id="4198420883535766848">ಪಟ್ಟಿಯಿಂದ ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4200609364258658652">ವೀಡಿಯೊ ಫ್ರೇಮ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="4200689466366162458">ಕಸ್ಟಮ್ ಪದಗಳು</translation>
 <translation id="4200983522494130825">ಹೊಸ &amp;ಟ್ಯಾಬ್</translation>
@@ -5158,6 +5163,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?}one{ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಅಳಿಸಬೇಕೆ?}other{ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಅಳಿಸಬೇಕೆ?}}</translation>
 <translation id="4608500690299898628">&amp;ಹುಡುಕು...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ಗೆ ದೋಷ ಎದುರಾಗಿದೆ</translation>
+<translation id="4610493438923139095">ವಿಶ್ವಾಸಾರ್ಹವಲ್ಲದ</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> ವೆಬ್‌ಸೈಟ್‌ಗೆ ಹೋಗುವುದೇ?</translation>
 <translation id="4611114513649582138">ಡೇಟಾ ಸಂಪರ್ಕ ಲಭ್ಯವಿದೆ</translation>
 <translation id="4611759022973144129">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು.</translation>
@@ -5183,6 +5189,7 @@
 <translation id="4627442949885028695">ಬೇರೆ ಸಾಧನದಿಂದ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4628762811416793313">Linux ಕಂಟೇನರ್ ಸೆಟಪ್ ಪೂರ್ಣವಾಗಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="4629803160911640220">ವಿಶ್ವಾಸಾರ್ಹವಾದ</translation>
 <translation id="4631955550884380853">ಫೋಕಸ್ ಮಾಡಿದ ಧ್ವನಿ</translation>
 <translation id="4632655012900268062">ಕಾರ್ಡ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="4633003931260532286">ವಿಸ್ತರಣೆಗೆ "<ph name="IMPORT_NAME" />" ನ ಕನಿಷ್ಠ "<ph name="IMPORT_VERSION" />" ಆವೃತ್ತಿಯ ಅಗತ್ಯವಿದೆ, ಆದರೆ "<ph name="INSTALLED_VERSION" />" ಆವೃತ್ತಿಯನ್ನು ಮಾತ್ರ ಇನ್‍ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -5433,6 +5440,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 ಬುಕ್‌ಮಾರ್ಕ್ ಅಳಿಸಲಾಗಿದೆ}one{{COUNT} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}other{{COUNT} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}}</translation>
 <translation id="481689174647911539">ಈ ಫೈಲ್ ವೈರಸ್ ಅಥವಾ ಮಾಲ್‌ವೇರ್ ಆಗಿರಬಹುದು.<ph name="LINE_BREAK" />ಅದು ಅಸುರಕ್ಷಿತವಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ನೀವು ಅದನ್ನು Google Safe Browsing ಗೆ ಕಳುಹಿಸಬಹುದು. ಸ್ಕ್ಯಾನ್‌ಗಳಿಗೆ ಕೆಲವು ಸೆಕೆಂಡ್‌ಗಳ ಸಮಯ ಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="4816900689218414104">ಫೋನ್ ಅಥವಾ ಟ್ಯಾಬ್ಲೆಟ್‌ ಒಂದರಲ್ಲಿ ಪಾಸ್‌ಕೀ ಅನ್ನು ರಚಿಸಿ</translation>
+<translation id="481917177323309377">ನೀವು <ph name="COUNT" /> ಅಥವಾ ಹೆಚ್ಚಿನ ದಿನಗಳಲ್ಲಿ ಬಳಸದಿರುವ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="4819323978093861656">{0,plural, =0{ಈಗ ಮುಚ್ಚಲಾಗುತ್ತಿದೆ.}=1{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: 1 ಸೆಕೆಂಡಿನಲ್ಲಿ}one{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: # ಸೆಕೆಂಡುಗಳಲ್ಲಿ}other{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: # ಸೆಕೆಂಡುಗಳಲ್ಲಿ}}</translation>
 <translation id="4819607494758673676">Google Assistant ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="4819818293886748542">ಬೆಂಬಲ ಟೂಲ್ ಲಿಂಕ್ ಪಡೆಯಿರಿ</translation>
@@ -6838,6 +6846,7 @@
 <translation id="5842497610951477805">ಬ್ಲೂಟೂತ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5844284118433003733">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ ಸಂಯೋಜಿಸಲಾಗುತ್ತದೆ, ಇದು ಎಲ್ಲಾ Google ಸೇವೆಗಳಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಭದ್ರತಾ ಇನ್ಸಿಡೆಂಟ್ ಸಂದರ್ಭದಲ್ಲಿ Gmail ನಲ್ಲಿ ರಕ್ಷಣೆ ಹೆಚ್ಚಾಗುತ್ತದೆ.</translation>
 <translation id="5844574845205796324">ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಲು ಹೊಸ ವಿಷಯವನ್ನು ಸೂಚಿಸಿ</translation>
+<translation id="5844685625984052392">ಸುಳಿವು</translation>
 <translation id="5846200638699387931">ರಿಲೇಶನ್ ಸಿಂಟ್ಯಾಕ್ಸ್ ದೋಷ: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">ಯಾವುದೇ ಶ್ಯಾಡೋ ಇಲ್ಲ</translation>
 <translation id="5846504156837627898">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -10297,7 +10306,7 @@
 <translation id="8315514906653279104">ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8317671367883557781">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8317965619823678157">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಕಲಿಸಿ</translation>
-<translation id="8318266828739827371">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ವರ್ಧಿತ ಪ್ರದೇಶವನ್ನು ನೋಡಲು ಪರದೆ ಬೇರ್ಪಡಿಸಿ ವೀಕ್ಷಣೆಯನ್ನು ಬಳಸಿ. ಡಾಕ್ ಮಾಡಿದ ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಅನ್ನು ಆನ್ ಮತ್ತು ಆಫ್ ಮಾಡಲು ಹುಡುಕಾಟ + Ctrl + D ಬಳಸಿ.</translation>
+<translation id="8318266828739827371">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ವರ್ಧಿತ ಪ್ರದೇಶವನ್ನು ನೋಡಲು ಸ್ಕ್ರೀನ್ ಬೇರ್ಪಡಿಸಿ ವೀಕ್ಷಣೆಯನ್ನು ಬಳಸಿ. ಡಾಕ್ ಮಾಡಿದ ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಅನ್ನು ಆನ್ ಮತ್ತು ಆಫ್ ಮಾಡಲು ಹುಡುಕಾಟ + Ctrl + D ಬಳಸಿ.</translation>
 <translation id="8319414634934645341">ವಿಸ್ತರಿತ ಕೀಲಿ ಬಳಕೆ</translation>
 <translation id="8320212361750431956">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ</translation>
 <translation id="8321476692217554900">ಅಧಿಸೂಚನೆಗಳು</translation>

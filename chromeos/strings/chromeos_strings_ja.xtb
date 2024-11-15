@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">削除</translation>
 <translation id="1191518099344003522">APN は有効になっています。</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
+<translation id="1196264380943975940">要約できません。文字起こしを長くしてみてください。</translation>
 <translation id="1196959502276349371">バージョン <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">再生と一時停止</translation>
 <translation id="1201402288615127009">次へ</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">編集と削除メニュー</translation>
 <translation id="2597774443162333062">ファイルはデバッグのため Google に送信されます</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
+<translation id="261322795497077164">話し手の識別</translation>
 <translation id="2617397783536231890">コットン</translation>
 <translation id="2618015542787108131">砂丘</translation>
 <translation id="2619761439309613843">毎日更新する</translation>
@@ -441,6 +443,7 @@
 <translation id="3140130301071865159">雪</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 限定</translation>
 <translation id="315116470104423982">モバイル データ</translation>
+<translation id="3153094818810437149">この設定は後から [レコーダーの設定] で変更できます</translation>
 <translation id="3156511682997763015">10 秒早送り</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています...</translation>
 <translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>
@@ -563,6 +566,7 @@
 <translation id="3785643128701396311">ピクセルアート</translation>
 <translation id="3799381533888781854">オフ - この設定は管理者によって管理されています。</translation>
 <translation id="380097101658023925">RGB 設定</translation>
+<translation id="380493988330050229">この文字起こしの言語では概要を作成できません</translation>
 <translation id="38114475217616659">履歴をすべて消去</translation>
 <translation id="3820172043799983114">無効な PIN です。</translation>
 <translation id="382043424867370667">「日の入り」の壁紙</translation>
@@ -735,6 +739,7 @@
 <translation id="458794348635939462">すべてのホストを解決できませんでした</translation>
 <translation id="4593212453765072419">プロキシ認証が必要です</translation>
 <translation id="4594021849294327751">文字起こしを行う</translation>
+<translation id="4594541568452132351">文字起こしの言語を選択してモデルをダウンロード</translation>
 <translation id="4607282946861182308">この画像を作成できません。別のプロンプトをお試しください。</translation>
 <translation id="4609350030397390689">キーボードの明るさを下げる</translation>
 <translation id="4623061655523261501">録音の名前を生成しました</translation>
@@ -750,6 +755,7 @@
 <translation id="4665014895760275686">メーカー</translation>
 <translation id="467510802200863975">パスワードが一致しません</translation>
 <translation id="467715984478005772">ファイアウォールの可能性があります</translation>
+<translation id="4678534708181186163">要約できません。文字起こしを短くしてみてください。</translation>
 <translation id="4683762547447150570">キーの割り当てにフォーカスするには、ボタンをタップします</translation>
 <translation id="4691278870498629773">停止 - トレイなし</translation>
 <translation id="469379815867856270">電波強度</translation>
@@ -852,6 +858,7 @@
 <translation id="5168185087976003268">電池の状態</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="517075088756846356">更新プロセスを続行するには、<ph name="DEVICE_NAME" /> の電源ケーブルを取り外してから、もう一度差し込んでください</translation>
+<translation id="5178021559562393163">名前を作成できません。文字起こしを短くしてみてください。</translation>
 <translation id="5180108905184566358">バオバブの木々</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">いつでも思い出の写真を。アルバムを追加または編集するには、<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />にアクセスしてください。</translation>
@@ -886,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ID</translation>
 <translation id="5317780077021120954">保存</translation>
+<translation id="5318310531701770497">名前を作成できません。文字起こしを長くしてみてください。</translation>
 <translation id="5318334351163689047">TCP リクエストに失敗しました</translation>
 <translation id="53196409393069519">音声文字変換をオンにしますか？</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>
@@ -1100,6 +1108,7 @@
 <translation id="6359919876285606596">この操作は元に戻せません</translation>
 <translation id="6368342879959028556">[AI を使用して作成] を選択した場合は、カスタム プロンプトを入力します。または、[AI 壁紙] を選択してテーマを選んでから、下線付きの単語を選択して AI 壁紙をカスタマイズすることもできます。</translation>
 <translation id="636850387210749493">企業の登録</translation>
+<translation id="6369221585240879141">この文字起こしの言語では録音名を作成できません</translation>
 <translation id="6373461326814131011">池</translation>
 <translation id="6379086450106841622">タッチスクリーン</translation>
 <translation id="6381741036071372448">キーボードをテストする</translation>
@@ -1274,6 +1283,7 @@
 <translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7135814714616751706">ショートカットの検索</translation>
+<translation id="7138614237884624401">簡略化したテキスト</translation>
 <translation id="7141470099673912333">コンテンツ転送</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
@@ -1695,6 +1705,7 @@
 <translation id="9100765901046053179">詳細設定</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>
+<translation id="9108856746036501072">レコーダーで会話を含む録音の文字起こしを作成できます。次のステップでは、文字起こしの言語を選択し、モデル（最大 100 MB）をダウンロードする必要があります。</translation>
 <translation id="9111102763498581341">ロック解除</translation>
 <translation id="9122492456897874028">コンテンツの要約、定義の取得など</translation>
 <translation id="9122602430962285795">再接続するには　[設定] に移動します</translation>

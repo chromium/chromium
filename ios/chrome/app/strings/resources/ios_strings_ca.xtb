@@ -781,6 +781,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4647758699119474035">Has iniciat la sessió com a <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Error del Compte de Google. Obre el menú del compte.</translation>
 <translation id="4650125387981512669">Continua com a <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Amaga al cap d'1 minut}other{Amaga al cap de {count} minuts}}</translation>
 <translation id="4652817563047461855">Assegura't que les teves contrasenyes siguin segures, esbrina si estan en perill i obtén consells per protegir-te en línia. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Desa</translation>
 <translation id="4668929960204016307">,</translation>

@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1191518099344003522">APN е овозможено.</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
+<translation id="1196264380943975940">Не може да се резимира. Обидете се со подолга транскрипција.</translation>
 <translation id="1196959502276349371">Верзија <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Пушти/Паузирај</translation>
 <translation id="1201402288615127009">Следно</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">Скриј ја транскрипцијата</translation>
 <translation id="160633243685262989">Прегледајте ја сликата</translation>
 <translation id="1611649489706141841">напред</translation>
+<translation id="1615144046047995187">Не може да се преземе. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
 <translation id="1615335640928990664">Потрошен интернет од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Користете тема</translation>
 <translation id="1621067168122174824">Изврши тест за наполнетост</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">Мени за изменување и бришење</translation>
 <translation id="2597774443162333062">Датотеките ќе се испратат во Google за да се отстранат грешките</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скенирањето е завршено. Скенирана е 1 страница}one{Скенирањето е завршено. Скенирани се {NUMBER_OF_PAGES} страница}other{Скенирањето е завршено. Скенирани се {NUMBER_OF_PAGES} страници}}</translation>
+<translation id="261322795497077164">Идентификација на говорник</translation>
 <translation id="2617397783536231890">памук</translation>
 <translation id="2618015542787108131">песочна дина</translation>
 <translation id="2619761439309613843">Дневно освежување</translation>
@@ -431,7 +434,7 @@
 <translation id="3084958266922136097">Оневозможете го штедачот на екранот</translation>
 <translation id="3091839911843451378">Неуспешно - запрено</translation>
 <translation id="3102119246920354026">Кеш</translation>
-<translation id="3112413615003385433">Вашиот наставник отстрани нови содржини од „Училишни алатки“</translation>
+<translation id="3112413615003385433">Вашиот наставник отстрани содржини од „Училишни алатки“</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3122614491980756867">базени</translation>
 <translation id="3122883569442693641">Повеќе детали</translation>
@@ -440,6 +443,7 @@
 <translation id="3140130301071865159">снег</translation>
 <translation id="3146655726035122603">Ексклузивно за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилен интернет</translation>
+<translation id="3153094818810437149">Ова може да го промените подоцна во поставките за „Диктафон“</translation>
 <translation id="3156511682997763015">Премотај нанапред 10 секунди</translation>
 <translation id="3156846309055100599">Се скенира страницата <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Откриен е портал за проверка</translation>
@@ -562,6 +566,7 @@
 <translation id="3785643128701396311">пикселизирана уметност</translation>
 <translation id="3799381533888781854">ИСКЛУЧЕНО – Администраторот управува со поставкава.</translation>
 <translation id="380097101658023925">контроли за rgb</translation>
+<translation id="380493988330050229">Не може да се создаде резиме за овој јазик на транскрипција</translation>
 <translation id="38114475217616659">Избриши ја целата историја</translation>
 <translation id="3820172043799983114">Неважечки PIN.</translation>
 <translation id="382043424867370667">Тапет Sunset</translation>
@@ -585,6 +590,7 @@
 <translation id="3885327323343477505">Променете го штедачот на екранот</translation>
 <translation id="3889914174935857450">Датум на ресетирање</translation>
 <translation id="3897092660631435901">Мени</translation>
+<translation id="3902271751020176019">Јазик на транскрипција</translation>
 <translation id="391412459402535266">Не можете да го тестирате уредот. Префрлете се на режим за лаптоп за да тестирате.</translation>
 <translation id="3916998944874125962">снимање слика од екранот</translation>
 <translation id="3923184630988645767">Интернет</translation>
@@ -733,6 +739,7 @@
 <translation id="458794348635939462">Неуспешно отворање на сите хостови</translation>
 <translation id="4593212453765072419">Потребна е проверка на прокси</translation>
 <translation id="4594021849294327751">Создавај транскрипција</translation>
+<translation id="4594541568452132351">Изберете јазик на транскрипција и преземете модел</translation>
 <translation id="4607282946861182308">Не може да се создадат слики од ова. Обидете се со друго барање.</translation>
 <translation id="4609350030397390689">Осветленоста на тастатурата се намали</translation>
 <translation id="4623061655523261501">Имињата на снимката се генерирани успешно</translation>
@@ -748,6 +755,7 @@
 <translation id="4665014895760275686">Производител</translation>
 <translation id="467510802200863975">Лозинките не се совпаѓаат</translation>
 <translation id="467715984478005772">Можеби има заштитен ѕид</translation>
+<translation id="4678534708181186163">Не може да се резимира. Обидете се со пократка транскрипција.</translation>
 <translation id="4683762547447150570">Допрете го копчето за да го фокусирате доделеното копче</translation>
 <translation id="4691278870498629773">Запрено - недостасува фиоката</translation>
 <translation id="469379815867856270">Јачина на сигналот</translation>
@@ -850,6 +858,7 @@
 <translation id="5168185087976003268">Состојба на батеријата</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="517075088756846356">Исклучете, па вклучете го повторно кабелот за напојување на <ph name="DEVICE_NAME" /> за да продолжите со процесот на ажурирање</translation>
+<translation id="5178021559562393163">Не може да се создадат имиња. Обидете се со пократка транскрипција.</translation>
 <translation id="5180108905184566358">дрвја баобаб</translation>
 <translation id="5180712487038406644">Експресивен</translation>
 <translation id="5190187232518914472">Повторно доживејте ги омилените спомени. За додавање или изменување албуми, одете во <ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
@@ -884,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Идентитет</translation>
 <translation id="5317780077021120954">Зачувај</translation>
+<translation id="5318310531701770497">Не може да се создадат имиња. Обидете се со подолга транскрипција.</translation>
 <translation id="5318334351163689047">Неуспешни TCP-барања</translation>
 <translation id="53196409393069519">Да се вклучи транскрипцијата?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -937,6 +947,7 @@
 <translation id="5606865426897221650">Картичка</translation>
 <translation id="5613201299517339763">Одјавени сте</translation>
 <translation id="5620281292257375798">Само интерно</translation>
+<translation id="5628106863521633649">Достапни јазици</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">апстракт</translation>
 <translation id="5655283760733841251">Осветленоста на тастатурата се зголеми</translation>
@@ -1097,6 +1108,7 @@
 <translation id="6359919876285606596">Дејствово е трајно и не може да се врати</translation>
 <translation id="6368342879959028556">Кога ќе изберете „Создавање со AI“, напишете приспособено барање. Или може да изберете „AI-тапети“ за да изберете тема, па да ги изберете подвлечените зборови за да го персонализирате вашиот AI-тапет.</translation>
 <translation id="636850387210749493">Запишување компанија</translation>
+<translation id="6369221585240879141">Не може да се создадат имиња на снимките за овој јазик на транскрипција</translation>
 <translation id="6373461326814131011">езерце</translation>
 <translation id="6379086450106841622">Екран на допир</translation>
 <translation id="6381741036071372448">Тестирајте ја тастатурата</translation>
@@ -1261,6 +1273,7 @@
 <translation id="710028965487274708">Неуспешно - Авторизацијата не успеа</translation>
 <translation id="7101959270679078188">Отклучете го уредот <ph name="DEVICE_NAME" /> за да продолжите со процесот на ажурирање</translation>
 <translation id="7103252855940681301">Името на уредот <ph name="INDEX" /> од <ph name="COUNT" /> е: <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Избран јазик</translation>
 <translation id="7107255225945990211">Избирање ексклузивен постер за <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Обидете се повторно подоцна</translation>
@@ -1270,6 +1283,7 @@
 <translation id="7130438335435247835">Име на пристапна точка (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Именски сервер}one{Именски сервер}other{Именски сервери}}</translation>
 <translation id="7135814714616751706">Пребарувајте кратенки</translation>
+<translation id="7138614237884624401">Поедноставен текст</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
@@ -1691,6 +1705,7 @@
 <translation id="9100765901046053179">Напредни поставки</translation>
 <translation id="910415269708673980">Освежете го билетот за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Се скенира страницата <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">„Диктафон“ може да создава транскрипции за снимки со говор. На следниот чекор, треба да го изберете јазикот на транскрипцијата и да го преземете моделот (до 100 MB).</translation>
 <translation id="9111102763498581341">Отклучи</translation>
 <translation id="9122492456897874028">Резимирајте содржини, добивајте дефиниции и друго</translation>
 <translation id="9122602430962285795">За да се поврзете повторно, одете во „Поставки“</translation>

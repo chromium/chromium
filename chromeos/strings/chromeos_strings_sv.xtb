@@ -139,6 +139,7 @@
 <translation id="1604959087182679653">Dölj transkription</translation>
 <translation id="160633243685262989">Förhandsgranska bild</translation>
 <translation id="1611649489706141841">framåt</translation>
+<translation id="1615144046047995187">Det gick inte att ladda ned. Försök igen eller starta om Chromebook.</translation>
 <translation id="1615335640928990664">Dataanvändning sedan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Använd ett tema</translation>
 <translation id="1621067168122174824">Kör laddningstest</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">Menyn Redigera och radera</translation>
 <translation id="2597774443162333062">Filerna skickas till Google för felsökning</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanningen har slutförts. 1 sida har skannats}other{Skanningen har slutförts. {NUMBER_OF_PAGES} sidor har skannats}}</translation>
+<translation id="261322795497077164">Högtalaridentifiering</translation>
 <translation id="2617397783536231890">bomull</translation>
 <translation id="2618015542787108131">en sanddyn</translation>
 <translation id="2619761439309613843">Daglig uppdatering</translation>
@@ -441,6 +443,7 @@
 <translation id="3140130301071865159">snö</translation>
 <translation id="3146655726035122603">Exklusivt för <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
+<translation id="3153094818810437149">Du kan ändra detta senare i inställningarna för Ljudinspelare</translation>
 <translation id="3156511682997763015">Spola framåt 10 sekunder</translation>
 <translation id="3156846309055100599">Skannar sidan <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>
@@ -563,6 +566,7 @@
 <translation id="3785643128701396311">pixelkonst</translation>
 <translation id="3799381533888781854">AV – Den här inställningen hanteras av administratören.</translation>
 <translation id="380097101658023925">RGB-kontroller</translation>
+<translation id="380493988330050229">Det går inte att skapa en sammanfattning för det här transkriptionsspråket</translation>
 <translation id="38114475217616659">Rensa all historik</translation>
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="382043424867370667">Bakgrund med solnedgång</translation>
@@ -586,6 +590,7 @@
 <translation id="3885327323343477505">Ändra skärmsläckare</translation>
 <translation id="3889914174935857450">Återställ datum</translation>
 <translation id="3897092660631435901">Meny</translation>
+<translation id="3902271751020176019">Transkriptionsspråk</translation>
 <translation id="391412459402535266">Det gick inte att testa enheten. Byt till laptopläge för att testa.</translation>
 <translation id="3916998944874125962">ta skärmbild</translation>
 <translation id="3923184630988645767">Dataanvändning</translation>
@@ -734,6 +739,7 @@
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
 <translation id="4594021849294327751">Skapa transkription</translation>
+<translation id="4594541568452132351">Välj transkriptionsspråk och ladda ned modell</translation>
 <translation id="4607282946861182308">Det går inte att skapa bilder av detta. Testa en annan prompt.</translation>
 <translation id="4609350030397390689">Tangenten som minskar ljusstyrkan på tangentbordet</translation>
 <translation id="4623061655523261501">Inspelade namn har genererats</translation>
@@ -941,6 +947,7 @@
 <translation id="5606865426897221650">Tabb</translation>
 <translation id="5613201299517339763">Du har loggats ut</translation>
 <translation id="5620281292257375798">Endast internt</translation>
+<translation id="5628106863521633649">Tillgängliga språk</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
 <translation id="5655283760733841251">Tangenten som ökar ljusstyrkan på tangentbordet</translation>
@@ -1101,6 +1108,7 @@
 <translation id="6359919876285606596">Åtgärden är permanent och går inte att ångra</translation>
 <translation id="6368342879959028556">När du väljer Skapa med AI skriver du en anpassad prompt. Du kan även välja AI-bakgrunder för att välja ett tema och sedan välja de understrukna orden för att anpassa AI-bakgrunden.</translation>
 <translation id="636850387210749493">Företagsregistrering</translation>
+<translation id="6369221585240879141">Det går inte att skapa inspelningsnamn för det här transkriptionsspråket</translation>
 <translation id="6373461326814131011">damm</translation>
 <translation id="6379086450106841622">Pekskärm</translation>
 <translation id="6381741036071372448">Testa tangentbordet</translation>
@@ -1265,6 +1273,7 @@
 <translation id="710028965487274708">Misslyckades – auktoriseringen misslyckades</translation>
 <translation id="7101959270679078188">Lås upp <ph name="DEVICE_NAME" /> för att fortsätta uppdateringsprocessen</translation>
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" /> heter <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Valt språk</translation>
 <translation id="7107255225945990211">Välj exklusiva konstverk för <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">retur</translation>
 <translation id="7117228822971127758">Försök igen senare</translation>
@@ -1274,6 +1283,7 @@
 <translation id="7130438335435247835">Åtkomstpunktens namn (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Namnserver}other{Namnservrar}}</translation>
 <translation id="7135814714616751706">Sök efter kortkommando</translation>
+<translation id="7138614237884624401">Förenklad text</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
@@ -1695,6 +1705,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="9100765901046053179">Avancerade inställningar</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar sidan <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Med Ljudinspelare kan du skapa transkriptioner av tal. I nästa steg måste du välja transkriptionsspråk och ladda ned modellen (upp till 100 MB).</translation>
 <translation id="9111102763498581341">Lås upp</translation>
 <translation id="9122492456897874028">Sammanfatta innehåll, få definitioner med mera</translation>
 <translation id="9122602430962285795">Öppna inställningarna för att återansluta</translation>

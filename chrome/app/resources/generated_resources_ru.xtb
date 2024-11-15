@@ -451,6 +451,7 @@
 <translation id="1296911687402551044">Закрепить выбранную вкладку</translation>
 <translation id="1297175357211070620">Принтер</translation>
 <translation id="129770436432446029">Оставить отзыв об эксперименте "<ph name="EXPERIMENT_NAME" />"</translation>
+<translation id="129808599775632797">&amp;Модификации</translation>
 <translation id="130097046531636712">Этот режим продлевает время работы от батареи, ограничивая фоновую активность и визуальные эффекты, например плавную прокрутку страниц.</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> может изменять указанные ниже файлы.</translation>
 <translation id="130174306655812048">Спросите "Окей, Google, что это за песня?".</translation>
@@ -1772,6 +1773,7 @@
 <translation id="2214018885812055163">Общие папки</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 строка скрыта&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> строка скрыта&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> строк скрыто&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}}</translation>
 <translation id="2215070081105889450">Чтобы поделиться аудио, предоставьте доступ к вкладке или экрану</translation>
+<translation id="2217208085547223783">Статус сертификата</translation>
 <translation id="2218019600945559112">Мышь и сенсорная панель</translation>
 <translation id="2218515861914035131">Вставить как обычный текст</translation>
 <translation id="221872881068107022">Прокрутка в обратную сторону</translation>
@@ -2503,6 +2505,7 @@
 <translation id="2722547199758472013">Идентификатор: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Открыть гостевой профиль</translation>
 <translation id="2723819893410108315">Лимон</translation>
+<translation id="2724822892847436256">Ограничения</translation>
 <translation id="2724841811573117416">Журналы WebRTC</translation>
 <translation id="272488616838512378">Преобразование единиц измерения</translation>
 <translation id="2725200716980197196">Подключение к сети восстановлено.</translation>
@@ -3463,6 +3466,7 @@
 <translation id="3421835120203732951">Добавить профиль</translation>
 <translation id="3423111258700187173">Результаты в папке "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423226218833787854">Подробнее об этой функции искусственного интеллекта</translation>
+<translation id="3423275441470187644">Доверие</translation>
 <translation id="3423463006624419153">На устройствах <ph name="PHONE_NAME_1" /> и <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Перезапустите <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Опишите, что вы делали, когда произошел сбой</translation>
@@ -4592,6 +4596,7 @@
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
 <translation id="4198268995694216131">Другие сайты</translation>
+<translation id="4198420883535766848">Удалить вкладку из списка</translation>
 <translation id="4200609364258658652">&amp;Копировать кадр видео</translation>
 <translation id="4200689466366162458">Специальные слова</translation>
 <translation id="4200983522494130825">Новая &amp;вкладка</translation>
@@ -5155,6 +5160,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Удалить группу вкладок?}one{Удалить группы вкладок?}few{Удалить группы вкладок?}many{Удалить группы вкладок?}other{Удалить группы вкладок?}}</translation>
 <translation id="4608500690299898628">&amp;Найти...</translation>
 <translation id="4610162781778310380">Ошибка в плагине <ph name="PLUGIN_NAME" /></translation>
+<translation id="4610493438923139095">Недоверенный</translation>
 <translation id="4610637590575890427">Возможно, вы хотели перейти на <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Доступно Интернет-подключение</translation>
 <translation id="4611759022973144129">Используйте этот пароль, чтобы войти в аккаунт на устройстве <ph name="DEVICE_TYPE" />.</translation>
@@ -5180,6 +5186,7 @@
 <translation id="4627442949885028695">Продолжить на другом устройстве</translation>
 <translation id="4628762811416793313">Не удалось завершить настройку контейнера Linux. Повторите попытку.</translation>
 <translation id="4629521233550547305">Открыть профиль <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Доверенный</translation>
 <translation id="4631955550884380853">Изоляция голоса</translation>
 <translation id="4632655012900268062">Настроить карточки</translation>
 <translation id="4633003931260532286">Для расширения требуется <ph name="IMPORT_NAME" /> версии не ранее <ph name="IMPORT_VERSION" />. Сейчас установлена версия <ph name="INSTALLED_VERSION" />.</translation>
@@ -5430,6 +5437,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Удалена 1 закладка.}one{Удалена {COUNT} закладка.}few{Удалено {COUNT} закладки.}many{Удалено {COUNT} закладок.}other{Удалено {COUNT} закладки.}}</translation>
 <translation id="481689174647911539">Этот файл может оказаться вирусом или вредоносным ПО.<ph name="LINE_BREAK" />Вы можете отправить его в сервис "Google Безопасный просмотр", чтобы проверить, представляет ли он угрозу. Обычно сканирование занимает несколько секунд.</translation>
 <translation id="4816900689218414104">Создайте ключ доступа на телефоне или планшете</translation>
+<translation id="481917177323309377">Вкладки, которые вы не открывали несколько дней (<ph name="COUNT" /> и более)</translation>
 <translation id="4819323978093861656">{0,plural, =0{Браузер закрыт.}=1{Браузер будет закрыт через 1 секунду.}one{Браузер будет закрыт через # секунду.}few{Браузер будет закрыт через # секунды.}many{Браузер будет закрыт через # секунд.}other{Браузер будет закрыт через # секунды.}}</translation>
 <translation id="4819607494758673676">Уведомления Google Ассистента</translation>
 <translation id="4819818293886748542">Ссылка для получения инструмента поддержки</translation>
@@ -6834,6 +6842,7 @@
 <translation id="5842497610951477805">Включение и отключение Bluetooth</translation>
 <translation id="5844284118433003733">Данные будут связаны с аккаунтом Google, в который вы вошли. Это позволит защитить вас в сервисах Google, например принять дополнительные меры в Gmail после инцидента в системе безопасности.</translation>
 <translation id="5844574845205796324">Предлагать контент</translation>
+<translation id="5844685625984052392">Используемый как подсказка</translation>
 <translation id="5846200638699387931">Ошибка синтаксиса отношений: <ph name="ERROR_LINE" />.</translation>
 <translation id="5846455742152785308">Без тени</translation>
 <translation id="5846504156837627898">Управление разрешениями сайтов</translation>

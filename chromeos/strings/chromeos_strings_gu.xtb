@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1191518099344003522">APN ચાલુ કર્યું છે.</translation>
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
+<translation id="1196264380943975940">સારાંશ આપી શકાતો નથી. કોઈ વધુ લાંબી ટ્રાન્સક્રિપ્ટ અજમાવી જુઓ.</translation>
 <translation id="1196959502276349371">વર્ઝન <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ચલાવો/થોભાવો</translation>
 <translation id="1201402288615127009">આગલું</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">ટ્રાન્સ્ક્રિપ્ટ છુપાવો</translation>
 <translation id="160633243685262989">છબીનો પ્રીવ્યૂ જુઓ</translation>
 <translation id="1611649489706141841">ફોરવર્ડ કરો</translation>
+<translation id="1615144046047995187">ડાઉનલોડ કરી શકતા નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />થી ડેટા વપરાશ</translation>
 <translation id="1618566998877964907">થીમનો ઉપયોગ કરો</translation>
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">ફેરફાર કરો અને ડિલીટ કરો મેનૂ</translation>
 <translation id="2597774443162333062">ડિબગીંગ માટે ફાઇલ Googleને મોકલવામાં આવશે</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{સ્કૅન કરવાનું પૂર્ણ થયું. 1 પેજ સ્કૅન કર્યું}one{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યું}other{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યા}}</translation>
+<translation id="261322795497077164">સ્પીકર ઓળખ</translation>
 <translation id="2617397783536231890">કોટન</translation>
 <translation id="2618015542787108131">રેતીનો ઢૂવો</translation>
 <translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
@@ -440,6 +443,7 @@
 <translation id="3140130301071865159">સ્નો</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> માટે વિશેષ</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
+<translation id="3153094818810437149">આ તમે પછીથી Recorder સેટિંગમાં બદલી શકો છો</translation>
 <translation id="3156511682997763015">10 સેકન્ડ ફૉરવર્ડ કરો</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ...</translation>
 <translation id="315738237743207937">કૅપ્ટિવ પોર્ટલની જાણકારી મળી</translation>
@@ -562,6 +566,7 @@
 <translation id="3785643128701396311">પિક્સેલ આર્ટ</translation>
 <translation id="3799381533888781854">બંધ છે - આ સેટિંગને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="380097101658023925">RGBના નિયંત્રણો</translation>
+<translation id="380493988330050229">આ ટ્રાન્સક્રિપ્ટ ભાષા માટે સારાંશ બનાવી શકાય નહીં</translation>
 <translation id="38114475217616659">બધો ઇતિહાસ સાફ કરો</translation>
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="382043424867370667">સનસેટ વૉલપેપર</translation>
@@ -585,6 +590,7 @@
 <translation id="3885327323343477505">સ્ક્રીન સેવર બદલો</translation>
 <translation id="3889914174935857450">ડેટા રિસેટ કરો</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
+<translation id="3902271751020176019">ટ્રાન્સક્રિપ્શનની ભાષા</translation>
 <translation id="391412459402535266">ડિવાઇસનું પરીક્ષણ કરી શકતા નથી. પરીક્ષણ કરવા માટે લૅપટૉપ મોડ પર સ્વિચ કરો.</translation>
 <translation id="3916998944874125962">સ્ક્રીનશૉટ લો</translation>
 <translation id="3923184630988645767">ડેટા વપરાશ</translation>
@@ -733,6 +739,7 @@
 <translation id="458794348635939462">બધા હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4594021849294327751">ટ્રાન્સક્રિપ્ટ બનાવો</translation>
+<translation id="4594541568452132351">ટ્રાન્સક્રિપ્શનની ભાષા અને ડાઉનલોડ મૉડલ પસંદ કરો</translation>
 <translation id="4607282946861182308">આની છબીઓ બનાવી શકતા નથી. કોઈ અન્ય પ્રૉમ્પ્ટ અજમાવી જુઓ.</translation>
 <translation id="4609350030397390689">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
 <translation id="4623061655523261501">રેકોર્ડિંગના નામ સફળતાપૂર્વક જનરેટ કર્યા</translation>
@@ -748,6 +755,7 @@
 <translation id="4665014895760275686">નિર્માતા</translation>
 <translation id="467510802200863975">પાસવર્ડ મેળ ખાતા નથી</translation>
 <translation id="467715984478005772">ફાયરવૉલ હોવાની શક્યતા છે</translation>
+<translation id="4678534708181186163">સારાંશ આપી શકાતો નથી. કોઈ વધુ ટૂંકી ટ્રાન્સક્રિપ્ટ અજમાવી જુઓ.</translation>
 <translation id="4683762547447150570">કી અસાઇનમેન્ટ પર ફોકસ કરવા માટે બટન પર ટૅપ કરો</translation>
 <translation id="4691278870498629773">બંધ - ટ્રે ખૂટે છે</translation>
 <translation id="469379815867856270">સિગ્નલની પ્રબળતા</translation>
@@ -850,6 +858,7 @@
 <translation id="5168185087976003268">બૅટરીની ક્ષમતા</translation>
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="517075088756846356">અપડેટની પ્રક્રિયા ચાલુ રાખવા માટે <ph name="DEVICE_NAME" />ના પાવર કેબલને અનપ્લગ કરો અને ફરીથી પ્લગ નાખો</translation>
+<translation id="5178021559562393163">નામ બનાવી શકાતા નથી. કોઈ વધુ ટૂંકી ટ્રાન્સક્રિપ્ટ અજમાવી જુઓ.</translation>
 <translation id="5180108905184566358">બાઑબેબના વૃક્ષો</translation>
 <translation id="5180712487038406644">અભિવ્યક્તપૂર્ણ</translation>
 <translation id="5190187232518914472">તમારી મનગમતી યાદગીરીઓને ફરીથી માણો. આલ્બમ ઉમેરવા અથવા તેમાં ફેરફાર કરવા માટે, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> પર જાઓ.</translation>
@@ -884,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ઓળખ</translation>
 <translation id="5317780077021120954">સાચવો</translation>
+<translation id="5318310531701770497">નામ બનાવી શકાતા નથી. કોઈ વધુ લાંબી ટ્રાન્સક્રિપ્ટ અજમાવી જુઓ.</translation>
 <translation id="5318334351163689047">TCP વિનંતી નિષ્ફળ થઈ</translation>
 <translation id="53196409393069519">શું ટ્રાન્સક્રિપ્શન ચાલુ કરીએ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -937,6 +947,7 @@
 <translation id="5606865426897221650">ટૅબ</translation>
 <translation id="5613201299517339763">તમને સાઇન આઉટ કરવામાં આવ્યા છે</translation>
 <translation id="5620281292257375798">માત્ર આંતરિક</translation>
+<translation id="5628106863521633649">ઉપલબ્ધ ભાષાઓ</translation>
 <translation id="5630438231335788050">બાઉહાઉસ</translation>
 <translation id="5631759159893697722">અમૂર્ત</translation>
 <translation id="5655283760733841251">કીબોર્ડનું બ્રાઇટનેસ વધારવાની કી</translation>
@@ -1097,6 +1108,7 @@
 <translation id="6359919876285606596">આ ક્રિયા કાયમી છે અને આમાં કરેલો ફેરફાર રદ કરી શકાતો નથી</translation>
 <translation id="6368342879959028556">જ્યારે તમે "AI વડે બનાવો" પસંદ કરો, ત્યારે કોઈ કસ્ટમ પ્રૉમ્પ્ટ લખો. અથવા તમે કોઈ થીમ પસંદ કરવા માટે "AI વૉલપેપર" પસંદ કરી શકો છો અને પછી તમારા AI વૉલપેપરને મનગમતું બનાવવા માટે, અન્ડરલાઇન કરેલા શબ્દો પસંદ કરી શકો છો.</translation>
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
+<translation id="6369221585240879141">આ ટ્રાન્સક્રિપ્ટ ભાષા માટે રેકોર્ડિંગના નામ બનાવી શકાય નહીં</translation>
 <translation id="6373461326814131011">સરોવર</translation>
 <translation id="6379086450106841622">ટચસ્ક્રીન</translation>
 <translation id="6381741036071372448">તમારા કીબોર્ડનું પરીક્ષણ કરો</translation>
@@ -1261,6 +1273,7 @@
 <translation id="710028965487274708">નિષ્ફળ રહ્યું - અધિકરણ નિષ્ફળ</translation>
 <translation id="7101959270679078188">અપડેટની પ્રક્રિયા ચાલુ રાખવા માટે <ph name="DEVICE_NAME" />ને અનલૉક કરો</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> નામનું ડિવાઇસ (<ph name="INDEX" />/<ph name="COUNT" />).</translation>
+<translation id="7103793063702494489">પસંદ કરેલી ભાષા</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> માટે વિશેષ આર્ટવર્ક પસંદ કરો</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7117228822971127758">કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
@@ -1270,6 +1283,7 @@
 <translation id="7130438335435247835">ઍક્સેસ પૉઇન્ટનું નામ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{સર્વરનું નામ}one{સર્વરનું નામ}other{સર્વરનું નામ}}</translation>
 <translation id="7135814714616751706">શૉર્ટકટ શોધો</translation>
+<translation id="7138614237884624401">સરળ કરેલી ટેક્સ્ટ</translation>
 <translation id="7141470099673912333">કન્ટેન્ટ ટ્રાન્સફર</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
@@ -1691,6 +1705,7 @@
 <translation id="9100765901046053179">વિગતવાર સેટિંગ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
+<translation id="9108856746036501072">Recorder, સ્પીચવાળા રેકોર્ડિંગ માટે ટ્રાન્સક્રિપ્શન બનાવી શકે છે. આગળના પગલામાં, તમારે ટ્રાન્સક્રિપ્શનની ભાષા પસંદ કરવી અને મૉડલ ડાઉનલોડ કરવું (100MB સુધી) જરૂરી છે.</translation>
 <translation id="9111102763498581341">અનલોક કરો</translation>
 <translation id="9122492456897874028">કન્ટેન્ટનો સારાંશ આપો, વ્યાખ્યાઓ મેળવો અને બીજું ઘણું</translation>
 <translation id="9122602430962285795">ફરીથી કનેક્ટ કરવા માટે, સેટિંગમાં જાઓ</translation>

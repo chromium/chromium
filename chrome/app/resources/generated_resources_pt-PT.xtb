@@ -448,6 +448,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1296911687402551044">Fixar o separador selecionado</translation>
 <translation id="1297175357211070620">Destino</translation>
 <translation id="129770436432446029">Enviar feedback sobre <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modificações</translation>
 <translation id="130097046531636712">Isto aumenta a duração da bateria ao limitar a atividade em segundo plano e os efeitos visuais, como o deslocamento suave</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pode editar os seguintes ficheiros</translation>
 <translation id="130174306655812048">Experimente "OK Google, que música é esta?"</translation>
@@ -1770,6 +1771,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2214018885812055163">Pastas partilhadas</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linha não apresentada&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linhas não apresentadas&gt;}}</translation>
 <translation id="2215070081105889450">Para partilhar o áudio, partilhe um separador ou um ecrã</translation>
+<translation id="2217208085547223783">Estado de fidedignidade</translation>
 <translation id="2218019600945559112">Rato e touchpad</translation>
 <translation id="2218515861914035131">Colar como texto simples</translation>
 <translation id="221872881068107022">Deslocamento inverso</translation>
@@ -2501,6 +2503,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Abrir perfil de convidado</translation>
 <translation id="2723819893410108315">Citrino</translation>
+<translation id="2724822892847436256">Restrições</translation>
 <translation id="2724841811573117416">Registos de WebRTC</translation>
 <translation id="272488616838512378">Conversão de unidades</translation>
 <translation id="2725200716980197196">Conetividade de rede restaurada</translation>
@@ -3462,6 +3465,7 @@ Quer pará-lo?</translation>
 <translation id="3421835120203732951">Adicionar novo perfil</translation>
 <translation id="3423111258700187173">Resultados encontrados na pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Saber mais sobre esta funcionalidade de IA</translation>
+<translation id="3423275441470187644">Fidedignidade</translation>
 <translation id="3423463006624419153">No "<ph name="PHONE_NAME_1" />" e no "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Reiniciar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Descreva o que estava a fazer quando o separador falhou</translation>
@@ -4591,6 +4595,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4195814663415092787">Continuar onde deixou</translation>
 <translation id="4198268995694216131">Sites adicionais</translation>
+<translation id="4198420883535766848">Remover separador da lista</translation>
 <translation id="4200609364258658652">Cop&amp;iar frame do vídeo</translation>
 <translation id="4200689466366162458">Palavras personalizadas</translation>
 <translation id="4200983522494130825">Novo &amp;separador</translation>
@@ -5154,6 +5159,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Eliminar o grupo de separadores?}other{Eliminar os grupos de separadores?}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
 <translation id="4610162781778310380">O plugin <ph name="PLUGIN_NAME" /> encontrou um erro.</translation>
+<translation id="4610493438923139095">Não fidedigno</translation>
 <translation id="4610637590575890427">Pretendia aceder a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Ligação de dados disponível</translation>
 <translation id="4611759022973144129">Pode usar esta palavra-passe para iniciar sessão no <ph name="DEVICE_TYPE" />.</translation>
@@ -5179,6 +5185,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4627442949885028695">Continuar a partir de outro dispositivo</translation>
 <translation id="4628762811416793313">A configuração do contentor do Linux não foi concluída. Tente novamente.</translation>
 <translation id="4629521233550547305">Abrir perfil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Fidedigno</translation>
 <translation id="4631955550884380853">Voz focada</translation>
 <translation id="4632655012900268062">Personalizar cartões</translation>
 <translation id="4633003931260532286">A extensão requer "<ph name="IMPORT_NAME" />" com, pelo menos, a versão "<ph name="IMPORT_VERSION" />", mas apenas está instalada a versão "<ph name="INSTALLED_VERSION" />".</translation>
@@ -6836,6 +6843,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5842497610951477805">Ativar o Bluetooth</translation>
 <translation id="5844284118433003733">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="5844574845205796324">Sugerir novos conteúdos a explorar</translation>
+<translation id="5844685625984052392">Instrução</translation>
 <translation id="5846200638699387931">Erro de sintaxe de relação: <ph name="ERROR_LINE" />.</translation>
 <translation id="5846455742152785308">Sem sombra</translation>
 <translation id="5846504156837627898">Gerir autorizações de sites</translation>

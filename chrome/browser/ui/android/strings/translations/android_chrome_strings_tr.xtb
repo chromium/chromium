@@ -802,6 +802,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4769632191812288342">Standart koruma kullanıyorsunuz</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> silindi</translation>
 <translation id="4778653490315793244">Henüz gösterilecek bir şey yok</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" />, varsayılan arama motorunuzdur</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" /> adlı dosyayı silmek istiyor musunuz?</translation>
 <translation id="4793679854893018356">Chrome'un güvenliğinizi nasıl sağladığını öğrenin</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1041,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5885378508678660271">Bildirimler <ph name="SEPARATOR" /> Bu site tehlikeli olduğu için Chrome bu izinleri kaldırdı</translation>
 <translation id="5895834791314695851">Şifreler yakında bu cihazda çalışmayı durduracak. Şifrelerinizi kullanmaya devam etmek için Google Play Hizmetleri'ni güncelleyin. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Geçiş anahtarı yok sayfası kapatıldı</translation>
+<translation id="5907542076239273525">Yer işareti <ph name="FOLDER_NAME" /> klasörüne kaydedildi</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5919204609460789179">Senkronizasyonu başlatmak için <ph name="PRODUCT_NAME" /> adlı uygulamayı güncelleyin</translation>
 <translation id="5938820472109305350">Ekle: <ph name="INTEREST" /></translation>

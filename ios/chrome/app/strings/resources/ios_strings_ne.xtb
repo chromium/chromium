@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। Google खातासम्बन्धी त्रुटि भयो। खाताको मेनु खोल्नुहोस्।</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
+<translation id="4651927776207937667">{count,plural, =1{१ मिनेटपछि लुकाउनुहोस्}other{{count} मिनेटपछि लुकाउनुहोस्}}</translation>
 <translation id="4652817563047461855">तपाईंका पासवर्डहरू सुरक्षित छन् भन्ने कुरा सुनिश्चित गर्नुहोस्, ती पासवर्ड ह्याक वा चोरी भएका छन् कि छैनन् भन्ने कुरा थाहा पाउनुहोस् र इन्टरनेटमा आफूलाई सुरक्षित राख्न सघाउने सुझाव प्राप्त गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">सेभ गर्नुहोस्</translation>
 <translation id="4668929960204016307">,</translation>

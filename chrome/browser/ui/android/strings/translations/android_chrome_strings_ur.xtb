@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">پاس ورڈ حذف کریں</translation>
 <translation id="1521774566618522728">آج فعال کیا گیا</translation>
 <translation id="153446405401665083">‏‫Chrome کا نیا ورژن دستیاب ہے</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{‏‫1 بُک مارک صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}other{‏‫# بُک مارکس صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}}</translation>
 <translation id="1544084554881119930">‏ادائیگی کے طریقے اور پتے مرموز کردہ نہیں ہوں گے۔ ‫Chrome سے براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
 صرف آپ کے پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="1544826120773021464">‏اپنے Google اکاؤنٹ کا نظم کرنے کے لیے، "اکاؤنٹ کا نظم کریں" بٹن پر تھپتھپائیں</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> کا استعمال کریں</translation>
 <translation id="160275202205869636">‏آن ہونے پر، اپنے Google اکاؤنٹ میں ڈیٹا کا استعمال اور اسے محفوظ کریں۔ آف ہونے پر، ڈیٹا صرف اس آلے میں محفوظ ہوتا ہے۔</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 منتخب آئٹم کو ہٹائیں}other{# منتخب آئٹمز کو ہٹائیں}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{‏‫1 بُک مارک اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}other{‏‫# پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}}</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="164269334534774161">آپ <ph name="CREATION_TIME" /> سے اس صفحہ کی ایک آف لائن کاپی دیکھ رہے ہیں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
@@ -802,6 +804,7 @@
 <translation id="4769632191812288342">آپ کو معیاری تحفظ حاصل ہو رہا ہے</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> حذف ہو گیا</translation>
 <translation id="4778653490315793244">دکھانے کے لیے ابھی تک کچھ نہیں ہے</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> آپ کا ڈیفالٹ سرچ انجن ہے</translation>
 <translation id="4787736314074622408">کیا آپ <ph name="ITEM_TITLE" /> کو حذف کرنا چاہتے ہیں؟</translation>
 <translation id="4793679854893018356">‏جانیں کہ Chrome آپ کو کیسے محفوظ رکھتا ہے</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

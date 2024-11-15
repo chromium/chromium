@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1191518099344003522">APN je omogočen.</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
+<translation id="1196264380943975940">Ni mogoče povzeti. Poskusite daljši prepis.</translation>
 <translation id="1196959502276349371">Različica <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Predvajanje/začasna zaustavitev</translation>
 <translation id="1201402288615127009">Naprej</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Proizvajalec</translation>
 <translation id="467510802200863975">Gesli se ne ujemata</translation>
 <translation id="467715984478005772">Sum na požarni zid</translation>
+<translation id="4678534708181186163">Ni mogoče povzeti. Poskusite krajši prepis.</translation>
 <translation id="4683762547447150570">Dotaknite se gumba, da označite dodelitev tipk</translation>
 <translation id="4691278870498629773">Ustavljeno – ni pladnja</translation>
 <translation id="469379815867856270">Moč signala</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="517075088756846356">Če želite nadaljevati postopek posodobitve, odklopite in znova priključite napajalni kabel naprave <ph name="DEVICE_NAME" /></translation>
+<translation id="5178021559562393163">Imen ni mogoče ustvariti. Poskusite krajši prepis.</translation>
 <translation id="5180108905184566358">baobabi</translation>
 <translation id="5180712487038406644">Ekspresivna</translation>
 <translation id="5190187232518914472">Podoživite svoje najlepše spomine. Če želite dodati ali urediti albume, odprite <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteta</translation>
 <translation id="5317780077021120954">Shrani</translation>
+<translation id="5318310531701770497">Imen ni mogoče ustvariti. Poskusite daljši prepis.</translation>
 <translation id="5318334351163689047">Neuspele zahteve TCP</translation>
 <translation id="53196409393069519">Želite vklopiti prepisovanje?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

@@ -450,6 +450,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1296911687402551044">Prikvači odabranu karticu</translation>
 <translation id="1297175357211070620">Odredište</translation>
 <translation id="129770436432446029">Pošaljite povratne informacije za eksperiment <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">Izmjene</translation>
 <translation id="130097046531636712">To produljuje trajanje baterije ograničavajući pozadinsku aktivnost i vizualne efekte kao što je glatko pomicanje</translation>
 <translation id="1301135395320604080">Web-lokacija <ph name="ORIGIN" /> može uređivati sljedeće datoteke</translation>
 <translation id="130174306655812048">Pokušajte reći "Hey Google, what song is this?" (Hey Google, koja je to pjesma?)</translation>
@@ -1772,6 +1773,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2214018885812055163">Dijeljene mape</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Ne prikazuje se jedan redak&gt;}one{&lt;Ne prikazuje se <ph name="NUMBER_OF_LINES" /> redak&gt;}few{&lt;Ne prikazuju se <ph name="NUMBER_OF_LINES" /> retka&gt;}other{&lt;Ne prikazuje se <ph name="NUMBER_OF_LINES" /> redaka&gt;}}</translation>
 <translation id="2215070081105889450">Da biste dijelili zvuk, podijelite karticu ili zaslon</translation>
+<translation id="2217208085547223783">Stanje pouzdanosti</translation>
 <translation id="2218019600945559112">Miš i dodirna podloga</translation>
 <translation id="2218515861914035131">Zalijepi kao običan tekst</translation>
 <translation id="221872881068107022">Obrnuto pomicanje</translation>
@@ -2504,6 +2506,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Otvori profil gosta</translation>
 <translation id="2723819893410108315">Boja limuna</translation>
+<translation id="2724822892847436256">Ograničenja</translation>
 <translation id="2724841811573117416">WebRTC zapisnici</translation>
 <translation id="272488616838512378">Pretvorba jedinica</translation>
 <translation id="2725200716980197196">Veza s mrežom ponovno je uspostavljena</translation>
@@ -3463,6 +3466,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3421835120203732951">Dodajte novi profil</translation>
 <translation id="3423111258700187173">Pronađeni su rezultati u mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Saznajte više o ovoj AI značajci</translation>
+<translation id="3423275441470187644">Pouzdanost</translation>
 <translation id="3423463006624419153">Na telefonima <ph name="PHONE_NAME_1" /> i <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Ponovo pokrenite <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Opišite što ste radili kada se kartica srušila</translation>
@@ -4592,6 +4596,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4195814663415092787">Nastavite tamo gdje ste stali</translation>
 <translation id="4198268995694216131">Dodatne web lokacije</translation>
+<translation id="4198420883535766848">Ukloni karticu s popisa</translation>
 <translation id="4200609364258658652">Kopira&amp;j kadar videozapisa</translation>
 <translation id="4200689466366162458">Prilagođene riječi</translation>
 <translation id="4200983522494130825">Nova &amp;kartica</translation>
@@ -5155,6 +5160,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Želite li izbrisati grupu kartica?}one{Želite li izbrisati grupe kartica?}few{Želite li izbrisati grupe kartica?}other{Želite li izbrisati grupe kartica?}}</translation>
 <translation id="4608500690299898628">&amp;Traži...</translation>
 <translation id="4610162781778310380">Dodatak <ph name="PLUGIN_NAME" /> naišao je na pogrešku</translation>
+<translation id="4610493438923139095">Nepouzdano</translation>
 <translation id="4610637590575890427">Jeste li mislili <ph name="SITE" /></translation>
 <translation id="4611114513649582138">Dostupna je podatkovna veza</translation>
 <translation id="4611759022973144129">Tu zaporku možete upotrebljavati za prijavu na uređaj <ph name="DEVICE_TYPE" />.</translation>
@@ -5180,6 +5186,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4627442949885028695">Nastavite na drugom uređaju</translation>
 <translation id="4628762811416793313">Postavljanje Linuxovog spremnika nije dovršeno. Pokušajte ponovo.</translation>
 <translation id="4629521233550547305">Otvorite profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Pouzdano</translation>
 <translation id="4631955550884380853">Fokusirani glas</translation>
 <translation id="4632655012900268062">Prilagodi kartice</translation>
 <translation id="4633003931260532286">Minimalna je verzija za "<ph name="IMPORT_NAME" />" koju proširenje zahtijeva "<ph name="IMPORT_VERSION" />", ali je instalirana samo verzija "<ph name="INSTALLED_VERSION" />"</translation>
@@ -6832,6 +6839,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5842497610951477805">Omogućivanje Bluetootha</translation>
 <translation id="5844284118433003733">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
 <translation id="5844574845205796324">Predložite novi sadržaj za istraživanje</translation>
+<translation id="5844685625984052392">Savjet</translation>
 <translation id="5846200638699387931">Sintaktička pogreška odnosa: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Bez sjenčenja</translation>
 <translation id="5846504156837627898">Upravljanje dopuštenjima za web-lokacije</translation>

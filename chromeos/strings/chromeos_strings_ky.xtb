@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1191518099344003522">APN иштетилди.</translation>
 <translation id="1195447618553298278">Белгисиз ката.</translation>
+<translation id="1196264380943975940">Корутундусу түзүлбөй жатат. Узунураак транскрипцияны колдонуп көрүңүз.</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> версиясы</translation>
 <translation id="1199355487114804640">Ойнотуу/Тындыруу</translation>
 <translation id="1201402288615127009">Кийинки</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Өндүрүүчү</translation>
 <translation id="467510802200863975">Сырсөздөр дал келген жок</translation>
 <translation id="467715984478005772">Тармактык коргоо бар окшойт</translation>
+<translation id="4678534708181186163">Корутундусу түзүлбөй жатат. Кыскараак транскрипцияны колдонуп көрүңүз.</translation>
 <translation id="4683762547447150570">Баскыч дайындоосуна көңүл буруу үчүн баскычты басыңыз</translation>
 <translation id="4691278870498629773">Токтоду – Түпкүч жок</translation>
 <translation id="469379815867856270">Сигналдын күчү</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Батареянын иштөө мөөнөтү</translation>
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="517075088756846356">Жаңыртуу процессин улантуу үчүн <ph name="DEVICE_NAME" /> түзмөгүнүн электр кубатынын кабелин сууруп, кайра сайыңыз</translation>
+<translation id="5178021559562393163">Аталыштар түзүлбөй жатат. Кыскараак транскрипцияны колдонуп көрүңүз.</translation>
 <translation id="5180108905184566358">баобаб дарактары</translation>
 <translation id="5180712487038406644">Даана</translation>
 <translation id="5190187232518914472">Эсте калган учурларды кайра көз алдыңыздан өткөрүңүз. Альбомдорду кошуу же түзөтүү үчүн <ph name="LINK_BEGIN" />Google Фотого<ph name="LINK_END" /> өтүңүз.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Идентификация</translation>
 <translation id="5317780077021120954">Сактоо</translation>
+<translation id="5318310531701770497">Аталыштар түзүлбөй жатат. Узунураак транскрипцияны колдонуп көрүңүз.</translation>
 <translation id="5318334351163689047">Ишке ашпай калган TCP сурамдары</translation>
 <translation id="53196409393069519">Транскрипция күйгүзүлсүнбү?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

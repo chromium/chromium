@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1191518099344003522">ኤፒኤን ነቅቷል።</translation>
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
+<translation id="1196264380943975940">ማጠቃለል አልተቻለም። ረዘም ያለ ጽሑፍ ግልባጭ ይፍጠሩ።</translation>
 <translation id="1196959502276349371">ስሪት <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">አጫውት/ለአፍታ አቁም</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">ወደ ጽሁፍ ግልባጭን ደብቅ</translation>
 <translation id="160633243685262989">የቅድመ ዕይታ ምስል</translation>
 <translation id="1611649489706141841">ወደ ፊት</translation>
+<translation id="1615144046047995187">ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን Chromebook እንደገና ያስጀምሩ</translation>
 <translation id="1615335640928990664">የውሂብ አጠቃቀም ከ<ph name="FRIENDLY_DATE" /> ጀምሮ</translation>
 <translation id="1618566998877964907">ገጽታ ይጠቀሙ</translation>
 <translation id="1621067168122174824">የባትሪ መሙላት ሙከራን አሂድ</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">ምናሌውን ያርትዑ እና ይሰርዙ</translation>
 <translation id="2597774443162333062">ፋይሎች ስህተታቸው እንዲታረም ወደ Google ይላካሉ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገፅ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
+<translation id="261322795497077164">ተናጋሪን መለየት</translation>
 <translation id="2617397783536231890">ጥጥ</translation>
 <translation id="2618015542787108131">የአሸዋ ክምር</translation>
 <translation id="2619761439309613843">ዕለታዊ ዕድሳት</translation>
@@ -440,6 +443,7 @@
 <translation id="3140130301071865159">በረዶ</translation>
 <translation id="3146655726035122603">ለ<ph name="PRODUCT_NAME" /> የተወሰነ</translation>
 <translation id="315116470104423982">የተንቀሳቃሽ ስልክ ውሂብ</translation>
+<translation id="3153094818810437149">ይህን በኋላ ላይ በመቅጃ ቅንብሮች ውስጥ መለወጥ ይችላሉ</translation>
 <translation id="3156511682997763015">10 ሰከንዶች ወደፊት</translation>
 <translation id="3156846309055100599">ገፅ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ...</translation>
 <translation id="315738237743207937">ተያዥ መግቢያ ተገኝቷል</translation>
@@ -562,6 +566,7 @@
 <translation id="3785643128701396311">የፒክስል ሥነ ጥበብ</translation>
 <translation id="3799381533888781854">ጠፍቷል - ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="380097101658023925">የአርጂቢ መቆጣጠሪያዎች</translation>
+<translation id="380493988330050229">ለዚህ የጽሑፍ ግልባጭ ቋንቋ ማጠቃለያ መፍጠር አልተቻለም</translation>
 <translation id="38114475217616659">ሁሉንም የዕይታ ታሪክ አፅዳ</translation>
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="382043424867370667">የፀሐይ መግባት ልጣፍ</translation>
@@ -585,6 +590,7 @@
 <translation id="3885327323343477505">የማያ ገፅ አሳራፊን ቀይር</translation>
 <translation id="3889914174935857450">ቀንን ዳግም አስጀምር</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
+<translation id="3902271751020176019">የጽሑፍ ግልባጭ ቋንቋ</translation>
 <translation id="391412459402535266">መሣሪያን መፈተሽ አልተቻለም። ለመፈተሽ ወደ የጭን ኮምፒውተር ሁነታ ይቀይሩ።</translation>
 <translation id="3916998944874125962">ቅጽበታዊ ገጽ እይታን የሚያነሳ</translation>
 <translation id="3923184630988645767">የውሂብ አጠቃቀም</translation>
@@ -733,6 +739,7 @@
 <translation id="458794348635939462">ለሁሉም አስተናጋጆች መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4594021849294327751">ጽሁፍ ግልባጭ ፍጠር</translation>
+<translation id="4594541568452132351">የጽሑፍ ግልባጭ ቋንቋ ይምረጡ እና ሞዴል ያውርዱ</translation>
 <translation id="4607282946861182308">የዚህን ምስል መፍጠር አልተቻለም። ሌላ ጥያቄ ይሞክሩ።</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
 <translation id="4623061655523261501">የመቅጃ ስሞች በተሳካ ሁኔታ መንጭተዋል</translation>
@@ -748,6 +755,7 @@
 <translation id="4665014895760275686">አምራች</translation>
 <translation id="467510802200863975">የይለፍ ቃላትዎ አይዛመዱም</translation>
 <translation id="467715984478005772">ኬላ ተጠርጥሯል</translation>
+<translation id="4678534708181186163">ማጠቃለል አልተቻለም። አጠር ያለ ጽሑፍ ግልባጭ ይሞክሩ።</translation>
 <translation id="4683762547447150570">በቁልፍ ምደባው ላይ ለማተኮር አዝራሩን መታ ያድርጉ</translation>
 <translation id="4691278870498629773">ቆሟል - መሳቢያ ይጎድላል</translation>
 <translation id="469379815867856270">የሲግናል ጥንካሬ</translation>
@@ -850,6 +858,7 @@
 <translation id="5168185087976003268">የባትሪ ጤንነት</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="517075088756846356">የማዘመን ሂደቱን ለመቀጠል የ<ph name="DEVICE_NAME" /> የኤሌክትሪክ ኃይል ገመዱን ይንቀሉት እና እንደገና ይሰኩት</translation>
+<translation id="5178021559562393163">ስሞችን መፍጠር አልተቻለም። አጠር ያለ ጽሑፍ ግልባጭ ይሞክሩ።</translation>
 <translation id="5180108905184566358">የባኦባብ ዛፎች</translation>
 <translation id="5180712487038406644">በደንብ መግለጽ የሚችል</translation>
 <translation id="5190187232518914472">የሚወዷቸውን ትውስታዎች ዳግም ይኑሯቸው። አልበሞችን ለማከል ወይም ለማርትዕ ወደ <ph name="LINK_BEGIN" />Google ፎቶዎች<ph name="LINK_END" /> ይሂዱ።</translation>
@@ -884,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ማንነት</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
+<translation id="5318310531701770497">ስሞችን መፍጠር አልተቻለም። ረዘም ያለ ጽሑፍ ግልባጭ ይፍጠሩ።</translation>
 <translation id="5318334351163689047">የ TCP ጥያቄ አለመሳካቶች</translation>
 <translation id="53196409393069519">ወደ ጽሁፍ ግልባጭ ይብራ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="COMPLETION_STATUS" /></translation>
@@ -937,6 +947,7 @@
 <translation id="5606865426897221650">ትር</translation>
 <translation id="5613201299517339763">ዘግተው እንዲወጡ ተደርገዋል</translation>
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
+<translation id="5628106863521633649">የሚገኙ ቋንቋዎች</translation>
 <translation id="5630438231335788050">ባውሃስ</translation>
 <translation id="5631759159893697722">ረቂቅ</translation>
 <translation id="5655283760733841251">የቁልፍ ሰሌዳ ብሩህነት መጨመሪያ</translation>
@@ -1097,6 +1108,7 @@
 <translation id="6359919876285606596">ይህ እርምጃ ቋሚ ነው እና ሊቀለበስ አይችልም</translation>
 <translation id="6368342879959028556">«በሰው ሠራሽ አስተውሎት ፍጠር» የሚለውን ሲመርጡ ብጁ ጥያቄ ይጻፉ። ወይም የእርስዎን ሰው ሠራሽ አስተውሎት ልጣፍ ግላዊ ለማድረግ ገፅታ ለመምረጥ እና ከዚያ የተሰመረባቸውን ቃላት ለመምረጥ «ሰው ሠራሽ አስተውሎት ልጣፎች» የሚለውን መምረጥ ይችላሉ።</translation>
 <translation id="636850387210749493">የድርጅት ምዝገባ</translation>
+<translation id="6369221585240879141">ለዚህ የጽሑፍ ግልባጭ ቋንቋ የቀረጻ ስሞችን መፍጠር አልተቻልም</translation>
 <translation id="6373461326814131011">ኩሬ</translation>
 <translation id="6379086450106841622">መነካት የሚችል ማያ</translation>
 <translation id="6381741036071372448">የቁልፍ ሰሌዳዎን ይሞክሩ</translation>
@@ -1261,6 +1273,7 @@
 <translation id="710028965487274708">አልተሳካም - ማረጋግጥ አልተሳካም</translation>
 <translation id="7101959270679078188">የማዘመን ሂደቱን ለመቀጠል <ph name="DEVICE_NAME" />ን ይክፈቱ</translation>
 <translation id="7103252855940681301">መሣሪያ <ph name="INDEX" /> ከ<ph name="COUNT" /> <ph name="NAME" /> ተብሎ ተሰይሟል</translation>
+<translation id="7103793063702494489">የተመረጠው ቋንቋ</translation>
 <translation id="7107255225945990211">ለ<ph name="PRODUCT_NAME" /> የተወሰነ ሥነ ጥበብ ይምረጡ</translation>
 <translation id="7108668606237948702">ያስገቡ</translation>
 <translation id="7117228822971127758">እባክዎ ቆይተው እንደገና ይሞክሩ</translation>
@@ -1270,6 +1283,7 @@
 <translation id="7130438335435247835">የመድረሻ ነጥብ ስም (ኤፒኤን)</translation>
 <translation id="7134436342991564651">{0,plural, =1{የስም አገልጋይ}one{የስም አገልጋዩች}other{የስም አገልጋዩች}}</translation>
 <translation id="7135814714616751706">የፍለጋ አቋራጮች</translation>
+<translation id="7138614237884624401">ቀላል ጽሑፍ</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
@@ -1691,6 +1705,7 @@
 <translation id="9100765901046053179">የላቁ ቅንብሮች</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9106415115617144481">ገፅ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>
+<translation id="9108856746036501072">መቅጃ ንግግር ላላቸው ቅጂዎች ወደ ጽሁፍ ግልባጮችን መፍጠር ይችላል። በቀጣዩ ደረጃ ላይ፣ የጽሑፍ ግልባጭ ቋንቋን መምረጥ እና ሞዴልን ያውርዱ (እስከ 100ሜባ ድረስ)።</translation>
 <translation id="9111102763498581341">ክፈት</translation>
 <translation id="9122492456897874028">ይዘትን ያጠቃልሉ፣ ትርጓሜዎችን ያግኙ እና ሌሎችም</translation>
 <translation id="9122602430962285795">ዳግም ለመገናኘት ወደ ቅንብሮች ይሂዱ</translation>

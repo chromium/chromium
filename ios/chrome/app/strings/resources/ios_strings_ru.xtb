@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">Управляется твоим родителем</translation>
 <translation id="4647758699119474035">Вы вошли как <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ошибка в аккаунте Google. Открыть меню аккаунта.</translation>
 <translation id="4650125387981512669">Продолжить как <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Скрывать через 1 минуту}one{Скрывать через {count} минуту}few{Скрывать через {count} минуты}many{Скрывать через {count} минут}other{Скрывать через {count} минуты}}</translation>
 <translation id="4652817563047461855">Убедитесь, что пароли в безопасности и не были раскрыты, а также получите совет о защите в интернете. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Сохранить</translation>
 <translation id="4668929960204016307">,</translation>

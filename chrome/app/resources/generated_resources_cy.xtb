@@ -452,6 +452,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1296911687402551044">Pinio'r Tab a Ddewisir</translation>
 <translation id="1297175357211070620">Cyrchfan</translation>
 <translation id="129770436432446029">Anfon adborth ar gyfer <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Addasiadau</translation>
 <translation id="130097046531636712">Mae hyn yn ymestyn pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol megis sgrolio llyfn</translation>
 <translation id="1301135395320604080">Gall <ph name="ORIGIN" /> olygu'r ffeiliau canlynol</translation>
 <translation id="130174306655812048">Rhowch gynnig ar "Hei Google, pa gân yw hon?"</translation>
@@ -1783,6 +1784,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2214018885812055163">Ffolderi sydd wedi'u rhannu</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 llinell heb ei dangos&gt;}zero{&lt;<ph name="NUMBER_OF_LINES" /> llinell heb eu dangos&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> linell heb eu dangos&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> llinell heb eu dangos&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> llinell heb eu dangos&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> llinell heb eu dangos&gt;}}</translation>
 <translation id="2215070081105889450">I rannu sain, rhannwch dab neu sgrîn yn lle hynny</translation>
+<translation id="2217208085547223783">Cyflwr Ymddiriedolaeth</translation>
 <translation id="2218019600945559112">Llygoden a phad cyffwrdd</translation>
 <translation id="2218515861914035131">Gludo fel testun plaen</translation>
 <translation id="221872881068107022">Sgrolio tuag yn ôl</translation>
@@ -2517,6 +2519,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2722547199758472013">Rhif adnabod: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Agor proffil Gwestai</translation>
 <translation id="2723819893410108315">Sitron</translation>
+<translation id="2724822892847436256">Cyfyngiadau</translation>
 <translation id="2724841811573117416">Cofnodion WebRTC</translation>
 <translation id="272488616838512378">Trosi Uned</translation>
 <translation id="2725200716980197196">Adferwyd cysylltedd rhwydwaith</translation>
@@ -3477,6 +3480,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3421835120203732951">Ychwanegu Proffil Newydd</translation>
 <translation id="3423111258700187173">Canlyniadau a ddarganfuwyd yn <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Dysgu rhagor am y nodwedd AI hon</translation>
+<translation id="3423275441470187644">Ymddiriedolaeth</translation>
 <translation id="3423463006624419153">Ar eich '<ph name="PHONE_NAME_1" />' a'ch '<ph name="PHONE_NAME_2" />':</translation>
 <translation id="3423858849633684918">Ail-lansiwch <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Disgrifiwch yr hyn yr oeddech yn ei wneud pan Wnaeth y Tab Dorri</translation>
@@ -4606,6 +4610,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4195643157523330669">Agor mewn tab newydd</translation>
 <translation id="4195814663415092787">Parhau lle y gwnaethoch adael</translation>
 <translation id="4198268995694216131">Gwefannau ychwanegol</translation>
+<translation id="4198420883535766848">Tynnu'r tab o'r rhestr</translation>
 <translation id="4200609364258658652">Copïo ffrâm fideo</translation>
 <translation id="4200689466366162458">Geiriau personol</translation>
 <translation id="4200983522494130825">Tab &amp;newydd</translation>
@@ -5169,6 +5174,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Dileu'r grŵp tabiau?}zero{Dileu'r grwpiau tabiau?}two{Dileu'r grwpiau tabiau?}few{Dileu'r grwpiau tabiau?}many{Dileu'r grwpiau tabiau?}other{Dileu'r grwpiau tabiau?}}</translation>
 <translation id="4608500690299898628">&amp;Chwilio...</translation>
 <translation id="4610162781778310380">Mae <ph name="PLUGIN_NAME" /> wedi dod ar draws gwall</translation>
+<translation id="4610493438923139095">Annibynadwy</translation>
 <translation id="4610637590575890427">Oeddech chi'n bwriadu mynd i <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Mae cysylltiad data ar gael</translation>
 <translation id="4611759022973144129">Gallwch ddefnyddio'r cyfrinair hwn i fewngofnodi i'ch <ph name="DEVICE_TYPE" />.</translation>
@@ -5194,6 +5200,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4627442949885028695">Parhau o ddyfais arall</translation>
 <translation id="4628762811416793313">Ni wnaeth gosod cynhwysydd Linux gwblhau. Rhowch gynnig arall arni.</translation>
 <translation id="4629521233550547305">Agor proffil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Dibynadwy</translation>
 <translation id="4631955550884380853">Llais mewn ffocws</translation>
 <translation id="4632655012900268062">Personoleiddio cardiau</translation>
 <translation id="4633003931260532286">Mae'r estyniad yn gofyn "<ph name="IMPORT_NAME" />" gydag o leiaf y fersiwn"<ph name="IMPORT_VERSION" />", ond yr unig fersiwn sydd wedi'i gosod yw "<ph name="INSTALLED_VERSION" />"</translation>
@@ -5444,6 +5451,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Mae 1 nod tudalen wedi'i ddileu}zero{Mae {COUNT} nod tudalen wedi'u dileu}two{Mae {COUNT} nod tudalen wedi'u dileu}few{Mae {COUNT} nod tudalen wedi'u dileu}many{Mae {COUNT} nod tudalen wedi'u dileu}other{Mae {COUNT} nod tudalen wedi'u dileu}}</translation>
 <translation id="481689174647911539">Gallai'r ffeil hon fod yn feirws neu ddrwgwedd.<ph name="LINE_BREAK" />Gallwch ei hanfon i Pori'n Ddiogel gyda Google i wirio a yw'n anniogel. Mae sganiau fel arfer yn cymryd ychydig eiliadau.</translation>
 <translation id="4816900689218414104">Creu cod pas ar ffôn neu lechen</translation>
+<translation id="481917177323309377">Tabiau nad ydych wedi'u defnyddio mewn <ph name="COUNT" /> neu fwy o ddyddiau</translation>
 <translation id="4819323978093861656">{0,plural, =0{Wrthi'n cau nawr.}=1{Wrthi'n cau nawr mewn: 1 eiliad}two{Wrthi'n cau nawr mewn: # eiliad}few{Wrthi'n cau nawr mewn: # eiliad}many{Wrthi'n cau nawr mewn: # eiliad}other{Wrthi'n cau nawr mewn: # eiliad}}</translation>
 <translation id="4819607494758673676">Hysbysiadau Google Assistant</translation>
 <translation id="4819818293886748542">Cael dolen Offeryn Cymorth</translation>
@@ -6849,6 +6857,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5842497610951477805">Galluogi Bluetooth</translation>
 <translation id="5844284118433003733">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
 <translation id="5844574845205796324">Argymell cynnwys newydd i'w archwilio</translation>
+<translation id="5844685625984052392">Awgrym</translation>
 <translation id="5846200638699387931">Gwall cystrawen perthynas: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Dim cysgod</translation>
 <translation id="5846504156837627898">Rheoli Caniatadau Gwefan</translation>

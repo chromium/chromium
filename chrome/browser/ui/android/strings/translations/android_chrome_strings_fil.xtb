@@ -802,6 +802,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4769632191812288342">Nakakakuha ka ng karaniwang proteksyon</translation>
 <translation id="4775646243557794597">Na-delete ang <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Wala pang maipapakita</translation>
+<translation id="4782929588435725897">Ang <ph name="SEARCH_ENGINE" /> ang iyong default na search engine</translation>
 <translation id="4787736314074622408">Gusto mo bang i-delete ang <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Alamin kung paano ka pinapanatiling ligtas ng Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1041,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5885378508678660271">Mga Notification <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil mapanganib ang site na ito</translation>
 <translation id="5895834791314695851">Malapit nang posibleng hindi gumana ang mga password sa device na ito. Para patuloy na magamit ang iyong mga password, i-update ang mga serbisyo ng Google Play. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Isinara ang sheet na walang passkey</translation>
+<translation id="5907542076239273525">Na-save ang bookmark sa <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5919204609460789179">I-update ang <ph name="PRODUCT_NAME" /> upang simulan ang pag-sync</translation>
 <translation id="5938820472109305350">Idagdag ang <ph name="INTEREST" /></translation>

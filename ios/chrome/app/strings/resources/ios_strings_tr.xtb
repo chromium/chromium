@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Kod tarandı</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} sekme}other{{count} sekme}}</translation>
 <translation id="1084365883616172403">Facebook yayını tamamlandı.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> açılamadı</translation>
 <translation id="1096992026380844478">Senkronizasyon ayarlarınız, son yedeğinize bağlı olarak geri yüklenecek. <ph name="BEGIN_LINK" />Neleri senkronize edebileceğinizi görün<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="1108938384783527433">Geçmiş senkronizasyonu</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Hayır, teşekkürler</translation>
 <translation id="2320166752086256636">Klavyeyi gizle</translation>
 <translation id="2321086116217818302">Şifreler hazırlanıyor…</translation>
+<translation id="2323697864063408084">Önemli olan hiçbir şeyi kaçırmamak için Kilit Ekranınızda ve Banner'larla bildirim alın</translation>
 <translation id="2326302612031521902">Birim seçici</translation>
 <translation id="2330607597130465898">Koruma yok</translation>
 <translation id="233375395665273385">Sil ve oturumu kapat</translation>
@@ -384,6 +386,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2671423594960767771">Grubu paylaş</translation>
 <translation id="2673508731173059946">Kopyalanan bağlantıyı ziyaret et</translation>
 <translation id="2687403674020088961">Tüm çerezleri engelle (önerilmez)</translation>
+<translation id="2688535388040882469">Banner'lar</translation>
 <translation id="2690858294534178585">Kamera kullanılıyor</translation>
 <translation id="2691653761409724435">Çevrimdışı kullanılamaz</translation>
 <translation id="2696180352517415858">Google Hesaplarınızdaki oturumlarınız kapatılmaz. <ph name="BEGIN_LINK" />Diğer etkinlik biçimleri<ph name="END_LINK" />, oturum açtığınızda Google Hesabınıza kaydedilebilir. Bunları istediğiniz zaman silebilirsiniz.
@@ -636,6 +639,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3986739045730058129">Sekmeye gidin</translation>
 <translation id="3992684624889376114">Bu sayfa hakkında</translation>
 <translation id="3994422733891749358">Almak istediğiniz bildirimleri seçin</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> olarak oturum aç</translation>
 <translation id="3995521777587992544">Sayfa yükleme ilerleme çubuğu, <ph name="EMAIL" /> yüklendi.</translation>
 <translation id="3997522473364371632">Şifre paylaşımı, yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="4002066346123236978">Başlık</translation>
@@ -843,6 +847,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4936354130727646074">Hiçbir zaman taşıma</translation>
 <translation id="4937410517508563815">Şifreler hesaba kaydedilir</translation>
 <translation id="4938338714234463591">Böylece, web sitelerindeki belirli özelliklerde sesinizi kullanabilirsiniz.</translation>
+<translation id="4938716880833771969">Bildirimleriniz sessiz olarak iletiliyor</translation>
 <translation id="4941089862236492464">Maalesef öğeniz paylaşılırken bir sorun oluştu.</translation>
 <translation id="4944543191714094452">Sayfada Bul…</translation>
 <translation id="4945756290001680296">Şifre ayarlarına erişin</translation>
@@ -1609,6 +1614,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8319076807703933069">Yeni Arama</translation>
 <translation id="8343993175958086504">Verilerinizi yedekleyin ve istediğiniz cihazda kullanın.</translation>
 <translation id="8349305172487531364">Yer işaretleri çubuğu</translation>
+<translation id="8364563001733875155">PIN'inizi değiştirmek için önce cihazınızda bir şifre kodu oluşturun.</translation>
 <translation id="8366466717204352506">Kontrol hiç yapılmadı</translation>
 <translation id="8368001212524806591">Fiyatı takip et</translation>
 <translation id="8370406443343902172">Ayarlar'a git...</translation>
@@ -1643,7 +1649,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8490629238792920282">Bağlantı oluşturulamadı</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8505361906966222822">Şuraya kaydet…</translation>
-<translation id="850600235656508448">Gizli modda aç</translation>
+<translation id="850600235656508448">Gizli sekmede aç</translation>
 <translation id="8511141513131731477">İlk sekmeye gidin</translation>
 <translation id="852075982791215701">Son sekmeye git</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} şifre ve diğer öğeler yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}other{{count} şifre ve diğer öğeler yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}}</translation>

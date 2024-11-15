@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1191518099344003522">Пункт доступу ўключаны.</translation>
 <translation id="1195447618553298278">Невядомая памылка.</translation>
+<translation id="1196264380943975940">Не ўдаецца падсумаваць. Паспрабуйце даўжэйшую расшыфроўку.</translation>
 <translation id="1196959502276349371">Версія <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Прайграць (прыпыніць)</translation>
 <translation id="1201402288615127009">Далей</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Вытворца</translation>
 <translation id="467510802200863975">Паролі не супадаюць</translation>
 <translation id="467715984478005772">Магчыма, уключаны брандмаўар</translation>
+<translation id="4678534708181186163">Не ўдаецца падсумаваць. Паспрабуйце карацейшую расшыфроўку.</translation>
 <translation id="4683762547447150570">Каб перайсці да прызначэння клавіш, націсніце кнопку</translation>
 <translation id="4691278870498629773">Спынена: няма латка</translation>
 <translation id="469379815867856270">Магутнасць сігналу</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Стан акумулятара</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="517075088756846356">Каб працягнуць абнаўленне, адключыце і падключыце зноў кабель сілкавання прылады "<ph name="DEVICE_NAME" />"</translation>
+<translation id="5178021559562393163">Не ўдаецца стварыць назвы. Паспрабуйце карацейшую расшыфроўку.</translation>
 <translation id="5180108905184566358">баабабы</translation>
 <translation id="5180712487038406644">Выразныя колеры</translation>
 <translation id="5190187232518914472">Ажывіце прыемныя ўспаміны. Каб дадаць або змяніць альбомы, перайдзіце ў <ph name="LINK_BEGIN" />Google Фота<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Ідэнтыфікатар</translation>
 <translation id="5317780077021120954">Захаваць</translation>
+<translation id="5318310531701770497">Не ўдаецца стварыць назвы. Паспрабуйце даўжэйшую расшыфроўку.</translation>
 <translation id="5318334351163689047">Збоі запытаў TCP</translation>
 <translation id="53196409393069519">Уключыць расшыфроўку?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

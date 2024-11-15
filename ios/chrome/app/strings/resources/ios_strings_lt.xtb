@@ -781,6 +781,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4645575059429386691">Tvarko vienas iš jūsų tėvų</translation>
 <translation id="4647758699119474035">Prisijungta kaip <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. „Google“ paskyros klaida. Atidaryti paskyros meniu.</translation>
 <translation id="4650125387981512669">Tęsti kaip <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Slėpti po vienos minutės}one{Slėpti po {count} minutės}few{Slėpti po {count} minučių}many{Slėpti po {count} minutės}other{Slėpti po {count} minučių}}</translation>
 <translation id="4652817563047461855">Įsitikinkite, kad slaptažodžiai saugūs, sužinokite, ar jie nebuvo pažeisti, ir gaukite patarimų, kaip apsisaugoti internete. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Išsaugoti</translation>
 <translation id="4668929960204016307">,</translation>

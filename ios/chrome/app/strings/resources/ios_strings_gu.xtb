@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">કોડ સ્કેન કર્યો</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
 <translation id="1084365883616172403">Facebook પોસ્ટ પૂર્ણ કરી છે.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> ખોલી શકાઈ નથી</translation>
 <translation id="1096992026380844478">તમારા છેલ્લા બૅકઅપના આધારે તમારા સિંક સંબંધિત સેટિંગ રિસ્ટોર કરવામાં આવશે. <ph name="BEGIN_LINK" />તમે શું સિંક કરી શકો, તે જાણો<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />નો હંમેશાં અનુવાદ કરો</translation>
 <translation id="1108938384783527433">ઇતિહાસ સિંક કરો</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">નહીં, આભાર</translation>
 <translation id="2320166752086256636">કીબોર્ડ છુપાવો</translation>
 <translation id="2321086116217818302">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
+<translation id="2323697864063408084">તમારી લૉક સ્ક્રીન પર અને બૅનર તરીકે નોટિફિકેશન મેળવો જેથી તમારા માટે અગત્યનું હોય તે ક્યારેય ચૂકી ન જવાય</translation>
 <translation id="2326302612031521902">એકમ પસંદગીકર્તા</translation>
 <translation id="2330607597130465898">સુરક્ષા વિના</translation>
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">જૂથ શેર કરો</translation>
 <translation id="2673508731173059946">કૉપિ કરેલી લિંકની મુલાકાત લો</translation>
 <translation id="2687403674020088961">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
+<translation id="2688535388040882469">બૅનર</translation>
 <translation id="2690858294534178585">કૅમેરા ઉપયોગમાં છે</translation>
 <translation id="2691653761409724435">ઑફલાઇન ઉપલબ્ધ નથી</translation>
 <translation id="2696180352517415858">તમને તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવામાં આવશે નહીં. જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">ટૅબ પર જાઓ</translation>
 <translation id="3992684624889376114">આ પેજ વિશે</translation>
 <translation id="3994422733891749358">તમે મેળવવા હોય તે નોટિફિકેશન પસંદ કરો</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="3995521777587992544">પેજ લોડ પ્રોગ્રેસ બાર, <ph name="EMAIL" /> લોડ થયો.</translation>
 <translation id="3997522473364371632">તમારા ઍડમિનિસ્ટ્રેટરે પાસવર્ડ શેરિંગની સુવિધા બંધ કરી છે.</translation>
 <translation id="4002066346123236978">શીર્ષક</translation>
@@ -843,6 +847,7 @@
 <translation id="4936354130727646074">ક્યારેય ખસેડશો નહીં</translation>
 <translation id="4937410517508563815">એકાઉન્ટમાં પાસવર્ડ સાચવો</translation>
 <translation id="4938338714234463591">આ તમને વેબસાઇટ પર અમુક ચોક્કસ સુવિધાઓ સાથે તમારા વૉઇસનો ઉપયોગ કરવા દેશે.</translation>
+<translation id="4938716880833771969">તમારા નોટિફિકેશન શાંતિથી ડિલિવર થઈ રહ્યાં છે</translation>
 <translation id="4941089862236492464">માફ કરશો, તમારી આઇટમને શેર કરવામાં સમસ્યા આવી હતી.</translation>
 <translation id="4944543191714094452">પેજમાં શોધો…</translation>
 <translation id="4945756290001680296">પાસવર્ડના સેટિંગને ઍક્સેસ કરો</translation>
@@ -1609,6 +1614,7 @@
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="8349305172487531364">બુકમાર્ક બાર</translation>
+<translation id="8364563001733875155">તમારો પિન બદલવા માટે, પહેલા તમારા ડિવાઇસ પર પાસકોડનું સેટઅપ કરો.</translation>
 <translation id="8366466717204352506">તપાસ ક્યારેય ચાલી નથી</translation>
 <translation id="8368001212524806591">કિંમત ટ્રૅક કરો</translation>
 <translation id="8370406443343902172">સેટિંગ પર જાઓ...</translation>

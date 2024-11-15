@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Koden skannades</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} flik}other{{count} flikar}}</translation>
 <translation id="1084365883616172403">Inlägg på Facebook klart.</translation>
+<translation id="1085677983426914530">Det gick inte att öppna <ph name="FILENAME" />.</translation>
 <translation id="1096992026380844478">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. <ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Synkronisera historiken</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Nej tack</translation>
 <translation id="2320166752086256636">Dölj tangentbordet</translation>
 <translation id="2321086116217818302">Lösenorden förbereds …</translation>
+<translation id="2323697864063408084">Få aviseringar på låsskärmen och som banners så att du aldrig missar det som är viktigt för dig</translation>
 <translation id="2326302612031521902">Enhetsväljare</translation>
 <translation id="2330607597130465898">Inget skydd</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
@@ -384,6 +386,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2671423594960767771">Dela grupp</translation>
 <translation id="2673508731173059946">Besök kopierad länk</translation>
 <translation id="2687403674020088961">Blockera alla cookies (rekommenderas inte)</translation>
+<translation id="2688535388040882469">Banners</translation>
 <translation id="2690858294534178585">Kameran används</translation>
 <translation id="2691653761409724435">Ej tillgänglig offline</translation>
 <translation id="2696180352517415858">Du loggas inte ut från Google-kontot. <ph name="BEGIN_LINK" />Annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.
@@ -636,6 +639,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3986739045730058129">Öppna fliken</translation>
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="3994422733891749358">Välj vilka aviseringar du vill ta emot</translation>
+<translation id="3994522032746736727">Logga in som <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Förloppsindikator för inläsning av sidor, <ph name="EMAIL" /> har lästs in.</translation>
 <translation id="3997522473364371632">Lösenordsdelning har inaktiverats av administratören.</translation>
 <translation id="4002066346123236978">Titel</translation>
@@ -843,6 +847,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4936354130727646074">Flytta aldrig</translation>
 <translation id="4937410517508563815">Spara lösenord i kontot</translation>
 <translation id="4938338714234463591">Detta gör att du kan använda rösten med vissa funktioner på webbplatser.</translation>
+<translation id="4938716880833771969">Dina aviseringar levereras tyst</translation>
 <translation id="4941089862236492464">Det gick inte att dela objektet.</translation>
 <translation id="4944543191714094452">Hitta på sida …</translation>
 <translation id="4945756290001680296">Åtkomst till lösenordsinställningar</translation>
@@ -1609,6 +1614,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
 <translation id="8349305172487531364">Bokmärkesfältet</translation>
+<translation id="8364563001733875155">Om du vill ändra pinkoden måste du först ställa in ett lösenord på enheten.</translation>
 <translation id="8366466717204352506">Kontrollen har aldrig körts</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>
 <translation id="8370406443343902172">Öppna inställningarna …</translation>

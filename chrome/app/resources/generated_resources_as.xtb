@@ -449,6 +449,7 @@
 <translation id="1296911687402551044">বাছনি কৰা টেবটো পিন কৰক</translation>
 <translation id="1297175357211070620">গন্তব্যস্থান</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />ৰ বাবে প্ৰতিক্ৰিয়া পঠিয়াওক</translation>
+<translation id="129808599775632797">সংশোধন</translation>
 <translation id="130097046531636712">এইটোৱে নেপথ্যৰ কাৰ্যকলাপ আৰু মসৃণ স্ক্ৰ’লিঙৰ দৰে ভিজুৱেল ইফেক্টসমূহ সীমিত কৰি বেটাৰীৰ পাৱাৰ বৃদ্ধি কৰে</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" />এ তলৰ ফাইলসমূহ সম্পাদনা কৰিব পাৰে</translation>
 <translation id="130174306655812048">“Hey Google, এইটো কি গীত?” বুলি সুধি চাওক</translation>
@@ -1778,6 +1779,7 @@
 <translation id="2214018885812055163">শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;১টা শাৰী দেখুওৱা হোৱা নাই&gt;}one{&lt;<ph name="NUMBER_OF_LINES" />টা শাৰী দেখুওৱা হোৱা নাই&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />টা শাৰী দেখুওৱা হোৱা নাই&gt;}}</translation>
 <translation id="2215070081105889450">অডিঅ’ শ্বেয়াৰ কৰিবলৈ, ইয়াৰ সলনি এটা টেব অথবা স্ক্ৰীন এখন শ্বেয়াৰ কৰক</translation>
+<translation id="2217208085547223783">বিশ্বাসৰ স্থিতি</translation>
 <translation id="2218019600945559112">মাউচ আৰু টাচ্চ্‌পেড</translation>
 <translation id="2218515861914035131">নিকা পাঠ হিচাপে পে’ষ্ট কৰক</translation>
 <translation id="221872881068107022">ওলোটাকৈ স্ক্র’ল কৰাৰ সুবিধা</translation>
@@ -2512,6 +2514,7 @@
 <translation id="2722547199758472013">আইডি: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">অতিথিৰ প্ৰ’ফাইল খোলক</translation>
 <translation id="2723819893410108315">চিট্ৰন</translation>
+<translation id="2724822892847436256">সীমাবদ্ধতা</translation>
 <translation id="2724841811573117416">WebRTC লগ</translation>
 <translation id="272488616838512378">একক ৰূপান্তৰণ</translation>
 <translation id="2725200716980197196">নেটৱর্ক সংযোগ পুনঃস্থাপন কৰা হ’ল</translation>
@@ -3472,6 +3475,7 @@
 <translation id="3421835120203732951">নতুন প্ৰ’ফাইল যোগ দিয়ক</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />ত ফলাফল বিচাৰি পোৱা গৈছে</translation>
 <translation id="3423226218833787854">এই AI সুবিধাটোৰ বিষয়ে অধিক জানক</translation>
+<translation id="3423275441470187644">বিশ্বাস</translation>
 <translation id="3423463006624419153">আপোনাৰ '<ph name="PHONE_NAME_1" />' আৰু '<ph name="PHONE_NAME_2" />'ত:</translation>
 <translation id="3423858849633684918">অনুগ্ৰহ কৰি <ph name="PRODUCT_NAME" /> পুনৰ লঞ্চ কৰক</translation>
 <translation id="3424969259347320884">টেবটো ক্ৰেশ্ব হওঁতে আপুনি কি কৰি আছিল সেয়া বৰ্ণনা কৰক</translation>
@@ -4600,6 +4604,7 @@
 <translation id="4195643157523330669">নতুন টেবত খোলক</translation>
 <translation id="4195814663415092787">আপুনি পূর্বতে এৰাৰ পৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="4198268995694216131">অতিৰিক্ত ছাইট</translation>
+<translation id="4198420883535766848">সূচীৰ পৰা আঁতৰাওক</translation>
 <translation id="4200609364258658652">ভিডিঅ’ৰ ফ্ৰে’ম প্ৰতিলিপি কৰক</translation>
 <translation id="4200689466366162458">কাষ্টম শব্দ</translation>
 <translation id="4200983522494130825">নতুন &amp;টেব</translation>
@@ -5163,6 +5168,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{টেবৰ গোট মচিবনে?}one{টেবৰ গোট মচিবনে?}other{টেবৰ গোট মচিবনে?}}</translation>
 <translation id="4608500690299898628">&amp;বিচাৰক…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />এ কিবা আসোঁৱাহ পাইছে</translation>
+<translation id="4610493438923139095">অবিশ্বাসী</translation>
 <translation id="4610637590575890427">আপুনি <ph name="SITE" />লৈ যাব বিচাৰিছিল নেকি?</translation>
 <translation id="4611114513649582138">ডেটা সংযোগ নাই</translation>
 <translation id="4611759022973144129">আপুনি আপোনাৰ <ph name="DEVICE_TYPE" />ত ছাইন ইন কৰিবলৈ এই পাছৱৰ্ডটো ব্যৱহাৰ কৰিব পাৰে।</translation>
@@ -5188,6 +5194,7 @@
 <translation id="4627442949885028695">অন্য ডিভাইচৰ পৰা অব্যাহত ৰাখক</translation>
 <translation id="4628762811416793313">Linux কণ্টেনাৰৰ ছেট আপ সম্পূর্ণ হোৱা নাছিল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> প্ৰ’ফাইলটো খোলক</translation>
+<translation id="4629803160911640220">বিশ্বাসী</translation>
 <translation id="4631955550884380853">ফ’কাছ কৰা কণ্ঠধ্বনি</translation>
 <translation id="4632655012900268062">কাৰ্ড কাষ্টমাইজ কৰক</translation>
 <translation id="4633003931260532286">এক্সটেনশ্বনৰ বাবে অতিকমেও "<ph name="IMPORT_VERSION" />" সংস্কৰণৰ সৈতে "<ph name="IMPORT_NAME" />"ৰ প্ৰয়োজন কিন্তু কেৱল "<ph name="INSTALLED_VERSION" />" সংস্কৰণটো ইনষ্টল কৰা হৈছে</translation>
@@ -6844,6 +6851,7 @@
 <translation id="5842497610951477805">ব্লুটুথ সক্ষম কৰা আছে</translation>
 <translation id="5844284118433003733">আপুনি ছাইন ইন হৈ থকা অৱস্থাত, আপোনাক সমগ্ৰ Google সেৱাসমূহত সুৰক্ষিত কৰিবলৈ এই ডেটাখিনি আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰা হয়, উদাহৰণস্বৰূপে - কোনো সুৰক্ষা সম্পৰ্কীয় ঘটনাৰ পাছত Gmailত সুৰক্ষা বৃদ্ধি কৰা।</translation>
 <translation id="5844574845205796324">অন্বেষণ কৰিবলৈ নতুন সমলৰ পৰামৰ্শ দিয়ক</translation>
+<translation id="5844685625984052392">ইংগিত</translation>
 <translation id="5846200638699387931">ৰিলেশ্বন ছিণ্টেক্স আসোঁৱাহ: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">কোনো ছাঁ নাই</translation>
 <translation id="5846504156837627898">ছাইটৰ অনুমতি পৰিচালনা কৰক</translation>
@@ -7586,7 +7594,7 @@
 <translation id="6385382178401976503">কাৰ্ড: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">সকীয়নি - সবিশেষ লগিং সক্ষম কৰা হৈছে; তলত দিয়া লগসমূহত URL অথবা অন্য সংবেদনশীল তথ্য থাকিব পাৰে। এই তথ্যখিনি দাখিল কৰাক লৈ আপোনাৰ একো অসুবিধা নথকাটো অনুগ্ৰহ কৰি পৰ্যালোচনা কৰি নিশ্চিত কৰক।</translation>
 <translation id="6387674443318562538">উলম্বভাৱে বিভাজন কৰক</translation>
-<translation id="6388152137132427505">সদায় বিজ্ঞতাৰে শ্বেয়াৰ কৰক। লিংকৰ ম্যাদ ৪৮ ঘণ্টাত উকলিব।</translation>
+<translation id="6388152137132427505">সদায় ভাবি-চিন্তি শ্বেয়াৰ কৰক। লিংকৰ ম্যাদ ৪৮ ঘণ্টাত উকলিব।</translation>
 <translation id="6388429472088318283">ভাষাসমূহ ফিল্টাৰ কৰক</translation>
 <translation id="6388577073199278153">আপোনাৰ ম’বাইল একাউণ্টটো এক্সেছ কৰিব নোৱাৰি</translation>
 <translation id="6389957561769636527">টেবসমূহ সংগঠিত কৰক</translation>

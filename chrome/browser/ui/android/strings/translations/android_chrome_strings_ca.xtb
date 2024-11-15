@@ -127,6 +127,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1513858653616922153">Suprimeix la contrasenya</translation>
 <translation id="1521774566618522728">Actiu avui</translation>
 <translation id="153446405401665083">Hi ha una versió nova de Chrome disponible</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 adreça d'interès s'ha desat només en aquest dispositiu. Per utilitzar-la als teus altres dispositius, desa-la al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# adreces d'interès s'han desat només en aquest dispositiu. Per utilitzar-les als teus altres dispositius, desa-les al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Per gestionar el teu Compte de Google, toca el botó Gestiona el compte</translation>
@@ -142,6 +143,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1598163867407640634">Utilitza <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Quan l'opció està activada, utilitza i desa les dades al teu Compte de Google. Quan està desactivada, les dades només es desen en aquest dispositiu.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Suprimeix 1 element seleccionat}other{Suprimeix # elements seleccionats}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 adreça d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# adreces d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als teus altres dispositius, desa'ls al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="164269334534774161">Es mostra una còpia sense connexió d'aquesta pàgina creada el dia <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -802,6 +804,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4769632191812288342">Tens una protecció estàndard</translation>
 <translation id="4775646243557794597">S'ha suprimit: <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Encara no hi ha res per mostrar</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> és el teu motor de cerca predeterminat</translation>
 <translation id="4787736314074622408">Vols suprimir <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Informació sobre com et protegeix Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

@@ -448,6 +448,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1296911687402551044">Fixa la pestanya seleccionada</translation>
 <translation id="1297175357211070620">Destinació</translation>
 <translation id="129770436432446029">Envia suggeriments amb relació a <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modificacions</translation>
 <translation id="130097046531636712">Allarga la durada de la bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau.</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pot editar els fitxers següents</translation>
 <translation id="130174306655812048">Prova de dir "Hey Google, quina és aquesta cançó?"</translation>
@@ -1770,6 +1771,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2214018885812055163">Carpetes compartides</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Hi ha 1 línia que no es mostra&gt;}other{&lt;Hi ha <ph name="NUMBER_OF_LINES" /> línies que no es mostren&gt;}}</translation>
 <translation id="2215070081105889450">Per compartir l'àudio, comparteix una pestanya o una pantalla</translation>
+<translation id="2217208085547223783">Estat de confiança</translation>
 <translation id="2218019600945559112">Ratolí i ratolí tàctil</translation>
 <translation id="2218515861914035131">Enganxa com a text sense format</translation>
 <translation id="221872881068107022">Desplaçament invers</translation>
@@ -2501,6 +2503,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2722547199758472013">Identificador: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Obre el perfil de convidat</translation>
 <translation id="2723819893410108315">Groc verdós</translation>
+<translation id="2724822892847436256">Restriccions</translation>
 <translation id="2724841811573117416">Registres de WebRTC</translation>
 <translation id="272488616838512378">Conversió d'unitats</translation>
 <translation id="2725200716980197196">S'ha restablert la connectivitat de la xarxa</translation>
@@ -3459,6 +3462,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3421835120203732951">Afegeix un perfil nou</translation>
 <translation id="3423111258700187173">Resultats trobats a <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Més informació sobre aquesta funció d'IA</translation>
+<translation id="3423275441470187644">Confia-hi</translation>
 <translation id="3423463006624419153">A <ph name="PHONE_NAME_1" /> i <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Torneu a iniciar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Descriu què feies quan la pestanya s'ha bloquejat</translation>
@@ -4587,6 +4591,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4195814663415092787">Continua des d'on ho vaig deixar</translation>
 <translation id="4198268995694216131">Llocs web addicionals</translation>
+<translation id="4198420883535766848">Suprimeix la pestanya de la llista</translation>
 <translation id="4200609364258658652">Copia&amp; el fotograma</translation>
 <translation id="4200689466366162458">Paraules personalitzades</translation>
 <translation id="4200983522494130825">Pes&amp;tanya nova</translation>
@@ -5150,6 +5155,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vols suprimir el grup de pestanyes?}other{Vols suprimir els grups de pestanyes?}}</translation>
 <translation id="4608500690299898628">&amp;Cerca...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ha detectat un error</translation>
+<translation id="4610493438923139095">No és de confiança</translation>
 <translation id="4610637590575890427">Volíeu anar a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Connexió de dades disponible</translation>
 <translation id="4611759022973144129">Pots utilitzar aquesta contrasenya per iniciar la sessió al teu dispositiu (<ph name="DEVICE_TYPE" />).</translation>
@@ -5175,6 +5181,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4627442949885028695">Continua des d'un altre dispositiu</translation>
 <translation id="4628762811416793313">La configuració del contenidor de Linux no s'ha completat. Torna-ho a provar.</translation>
 <translation id="4629521233550547305">Obre el perfil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">De confiança</translation>
 <translation id="4631955550884380853">Veu enfocada</translation>
 <translation id="4632655012900268062">Personalitza les targetes</translation>
 <translation id="4633003931260532286">L'extensió requereix <ph name="IMPORT_NAME" /> amb <ph name="IMPORT_VERSION" /> com a versió mínima, però només hi ha instal·lada la versió <ph name="INSTALLED_VERSION" /></translation>
@@ -5425,6 +5432,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit {COUNT} adreces d'interès}}</translation>
 <translation id="481689174647911539">Aquest fitxer pot ser un virus o programari maliciós.<ph name="LINE_BREAK" />Pots enviar-lo a Navegació segura de Google per comprovar si no és segur. Les anàlisis solen tardar uns quants segons.</translation>
 <translation id="4816900689218414104">Crea una clau d'accés en un telèfon o una tauleta</translation>
+<translation id="481917177323309377">Pestanyes que fa <ph name="COUNT" /> dies o més que no has utilitzat</translation>
 <translation id="4819323978093861656">{0,plural, =0{S'està tancant ara.}=1{Es tancarà d'aquí a 1 segon}other{Es tancarà d'aquí a # segons}}</translation>
 <translation id="4819607494758673676">Notificacions de l'Assistent de Google</translation>
 <translation id="4819818293886748542">Obtén un enllaç a l'eina d'assistència</translation>
@@ -6828,6 +6836,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5842497610951477805">Activa el Bluetooth</translation>
 <translation id="5844284118433003733">Si tens la sessió iniciada, aquestes dades s'enllacen al teu Compte de Google per protegir-te als serveis de Google; per exemple, augmentant la protecció a Gmail després d'un incident de seguretat.</translation>
 <translation id="5844574845205796324">Suggereix contingut nou per explorar</translation>
+<translation id="5844685625984052392">Suggeriment</translation>
 <translation id="5846200638699387931">Error de sintaxi de la relació: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Sense ombra</translation>
 <translation id="5846504156837627898">Gestiona els permisos dels llocs web</translation>

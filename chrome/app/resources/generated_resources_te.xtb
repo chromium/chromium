@@ -331,8 +331,8 @@
 <translation id="1217483152325416304">మీ స్థానిక డేటా త్వరలో తొలగించబడుతుంది</translation>
 <translation id="1217668622537098248">చర్య తర్వాత తిరిగి ఎడమ క్లిక్ వద్దకు మారు</translation>
 <translation id="1218015446623563536">Linuxని తొలగించండి</translation>
-<translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />ఈ పరికర స్థానాన్ని అంచనా వేయడంలో సహాయపడటానికి Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వంటి మూలాధారాలను Google స్థాన సేవ ఉపయోగిస్తుంది.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />మీరు ఈ పరికరంలో ప్రధాన స్థాన సెట్టింగ్‌ని ఆఫ్ చేయడం ద్వారా స్థానాన్ని ఆఫ్ చేయవచ్చు. మీరు స్థాన సెట్టింగ్‌లలో స్థానం కోసం Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వినియోగాన్ని కూడా ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />ఈ పరికర లొకేషన్‌ను అంచనా వేయడానికి Google లొకేషన్ సర్వీస్, Wi‑Fiని, మొబైల్ నెట్‌వర్క్‌లను, సెన్సార్‌లను, ఇలాంటి ఇతర సోర్స్‌లను ఉపయోగిస్తుంది.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />మీరు ఈ పరికరంలో ప్రధాన లొకేషన్ సెట్టింగ్‌ను ఆఫ్ చేయడం ద్వారా లొకేషన్‌ను ఆఫ్ చేయవచ్చు. లొకేషన్ సెట్టింగ్స్‌లో లొకేషన్‌ కోసం Wi‑Fiని, మొబైల్ నెట్‌వర్క్‌లను, సెన్సార్‌లను వినియోగించకుండా కూడా ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1219134100826635117">మీ అడ్మినిస్ట్రేటర్ ఈ చర్యను బ్లాక్ చేశారు</translation>
 <translation id="1219219114431716687">ఫ్రూట్ టార్ట్</translation>
 <translation id="122082903575839559">సర్టిఫికెట్ సంతకం అల్గారిథమ్</translation>
@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">ఎంపిక చేసిన ట్యాబ్‌ను పిన్ చేయండి</translation>
 <translation id="1297175357211070620">గమ్యం</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />‌పై మీ ఫీడ్‌బ్యాక్‌ను పంపండి</translation>
+<translation id="129808599775632797">&amp;Modifications</translation>
 <translation id="130097046531636712">బ్యాక్‌గ్రౌండ్ యాక్టివిటీని, సున్నితమైన స్క్రోలింగ్ వంటి విజువల్ ఎఫెక్ట్‌లను పరిమితం చేయడం ద్వారా ఇది బ్యాటరీ పవర్‌ను పెంచుతుంది</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> కింది ఫైళ్లను సవరించగలదు</translation>
 <translation id="130174306655812048">"Ok Google, ఇది ఏ పాట?" అని అడిగి చూడండి</translation>
@@ -755,7 +756,7 @@
 <translation id="1523279371236772909">గత నెలలో చూశారు</translation>
 <translation id="1523978563989812243">టెక్ట్స్-టు-స్పీచ్ ఇంజిన్‌లు</translation>
 <translation id="1524563461097350801">వద్దు, ధన్యవాదాలు</translation>
-<translation id="1525740877599838384">స్థానాన్ని గుర్తించడానికి Wi-Fiని మాత్రమే ఉపయోగించండి</translation>
+<translation id="1525740877599838384">లొకేషన్‌ను గుర్తించడానికి Wi-Fiని మాత్రమే ఉపయోగించండి</translation>
 <translation id="152629053603783244">Linuxను రీస్టార్ట్ చేయండి</translation>
 <translation id="1526560967942511387">శీర్షికలేని డాక్యుమెంట్‌</translation>
 <translation id="1527336312600375509">మానిటర్ రిఫ్రెష్ రేటు</translation>
@@ -960,7 +961,7 @@
 <translation id="1647408325348388858"><ph name="FILE_NAME" />ను ఈ వెబ్ యాప్‌లో తెరిచి, ఎడిట్ చేయాలా?</translation>
 <translation id="1647986356840967552">మునుపటి పేజీ</translation>
 <translation id="1648439345221797326">ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="1648528859488547844">స్థానాన్ని గుర్తించడానికి Wi‑Fi లేదా మొబైల్ నెట్‌వర్క్‌లను ఉపయోగించండి</translation>
+<translation id="1648528859488547844">లొకేషన్‌ను గుర్తించడానికి Wi‑Fi లేదా మొబైల్ నెట్‌వర్క్‌లను ఉపయోగించండి</translation>
 <translation id="164936512206786300">బ్లూటూత్ పరికరాన్ని అన్‌పెయిర్ చేయండి</translation>
 <translation id="1650407365859096313">కొత్త ట్యాబ్‌లో తెరవబడుతుంది, అనుమతిని <ph name="PERMISSION_STATE" /></translation>
 <translation id="1650801028905250434">నా డ్రైవ్‌లోని మీ ఫైల్స్ ఆటోమేటిక్‌గా మీ Chromebookకు సింక్ అవుతాయి, కాబట్టి మీరు ఇంటర్నెట్ కనెక్షన్ లేకుండానే వాటిని యాక్సెస్ చేయగలరు. మీరు దీన్ని ఎప్పుడైనా సెట్టింగ్‌లు &gt; ఫైల్స్‌లో మార్చవచ్చు.</translation>
@@ -1778,6 +1779,7 @@
 <translation id="2214018885812055163">షేర్ చేసిన ఫోల్డర్‌లు</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 పంక్తి చూపబడలేదు&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> పంక్తులు చూపబడలేదు&gt;}}</translation>
 <translation id="2215070081105889450">ఆడియోను షేర్ చేయడానికి బదులుగా ట్యాబ్ లేదా స్క్రీన్‌ను షేర్ చేయండి</translation>
+<translation id="2217208085547223783">ట్రస్ట్ స్టేట్</translation>
 <translation id="2218019600945559112">మౌస్ మరియు టచ్‌ప్యాడ్</translation>
 <translation id="2218515861914035131">సాధారణ టెక్స్ట్ లాగా పేస్ట్ చేయండి</translation>
 <translation id="221872881068107022">రివర్స్ స్క్రోలింగ్</translation>
@@ -2512,6 +2514,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">గెస్ట్ ప్రొఫైల్‌ను తెరవండి</translation>
 <translation id="2723819893410108315">సిట్రాన్</translation>
+<translation id="2724822892847436256">పరిమితులు</translation>
 <translation id="2724841811573117416">WebRTC లాగ్‌లు</translation>
 <translation id="272488616838512378">యూనిట్ మార్పిడి</translation>
 <translation id="2725200716980197196">నెట్‌వర్క్ కనెక్టివిటీ పునరుద్ధరించబడింది</translation>
@@ -3472,6 +3475,7 @@
 <translation id="3421835120203732951">కొత్త ప్రొఫైల్‌ను జోడించండి</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />‌లో ఫలితాలు కనుగొనబడ్డాయి</translation>
 <translation id="3423226218833787854">ఈ AI ఫీచర్ గురించి మరింత తెలుసుకోండి</translation>
+<translation id="3423275441470187644">ట్రస్ట్</translation>
 <translation id="3423463006624419153">మీ '<ph name="PHONE_NAME_1" />' మరియు '<ph name="PHONE_NAME_2" />'లో:</translation>
 <translation id="3423858849633684918">దయచేసి  <ph name="PRODUCT_NAME" />ని తిరిగి ప్రారంభించండి</translation>
 <translation id="3424969259347320884">ట్యాబ్ క్రాష్ అయిన సమయంలో మీరు ఏం చేస్తున్నారో వివరించండి</translation>
@@ -4601,6 +4605,7 @@
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="4195814663415092787">ఇంతకు ముందు ఆపిన చోట నుండే కొనసాగించండి</translation>
 <translation id="4198268995694216131">అదనపు సైట్‌లు</translation>
+<translation id="4198420883535766848">లిస్ట్ నుండి ట్యాబ్‌ను తీసివేయండి</translation>
 <translation id="4200609364258658652">వీడియో ఫ్రేమ్‌ను కాపీ చేయండి</translation>
 <translation id="4200689466366162458">అనుకూల పదాలు</translation>
 <translation id="4200983522494130825">కొత్త &amp;టాబ్</translation>
@@ -5164,6 +5169,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ట్యాబ్ గ్రూప్‌ను తొలగించాలా?}other{ట్యాబ్ గ్రూప్‌లను తొలగించాలా?}}</translation>
 <translation id="4608500690299898628">&amp;కనుగొను...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />‌కు ఎర్రర్ ఎదురైంది</translation>
+<translation id="4610493438923139095">ట్రస్ట్ చేయలేనిది</translation>
 <translation id="4610637590575890427">మీరు <ph name="SITE" />కు వెళ్లాలనుకుంటున్నారా?</translation>
 <translation id="4611114513649582138">డేటా కనెక్షన్ అందుబాటులో ఉంది</translation>
 <translation id="4611759022973144129">మీ <ph name="DEVICE_TYPE" />కి సైన్ ఇన్ చేయడానికి మీరు ఈ పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు.</translation>
@@ -5189,6 +5195,7 @@
 <translation id="4627442949885028695">మరో పరికరం నుండి కొనసాగించండి</translation>
 <translation id="4628762811416793313">Linux కంటెయినర్ సెటప్ పూర్తి కాలేదు. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> ప్రొఫైల్‌ను తెరవు</translation>
+<translation id="4629803160911640220">ట్రస్ట్ చేయదగినది</translation>
 <translation id="4631955550884380853">ఫోకస్డ్ వాయిస్</translation>
 <translation id="4632655012900268062">కార్డ్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="4633003931260532286">"<ph name="IMPORT_NAME" />" యొక్క వెర్షన్ కనీసం "<ph name="IMPORT_VERSION" />" ఉండాలని ఎక్స్‌టెన్షన్ కోరుతోంది, కానీ "<ph name="INSTALLED_VERSION" />" వెర్షన్ మాత్రమే ఇన్‌స్టాల్ చేయబడి ఉంది</translation>
@@ -5439,6 +5446,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 బుక్‌మార్క్ తొలగించబడింది}other{{COUNT} బుక్‌మార్క్‌లు తొలగించబడ్డాయి}}</translation>
 <translation id="481689174647911539">ఈ ఫైల్ వైరస్ లేదా మాల్‌వేర్ కావచ్చు.<ph name="LINE_BREAK" />మీరు దీన్ని Google సురక్షిత బ్రౌజింగ్‌కి పంపి అది సురక్షితం కాదు అని చెక్ చేయవచ్చు. స్కాన్స్ చేయడానికి సాధారణంగా కొన్ని సెకన్ల సమయం పడుతుంది.</translation>
 <translation id="4816900689218414104">ఫోన్ లేదా టాబ్లెట్‌లో పాస్-కీని క్రియేట్ చేయండి</translation>
+<translation id="481917177323309377"><ph name="COUNT" /> లేదా అంతకంటే ఎక్కువ రోజులుగా మీరు ఉపయోగించని ట్యాబ్‌లు</translation>
 <translation id="4819323978093861656">{0,plural, =0{ఇప్పుడు మూసివేయబడుతోంది.}=1{మూసివేయబడటానికి మిగిలి ఉన్న సమయం: 1 సెకను}other{మూసివేయబడటానికి మిగిలి ఉన్న సమయం: # సెకన్లు}}</translation>
 <translation id="4819607494758673676">Google Assistant నోటిఫికేషన్‌లు</translation>
 <translation id="4819818293886748542">సపోర్ట్ టూల్ లింక్‌ను పొందండి</translation>
@@ -6040,7 +6048,7 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" />‌ను ఎంచుకోండి</translation>
 <translation id="5249624017678798539">డౌన్‌లోడ్ పూర్తి కావడానికి ముందే బ్రౌజర్ క్రాష్ అయింది.</translation>
 <translation id="5249818097095743806">మీ సెక్యూరిటీ కీని ఉపయోగించండి</translation>
-<translation id="5250372599208556903">స్థానిక కంటెంట్‌ని అందించడానికి <ph name="SEARCH_ENGINE_NAME" /> మీ స్థానాన్ని ఉపయోగిస్తుంది. మీరు దీన్ని <ph name="SETTINGS_LINK" />లో మార్చవచ్చు.</translation>
+<translation id="5250372599208556903">లోకల్ కంటెంట్‌ను అందించడానికి <ph name="SEARCH_ENGINE_NAME" /> మీ లొకేషన్‌ను ఉపయోగిస్తుంది. మీరు దీన్ని <ph name="SETTINGS_LINK" />లో మార్చవచ్చు.</translation>
 <translation id="5252653240322147470">PIN తప్పనిసరిగా కనీసం <ph name="MAXIMUM" /> కంటే తక్కువ అంకెలు ఉండాలి</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" />ను ఉపయోగించండి</translation>
 <translation id="5254233580564156835">మెమరీ వినియోగం: <ph name="MEMORY_USAGE" /></translation>
@@ -6843,6 +6851,7 @@
 <translation id="5842497610951477805">బ్లూటూత్‌ను ప్రారంభించండి</translation>
 <translation id="5844284118433003733">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచడం కోసం ఈ డేటా మీ Google ఖాతాకు లింక్ చేయబడుతుంది, ఉదాహరణకు సెక్యూరిటీకి సంబంధించిన ఒక సంఘటన జరిగిన తర్వాత Gmailలో రక్షణను పెంచడం జరుగుతుంది.</translation>
 <translation id="5844574845205796324">అన్వేషించడానికి కొత్త కంటెంట్‌ను సూచించండి</translation>
+<translation id="5844685625984052392">సూచన</translation>
 <translation id="5846200638699387931">రిలేషన్ సింటాక్స్ ఎర్రర్: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">షాడో ఏదీ కనుగొనబడలేదు</translation>
 <translation id="5846504156837627898">సైట్ అనుమతులను మేనేజ్ చేయండి</translation>
@@ -7112,8 +7121,8 @@
 <translation id="6039651071822577588">నెట్‌వర్క్ ఫీచర్ నిఘంటువు తప్పు ఫార్మాట్‌లో ఉంది</translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6040756649917982069">{COUNT,plural, =0{సర్టిఫికెట్‌లేవీ లేవు}=1{1 సర్టిఫికెట్}other{{COUNT} సర్టిఫికెట్‌లు}}</translation>
-<translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />మీ పరికర స్థానాన్ని అంచనా వేయడంలో సహాయపడటానికి Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వంటి మూలాధారాలను Google స్థాన సేవ ఉపయోగిస్తుంది.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />మీరు మీ పరికరంలో ప్రధాన స్థాన సెట్టింగ్‌ని ఆఫ్ చేయడం ద్వారా స్థానాన్ని ఆఫ్ చేయవచ్చు. మీరు స్థాన సెట్టింగ్‌లలో స్థానం కోసం Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వినియోగాన్ని కూడా ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />ఈ పరికర లొకేషన్‌ను అంచనా వేయడానికి Google లొకేషన్ సర్వీస్, Wi‑Fiని, మొబైల్ నెట్‌వర్క్‌లను, సెన్సార్‌లను, ఇలాంటి ఇతర సోర్స్‌లను ఉపయోగిస్తుంది.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />మీరు ఈ పరికరంలో ప్రధాన లొకేషన్ సెట్టింగ్‌ను ఆఫ్ చేయడం ద్వారా లొకేషన్‌ను ఆఫ్ చేయవచ్చు. లొకేషన్‌ కోసం Wi‑Fiని, మొబైల్ నెట్‌వర్క్‌లను, సెన్సార్‌లను వినియోగించకుండా లొకేషన్ సెట్టింగ్స్‌లో కూడా ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
 <translation id="604388835206766544">కాన్ఫిగరేషన్ అన్వయింపు విఫలమైంది</translation>
 <translation id="6043994281159824495">ఇప్పుడే సైన్ అవుట్ చేయి</translation>
@@ -7528,7 +7537,7 @@
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> కోసం కొత్త ప్రొఫైల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6340071272923955280">ఇంటర్నెట్ ముద్రణ ప్రోటోకాల్ (IPPS)</translation>
 <translation id="6340526405444716530">వ్యక్తిగతీకరణ</translation>
-<translation id="6341850831632289108">మీ భౌతిక స్థానాన్ని గుర్తించండి</translation>
+<translation id="6341850831632289108">మీ ఫిజికల్‌ లొకేషన్‌ను గుర్తించండి</translation>
 <translation id="6342069812937806050">ఇప్పుడే</translation>
 <translation id="6343003829431264373">సరి సంఖ్య పేజీలు మాత్రమే</translation>
 <translation id="6343262564968371601">Googleను, ఫైల్స్‌ను, యాప్‌లను మరిన్నింటిని సెర్చ్ చేయడం ద్వారా మీరు వెతుకుతున్న దాన్ని కనుగొనండి</translation>
@@ -7898,7 +7907,7 @@
 <translation id="6615455863669487791">నాకు చూపించు</translation>
 <translation id="6618744767048954150">రన్ అవుతున్నాయి</translation>
 <translation id="6619058681307408113">లైన్ ప్రింటర్ డెమాన్ (LPD)</translation>
-<translation id="661907246513853610">సైట్ మీ స్థానాన్ని ట్రాక్ చేయవచ్చు</translation>
+<translation id="661907246513853610">సైట్ మీ లొకేషన్‌ను ట్రాక్ చేయవచ్చు</translation>
 <translation id="6619243162837544323">నెట్‌వర్క్ స్థితి</translation>
 <translation id="6619801788773578757">కియోస్క్ అప్లికేషన్‌ని జోడించండి</translation>
 <translation id="6619990499523117484">మీ PINను నిర్ధారించండి</translation>
@@ -9070,7 +9079,7 @@
 <translation id="7455988709578031708">మీ బ్రౌజింగ్ హిస్టరీ ఆధారంగా. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
 <translation id="7456142309650173560">డెవలపర్</translation>
 <translation id="7456774706094330779">పొడిగించిన ప్రీ - లోడింగ్</translation>
-<translation id="7456847797759667638">స్థానాన్ని తెరువు...</translation>
+<translation id="7456847797759667638">లొకేషన్‌ను తెరవండి...</translation>
 <translation id="7457027286267861992">తగినంత డిస్క్ స్పేస్ లేదు. దయచేసి మరింత డిస్క్ స్పేస్‌ను ఖాళీ చేసి, మళ్లీ ట్రై చేయండి. ఎర్రర్ కోడ్ <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{లింక్}other{# లింక్‌లు}}</translation>
 <translation id="7458168200501453431">Google Searchలో ఉపయోగించే స్పెల్ చెకర్‌నే ఇక్కడ ఉపయోగిస్తుంది. మీరు బ్రౌజర్‌లో టైప్ చేసే టెక్స్ట్‌ను Googleకు పంపుతుంది.</translation>
@@ -10831,7 +10840,7 @@
 <translation id="8693862390730570097">"రాయడంలో సహాయం పొందండి" ఫీచర్ ఆటోమేటిక్‌గా తెరుచుకొనేలా అనుమతించవద్దు</translation>
 <translation id="8694596275649352090">స్లీప్‌లో ఉన్నప్పుడు లేదా మూత మూసి ఉన్నప్పుడు లాక్ అవుతుంది</translation>
 <translation id="8695139659682234808">సెటప్ పూర్తి అయ్యాక తల్లిదండ్రుల నియంత్రణలను జోడించండి</translation>
-<translation id="8695825812785969222">స్థానాన్ని &amp;తెరువు...</translation>
+<translation id="8695825812785969222">లొకేషన్‌ను &amp;తెరవండి...</translation>
 <translation id="8698269656364382265">మునుపటి స్క్రీన్‌కు తిరిగి వెళ్లడానికి, ఎడమ వైపు నుండి స్వైప్ చేయండి.</translation>
 <translation id="8698432579173128320">Google Driveకు బ్యాకప్ చేయండి. ఏ సమయంలో అయినా సులభంగా మీ డేటాను రీస్టోర్ చేయండి లేదా పరికరాన్ని మార్చండి. ఈ బ్యాకప్‌లో యాప్ డేటా ఉంటుంది. బ్యాకప్‌లు Googleకు అప్‌లోడ్ అవుతాయి, అలాగే మీ Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించి ఎన్‌క్రిప్ట్ అవుతాయి. <ph name="BEGIN_LINK1" />బ్యాకప్ గురించి మరింత తెలుసుకోండి<ph name="BEGIN_LINK1_END" />మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">అప్లికేషన్‌ల మెనూ</translation>
@@ -11142,7 +11151,7 @@
 <translation id="8907701755790961703">దయచేసి దేశాన్ని ఎంచుకోండి</translation>
 <translation id="8908420399006197927">సూచించబడిన గ్రూప్ నుండి ట్యాబ్‌ను మినహాయించండి</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> అన్ఇన్‌స్టాల్ చేయబడింది</translation>
-<translation id="8909833622202089127">సైట్ మీ స్థానాన్ని ట్రాక్ చేస్తోంది</translation>
+<translation id="8909833622202089127">సైట్ మీ లొకేషన్‌ను ట్రాక్ చేస్తోంది</translation>
 <translation id="8910222113987937043">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల‌లో మార్పులు మీ Google ఖాతాకు ఇకపై సింక్ చేయ‌బడవు. అయినప్పటికీ, ఇప్పటికే ఉన్న మీ డేటా Google ఖాతాలో స్టోరేజ్‌ చేయబడుతుంది. <ph name="BEGIN_LINK" />Google డాష్‌బోర్డ్<ph name="END_LINK" />లో నిర్వహించబడుతుంది.</translation>
 <translation id="8910987510378294980">పరికర లిస్ట్‌ను దాచండి</translation>
 <translation id="8912362522468806198">Google ఖాతా</translation>

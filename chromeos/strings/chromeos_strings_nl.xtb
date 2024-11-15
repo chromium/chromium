@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1191518099344003522">APN staat aan.</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
+<translation id="1196264380943975940">Kan niet samenvatten. Probeer een langer transcript.</translation>
 <translation id="1196959502276349371">Versie <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Afspelen/Onderbreken</translation>
 <translation id="1201402288615127009">Volgende</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Fabrikant</translation>
 <translation id="467510802200863975">De wachtwoorden komen niet overeen</translation>
 <translation id="467715984478005772">Vermoedelijke firewall</translation>
+<translation id="4678534708181186163">Kan niet samenvatten. Probeer een korter transcript.</translation>
 <translation id="4683762547447150570">Tik op de knop om de focus op de toetstoewijzing te plaatsen</translation>
 <translation id="4691278870498629773">Gestopt: lade ontbreekt</translation>
 <translation id="469379815867856270">Signaalsterkte</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Batterijconditie</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="517075088756846356">Koppel de stroomkabel van je <ph name="DEVICE_NAME" /> los en sluit deze weer aan om door te gaan met het updateproces</translation>
+<translation id="5178021559562393163">Kan geen namen maken. Probeer een korter transcript.</translation>
 <translation id="5180108905184566358">baobabbomen</translation>
 <translation id="5180712487038406644">Expressief</translation>
 <translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteit</translation>
 <translation id="5317780077021120954">Opslaan</translation>
+<translation id="5318310531701770497">Kan geen namen maken. Probeer een langer transcript.</translation>
 <translation id="5318334351163689047">Mislukte TCP-verzoeken</translation>
 <translation id="53196409393069519">Transcriptie aanzetten?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

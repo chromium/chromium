@@ -5432,6 +5432,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4816336393325437908">{COUNT,plural, =1{1 järjehoidja kustutati}other{{COUNT} järjehoidjat kustutati}}</translation>
 <translation id="481689174647911539">See fail võib olla viirus või pahavara.<ph name="LINE_BREAK" />Võite selle saata teenusele Google'i ohutu sirvimine, et kontrollida, kas see on ohtlik. Tavaliselt võtab kontrollimine paar sekundit.</translation>
 <translation id="4816900689218414104">Looge telefonis või tahvelarvutis pääsuvõti</translation>
+<translation id="481917177323309377">Vahelehed, mida te ei ole vähemalt <ph name="COUNT" /> päeva kasutanud</translation>
 <translation id="4819323978093861656">{0,plural, =0{Suletakse kohe.}=1{Suletakse 1 sekundi pärast}other{Suletakse # sekundi pärast}}</translation>
 <translation id="4819607494758673676">Google'i assistendi märguanded</translation>
 <translation id="4819818293886748542">Toetööriista lingi hankimine</translation>

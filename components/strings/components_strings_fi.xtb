@@ -1412,6 +1412,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="353816159217417898">Näyttö (sivullinen)</translation>
 <translation id="3542628208405253498">Kuva kortista</translation>
 <translation id="3542768452570884558">Avaa linkki uudessa ikkunassa</translation>
+<translation id="3543935938072367282">Maksa nopeammin automaattisen täytön avulla</translation>
 <translation id="3547442767634383572">Työprofiilin yleiskatsaus</translation>
 <translation id="3547746132308051926">20 x 24 tuumaa</translation>
 <translation id="3550325450190222557">Lähetä palautetta tekoälyä hyödyntävästä automaattisesta täytöstä.</translation>
@@ -1580,6 +1581,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3801297763951514916">Käyt sivustolla usein</translation>
 <translation id="380329542618494757">Nimi</translation>
 <translation id="3803801106042434208">Nämä hakukoneet ovat suosittuja alueellasi</translation>
+<translation id="380666903981445943">Tallenna maksutapa Google-tilillesi, niin se täytetään automaattisesti Chromessa tehtäviä ostoksia varten</translation>
 <translation id="3807366285948165054">Kuvan X vaihto</translation>
 <translation id="3807709094043295184">Klassinen rock ja ikivihreät</translation>
 <translation id="3807873520724684969">Haitallinen sisältö estetty</translation>
@@ -1736,6 +1738,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4102567721634170493">Paikalliset uutiset</translation>
 <translation id="4103249731201008433">Laitteen sarjanumero on virheellinen</translation>
 <translation id="4103592298805904008">Pahvi (yksikerroksinen)</translation>
+<translation id="4104702906064390950">Tallennetaan IBAN-tietoja</translation>
 <translation id="4106887816571530227">Upotettu sisältö ei ole sallittua</translation>
 <translation id="4110652170750985508">Tarkasta maksu</translation>
 <translation id="4111546256784973544">Paintball</translation>
@@ -3053,6 +3056,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6499038740797743453">Vaihdetaanko salasana?</translation>
 <translation id="6502510275417601303">Ilmoitus uudesta maksuasetuksesta on suljettu</translation>
 <translation id="6502991525169604759">Ilman muutoksia</translation>
+<translation id="6505072878288254563">Käännetään</translation>
 <translation id="6506959208958864820">Kirjekuori</translation>
 <translation id="6507117483253822672">Kirjoita itsevarmasti millä tahansa sivustolla</translation>
 <translation id="6508722015517270189">Käynnistä Chrome uudelleen.</translation>

@@ -318,6 +318,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1206832039833782423">Sikkerhetskoden finner du på baksiden av kortet</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Slett gruppen}other{Slett gruppene}}</translation>
 <translation id="1208392090861059168">Den nåværende tidsplanen er satt til <ph name="SUNRISE" />–<ph name="SUNSET" />. For å oppdatere tidsplanen for solnedgang og soloppgang automatisk, <ph name="BEGIN_LINK" />slå på posisjonstilgang for systemet<ph name="END_LINK" />.</translation>
+<translation id="1210376751550516429">Velg en lydenhet</translation>
 <translation id="1210678701920254279">Se eller legg til skrivere, og se aktive utskriftsjobber</translation>
 <translation id="1211769675100312947">Snarveiene er utvalgt av deg</translation>
 <translation id="1213254615020057352">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen bedre for barnet ditt ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne innstillingen håndheves av eieren. Eieren kan velge å sende diagnostikk- og bruksdata for denne enheten til Google. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto.</translation>
@@ -402,6 +403,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1264083566674525434">Rediger nettstedstillatelser</translation>
 <translation id="1264337193001759725">For å se nettverks-UI-logger, se: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1264956950255940376">Mys med venstre øye</translation>
+<translation id="1265094893042958831">Genererer forslag for denne siden …</translation>
 <translation id="1265279736024499987">Appene og innstillingene dine blir synkronisert på alle ChromeOS Flex-enheter hvor du er logget på med Google-kontoen din. For å finne alternativer for nettlesersynkronisering, gå til<ph name="LINK_BEGIN" />Chrome-innstillingene<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Målspråket:</translation>
 <translation id="1267649802567297774">Generert bilde <ph name="INDEX" /> av <ph name="SUBJECT" /> i <ph name="STYLE" />-stil og med <ph name="MOOD" />-stemning.</translation>
@@ -4408,6 +4410,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4047345532928475040">I/T</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Gå til startskjermen</translation>
+<translation id="4048295959689903187">Velg lydenhet</translation>
 <translation id="4048384495227695211">Vis <ph name="FILE_NAME" /> i mappen</translation>
 <translation id="404894744863342743">Når du er ferdig med å bruke den nedlastede filen, sletter du den slik at andre som bruker denne enheten, ikke kan se passordene dine.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt er ikke tilgjengelig. For å bruke nærdeling med vedkommende må du legge til e-postadressen som er knyttet til vedkommendes Google-konto, i kontaktene dine.}other{# kontakter er ikke tilgjengelige. For å bruke nærdeling med dem må du legge til e-postadressene som er knyttet til Google-kontoene deres, i kontaktene dine.}}</translation>
@@ -5316,6 +5319,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4730492586225682674">Vis det siste pekepenn-notatet på låseskjermen</translation>
 <translation id="4730888769809690665">Varsler er tillatt for <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Nettsteder som kan bruke informasjon de har lagret om deg</translation>
+<translation id="4732799736617504962">Den tilkoblede mikrofonen støtter bare støyreduksjon</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (venstre)</translation>
 <translation id="4733793249294335256">Sted</translation>
 <translation id="473546211690256853">Denne kontoen administreres av <ph name="DOMAIN" />.</translation>
@@ -5388,6 +5392,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4789348252524569426">Kan ikke installere talefiler. Enheten må oppdateres. Start enheten på nytt, og prøv igjen.</translation>
 <translation id="4789550509729954245">Vis et varsel når enheter deler i nærheten</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4791200512372376561">Ingen forslag er tilgjengelige. Prøv å spørre om ting som «oppsummer denne siden» eller stille spørsmål selv.</translation>
 <translation id="4791793693640849493">Lagre elementer i kontoen</translation>
 <translation id="4792290259143007505">Slå på TrackPoint-akselerasjon</translation>
 <translation id="4792711294155034829">&amp;Rapporter et problem</translation>
@@ -6070,6 +6075,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5276357196618041410">Kan ikke lagre konfigurasjonen uten pålogging først</translation>
 <translation id="5277127016695466621">Vis sidepanelet</translation>
 <translation id="5278823018825269962">Status-ID</translation>
+<translation id="5279214046729249716">Ja, hold dem atskilt</translation>
 <translation id="5279600392753459966">Blokkér alle</translation>
 <translation id="5280064835262749532">Oppdater legitimasjonen for <ph name="SHARE_PATH" /></translation>
 <translation id="5280335021886535443">Trykk på |<ph name="ACCELERATOR" />| for å fokusere på denne boblen.</translation>

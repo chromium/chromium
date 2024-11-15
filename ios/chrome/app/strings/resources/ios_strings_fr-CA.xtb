@@ -781,6 +781,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4647758699119474035">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erreur de compte Google. Ouvrez le menu du compte.</translation>
 <translation id="4650125387981512669">Continuer comme <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Masquer après 1 minute}one{Masquer après {count} minute}other{Masquer après {count} minutes}}</translation>
 <translation id="4652817563047461855">Assurez-vous que vos mots de passe sont sûrs, découvrez s'ils ont été compromis et obtenez des conseils pour vous protéger en ligne. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Enregistrer</translation>
 <translation id="4668929960204016307">,</translation>

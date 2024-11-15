@@ -362,6 +362,7 @@
 <translation id="2589921777872778654">Menu per modificare o eliminare</translation>
 <translation id="2597774443162333062">I file verranno inviati a Google per il debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate}}</translation>
+<translation id="261322795497077164">Identificazione dei relatori</translation>
 <translation id="2617397783536231890">cotone</translation>
 <translation id="2618015542787108131">una duna di sabbia</translation>
 <translation id="2619761439309613843">Aggiornam. quotidiano</translation>
@@ -442,6 +443,7 @@
 <translation id="3140130301071865159">neve</translation>
 <translation id="3146655726035122603">In esclusiva per <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dati mobili</translation>
+<translation id="3153094818810437149">Puoi modificare questa scelta in seguito nelle impostazioni di Registratore</translation>
 <translation id="3156511682997763015">Avanti di 10 secondi</translation>
 <translation id="3156846309055100599">Scansione pagina <ph name="PAGE_NUMBER" /> in corso…</translation>
 <translation id="315738237743207937">Captive portal rilevato</translation>
@@ -564,6 +566,7 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">OFF: questa impostazione è gestita dall'amministratore</translation>
 <translation id="380097101658023925">Controlli RGB</translation>
+<translation id="380493988330050229">Impossibile creare un riepilogo per trascrizioni in questa lingua</translation>
 <translation id="38114475217616659">Cancella tutta la cronologia</translation>
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="382043424867370667">Sfondo Tramonto</translation>
@@ -736,6 +739,7 @@
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4594021849294327751">Crea trascrizione</translation>
+<translation id="4594541568452132351">Seleziona la lingua della trascrizione e scarica il modello</translation>
 <translation id="4607282946861182308">Impossibile creare immagini di quanto richiesto. Prova un altro comando.</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
 <translation id="4623061655523261501">Nomi di registrazione generati correttamente</translation>
@@ -1104,6 +1108,7 @@
 <translation id="6359919876285606596">Questa azione è definitiva e non può essere annullata</translation>
 <translation id="6368342879959028556">Quando selezioni "Crea con l'AI", scrivi un prompt personalizzato. In alternativa, puoi selezionare "Sfondi AI" per scegliere un tema e poi selezionare le parole sottolineate per personalizzare il tuo sfondo creato dall'AI.</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
+<translation id="6369221585240879141">Impossibile creare nomi di registrazioni per trascrizioni in questa lingua</translation>
 <translation id="6373461326814131011">stagno</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Testare la tastiera</translation>
@@ -1278,6 +1283,7 @@
 <translation id="7130438335435247835">Nome punto di accesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server dei nomi}other{Server dei nomi}}</translation>
 <translation id="7135814714616751706">Cerca scorciatoie</translation>
+<translation id="7138614237884624401">Testo semplificato</translation>
 <translation id="7141470099673912333">Trasferimento contenuti</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
@@ -1699,6 +1705,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="9100765901046053179">Impostazioni avanzate</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>
+<translation id="9108856746036501072">Registratore può creare trascrizioni per le registrazioni con parlato. Nel passaggio successivo, devi selezionare la lingua della trascrizione e scaricare il modello (fino a 100 MB).</translation>
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="9122492456897874028">Riassumi i contenuti, ottieni definizioni e altro ancora</translation>
 <translation id="9122602430962285795">Per riconnetterti, vai alle Impostazioni</translation>

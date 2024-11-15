@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1191518099344003522">APN đã bật.</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
+<translation id="1196264380943975940">Không tóm tắt được. Hãy thử một bản chép lời dài hơn.</translation>
 <translation id="1196959502276349371">Phiên bản <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Phát/tạm dừng</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Nhà sản xuất</translation>
 <translation id="467510802200863975">Mật khẩu không khớp</translation>
 <translation id="467715984478005772">Tin là có tường lửa</translation>
+<translation id="4678534708181186163">Không tóm tắt được. Hãy thử một bản chép lời ngắn hơn.</translation>
 <translation id="4683762547447150570">Nhấn vào nút này để tập trung vào việc gán phím</translation>
 <translation id="4691278870498629773">Đã dừng – Thiếu khay</translation>
 <translation id="469379815867856270">Cường độ tín hiệu</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Tình trạng pin</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="517075088756846356">Hãy rút cáp nguồn của <ph name="DEVICE_NAME" /> ra rồi cắm lại để tiếp tục quá trình cập nhật</translation>
+<translation id="5178021559562393163">Không tạo được tên. Hãy thử một bản chép lời ngắn hơn.</translation>
 <translation id="5180108905184566358">cây bao báp</translation>
 <translation id="5180712487038406644">Tự sáng tạo</translation>
 <translation id="5190187232518914472">Hồi tưởng lại những kỷ niệm đáng nhớ của bạn. Để thêm hoặc chỉnh sửa album, hãy chuyển đến <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Nhận dạng</translation>
 <translation id="5317780077021120954">Lưu</translation>
+<translation id="5318310531701770497">Không tạo được tên. Hãy thử một bản chép lời dài hơn.</translation>
 <translation id="5318334351163689047">Không gửi được yêu cầu TCP</translation>
 <translation id="53196409393069519">Bạn muốn bật tính năng chép lời?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

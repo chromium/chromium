@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">Пад кіраваннем бацькоў</translation>
 <translation id="4647758699119474035">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Памылка Уліковага запісу Google. Адкрыйце меню ўліковага запісу.</translation>
 <translation id="4650125387981512669">Працягнуць як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Хаваць праз 1 хвіліну}one{Хаваць праз {count} хвіліну}few{Хаваць праз {count} хвіліны}many{Хаваць праз {count} хвілін}other{Хаваць праз {count} хвіліны}}</translation>
 <translation id="4652817563047461855">Захоўвайце свае паролі ў бяспецы, будзьце ў курсе ў выпадку іх раскрыцця і атрымлівайце парады, якія дапамогуць вам абараніць сябе ў інтэрнэце. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Захаваць</translation>
 <translation id="4668929960204016307">,</translation>

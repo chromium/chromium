@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1191518099344003522">APN on lubatud.</translation>
 <translation id="1195447618553298278">Tundmatu viga.</translation>
+<translation id="1196264380943975940">Kokkuvõtet ei saa teha. Proovige pikemat transkriptsiooni.</translation>
 <translation id="1196959502276349371">Versioon <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Esita/peata</translation>
 <translation id="1201402288615127009">Järgmine</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Tootja</translation>
 <translation id="467510802200863975">Paroolid ei kattu</translation>
 <translation id="467715984478005772">Kahtlustatakse tulemüüri</translation>
+<translation id="4678534708181186163">Kokkuvõtet ei saa teha. Proovige lühemat transkriptsiooni.</translation>
 <translation id="4683762547447150570">Puudutage nuppu, et aktiveerida klahvide määramine</translation>
 <translation id="4691278870498629773">Peatatud – salv on puudu</translation>
 <translation id="469379815867856270">Signaali tugevus</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Aku seisukord</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="517075088756846356">Eemaldage seadme <ph name="DEVICE_NAME" /> toitekaabel ja ühendage see uuesti, et värskendamist jätkata</translation>
+<translation id="5178021559562393163">Nimesid ei saa luua. Proovige lühemat transkriptsiooni.</translation>
 <translation id="5180108905184566358">ahvileivapuud</translation>
 <translation id="5180712487038406644">Ilmekas</translation>
 <translation id="5190187232518914472">Taaselustage oma lemmikmälestused. Albumite lisamiseks või muutmiseks avage rakendus <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteet</translation>
 <translation id="5317780077021120954">Salvesta</translation>
+<translation id="5318310531701770497">Nimesid ei saa luua. Proovige pikemat transkriptsiooni.</translation>
 <translation id="5318334351163689047">TCP-taotluste vead</translation>
 <translation id="53196409393069519">Kas lülitada transkribeerimine sisse?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

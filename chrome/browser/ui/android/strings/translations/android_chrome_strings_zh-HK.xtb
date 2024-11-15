@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 個書籤只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{# 個書籤只會儲存至此裝置。如要在其他裝置上使用，請將這些項目儲存至 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="1544084554881119930">系統將不會加密你的付款方法和地址，Chrome 上的瀏覽記錄將不會同步。
 只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1544826120773021464">如要管理 Google 帳戶，請輕按「管理帳戶」按鈕</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634">透過 <ph name="SITE_ETLD_PLUS_ONE" /> 支付 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 費用</translation>
 <translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存至此裝置。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個已選取的項目}other{移除 # 個已選取的項目}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 個書籤和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將這些項目儲存至 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{# 個書籤和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將這些項目儲存至 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您正在查看此網頁的離線版本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">記錄</translation>
@@ -802,6 +804,7 @@
 <translation id="4769632191812288342">你將獲得標準保護功能</translation>
 <translation id="4775646243557794597">已刪除<ph name="TIME_PERIOD" />的資料</translation>
 <translation id="4778653490315793244">未有可以顯示內容</translation>
+<translation id="4782929588435725897">預設搜尋引擎已設定為 <ph name="SEARCH_ENGINE" /></translation>
 <translation id="4787736314074622408">係咪想刪除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4793679854893018356">瞭解 Chrome 如何保護使用者的網上安全</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

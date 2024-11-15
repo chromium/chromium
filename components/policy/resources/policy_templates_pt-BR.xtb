@@ -908,6 +908,7 @@ Se a política for deixada sem definição, nenhuma ação será executada.
 O limite mínimo é de 1 minuto.
 
 A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui ações como mover o mouse ou digitar no teclado.</translation>
+<translation id="1611144198714227240">Desativar o card do Calendário do Outlook na página "Nova guia"</translation>
 <translation id="1611394564825535541">Permite controlar se os usuários podem acessar impressoras que não sejam de empresas.
 
       Se esta política for definida como verdadeira ou for deixada sem definição, os usuários poderão adicionar, configurar e imprimir usando as próprias impressoras.
@@ -1140,6 +1141,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
       Os padrões de URL não podem entrar em conflito com <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
+<translation id="1754668667300090632">Desativar o card de arquivos do SharePoint na página "Nova guia"</translation>
 <translation id="1755310913456007816">Usar as configurações on-line existentes de verificação da revogação</translation>
 <translation id="1760951637494635692">Permitir a API Serial nesses sites</translation>
 <translation id="1765503534110351026">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -1368,6 +1370,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
 <translation id="1928355425032308464">Permitir entrada de vídeo</translation>
 <translation id="1930094135927166199">Desativar compartilhamento de energia via USB</translation>
 <translation id="1930127294345368978">Número máximo de páginas permitidas para um único trabalho de impressão</translation>
+<translation id="1931537386635075674">Ativar o card do Calendário do Outlook na página "Nova guia"</translation>
 <translation id="1933378685401357864">Imagem do plano de fundo</translation>
 <translation id="1935409768874953955">A coleta de dados anônimos inseridos no URL deve estar sempre ativa</translation>
 <translation id="1942015922182679826">Ativar a exclusão de senhas não descriptografáveis</translation>
@@ -1461,6 +1464,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
       Se ela for definida como verdadeira, o fuso horário atual do dispositivo será enviado.</translation>
 <translation id="1990784382342293892">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1990823660725793326">Um SharedWorker do URL do blob não herda um controlador. (Comportamento legado)</translation>
 <translation id="1995744620192427843">A definição da política impede que as páginas da Web com URLs proibidos sejam carregadas durante a autenticação do usuário (por exemplo, nas telas de login e de bloqueio). Ela fornece uma lista de padrões de URL que especificam URLs proibidos. Se a política não for definida, nenhum URL será proibido durante a autenticação. Formate o padrão de URL de acordo com este modelo ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
 
 Exceções a esses padrões podem ser definidas na política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> relacionada.
@@ -7615,6 +7619,13 @@ Desativar a política ou deixá-la sem definição faz com que a pesquisa CNAME 
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="6431446111529802555">Europa.</translation>
+<translation id="6432641193840355112">Esta política controla a visibilidade do card de arquivos do SharePoint na página "Nova guia". O card só vai aparecer na página "Nova guia" se a política estiver ativada e sua organização tiver autorizado o uso dos dados de arquivos do SharePoint no navegador.
+
+O card de recomendação de arquivos do SharePoint mostra uma lista de arquivos recomendados.  O objetivo é resolver o problema da mudança de contexto e aumentar a produtividade, dando aos usuários um atalho para acessar os documentos mais importantes.
+
+O card do Microsoft Sharepoint vai precisar de mais configurações administrativas. Para mais informações sobre como conectar o card da página "Nova guia" do Chrome ao Sharepoint, consulte o artigo de ajuda.
+
+Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do SharePoint não vai aparecer. Se a <ph name="NTPCARDSVISIBLE" /> for ativada, o card do Sharepoint vai aparecer se esta política também estiver ativada e houver dados para mostrar. Se a <ph name="NTPCARDSVISIBLE" /> for deixada sem definição, o card do SharePoint vai aparecer se esta política também estiver ativada, o usuário tiver ativado o card na página "Personalizar o Chrome" e houver dados para mostrar.</translation>
 <translation id="6433697627431665375">Evitar que os dados do <ph name="PRODUCT_NAME" /> sejam incluídos em backups</translation>
 <translation id="6436052172226685535">Comportamento padrão para LBS.</translation>
 <translation id="6438472072089952201">O <ph name="PRODUCT_NAME" /> tenta fazer upgrade de algumas
@@ -8810,6 +8821,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Se esta política for deixada sem definição ou em branco, o usuário poderá configurar qualquer Conta do Google como uma conta principal do navegador no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Definir o tamanho mínimo do PIN da tela de bloqueio</translation>
+<translation id="7232835921904883015">Mostrar o card de arquivos do SharePoint na página "Nova guia"</translation>
 <translation id="7234280155140786597">Nomes dos hosts de mensagens nativas proibidos (ou "*" para todos)</translation>
 <translation id="723621412149834592">Se a política for definida como <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (valor 2), por padrão, a permissão a sites para posicionamento de janelas será automaticamente negada. Isso vai limitar a capacidade dos sites de ver informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em locais específicos.
 
@@ -9287,6 +9299,7 @@ Se a política for desativada, a configuração de medição de anúncio também
 Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para no dispositivo.
 
 A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.</translation>
+<translation id="7643824472046534064">Ativar o card de arquivos do SharePoint na página "Nova guia"</translation>
 <translation id="7643883929273267746">Contas restritas que estão visíveis no <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Esta política é uma orientação geral para todas as regras definidas na política DataLeakPreventionRulesList.
       Se ela for definida como verdadeira, os relatórios em tempo real de eventos para prevenção de vazamentos de dados serão ativados.
@@ -9703,6 +9716,19 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="7962093600142350905">Esta política controla se as impressoras com protocolo Privet disponíveis serão exibidas ao usuário na caixa de diálogo de visualização de impressão.
       Se a política for definida como "Ativada", as impressoras com protocolo Privet disponíveis serão exibidas.
       Se ela for definida como "Desativada" ou deixada sem definição, as impressoras com protocolo Privet não serão exibidas na visualização de impressão, já que esse método de impressão está suspenso.</translation>
+<translation id="7962516520649791537">Em https://w3c.github.io/ServiceWorker/#control-and-use-worker-client (link em inglês),
+os workers devem herdar os controladores do URL do blob.  No entanto, o código atual
+permite que apenas DedicatedWorkers herdem o controlador. SharedWorkers
+não o herdam.
+
+Se a política for ativada ou deixada sem definição, o
+<ph name="PRODUCT_NAME" /> vai herdar o controlador
+se o URL de um blob for usado como um URL de SharedWorker.
+
+Se a política for desativada, o comportamento não será alinhado à
+especificação atual.
+
+Esta política é temporária e será removida.</translation>
 <translation id="7969865441622729072">Ativar todos os sons no "Modo sem distrações".</translation>
 <translation id="7970660709107174905">Configurações do particionamento de armazenamento de terceiros</translation>
 <translation id="7972223739742725350">Não ativar a API Save and Share para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros.</translation>
@@ -9814,6 +9840,7 @@ também é seguro.</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Ativar o provedor de pesquisa padrão e permitir que os usuários modifiquem a lista de provedores de pesquisa</translation>
 <translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
+<translation id="8030228699677851043">Alinhar o comportamento do URL do blob do SharedWorker com a especificação</translation>
 <translation id="8031651557770840616">Não permitir o plano de fundo de IA generativa</translation>
 <translation id="8035570672225663428">Permitir que o modelo de carregamento adaptável controle o processo de carregamento para prolongar a duração da bateria</translation>
 <translation id="8036284429246268475">Se a política for ativada, os usuários poderão permitir que o <ph name="PRODUCT_NAME" /> verifique se os nomes de usuário e as senhas usados foram comprometidos em um vazamento.
@@ -10041,6 +10068,13 @@ Esta política é válida para o modo de navegação anônima. Isso significa qu
 <translation id="8239143983379015783">Forçar a ativação da cota persistente</translation>
 <translation id="8244171102276095471">Ativar pacotes de criptografia RC4 em TLS</translation>
 <translation id="8244525275280476362">Atraso máximo de busca após a invalidação de uma política</translation>
+<translation id="8244828501034607035">Esta política controla a visibilidade do card do Outlook na página "Nova guia". O card só vai aparecer na página "Nova guia" se a política estiver ativada e sua organização tiver autorizado o uso dos dados do Calendário do Outlook no navegador.
+
+O card do Outlook mostra o próximo evento da agenda e oferece uma visão geral das outras reuniões do dia. O objetivo é resolver o problema da mudança de contexto e aumentar a produtividade, dando aos usuários um atalho para acessar a próxima reunião.
+
+O card do Microsoft Outlook vai precisar de mais configurações administrativas. Para mais informações sobre como conectar o card da página "Nova guia" do Chrome ao Outlook, consulte o artigo de ajuda.
+
+Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do Outlook não vai aparecer. Se a <ph name="NTPCARDSVISIBLE" /> for ativada, o card do Outlook vai aparecer se esta política também estiver ativada e houver dados para mostrar. Se a <ph name="NTPCARDSVISIBLE" /> for deixada sem definição, o card do Outlook vai aparecer se esta política também estiver ativada, o usuário tiver ativado o card na página "Personalizar o Chrome" e houver dados para mostrar.</translation>
 <translation id="8245574649143980200">Se a política for deixada sem definição ou for ativada, os usuários poderão ver e usar o item de menu da pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto. Se ela for desativada, os usuários não verão a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto quando a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> estiver disponível.</translation>
 <translation id="8247143534027746614">Bloquear o acesso a uma lista de padrões de URL durante a autenticação</translation>
 <translation id="824818544897669723">Desativar exclusão do histórico do navegador e de downloads</translation>
@@ -10927,6 +10961,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Os dispositivos novos vêm com o horário do Pacífico (EUA). O formato do valor segue a nomenclatura do banco de dados da IANA (https://en.wikipedia.org/wiki/Tz_database, link em inglês). A inserção de um valor inválido ativa a política que usa GMT.
 
       Se a política não for definida ou se você inserir uma string vazia, o dispositivo usará o fuso horário ativo no momento, mas os usuários poderão mudá-lo.</translation>
+<translation id="8874071621901957187">Mostrar o card do Calendário do Outlook na página "Nova guia"</translation>
 <translation id="8875202330803089599">Se a política for definida, o usuário não poderá ignorar as decisões de segurança de downloads.
 
       Há muitos tipos de alertas de download no Chrome, que os divide nas categorias abaixo. Saiba mais sobre os vereditos da Navegação segura (https://support.google.com/chrome/?p=ib_download_blocked).
@@ -10981,6 +11016,7 @@ Se desativada, apenas os dados de hardware padrão serão enviados.</translation
 <translation id="8908294717014659003">Permite definir se os sites podem ter acesso a dispositivos de captura de mídia. O acesso a dispositivos de captura de mídia pode ser permitido por padrão, ou uma pergunta será feita ao usuário cada vez que um site quiser ter acesso a dispositivos de captura de mídia.
 
       Se esta política não for definida, será usado "PromptOnAccess", e o usuário poderá  fazer alterações.</translation>
+<translation id="8909400095164640684">Configurações do agregador de pesquisa corporativo</translation>
 <translation id="8911348623012274122">Definir um limite de memória para instâncias do Chrome</translation>
 <translation id="8911736066340032670">Informe os dados relacionados à tela, como a taxa de atualização, e os relacionados a gráficos, como versão do driver.
 
@@ -11391,6 +11427,7 @@ O padrão é RollbackDisabled.</translation>
 <translation id="9221827710437832530">Permitir acesso à geolocalização na tela de login.</translation>
 <translation id="922540222991413931">Configurar extensão, aplicativo e origens de instalação do script do usuário</translation>
 <translation id="924557436754151212">Importar senhas salvas do navegador padrão na primeira execução</translation>
+<translation id="925379810778921867">Um SharedWorker do URL do blob herda um controlador.</translation>
 <translation id="927384371566552478">Se a política for definida como "Ativada" ou não for definida, a interface de exportação/importação ficará disponível para o usuário. Se a política for definida como "Desativada", a interface de exportação/importação não ficará disponível para o usuário.</translation>
 <translation id="929549405492388749">Se definida como verdadeira, esta política forçará a ativação do AppCache, mesmo que ele esteja indisponível no Chrome por padrão.
 

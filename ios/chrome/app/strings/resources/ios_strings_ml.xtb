@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">നിങ്ങളുടെ രക്ഷിതാവ് നിയന്ത്രിക്കുന്നു</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />. Google Account-ൽ പിശക്. അക്കൗണ്ട് മെനു തുറക്കുക.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ആയി തുടരുക</translation>
+<translation id="4651927776207937667">{count,plural, =1{ഒരു മിനിറ്റിന് ശേഷം മറയ്ക്കുക}other{{count} മിനിറ്റിന് ശേഷം മറയ്ക്കുക}}</translation>
 <translation id="4652817563047461855">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമാണെന്ന് ഉറപ്പാക്കുക, അവ അപഹരിക്കപ്പെട്ടുവെന്ന് കണ്ടെത്തിയാൽ ഓൺലൈനിൽ സ്വയം പരിരക്ഷിക്കുന്നതിനുള്ള ഉപദേശം നേടുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">സംരക്ഷിക്കുക</translation>
 <translation id="4668929960204016307">,</translation>

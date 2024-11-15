@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1191518099344003522">啟用咗 APN。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
+<translation id="1196264380943975940">無法提供摘要，請改用較長的轉錄文字。</translation>
 <translation id="1196959502276349371">版本：<ph name="VERSION" /></translation>
 <translation id="1199355487114804640">播放/暫停</translation>
 <translation id="1201402288615127009">下一個</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">製造商</translation>
 <translation id="467510802200863975">密碼不相符</translation>
 <translation id="467715984478005772">可能有防火牆</translation>
+<translation id="4678534708181186163">無法提供摘要，請改用較短的轉錄文字。</translation>
 <translation id="4683762547447150570">㩒一下個掣就可以將焦點移去按鍵指派區</translation>
 <translation id="4691278870498629773">已停止 - 沒有紙匣</translation>
 <translation id="469379815867856270">訊號強度</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">電池狀態</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="517075088756846356">請拔除然後重新插上「<ph name="DEVICE_NAME" />」電源線，以繼續更新程序</translation>
+<translation id="5178021559562393163">無法建立名稱，請改用較短的轉錄文字。</translation>
 <translation id="5180108905184566358">猴麵包樹</translation>
 <translation id="5180712487038406644">熱情奔放</translation>
 <translation id="5190187232518914472">重溫美好回憶。如要新增或編輯相簿，請前往「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」。</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
+<translation id="5318310531701770497">無法建立名稱，請改用較長的轉錄文字。</translation>
 <translation id="5318334351163689047">TCP 要求失敗</translation>
 <translation id="53196409393069519">要開啟轉錄功能嗎？</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>

@@ -781,6 +781,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4647758699119474035">Wedi mewngofnodi fel <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Gwall Cyfrif Google. Agor dewislen cyfrif.</translation>
 <translation id="4650125387981512669">Parhau fel <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Cuddio ar ôl 1 funud}zero{Cuddio ar ôl {count} munud}two{Cuddio ar ôl {count} funud}few{Cuddio ar ôl {count} munud}many{Cuddio ar ôl {count} munud}other{Cuddio ar ôl {count} munud}}</translation>
 <translation id="4652817563047461855">Gwneud yn siŵr bod eich cyfrineiriau yn ddiogel, darganfod a ydynt wedi cael eu peryglu, a chael cyngor i helpu i amddiffyn eich hun ar-lein. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Cadw</translation>
 <translation id="4668929960204016307">,</translation>

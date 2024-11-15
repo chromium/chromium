@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1191518099344003522">APN සබල කර ඇත.</translation>
 <translation id="1195447618553298278">නොදන්නා දෝෂය.</translation>
+<translation id="1196264380943975940">සාරාංශ කළ නොහැක. දිගු අනුපතක් උත්සාහ කරන්න.</translation>
 <translation id="1196959502276349371">අනුවාදය <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">වාදනය කරන්න/විරාම කරන්න</translation>
 <translation id="1201402288615127009">ඊළඟ</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">නිෂ්පාදකයා</translation>
 <translation id="467510802200863975">මුරපද නොගැළපෙති</translation>
 <translation id="467715984478005772">ෆයර්වෝලය සැක කරන ලදි</translation>
+<translation id="4678534708181186163">සාරාංශ කළ නොහැක. කෙටි අනුපතක් උත්සාහ කරන්න.</translation>
 <translation id="4683762547447150570">යතුරු වෙන් කිරීම මත අවධානය යොමු කිරීමට බොත්තමට තට්ටු කරන්න</translation>
 <translation id="4691278870498629773">නැවතිණි - තැටිය අස්ථානගතව ඇත</translation>
 <translation id="469379815867856270">සංඥා ප්‍රබලතාව</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">බැටරි සුවතාව</translation>
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
 <translation id="517075088756846356">යාවත්කාලීන ක්‍රියාවලිය දිගටම කිරීමට <ph name="DEVICE_NAME" /> බල කේබලය පේනු නොගත කර නැවත පේනු ගත කරන්න</translation>
+<translation id="5178021559562393163">නම් තැනීමට නොහැක. කෙටි අනුපතක් උත්සාහ කරන්න.</translation>
 <translation id="5180108905184566358">බයෝබැබ් ගස්</translation>
 <translation id="5180712487038406644">ප්‍රකාශනාත්මක</translation>
 <translation id="5190187232518914472">ඔබගේ ප්‍රියතම මතක යළි ජීවමාන කරන්න. ඇල්බම එක් කිරීමට හෝ සංස්කරණය කිරීමට, <ph name="LINK_BEGIN" />Google ඡායාරූප<ph name="LINK_END" /> වෙත යන්න.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">අනන්‍යතාවය</translation>
 <translation id="5317780077021120954">සුරකින්න</translation>
+<translation id="5318310531701770497">නම් තැනීමට නොහැක. දිගු අනුපතක් උත්සාහ කරන්න.</translation>
 <translation id="5318334351163689047">TCP ඉල්ලීම් අසාර්ථක වීම්</translation>
 <translation id="53196409393069519">පිටපත ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

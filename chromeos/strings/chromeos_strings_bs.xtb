@@ -50,7 +50,7 @@
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1191518099344003522">APN je omogućen.</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
-<translation id="1196264380943975940">Sažimanje nije uspjelo. Pokušajte s duljim prijepisom.</translation>
+<translation id="1196264380943975940">Nije moguće sažeti. Pokušajte s dužim transkriptom.</translation>
 <translation id="1196959502276349371">Verzija <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Pokretanje/pauziranje</translation>
 <translation id="1201402288615127009">Naprijed</translation>
@@ -362,7 +362,7 @@
 <translation id="2589921777872778654">Meni za uređivanje i brisanje</translation>
 <translation id="2597774443162333062">Fajl će se poslati Googleu radi otklanjanje grešaka</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
-<translation id="261322795497077164">Identifikacija govornika</translation>
+<translation id="261322795497077164">Prepoznavanje govornika</translation>
 <translation id="2617397783536231890">pamuka</translation>
 <translation id="2618015542787108131">pješčana dina</translation>
 <translation id="2619761439309613843">Dnevno osvježavanje</translation>
@@ -443,7 +443,7 @@
 <translation id="3140130301071865159">snijeg</translation>
 <translation id="3146655726035122603">Ekskluzivno za <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
-<translation id="3153094818810437149">To možete promijeniti poslije u postavkama Snimača</translation>
+<translation id="3153094818810437149">Možete promijeniti ovo kasnije u postavkama Diktafona</translation>
 <translation id="3156511682997763015">Premotaj 10 s unaprijed</translation>
 <translation id="3156846309055100599">Skenira se <ph name="PAGE_NUMBER" />. stranica...</translation>
 <translation id="315738237743207937">Otkriven je zaštitni portal</translation>
@@ -566,7 +566,7 @@
 <translation id="3785643128701396311">pikselna umjetnost</translation>
 <translation id="3799381533888781854">ISKLJUČENO – ovom postavkom upravlja vaš administrator.</translation>
 <translation id="380097101658023925">kontrole RGB-a</translation>
-<translation id="380493988330050229">Izrada sažetka za taj jezik prijepisa nije uspjela</translation>
+<translation id="380493988330050229">Nije moguće kreirati sažetak za ovaj jezik transkripta</translation>
 <translation id="38114475217616659">Obriši svu historiju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="382043424867370667">Pozadinska slika zalaska sunca</translation>
@@ -739,7 +739,7 @@
 <translation id="458794348635939462">Rješavanje svih hostova nije uspjelo</translation>
 <translation id="4593212453765072419">Potrebna je autentifikacija proksi servera</translation>
 <translation id="4594021849294327751">Kreiraj transkript</translation>
-<translation id="4594541568452132351">Odaberite jezik prijepisa i preuzmite model</translation>
+<translation id="4594541568452132351">Odaberite jezik transkripta i preuzmite model</translation>
 <translation id="4607282946861182308">Nije moguće kreirati slike toga. Pokušajte s drugim upitom.</translation>
 <translation id="4609350030397390689">Smanjivanje osvjetljenja tastature</translation>
 <translation id="4623061655523261501">Nazivi snimaka su uspješno generirani</translation>
@@ -755,7 +755,7 @@
 <translation id="4665014895760275686">Proizvođač</translation>
 <translation id="467510802200863975">Lozinke se ne podudaraju</translation>
 <translation id="467715984478005772">Sumnja na zaštitni zid</translation>
-<translation id="4678534708181186163">Sažimanje nije uspjelo. Pokušajte s kraćim prijepisom.</translation>
+<translation id="4678534708181186163">Nije moguće sažeti. Pokušajte s kraćim transkriptom.</translation>
 <translation id="4683762547447150570">Fokusiranje dodjele tipke dodirom dugmeta</translation>
 <translation id="4691278870498629773">Zaustavljeno – nedostaje ladica za papir</translation>
 <translation id="469379815867856270">Jačina signala</translation>
@@ -858,7 +858,7 @@
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Prikaži u folderu</translation>
 <translation id="517075088756846356">Iskopčajte kabl za napajanje uređaja <ph name="DEVICE_NAME" /> i ponovo ga priključite da nastavite postupak ažuriranja</translation>
-<translation id="5178021559562393163">Nije moguće izraditi nazive. Pokušajte s kraćim prijepisom.</translation>
+<translation id="5178021559562393163">Nije moguće kreirati imena. Pokušajte s kraćim transkriptom.</translation>
 <translation id="5180108905184566358">stabla baobaba</translation>
 <translation id="5180712487038406644">Izražajno</translation>
 <translation id="5190187232518914472">Ponovo doživite omiljene uspomene. Da dodate ili uredite albume, idite u <ph name="LINK_BEGIN" />Google Fotografije<ph name="LINK_END" />.</translation>
@@ -893,7 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
-<translation id="5318310531701770497">Nije moguće izraditi nazive. Pokušajte s duljim prijepisom.</translation>
+<translation id="5318310531701770497">Nije moguće kreirati imena. Pokušajte s dužim transkriptom.</translation>
 <translation id="5318334351163689047">Greške TCP zahtjeva</translation>
 <translation id="53196409393069519">Uključiti transkripciju?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1108,7 +1108,7 @@
 <translation id="6359919876285606596">Radnja je trajna i ne može se opozvati</translation>
 <translation id="6368342879959028556">Kada odaberete "Kreirajte putem AI-ja", napišite prilagođeni upit. Ili možete odabrati "AI pozadinske slike" da odaberete temu, a zatim odaberite podvučene riječi da personalizirate AI pozadinsku sliku.</translation>
 <translation id="636850387210749493">Prijava preduzeća</translation>
-<translation id="6369221585240879141">Izrada naziva snimki za taj jezik prijepisa nije uspjela</translation>
+<translation id="6369221585240879141">Nije moguće kreirati nazive snimaka za ovaj jezik transkripta</translation>
 <translation id="6373461326814131011">Ribnjak</translation>
 <translation id="6379086450106841622">Ekran na dodir</translation>
 <translation id="6381741036071372448">Testirajte tastaturu</translation>
@@ -1705,7 +1705,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="9100765901046053179">Napredne postavke</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se stranica broj <ph name="PAGE_NUMBER" /></translation>
-<translation id="9108856746036501072">Snimač može izrađivati prijepise za snimke s govorom. U sljedećem koraku trebate odabrati jezik prijepisa i preuzeti model (do 100 MB).</translation>
+<translation id="9108856746036501072">Diktafon može kreirati transkripcije za snimke s govorom. U sljedećem koraku trebate odabrati jezik transkripta i preuzeti model (do 100 MB).</translation>
 <translation id="9111102763498581341">Otključaj</translation>
 <translation id="9122492456897874028">Sažimajte sadržaj, dobijajte definicije i još mnogo toga</translation>
 <translation id="9122602430962285795">Da se ponovo povežete, idite u Postavke</translation>

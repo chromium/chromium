@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">Odstrániť heslo</translation>
 <translation id="1521774566618522728">Aktívne dnes</translation>
 <translation id="153446405401665083">K dispozícii je nová verzia Chromu</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 záložka je uložená iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju do účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# záložky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# záložiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Spôsoby platby a adresy nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
 Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Ak chcete spravovať svoj účet Google, klepnite na tlačidlo Spravovať účet</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634">Používajte <ph name="SITE_ETLD_PLUS_ONE" /> od poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Keď je toto nastavenie zapnuté, údaje používate a ukladáte vo svojom účte Google. Keď je vypnuté, údaje sa ukladajú iba do tohto zariadenia.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstrániť 1 vybranú položku}few{Odstrániť # vybrané položky}many{Odstrániť # vybranej položky}other{Odstrániť # vybraných položiek}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 záložka a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# záložky a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# záložiek a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Bezpečné prehliadanie</translation>
 <translation id="164269334534774161">Zobrazuje sa offline kópia tejto stránky z <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">História</translation>
@@ -802,6 +804,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4769632191812288342">Máte štandardnú ochranu</translation>
 <translation id="4775646243557794597">Dáta z obdobia <ph name="TIME_PERIOD" /> boli odstránené</translation>
 <translation id="4778653490315793244">Zatiaľ nie je čo zobraziť</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> je váš predvolený vyhľadávač</translation>
 <translation id="4787736314074622408">Chcete súbor <ph name="ITEM_TITLE" /> odstrániť?</translation>
 <translation id="4793679854893018356">Ako vás Chrome chráni</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

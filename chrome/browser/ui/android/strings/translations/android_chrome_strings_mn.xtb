@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">Нууц үг устгах</translation>
 <translation id="1521774566618522728">Өнөөдөр идэвхтэй</translation>
 <translation id="153446405401665083">Chrome-н шинэ хувилбар бэлэн байна</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 хавчуургыг зөвхөн энэ төхөөрөмжид хадгалсан. Уг хавчуургыг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}other{# хавчуургыг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="1544084554881119930">Төлбөрийн хэрэгсэл болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
 Зөвхөн таны нэвтрэх үгтэй хэн нэгэн шифрлэгдсэн өгөгдлийг тань унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй эсвэл хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Google бүртгэлээ удирдахын тулд "Бүртгэлээ удирдах" товчлуур дээр товшино уу</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" />-г <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р ашиглаарай</translation>
 <translation id="160275202205869636">Асаалттай үед таны Google Бүртгэлийн өгөгдлийг ашиглаж, үүнд хадгалдаг. Унтраалттай үед өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Сонгосон 1 зүйлийг устгах}other{Сонгосон # зүйлийг устгах}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 хавчуурга болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}other{# хавчуурга болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
 <translation id="164269334534774161">Та энэ хуудасны офлайн хуулбарыг <ph name="CREATION_TIME" />-с харж байна</translation>
 <translation id="1644574205037202324">Түүх</translation>
@@ -802,6 +804,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4769632191812288342">Та стандарт хамгаалалтыг авч байна</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" />-г устгасан</translation>
 <translation id="4778653490315793244">Одоогоор харуулах зүйл алга</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> нь таны өгөгдмөл хайлтын систем юм</translation>
 <translation id="4787736314074622408">Та <ph name="ITEM_TITLE" />-г устгахыг хүсэж байна уу?</translation>
 <translation id="4793679854893018356">Chrome таныг хэрхэн аюулгүй байлгадаг болохыг мэдэж авна уу</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

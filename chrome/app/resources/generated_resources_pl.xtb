@@ -450,6 +450,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1296911687402551044">Przypnij wybraną kartę</translation>
 <translation id="1297175357211070620">Urządzenie docelowe</translation>
 <translation id="129770436432446029">Prześlij opinię na temat: <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modyfikacje</translation>
 <translation id="130097046531636712">Ten tryb pozwala oszczędzać baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie</translation>
 <translation id="1301135395320604080">Strona <ph name="ORIGIN" /> może edytować te pliki</translation>
 <translation id="130174306655812048">Powiedz na przykład „OK Google, co to za utwór?”</translation>
@@ -1767,6 +1768,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2214018885812055163">Foldery udostępnione</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 wiersz jest niewidoczny&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> wiersze są niewidoczne&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> wierszy jest niewidocznych&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> wiersza jest niewidoczne&gt;}}</translation>
 <translation id="2215070081105889450">Aby udostępnić dźwięk, udostępnij kartę lub ekran</translation>
+<translation id="2217208085547223783">Stan zaufania</translation>
 <translation id="2218019600945559112">Myszka i touchpad</translation>
 <translation id="2218515861914035131">Wklej jako zwykły tekst</translation>
 <translation id="221872881068107022">Odwrotne przewijanie</translation>
@@ -2485,6 +2487,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2722547199758472013">Identyfikator: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Otwórz profil gościa</translation>
 <translation id="2723819893410108315">Cytryna</translation>
+<translation id="2724822892847436256">Ograniczenia</translation>
 <translation id="2724841811573117416">Logi WebRTC</translation>
 <translation id="272488616838512378">Przeliczanie jednostek</translation>
 <translation id="2725200716980197196">Łączność z siecią przywrócona</translation>
@@ -3441,6 +3444,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3421835120203732951">Dodaj nowy profil</translation>
 <translation id="3423111258700187173">Wyniki znalezione w folderze <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Więcej informacji o tej funkcji opartej na AI</translation>
+<translation id="3423275441470187644">Zaufanie</translation>
 <translation id="3423463006624419153">Na telefonach „<ph name="PHONE_NAME_1" />” oraz „<ph name="PHONE_NAME_2" />”:</translation>
 <translation id="3423858849633684918">Ponownie uruchom przeglądarkę <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Opisz, co robiłeś, gdy wystąpiła awaria karty</translation>
@@ -4570,6 +4574,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4195814663415092787">Kontynuuj od tego samego miejsca</translation>
 <translation id="4198268995694216131">Dodatkowe witryny</translation>
+<translation id="4198420883535766848">Usuń kartę z listy</translation>
 <translation id="4200609364258658652">Kopiu&amp;j klatkę wideo</translation>
 <translation id="4200689466366162458">Słowa niestandardowe</translation>
 <translation id="4200983522494130825">Nowa &amp;karta</translation>
@@ -5133,6 +5138,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Usunąć grupę kart?}few{Usunąć grupy kart?}many{Usunąć grupy kart?}other{Usunąć grupy kart?}}</translation>
 <translation id="4608500690299898628">&amp;Znajdź</translation>
 <translation id="4610162781778310380">We wtyczce <ph name="PLUGIN_NAME" /> wystąpił błąd</translation>
+<translation id="4610493438923139095">Niezaufany</translation>
 <translation id="4610637590575890427">Czy chodziło o przejście do witryny <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Dostępne jest połączenie transmisji danych</translation>
 <translation id="4611759022973144129">Możesz użyć tego hasła, aby zalogować się na urządzeniu <ph name="DEVICE_TYPE" />.</translation>
@@ -5158,6 +5164,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4627442949885028695">Kontynuuj z innego urządzenia</translation>
 <translation id="4628762811416793313">Konfiguracja kontenera Linuxa nie została ukończona. Spróbuj ponownie.</translation>
 <translation id="4629521233550547305">Otwórz profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Zaufany</translation>
 <translation id="4631955550884380853">Skupiony głos</translation>
 <translation id="4632655012900268062">Dostosuj karty</translation>
 <translation id="4633003931260532286">Rozszerzenie wymaga: „<ph name="IMPORT_NAME" />” przynajmniej w wersji „<ph name="IMPORT_VERSION" />”, ale zainstalowana jest tylko wersja „<ph name="INSTALLED_VERSION" />”</translation>
@@ -6811,6 +6818,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5842497610951477805">Włącz Bluetooth</translation>
 <translation id="5844284118433003733">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
 <translation id="5844574845205796324">Sugeruj nowe treści, z którymi warto się zapoznać</translation>
+<translation id="5844685625984052392">Podpowiedź</translation>
 <translation id="5846200638699387931">Błąd składni relacji: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Bez cienia</translation>
 <translation id="5846504156837627898">Zarządzanie uprawnieniami witryn</translation>

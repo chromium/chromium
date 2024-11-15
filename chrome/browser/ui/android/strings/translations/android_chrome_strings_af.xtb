@@ -127,6 +127,7 @@ Gaan na <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer 
 <translation id="1513858653616922153">Vee wagwoord uit</translation>
 <translation id="1521774566618522728">Aktief vandag</translation>
 <translation id="153446405401665083">Nuwe weergawe van Chrome is beskikbaar</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 boekmerk is net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, <ph name="ACCOUNT_EMAIL" />, om dit op jou ander toestelle te gebruik.}other{# boekmerke word net op hierdie toestel gestoor. As jy hulle op jou ander toestelle wil gebruik, moet jy hulle in jou Google-rekening, <ph name="ACCOUNT_EMAIL" />, stoor.}}</translation>
 <translation id="1544084554881119930">Betaalmetodes en adresse sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
 Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="1544826120773021464">Tik op die "Bestuur rekening"-knoppie om jou Google-rekening te bestuur</translation>
@@ -142,6 +143,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1598163867407640634">Gebruik <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Gebruik en stoor data in jou Google-rekening wanneer dit aan is. Data word slegs op hierdie toestel gestoor wanneer dit af is.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Verwyder 1 gekose item}other{Verwyder # gekose items}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 boekmerk en ander items word net op hierdie toestel gestoor. As jy hulle op jou ander toestelle wil gebruik, moet jy hulle in jou Google-rekening, <ph name="ACCOUNT_EMAIL" />, stoor.}other{# boekmerke en ander items word net op hierdie toestel gestoor. As jy hulle op jou ander toestelle wil gebruik, moet jy hulle in jou Google-rekening, <ph name="ACCOUNT_EMAIL" />, stoor.}}</translation>
 <translation id="1641113438599504367">Veiligblaai</translation>
 <translation id="164269334534774161">Jy bekyk tans 'n vanlyn kopie van hierdie program vanaf <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
@@ -802,6 +804,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4769632191812288342">Jy kry tans standaardbeskerming</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> uitgevee</translation>
 <translation id="4778653490315793244">Nog niks om te wys nie</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> is jou versteksoekenjin</translation>
 <translation id="4787736314074622408">Wil jy <ph name="ITEM_TITLE" /> uitvee?</translation>
 <translation id="4793679854893018356">Vinnd uit hoe Chrome jou veilig hou</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1043,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5885378508678660271">Kennisgewings <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder want die werf is gevaarlik</translation>
 <translation id="5895834791314695851">Wagwoorde mag dalk binnekort ophou om op hierdie toestel te werk. Dateer Google Play Dienste op om aan te hou om jou wagwoorde te gebruik. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Geen toegangsleutelblad is toegemaak nie</translation>
+<translation id="5907542076239273525">Boekmerk gestoor in <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5919204609460789179">Dateer <ph name="PRODUCT_NAME" /> op om sinkronisering te begin</translation>
 <translation id="5938820472109305350">Voeg <ph name="INTEREST" /> by</translation>

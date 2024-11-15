@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1191518099344003522">APN이 사용 설정되었습니다.</translation>
 <translation id="1195447618553298278">알 수 없는 오류</translation>
+<translation id="1196264380943975940">요약할 수 없습니다. 더 긴 스크립트를 사용해 보세요.</translation>
 <translation id="1196959502276349371">버전 <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">재생/일시중지</translation>
 <translation id="1201402288615127009">다음</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">제조업체</translation>
 <translation id="467510802200863975">비밀번호가 일치하지 않습니다.</translation>
 <translation id="467715984478005772">방화벽 의심됨</translation>
+<translation id="4678534708181186163">요약할 수 없습니다. 더 짧은 스크립트를 사용해 보세요.</translation>
 <translation id="4683762547447150570">키 할당에서 포커스할 버튼을 탭하세요.</translation>
 <translation id="4691278870498629773">중지됨 - 배지대 없음</translation>
 <translation id="469379815867856270">신호 강도</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">배터리 상태</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="517075088756846356">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 전원 케이블을 분리했다가 다시 연결하세요.</translation>
+<translation id="5178021559562393163">이름을 만들 수 없습니다. 더 짧은 스크립트를 사용해 보세요.</translation>
 <translation id="5180108905184566358">바오밥나무</translation>
 <translation id="5180712487038406644">생생함</translation>
 <translation id="5190187232518914472">소중한 추억을 되새겨 보세요. 앨범을 추가하거나 수정하려면 <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />로 이동하세요.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">주소</translation>
 <translation id="5317780077021120954">저장</translation>
+<translation id="5318310531701770497">이름을 만들 수 없습니다. 더 긴 스크립트를 사용해 보세요.</translation>
 <translation id="5318334351163689047">TCP 요청 실패</translation>
 <translation id="53196409393069519">스크립트 작성을 사용 설정하시겠습니까?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

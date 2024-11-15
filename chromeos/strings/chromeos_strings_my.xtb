@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1191518099344003522">APN ဖွင့်ထားသည်။</translation>
 <translation id="1195447618553298278">မှားရသည့်အကြောင်း မသိပါ။</translation>
+<translation id="1196264380943975940">အနှစ်ချုပ်၍ မရပါ။ ပိုရှည်သည့် စာသားမှတ်တမ်းကို စမ်းကြည့်ပါ။</translation>
 <translation id="1196959502276349371">ဗားရှင်း <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ဖွင့်ရန်/ခဏရပ်ရန်</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">စာသားမှတ်တမ်းကို ဖျောက်ပါ</translation>
 <translation id="160633243685262989">ပုံ အစမ်းကြည့်ရှုရန်</translation>
 <translation id="1611649489706141841">ရှေ့သို့</translation>
+<translation id="1615144046047995187">ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် Chromebook ကို ပြန်စပါ။</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
 <translation id="1618566998877964907">အပြင်အဆင် သုံးပါ</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
@@ -588,6 +590,7 @@
 <translation id="3885327323343477505">စကရင်နားချိန်ပုံ ပြောင်းရန်</translation>
 <translation id="3889914174935857450">ရက်စွဲ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="3897092660631435901">မီနျူး</translation>
+<translation id="3902271751020176019">စာသားမှတ်တမ်း ဘာသာစကား</translation>
 <translation id="391412459402535266">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် လက်ပ်တော့မုဒ်သို့ ပြောင်းပါ။</translation>
 <translation id="3916998944874125962">ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်</translation>
 <translation id="3923184630988645767">ဒေတာသုံးစွဲမှု</translation>
@@ -752,6 +755,7 @@
 <translation id="4665014895760275686">ထုတ်လုပ်သူ</translation>
 <translation id="467510802200863975">စကားဝှက်များ မတူညီပါ</translation>
 <translation id="467715984478005772">Firewall ကို သံသယရှိသည်</translation>
+<translation id="4678534708181186163">အနှစ်ချုပ်၍ မရပါ။ ပိုတိုသည့် စာသားမှတ်တမ်းကို စမ်းကြည့်ပါ။</translation>
 <translation id="4683762547447150570">ကီးသတ်မှတ်ချက် ပြရန် ခလုတ်ကိုတို့ပါ</translation>
 <translation id="4691278870498629773">ရပ်သွားသည် - ဗန်းမရှိပါ</translation>
 <translation id="469379815867856270">လိုင်းဆွဲအား</translation>
@@ -854,6 +858,7 @@
 <translation id="5168185087976003268">ဘက်ထရီအခြေအနေ</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="517075088756846356">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> ပါဝါကြိုးကို ပလတ်ဖြုတ်ပြီး ပြန်တပ်ပါ</translation>
+<translation id="5178021559562393163">အမည်များ ပြုလုပ်၍မရပါ။ ပိုတိုသည့် စာသားမှတ်တမ်းကို စမ်းကြည့်ပါ။</translation>
 <translation id="5180108905184566358">ဘောင်းဘတ်သစ်ပင်</translation>
 <translation id="5180712487038406644">ခံစားမှုအပြည့်</translation>
 <translation id="5190187232518914472">သင့်အကြိုက်ဆုံး အမှတ်တရအချိန်များကို ပြန်လည်ခံစားကြည့်ပါ။ အယ်လ်ဘမ်များ ထည့်ရန် သို့မဟုတ် တည်းဖြတ်ရန် <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> သို့သွားပါ။</translation>
@@ -888,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">အထောက်အထား</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
+<translation id="5318310531701770497">အမည်များ ပြုလုပ်၍မရပါ။ ပိုရှည်သည့် စာသားမှတ်တမ်းကို စမ်းကြည့်ပါ။</translation>
 <translation id="5318334351163689047">TCP တောင်းဆိုချက် ချွတ်ယွင်းမှုများ</translation>
 <translation id="53196409393069519">စာသားမှတ်တမ်း ဖွင့်မလား။</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ <ph name="COMPLETION_STATUS" /></translation>
@@ -941,6 +947,7 @@
 <translation id="5606865426897221650">တဘ်</translation>
 <translation id="5613201299517339763">အကောင့်ထွက်လိုက်သည်</translation>
 <translation id="5620281292257375798">ရုံးတွင်းသာ</translation>
+<translation id="5628106863521633649">ရနိုင်သော ဘာသာစကားများ</translation>
 <translation id="5630438231335788050">ဘောင်းဟောက်စ်</translation>
 <translation id="5631759159893697722">ကောက်နုတ်ချက်</translation>
 <translation id="5655283760733841251">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
@@ -1266,6 +1273,7 @@
 <translation id="710028965487274708">မအောင်မြင်ပါ - ခွင့်ပြုချက်ပေး၍ မရပါ</translation>
 <translation id="7101959270679078188">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> ကို ဖွင့်ပါ</translation>
 <translation id="7103252855940681301">ကိရိယာသည် <ph name="COUNT" /> ခုအနက် <ph name="INDEX" /> ခုမြောက်ဖြစ်ပြီး <ph name="NAME" /> ဟု အမည်ပေးထားသည်။</translation>
+<translation id="7103793063702494489">ရွေးချယ်ထားသည့် ဘာသာစကား</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> အထူးပိုစတာပုံ ရွေးရန်</translation>
 <translation id="7108668606237948702">ရိုက်ထည့်</translation>
 <translation id="7117228822971127758">နောက်မှ ထပ်စမ်းကြည့်ပါ</translation>

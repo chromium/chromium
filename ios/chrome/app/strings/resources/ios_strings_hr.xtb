@@ -781,6 +781,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4645575059429386691">Upravlja tvoj roditelj</translation>
 <translation id="4647758699119474035">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Pogreška Google računa. Otvorite izbornik računa.</translation>
 <translation id="4650125387981512669">Nastavi kao <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Sakrij nakon 1 minute}one{Sakrij nakon {count} minute}few{Sakrij nakon {count} minute}other{Sakrij nakon {count} minuta}}</translation>
 <translation id="4652817563047461855">Provjerite jesu li vaše zaporke sigurne, saznajte jesu li ugrožene i primite savjete koji će vam pomoći da se zaštitite online. <ph name="BEGIN_LINK" />Saznaj više<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Spremi</translation>
 <translation id="4668929960204016307">,</translation>

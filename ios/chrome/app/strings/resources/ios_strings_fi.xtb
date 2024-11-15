@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Koodi skannattiin.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} välilehti}other{{count} välilehteä}}</translation>
 <translation id="1084365883616172403">Facebook-viesti julkaistu.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> ei avautunut</translation>
 <translation id="1096992026380844478">Synkronointiasetukset palautetaan viimeisen varmuuskopion perusteella. <ph name="BEGIN_LINK" />Katso, mitä voit synkronoida<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Käännä <ph name="LANGUAGE" /> aina</translation>
 <translation id="1108938384783527433">Historian synkronointi</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Ei kiitos</translation>
 <translation id="2320166752086256636">Piilota näppäimistö</translation>
 <translation id="2321086116217818302">Valmistellaan salasanoja…</translation>
+<translation id="2323697864063408084">Saat ilmoituksia lukitusnäytölle ja bannereina, niin et missaa tärkeitä asioita</translation>
 <translation id="2326302612031521902">Yksikön valitsin</translation>
 <translation id="2330607597130465898">Ei suojausta</translation>
 <translation id="233375395665273385">Poista ja kirjaudu ulos</translation>
@@ -384,6 +386,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2671423594960767771">Jaa ryhmä</translation>
 <translation id="2673508731173059946">Avaa kopioitu linkki</translation>
 <translation id="2687403674020088961">Estä kaikki evästeet (ei suositella)</translation>
+<translation id="2688535388040882469">Bannerit</translation>
 <translation id="2690858294534178585">Kamera on käytössä</translation>
 <translation id="2691653761409724435">Ei offline-käytössä</translation>
 <translation id="2696180352517415858">Sinua ei kirjata ulos Google-tililtäsi. <ph name="BEGIN_LINK" />Muita toimintoja<ph name="END_LINK" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa niitä koska vain.
@@ -636,6 +639,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3986739045730058129">Siirry välilehdelle</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="3994422733891749358">Valitse, mitä ilmoituksia haluat saada</translation>
+<translation id="3994522032746736727">Kirjaudu sisään tilillä <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Sivun lataamisen etenemispalkki, <ph name="EMAIL" /> ladattu</translation>
 <translation id="3997522473364371632">Järjestelmänvalvoja on poistanut salasanan jakamisen käytöstä.</translation>
 <translation id="4002066346123236978">Nimi</translation>
@@ -843,6 +847,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4936354130727646074">Älä koskaan siirrä</translation>
 <translation id="4937410517508563815">Tallenna tilin salasanat</translation>
 <translation id="4938338714234463591">Tämän avulla voit käyttää ääntäsi tietyille ominaisuuksille verkkosivustoilla.</translation>
+<translation id="4938716880833771969">Ilmoitukset toimitetaan hiljaisesti</translation>
 <translation id="4941089862236492464">Virhe jaettaessa kohdetta.</translation>
 <translation id="4944543191714094452">Hae sivulta…</translation>
 <translation id="4945756290001680296">Siirry salasana-asetuksiin</translation>
@@ -1609,6 +1614,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8319076807703933069">Uusi haku</translation>
 <translation id="8343993175958086504">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella.</translation>
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
+<translation id="8364563001733875155">Jos haluat muuttaa PIN-koodia, lisää laitteelle ensin tunnuskoodi.</translation>
 <translation id="8366466717204352506">Tarkistusta ei tehty</translation>
 <translation id="8368001212524806591">Seuraa hintaa</translation>
 <translation id="8370406443343902172">Avaa Asetukset…</translation>

@@ -451,6 +451,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1296911687402551044">Pripni izbrani zavihek</translation>
 <translation id="1297175357211070620">Cilj</translation>
 <translation id="129770436432446029">Pošiljanje povratnih informacij za preizkus <ph name="EXPERIMENT_NAME" />.</translation>
+<translation id="129808599775632797">&amp;Spremembe</translation>
 <translation id="130097046531636712">Ta funkcija podaljša čas delovanja baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot je tekoče drsenje.</translation>
 <translation id="1301135395320604080">Spletno mesto <ph name="ORIGIN" /> lahko ureja naslednje datoteke</translation>
 <translation id="130174306655812048">Poskusite »Ok Google, what song is this?« (Ok Google, katera je ta skladba?)</translation>
@@ -1783,6 +1784,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2214018885812055163">Mape v skupni rabi</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 vrstica ni prikazana&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> vrstica ni prikazana&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> vrstici nista prikazani&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> vrstice niso prikazane&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> vrstic ni prikazanih&gt;}}</translation>
 <translation id="2215070081105889450">Če želite deliti zvok, namesto tega delite zavihek ali zaslon</translation>
+<translation id="2217208085547223783">Stanje zaupanja</translation>
 <translation id="2218019600945559112">Miška in sledilna ploščica</translation>
 <translation id="2218515861914035131">Prilepi kot navadno besedilo</translation>
 <translation id="221872881068107022">Obratno pomikanje</translation>
@@ -2517,6 +2519,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Odpiranje profila gosta</translation>
 <translation id="2723819893410108315">Rumeno-zelena</translation>
+<translation id="2724822892847436256">Omejitve</translation>
 <translation id="2724841811573117416">Dnevniki za WebRTC</translation>
 <translation id="272488616838512378">Pretvorba enot</translation>
 <translation id="2725200716980197196">Omrežna povezava je znova vzpostavljena</translation>
@@ -3477,6 +3480,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3421835120203732951">Dodaj nov profil</translation>
 <translation id="3423111258700187173">Rezultati, najdeni v mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Preberite več o tej funkciji umetne inteligence</translation>
+<translation id="3423275441470187644">Zaupanje</translation>
 <translation id="3423463006624419153">V telefonu »<ph name="PHONE_NAME_1" />« in »<ph name="PHONE_NAME_2" />«:</translation>
 <translation id="3423858849633684918">Znova zaženite <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Opišite, kaj ste počeli, ko se je zavihek zrušil</translation>
@@ -4606,6 +4610,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4195814663415092787">Nadaljuj prejšnjo sejo</translation>
 <translation id="4198268995694216131">Dodatna spletna mesta</translation>
+<translation id="4198420883535766848">Odstranitev zavihka s seznama</translation>
 <translation id="4200609364258658652">Kopira&amp;j videosličico</translation>
 <translation id="4200689466366162458">Besede po meri</translation>
 <translation id="4200983522494130825">Nov &amp;zavihek</translation>
@@ -5169,6 +5174,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Želite izbrisati skupino zavihkov?}one{Želite izbrisati skupine zavihkov?}two{Želite izbrisati skupine zavihkov?}few{Želite izbrisati skupine zavihkov?}other{Želite izbrisati skupine zavihkov?}}</translation>
 <translation id="4608500690299898628">&amp;Iskanje ...</translation>
 <translation id="4610162781778310380">Pri vtičniku <ph name="PLUGIN_NAME" /> je prišlo do napake</translation>
+<translation id="4610493438923139095">Ni zaupanja vredno</translation>
 <translation id="4610637590575890427">Ali ste nameravali obiskati <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Podatkovna povezava je na voljo</translation>
 <translation id="4611759022973144129">To geslo lahko uporabite za prijavo v napravo <ph name="DEVICE_TYPE" /></translation>
@@ -5194,6 +5200,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4627442949885028695">Nadaljevanje iz druge naprave</translation>
 <translation id="4628762811416793313">Nastavitev vsebnika za Linux se ni dokončala. Poskusite znova.</translation>
 <translation id="4629521233550547305">Odpri profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Zaupanja vredno</translation>
 <translation id="4631955550884380853">Osredotočen glas</translation>
 <translation id="4632655012900268062">Prilagodi kartice</translation>
 <translation id="4633003931260532286">Razširitev zahteva »<ph name="IMPORT_NAME" />« z najmanjšo številko različice »<ph name="IMPORT_VERSION" />«, vendar je nameščena samo različica »<ph name="INSTALLED_VERSION" />«</translation>
@@ -5444,6 +5451,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4816336393325437908">{COUNT,plural, =1{1 zaznamek je izbrisan}one{{COUNT} zaznamek je izbrisan}two{{COUNT} zaznamka sta izbrisana}few{{COUNT} zaznamki so izbrisani}other{{COUNT} zaznamkov je izbrisanih}}</translation>
 <translation id="481689174647911539">Ta datoteka je morda virus ali zlonamerna programska oprema.<ph name="LINE_BREAK" />Lahko jo pošljete Google Varnemu brskanju, da preveri, ali je varna. Pregled običajno traja nekaj sekund.</translation>
 <translation id="4816900689218414104">Ustvarjanje gesla v telefonu ali tabličnem računalniku</translation>
+<translation id="481917177323309377">Zavihki, ki jih niste uporabljali najmanj toliko dni: <ph name="COUNT" /></translation>
 <translation id="4819323978093861656">{0,plural, =0{Zapiranje.}=1{Zapiranje čez: 1 sekundo}one{Zapiranje čez: # sekundo}two{Zapiranje čez: # sekundi}few{Zapiranje čez: # sekunde}other{Zapiranje čez: # sekund}}</translation>
 <translation id="4819607494758673676">Obvestila Pomočnika Google</translation>
 <translation id="4819818293886748542">Pridobivanje povezave do orodja za podporo</translation>
@@ -6851,6 +6859,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5842497610951477805">Omogočanje Bluetootha</translation>
 <translation id="5844284118433003733">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
 <translation id="5844574845205796324">Predlagaj nove vsebine za raziskovanje</translation>
+<translation id="5844685625984052392">Namig</translation>
 <translation id="5846200638699387931">Napaka v sintaksi razmerja: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Brez sence</translation>
 <translation id="5846504156837627898">Upravljanje dovoljenj spletnih mest</translation>

@@ -127,6 +127,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1513858653616922153">Elimina la password</translation>
 <translation id="1521774566618522728">Attivo oggi</translation>
 <translation id="153446405401665083">È disponibile una nuova versione di Chrome</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 preferito è salvato soltanto su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, salvalo nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# preferiti sono salvati soltanto su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">I metodi di pagamento e gli indirizzi non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.
 Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Per gestire il tuo Account Google, tocca il pulsante "Gestisci account"</translation>
@@ -142,6 +143,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1598163867407640634">Utilizza <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Quando l'opzione è attiva, utilizza e salva i dati nel tuo Account Google. Se è disattivata, i dati vengono salvati solo su questo dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Rimuovi 1 elemento selezionato}other{Rimuovi # elementi selezionati}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 preferito e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{# preferiti e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="164269334534774161">È visualizzata una copia offline di questa pagina del giorno <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Cronologia</translation>
@@ -1041,6 +1043,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5885378508678660271">Notifiche <ph name="SEPARATOR" /> Chrome ha rimosso queste autorizzazioni perché questo sito è pericoloso</translation>
 <translation id="5895834791314695851">A breve le password potrebbero smettere di funzionare su questo dispositivo. Per continuare a utilizzare le tue password, aggiorna Google Play Services. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Nessun foglio di passkey è stato chiuso</translation>
+<translation id="5907542076239273525">Preferito salvato nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5919204609460789179">Aggiorna <ph name="PRODUCT_NAME" /> per avviare la sincronizzazione</translation>
 <translation id="5938820472109305350">Aggiungi <ph name="INTEREST" /></translation>

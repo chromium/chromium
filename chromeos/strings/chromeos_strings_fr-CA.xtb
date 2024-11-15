@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1191518099344003522">Le nom de point d'accès est activé.</translation>
 <translation id="1195447618553298278">Erreur inconnue.</translation>
+<translation id="1196264380943975940">Impossible de résumer. Essayez une transcription plus longue.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Lecture/Mise en pause</translation>
 <translation id="1201402288615127009">Suivant</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les mots de passe ne correspondent pas</translation>
 <translation id="467715984478005772">Un pare-feu semble être présent</translation>
+<translation id="4678534708181186163">Impossible de résumer. Essayez une transcription plus courte.</translation>
 <translation id="4683762547447150570">Appuyer sur le bouton pour mettre en évidence l'attribution des touches</translation>
 <translation id="4691278870498629773">Tâche arrêtée : bac manquant</translation>
 <translation id="469379815867856270">Puissance du signal</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">État de la pile</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="517075088756846356">Débranchez et rebranchez le câble d'alimentation de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
+<translation id="5178021559562393163">Impossible de créer des noms. Essayez une transcription plus courte.</translation>
 <translation id="5180108905184566358">baobabs</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter des albums ou modifier vos albums existants, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
+<translation id="5318310531701770497">Impossible de créer des noms. Essayez une transcription plus longue.</translation>
 <translation id="5318334351163689047">Échecs des demandes TCP</translation>
 <translation id="53196409393069519">Activer la transcription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

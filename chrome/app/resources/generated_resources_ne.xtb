@@ -446,6 +446,7 @@
 <translation id="1296911687402551044">चयन गरिएको ट्याब पिन गर्नुहोस्</translation>
 <translation id="1297175357211070620">गन्तव्य</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> बारे प्रतिक्रिया पठाउनुहोस्</translation>
+<translation id="129808599775632797">परिमार्जनहरू</translation>
 <translation id="130097046531636712">यसले निर्वाध रूपमा स्क्रोल गर्ने सुविधालगायतका ब्याकग्राउन्डमा हुने क्रियाकलाप र भिजुअल इफेक्टहरूलाई सीमित पारेर ब्याट्री टिक्ने अवधि बढाउँछ</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> ले निम्न फाइलहरू सम्पादन गर्न सक्छ</translation>
 <translation id="130174306655812048">“Ok Google, यो कुन गीत हो?” भनेर सोधी हेर्नुहोस्</translation>
@@ -1767,6 +1768,7 @@
 <translation id="2214018885812055163">आदान प्रदान गरिएका फोल्डरहरू</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;१ पङ्क्ति देखाइएको छैन&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> पङ्क्तिहरू देखाइएका छैनन्&gt;}}</translation>
 <translation id="2215070081105889450">अडियो सेयर गर्न यसको साटो ट्याब वा स्क्रिन सेयर गर्नुहोस्</translation>
+<translation id="2217208085547223783">विश्वासको स्थिति</translation>
 <translation id="2218019600945559112">माउस र टचप्याड</translation>
 <translation id="2218515861914035131">सादा पाठको रूपमा टाँस्नुहोस्</translation>
 <translation id="221872881068107022">विपरीत दिशामा स्क्रोल गर्नुहोस्</translation>
@@ -2498,6 +2500,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">अतिथि प्रोफाइल खोल्नुहोस्</translation>
 <translation id="2723819893410108315">ज्यामिर</translation>
+<translation id="2724822892847436256">अवरोधहरू</translation>
 <translation id="2724841811573117416">WebRTC लगहरू</translation>
 <translation id="272488616838512378">एकाइ रूपान्तरण</translation>
 <translation id="2725200716980197196">सञ्जाल जडान पुनर्स्थापित</translation>
@@ -3457,6 +3460,7 @@
 <translation id="3421835120203732951">नयाँ प्रोफाइल हाल्नुहोस्</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> मा परिणामहरू भेटिए</translation>
 <translation id="3423226218833787854">यो AI सुविधाका बारेमा थप जान्नुहोस्</translation>
+<translation id="3423275441470187644">विश्वास</translation>
 <translation id="3423463006624419153">तपाईंको '<ph name="PHONE_NAME_1" />' र '<ph name="PHONE_NAME_2" />' मा:</translation>
 <translation id="3423858849633684918">कृपया <ph name="PRODUCT_NAME" /> लाई पुन: लन्च गर्नुहोस्</translation>
 <translation id="3424969259347320884">ट्याब क्र्यास भएको बेला तपाईं के गर्दै हुनुहुन्थ्यो भनी वर्णन दिनुहोस्</translation>
@@ -3981,7 +3985,7 @@
 <translation id="3771294271822695279">भिडियो फाइलहरू</translation>
 <translation id="3771851622616482156">तपाईंलाई यो साइटबाट साइन आउट गरिने छ। साथै, हाल कुनै ट्याबमा यो साइट खोलिएको छ भने सो ट्याबबाट पनि साइन आउट गरिने छ</translation>
 <translation id="3772046291955677288">मैले <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" /> पढेको छु र म ती सर्तहरूमा सहमत छु।</translation>
-<translation id="3774059845329307709">क्रम सङ्ख्या</translation>
+<translation id="3774059845329307709">सिरियल नम्बर</translation>
 <translation id="3774166835015494435">हालसालैका फोटो तथा सूचनाहरू</translation>
 <translation id="3775432569830822555">SSL सर्भर सर्टिफिकेट</translation>
 <translation id="3775705724665058594">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
@@ -4585,6 +4589,7 @@
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4195814663415092787">तपाइँले छोड्नुभएको स्थान देखि जारी राख्नुहोस्</translation>
 <translation id="4198268995694216131">थप साइटहरू</translation>
+<translation id="4198420883535766848">सूचीबाट ट्याब हटाउनुहोस्</translation>
 <translation id="4200609364258658652">भिडियो फ्रेम कपी गर्नुहोस्</translation>
 <translation id="4200689466366162458"> कस्टम गर्न मिल्ने शब्दहरू</translation>
 <translation id="4200983522494130825">नयाँ &amp;ट्याब</translation>
@@ -5148,6 +5153,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ट्याब समूह मेटाउने हो?}other{ट्याब समूहहरू मेटाउने हो?}}</translation>
 <translation id="4608500690299898628">&amp;फेला पार्नुहोस्...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> मा त्रुटि भएको छ</translation>
+<translation id="4610493438923139095">अविश्वसनीय</translation>
 <translation id="4610637590575890427">के तपाईं <ph name="SITE" /> मा जान चाहनुहुन्छ?</translation>
 <translation id="4611114513649582138">डेटा जडान उपलब्ध छ</translation>
 <translation id="4611759022973144129">तपाईं आफ्नो <ph name="DEVICE_TYPE" /> मा साइन इन गर्न यो पासवर्ड प्रयोग गर्न सक्नुहुन्छ।</translation>
@@ -5173,6 +5179,7 @@
 <translation id="4627442949885028695">अर्को यन्त्रबाट जारी राख्नुहोस्</translation>
 <translation id="4628762811416793313">Linux कन्टेनर सेटअप गर्ने कार्य पूरा भएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> नामक प्रोफाइल खोल्नुहोस्</translation>
+<translation id="4629803160911640220">विश्वसनीय</translation>
 <translation id="4631955550884380853">स्पष्ट आवाज</translation>
 <translation id="4632655012900268062">कार्डहरू आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="4633003931260532286">विस्तारलाई कम्तीमा "<ph name="IMPORT_VERSION" />" संस्करणको "<ph name="IMPORT_NAME" />" आवश्यक पर्छ तर स्थापना संस्करण भने केवल "<ph name="INSTALLED_VERSION" />" हो</translation>
@@ -5423,6 +5430,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{एउटा पुस्तक चिन्ह मेटाइयो}other{{COUNT} वटा पुस्तक चिन्ह मेटाइए}}</translation>
 <translation id="481689174647911539">यो फाइल भाइरस वा मालवेयर हुन सक्छ।<ph name="LINE_BREAK" />तपाईं यो फाइल सुरक्षित छ कि छैन भन्ने कुरा जाँच्न यसलाई Google सुरक्षित ब्राउजिङमा पठाउन सक्नुहुन्छ। स्क्यान गर्न सामान्यतया केही सेकेन्ड लाग्छ।</translation>
 <translation id="4816900689218414104">फोन वा ट्याब्लेटमा पासकी सेट गर्नुहोस्</translation>
+<translation id="481917177323309377">तपाईंले <ph name="COUNT" /> दिन वा सोभन्दा बढी समयदेखि प्रयोग नगरेका ट्याबहरू</translation>
 <translation id="4819323978093861656">{0,plural, =0{अहिले बन्द गरिँदै छन्।}=1{निम्न समयपछि बन्द गरिन्छन्: १ सेकेन्ड}other{निम्न समयपछि बन्द गरिन्छन्: # सेकेन्ड}}</translation>
 <translation id="4819607494758673676">Google सहायकका सूचनाहरू</translation>
 <translation id="4819818293886748542">सहायता टुलको लिंक प्राप्त गर्नुहोस्</translation>
@@ -6828,6 +6836,7 @@
 <translation id="5842497610951477805">ब्लुटुथ सक्षम</translation>
 <translation id="5844284118433003733">तपाईं साइन इन हुनुभएका बेला तपाईंलाई Google का सेवाहरूमा सुरक्षित राख्न (उदाहरणका लागि सुरक्षासम्बन्धी व्यवस्थापछि Gmail मा सुरक्षा बढाउन) यो डेटा तपाईंको Google खातासँग लिंक गरिन्छ।</translation>
 <translation id="5844574845205796324">अन्वेषण गरिनु पर्ने नयाँ सामग्री सिफारिस गर्नुहोस्</translation>
+<translation id="5844685625984052392">सङ्केत</translation>
 <translation id="5846200638699387931">सम्बन्धको विन्याससम्बन्धी त्रुटि: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">कुनै पनि छाया छैन</translation>
 <translation id="5846504156837627898">साइटलाई दिइएका अनुमतिहरू व्यवस्थापन गर्नुहोस्</translation>

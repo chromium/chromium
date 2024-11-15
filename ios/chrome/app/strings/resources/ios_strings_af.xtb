@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Kode is geskandeer</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} oortjie}other{{count} oortjies}}</translation>
 <translation id="1084365883616172403">Facebook-plasing is voltooi.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> kon nie oopgemaak word nie</translation>
 <translation id="1096992026380844478">Jou sinkroniseringinstellings sal op grond van jou jongste rugsteun teruggestel word. <ph name="BEGIN_LINK" />Sien wat jy kan sinkroniseer<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Vertaal <ph name="LANGUAGE" /> altyd</translation>
 <translation id="1108938384783527433">Geskiedenissinkronisering</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Nee, dankie</translation>
 <translation id="2320166752086256636">Versteek sleutelbord</translation>
 <translation id="2321086116217818302">Maak tans wagwoorde gereed …</translation>
+<translation id="2323697864063408084">Kry kennisgewings op jou sluitskerm en as baniere om nooit te mis wat vir jou saakmaak nie</translation>
 <translation id="2326302612031521902">Eenheidkieser</translation>
 <translation id="2330607597130465898">Geen beskerming nie</translation>
 <translation id="233375395665273385">Vee uit en meld af</translation>
@@ -384,6 +386,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2671423594960767771">Deel groep</translation>
 <translation id="2673508731173059946">Besoek gekopieerde skakel</translation>
 <translation id="2687403674020088961">Blokkeer alle webkoekies (nie aanbeveel nie)</translation>
+<translation id="2688535388040882469">Baniere</translation>
 <translation id="2690858294534178585">Kamera word tans gebruik</translation>
 <translation id="2691653761409724435">Nie vanlyn beskikbaar nie</translation>
 <translation id="2696180352517415858">Jy sal nie by jou Google-rekening afgemeld word nie. <ph name="BEGIN_LINK" />Ander soorte aktiwiteit<ph name="END_LINK" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan dit enige tyd uitvee.
@@ -636,6 +639,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3986739045730058129">Gaan na oortjie</translation>
 <translation id="3992684624889376114">Meer oor hierdie bladsy</translation>
 <translation id="3994422733891749358">Kies die kennisgewings wat jy wil ontvang</translation>
+<translation id="3994522032746736727">Meld aan as <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Bladlaaivorderingsbalk, <ph name="EMAIL" /> gelaai.</translation>
 <translation id="3997522473364371632">Wagwoorddeling is deur jou administrateur deaktiveer.</translation>
 <translation id="4002066346123236978">Titel</translation>
@@ -777,6 +781,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
 <translation id="4647758699119474035">Aangemeld as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fout met Google-rekening. Maak rekeningkieslys oop.</translation>
 <translation id="4650125387981512669">Gaan voort as <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Versteek ná 1 minuut}other{Versteek ná {count} minute}}</translation>
 <translation id="4652817563047461855">Maak seker dat jou wagwoorde veilig is, vind uit of hulle gekompromitteer is, en kry advies om jouself aanlyn te beskerm. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Stoor</translation>
 <translation id="4668929960204016307">,</translation>
@@ -843,6 +848,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4936354130727646074">Moet nooit skuif nie</translation>
 <translation id="4937410517508563815">Stoor wagwoorde in rekening</translation>
 <translation id="4938338714234463591">Dit sal dit vir jou moontlik maak om jou stem vir sekere kenmerke op webwerwe te gebruik.</translation>
+<translation id="4938716880833771969">Jou kennisgewings word stilweg afgelewer</translation>
 <translation id="4941089862236492464">Jammer, kon nie jou item deel nie.</translation>
 <translation id="4944543191714094452">Soek op bladsy …</translation>
 <translation id="4945756290001680296">Gaan by wagwoordinstelling in</translation>
@@ -1609,6 +1615,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8319076807703933069">Nuwe soektog</translation>
 <translation id="8343993175958086504">Rugsteun jou goed en gebruik dit op enige toestel.</translation>
 <translation id="8349305172487531364">Boekmerkebalk</translation>
+<translation id="8364563001733875155">Om jou PIN te verander, moet jy eers ’n wagkode op jou toestel opstel.</translation>
 <translation id="8366466717204352506">Kontrole is nooit uitgevoer nie</translation>
 <translation id="8368001212524806591">Spoor prys na</translation>
 <translation id="8370406443343902172">Gaan na instellings …</translation>

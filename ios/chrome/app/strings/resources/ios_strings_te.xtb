@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">మీ తల్లి/తండ్రి ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" />‌గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. Google ఖాతా ఎర్రర్. ఖాతా మెనూను తెరవండి.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" />గా కొనసాగించండి</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 నిమిషం తర్వాత దాచాలి}other{{count} నిమిషాల తర్వాత దాచాలి}}</translation>
 <translation id="4652817563047461855">మీ పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయని నిర్ధారించుకోండి, అవి చోరీకి గురయ్యాయో లేదో తెలుసుకోండి, అదనంగా, ఆన్‌లైన్‌లో మిమ్మల్ని మీరు రక్షించుకోవడంలో సహాయపడటానికి సలహాను పొందండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">సేవ్ చేయండి</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1318,7 +1319,7 @@
 <translation id="69739764870135975">అలాగే Google మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ అయితే, మీకు మరింత సందర్భోచితమైన సూచనలు కనిపిస్తాయి</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">మొత్తం సమయం</translation>
-<translation id="6983306615164277634">స్థానాన్ని మార్చడానికి మీరు అడ్రస్ బార్‌ను నొక్కి, పట్టుకోవచ్చు కూడా.</translation>
+<translation id="6983306615164277634">అడ్రస్ బార్ స్థానాన్ని మార్చడానికి దాన్ని నొక్కి, పట్టుకోవచ్చు.</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="7004032350256606903">మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>

@@ -781,6 +781,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4647758699119474035">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Błąd konta Google. Otwórz menu konta.</translation>
 <translation id="4650125387981512669">Kontynuuj jako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Ukrywaj po minucie}few{Ukrywaj po {count} minutach}many{Ukrywaj po {count} minutach}other{Ukrywaj po {count} minuty}}</translation>
 <translation id="4652817563047461855">Upewnij się, że Twoje hasła są bezpieczne, dowiedz się, czy nie zostały przejęte, i poznaj porady, jak lepiej chronić się online. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Zapisz</translation>
 <translation id="4668929960204016307">,</translation>

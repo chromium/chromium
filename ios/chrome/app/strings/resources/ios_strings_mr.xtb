@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">आपल्या पालकांद्वारे व्यवस्थापित करण्यात आले</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> म्हणून साइन इन केले आहे. <ph name="USER_EMAIL" />. Google खाते संबंधित एरर. खाते मेनू उघडा.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> म्हणून पुढे सुरू ठेवा</translation>
+<translation id="4651927776207937667">{count,plural, =1{१ मिनिटानंतर लपवा}other{{count} मिनिटांनंतर लपवा}}</translation>
 <translation id="4652817563047461855">तुमचे पासवर्ड सुरक्षित असल्याची खात्री करा, ते धोक्यात असल्यास शोधा आणि ऑनलाइन असताना स्वतःचे संरक्षण करण्यात मदत करण्यासाठी सल्ला मिळवा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">सेव्ह करा</translation>
 <translation id="4668929960204016307">,</translation>

@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">Izbris gesla</translation>
 <translation id="1521774566618522728">Aktivno danes</translation>
 <translation id="153446405401665083">Na voljo je nova različica Chroma</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 zaznamek je shranjen samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}one{# zaznamek je shranjen samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}two{# zaznamka sta shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}few{# zaznamki so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}other{# zaznamkov je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Če želite upravljati račun Google, se dotaknite gumba »Upravljanje računa«</translation>
@@ -142,6 +143,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1598163867407640634">Uporabite <ph name="SITE_ETLD_PLUS_ONE" /> z računom pri ponudniku <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Če je ta možnost vklopljena, uporabljate in shranjujete podatke v računu Google. Če je izklopljena, se podatki shranjujejo samo v tej napravi.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranitev 1 izbranega elementa}one{Odstranitev # izbranega elementa}two{Odstranitev # izbranih elementov}few{Odstranitev # izbranih elementov}other{Odstranitev # izbranih elementov}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}one{# geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}two{# gesli in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}few{# gesla in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}other{# gesel in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="164269334534774161">Ogledujete si kopijo te strani brez povezave z dne <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Zgodovina</translation>
@@ -802,6 +804,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4769632191812288342">Imate standardno zaščito</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> – izbrisano</translation>
 <translation id="4778653490315793244">Ničesar ni za prikaz</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> je vaš privzeti iskalnik</translation>
 <translation id="4787736314074622408">Ali želite izbrisati »<ph name="ITEM_TITLE" />«?</translation>
 <translation id="4793679854893018356">Preberite, kako vas Chrome varuje</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

@@ -781,6 +781,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4647758699119474035">Log masuk sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ralat Google Account. Buka menu akaun.</translation>
 <translation id="4650125387981512669">Teruskan sebagai <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Sembunyikan selepas 1 minit}other{Sembunyikan selepas {count} minit}}</translation>
 <translation id="4652817563047461855">Pastikan kata laluan anda selamat, pastikan jika kata laluan anda telah terjejas dan dapatkan nasihat untuk melindungi diri anda dalam talian. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Simpan</translation>
 <translation id="4668929960204016307">,</translation>

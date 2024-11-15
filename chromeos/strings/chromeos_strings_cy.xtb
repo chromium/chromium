@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1191518099344003522">Mae APN wedi'i alluogi.</translation>
 <translation id="1195447618553298278">Gwall anhysbys.</translation>
+<translation id="1196264380943975940">Methu â chrynhoi. Rhowch gynnig ar drawsgrifiad hirach.</translation>
 <translation id="1196959502276349371">Fersiwn <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Chwarae/Seibio</translation>
 <translation id="1201402288615127009">Nesaf</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Gwneuthurwr</translation>
 <translation id="467510802200863975">Nid yw'r cyfrineiriau'n cyfateb</translation>
 <translation id="467715984478005772">Mae wal dân yn debygol</translation>
+<translation id="4678534708181186163">Methu â chrynhoi. Rhowch gynnig ar drawsgrifiad byrrach.</translation>
 <translation id="4683762547447150570">Tapiwch ar y botwm i ganolbwyntio ar aseiniad y fysell</translation>
 <translation id="4691278870498629773">Wedi stopio - Mae hambwrdd ar goll</translation>
 <translation id="469379815867856270">Cryfder Signal</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Iechyd y batri</translation>
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
 <translation id="517075088756846356">Dadblygiwch ac ail-blygiwch y cebl pŵer <ph name="DEVICE_NAME" /> i barhau â'r broses ddiweddaru</translation>
+<translation id="5178021559562393163">Methu â chreu enwau. Rhowch gynnig ar drawsgrifiad byrrach.</translation>
 <translation id="5180108905184566358">coed baobab</translation>
 <translation id="5180712487038406644">Mynegiannol</translation>
 <translation id="5190187232518914472">Ail-fyw eich hoff atgofion. I ychwanegu neu olygu albymau, ewch i <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Hunaniaeth</translation>
 <translation id="5317780077021120954">Cadw</translation>
+<translation id="5318310531701770497">Methu â chreu enwau. Rhowch gynnig ar drawsgrifiad hirach.</translation>
 <translation id="5318334351163689047">Methiannau ceisiadau UDP</translation>
 <translation id="53196409393069519">Troi trawsgrifiad ymlaen?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

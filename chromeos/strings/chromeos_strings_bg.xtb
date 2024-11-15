@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1191518099344003522">Името на точката за достъп (APN) е активирано.</translation>
 <translation id="1195447618553298278">Неизвестна грешка.</translation>
+<translation id="1196264380943975940">Не може да се направи обобщение. Опитайте с по-дълъг препис.</translation>
 <translation id="1196959502276349371">Версия <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Пускане/пауза</translation>
 <translation id="1201402288615127009">Напред</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">Скриване на преписа</translation>
 <translation id="160633243685262989">Визуализация на изображението</translation>
 <translation id="1611649489706141841">напред</translation>
+<translation id="1615144046047995187">Изтеглянето не е възможно. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Използване на тема</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">Меню за редактиране и изтриване</translation>
 <translation id="2597774443162333062">Файловете ще бъдат изпратени до Google за отстраняване на грешки</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Сканирането завърши. Сканирана бе 1 страница}other{Сканирането завърши. Сканирани бяха {NUMBER_OF_PAGES} страници}}</translation>
+<translation id="261322795497077164">Идентифициране на говорещите</translation>
 <translation id="2617397783536231890">памук</translation>
 <translation id="2618015542787108131">пясъчна дюна</translation>
 <translation id="2619761439309613843">Ежедневно опресняване</translation>
@@ -440,6 +443,7 @@
 <translation id="3140130301071865159">сняг</translation>
 <translation id="3146655726035122603">Само за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилни данни</translation>
+<translation id="3153094818810437149">Можете да промените това по-късно от настройките на „Рекордер“</translation>
 <translation id="3156511682997763015">Превъртане с 10 секунди напред</translation>
 <translation id="3156846309055100599">Страница <ph name="PAGE_NUMBER" /> се сканира...</translation>
 <translation id="315738237743207937">Открит е портал за удостоверяване</translation>
@@ -562,6 +566,7 @@
 <translation id="3785643128701396311">изкуство с пиксели</translation>
 <translation id="3799381533888781854">ИЗКЛЮЧЕНО – тази настройка се управлява от администратора ви.</translation>
 <translation id="380097101658023925">контроли за rgb</translation>
+<translation id="380493988330050229">Не може да се създаде обобщение за този език на преписа</translation>
 <translation id="38114475217616659">Изчистване на цялата история</translation>
 <translation id="3820172043799983114">Невалиден ПИН код.</translation>
 <translation id="382043424867370667">Тапет със залез</translation>
@@ -585,6 +590,7 @@
 <translation id="3885327323343477505">Промяна на скрийнсейвъра</translation>
 <translation id="3889914174935857450">Дата на нулиране</translation>
 <translation id="3897092660631435901">Меню</translation>
+<translation id="3902271751020176019">Език на преписите</translation>
 <translation id="391412459402535266">Устройството не може да бъде тествано. За целта превключете към режим на лаптоп.</translation>
 <translation id="3916998944874125962">създаване на екранна снимка</translation>
 <translation id="3923184630988645767">Пренос на данни</translation>
@@ -733,6 +739,7 @@
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4594021849294327751">Създаване на препис</translation>
+<translation id="4594541568452132351">Изберете езика на преписите и изтеглете модела</translation>
 <translation id="4607282946861182308">Не могат да се създадат изображения на това. Опитайте с друга подкана.</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
 <translation id="4623061655523261501">Имената на записите бяха генерирани успешно</translation>
@@ -748,6 +755,7 @@
 <translation id="4665014895760275686">Производител</translation>
 <translation id="467510802200863975">Паролите не са идентични</translation>
 <translation id="467715984478005772">Предполага се наличие на защитна стена</translation>
+<translation id="4678534708181186163">Не може да се направи обобщение. Опитайте с по-кратък препис.</translation>
 <translation id="4683762547447150570">Докоснете бутона, за да поставите фокуса върху зададения клавиш</translation>
 <translation id="4691278870498629773">Спряло – липсваща тава</translation>
 <translation id="469379815867856270">Сила на сигнала</translation>
@@ -850,6 +858,7 @@
 <translation id="5168185087976003268">Състояние на батерията</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="517075088756846356">Изключете и включете отново захранващия кабел на устройството (<ph name="DEVICE_NAME" />), за да продължите процеса на актуализиране</translation>
+<translation id="5178021559562393163">Не могат да се създадат имена. Опитайте с по-кратък препис.</translation>
 <translation id="5180108905184566358">дървета баобаб</translation>
 <translation id="5180712487038406644">Изразителен</translation>
 <translation id="5190187232518914472">Преживейте отново любимите си спомени. За да добавите или редактирате албуми, отворете <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
@@ -884,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Самоличност</translation>
 <translation id="5317780077021120954">Запазване</translation>
+<translation id="5318310531701770497">Не могат да се създадат имена. Опитайте с по-дълъг препис.</translation>
 <translation id="5318334351163689047">Неуспешни заявки през TCP</translation>
 <translation id="53196409393069519">Да се включи ли функцията за препис?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -937,6 +947,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Вече не сте в профила си</translation>
 <translation id="5620281292257375798">Само за вътрешно ползване</translation>
+<translation id="5628106863521633649">Налични езици</translation>
 <translation id="5630438231335788050">Баухаус</translation>
 <translation id="5631759159893697722">резюме</translation>
 <translation id="5655283760733841251">Увеличаване на яркостта на клавиатурата</translation>
@@ -1097,6 +1108,7 @@
 <translation id="6359919876285606596">Това действие е необратимо и не може да бъде отменено</translation>
 <translation id="6368342879959028556">Когато изберете „Създаване с AI“, напишете персонализирана подкана. Можете също да изберете „Тапети от AI“, за да посочите тема, и след това да изберете от подчертаните думи, за да персонализирате тапета от AI.</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
+<translation id="6369221585240879141">Не могат да се създадат имена на записите за този език на преписа</translation>
 <translation id="6373461326814131011">Изкуствено езеро</translation>
 <translation id="6379086450106841622">Сензорен екран</translation>
 <translation id="6381741036071372448">Тестване на клавиатурата</translation>
@@ -1261,6 +1273,7 @@
 <translation id="710028965487274708">Неуспешно – Удостоверяването не бе успешно</translation>
 <translation id="7101959270679078188">Отключете устройството (<ph name="DEVICE_NAME" />), за да продължите процеса на актуализиране</translation>
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> от <ph name="COUNT" /> на име <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Избран език</translation>
 <translation id="7107255225945990211">Изберете специални произведения за <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Моля, опитайте отново по-късно</translation>
@@ -1270,6 +1283,7 @@
 <translation id="7130438335435247835">Име на точката за достъп (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
 <translation id="7135814714616751706">Търсете комбинации</translation>
+<translation id="7138614237884624401">Опростен текст</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
@@ -1691,6 +1705,7 @@
 <translation id="9100765901046053179">Разширени настройки</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">„Рекордер“ може да създава преписи за записите с говор. В следващата стъпка трябва да изберете езика на преписите и да изтеглите модела (до 100 MB).</translation>
 <translation id="9111102763498581341">Отключване</translation>
 <translation id="9122492456897874028">Обобщавайте съдържание, получавайте определения и др.</translation>
 <translation id="9122602430962285795">За повторно свързване отворете „Настройки“</translation>

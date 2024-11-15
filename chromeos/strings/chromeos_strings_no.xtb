@@ -139,6 +139,7 @@
 <translation id="1604959087182679653">Skjul transkripsjonen</translation>
 <translation id="160633243685262989">Forhåndsvisningsbilde</translation>
 <translation id="1611649489706141841">fremover</translation>
+<translation id="1615144046047995187">Kan ikke laste ned. Prøv på nytt, eller start Chromebooken på nytt.</translation>
 <translation id="1615335640928990664">Databruk siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Bruk et tema</translation>
 <translation id="1621067168122174824">Kjør ladetest</translation>
@@ -589,6 +590,7 @@
 <translation id="3885327323343477505">Bytt skjermsparer</translation>
 <translation id="3889914174935857450">Tilbakestillingsdato</translation>
 <translation id="3897092660631435901">Meny</translation>
+<translation id="3902271751020176019">Transkripsjonsspråk</translation>
 <translation id="391412459402535266">Kan ikke teste enheten. Bytt til laptopmodus for å teste.</translation>
 <translation id="3916998944874125962">ta skjermbilde</translation>
 <translation id="3923184630988645767">Databruk</translation>
@@ -945,6 +947,7 @@
 <translation id="5606865426897221650">Fane</translation>
 <translation id="5613201299517339763">Du er blitt logget av</translation>
 <translation id="5620281292257375798">Bare internt</translation>
+<translation id="5628106863521633649">Tilgjengelige språk</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
 <translation id="5655283760733841251">Tastaturlysstyrke opp</translation>
@@ -1270,6 +1273,7 @@
 <translation id="710028965487274708">Mislykket – autorisasjonen mislyktes</translation>
 <translation id="7101959270679078188">Lås opp <ph name="DEVICE_NAME" /> for å fortsette oppdateringsprosessen</translation>
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" />. Navn: <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Valgt språk</translation>
 <translation id="7107255225945990211">Velg grafikk som kun finnes på <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7117228822971127758">Prøv på nytt senere</translation>

@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">حذف كلمة المرور</translation>
 <translation id="1521774566618522728">نشط اليوم</translation>
 <translation id="153446405401665083">‏يتوفّر إصدار جديد من متصفّح Chrome</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{‏تم حفظ إشارة مرجعية واحدة على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}zero{‏تم حفظ # إشارة مرجعية على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}two{‏تم حفظ إشارتَين مرجعيتَين على هذا الجهاز فقط. ولاستخدامهما على أجهزتك الأخرى، يجب حفظهما في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}few{‏تم حفظ # إشارات مرجعية على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}many{‏تم حفظ # إشارة مرجعية على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}other{‏تم حفظ # إشارة مرجعية على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">‏لن يتم تشفير طُرق الدفع والعناوين. ولن تتم مزامنة سجلّ التصفّح من Chrome.
 ولا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">‏لإدارة إعدادات حسابك على Google، يُرجى النقر على الزر "إدارة الحساب".</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634">استخدِم <ph name="SITE_ETLD_PLUS_ONE" /> مع <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="160275202205869636">‏عند تفعيل هذا الإعداد، يمكنك استخدام البيانات وحفظها في حسابك على Google. أمّا في حال إيقاف هذا الإعداد، فسيتم حفظ البيانات على هذا الجهاز فقط.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{إزالة عنصر واحد محدد}zero{إزالة # عنصر محدد}two{إزالة عنصرين (#) محددين}few{إزالة # عناصر محددة}many{إزالة # عنصرًا محددًا}other{إزالة # عنصر محدد}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{‏تم حفظ إشارة مرجعية واحدة وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}zero{‏تم حفظ # إشارة مرجعية وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}two{‏تم حفظ إشارتَين مرجعيتَين وبيانات أخرى على هذا الجهاز فقط. ولاستخدامهما على أجهزتك الأخرى، يجب حفظهما في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}few{‏تم حفظ # إشارات مرجعية وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}many{‏تم حفظ # إشارة مرجعية وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}other{‏تم حفظ # إشارة مرجعية وبيانات أخرى على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
 <translation id="164269334534774161">أنت تعرض نسخة بلا اتصال لهذه الصفحة من <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">السجل</translation>
@@ -804,6 +806,7 @@
 <translation id="4769632191812288342">يتم توفير الحماية العادية حاليًا.</translation>
 <translation id="4775646243557794597">تم حذف <ph name="TIME_PERIOD" />.</translation>
 <translation id="4778653490315793244">ما من محتوى متوفّر حتى الآن</translation>
+<translation id="4782929588435725897">‫<ph name="SEARCH_ENGINE" /> هو محرك البحث التلقائي</translation>
 <translation id="4787736314074622408">هل تريد حذف "<ph name="ITEM_TITLE" />"؟</translation>
 <translation id="4793679854893018356">‏تعرّف على الطريقة التي يحافظ بها Chrome على أمانك</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1042,6 +1045,7 @@
 <translation id="5885378508678660271">‏الإشعارات <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنّ هذا الموقع الإلكتروني خطير</translation>
 <translation id="5895834791314695851">‏ستفقد قريبًا إمكانية الوصول إلى كلمات المرور المحفوظة على هذا الجهاز. لمواصلة استخدام كلمات المرور، يجب تحديث "خدمات Google Play". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">تمّ إغلاق صفحة "ما من مفاتيح مرور"</translation>
+<translation id="5907542076239273525">تم حفظ الإشارة المرجعية في "<ph name="FOLDER_NAME" />"</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5919204609460789179">تحديث <ph name="PRODUCT_NAME" /> لبدء المزامنة</translation>
 <translation id="5938820472109305350">إضافة <ph name="INTEREST" /></translation>

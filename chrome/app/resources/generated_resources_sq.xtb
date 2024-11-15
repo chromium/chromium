@@ -5410,6 +5410,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{U fshi 1 faqëshënues}other{U fshinë {COUNT} faqeshënues}}</translation>
 <translation id="481689174647911539">Ky skedar mund të jetë një virus ose softuer keqdashës.<ph name="LINE_BREAK" />Mund ta dërgosh atë te "Shfletimi i sigurt i Google" për të kontrolluar nëse nuk është i sigurt. Skanimet zakonisht zgjasin disa sekonda.</translation>
 <translation id="4816900689218414104">Krijo një çelës kalimi në telefon ose tablet</translation>
+<translation id="481917177323309377">Skedat që nuk janë përdorur për <ph name="COUNT" /> ose më shumë ditë</translation>
 <translation id="4819323978093861656">{0,plural, =0{Po mbyllet tani.}=1{Do të mbyllet pas: 1 sekonde}other{Do të mbyllet pas: # sekondash}}</translation>
 <translation id="4819607494758673676">Njoftimet e "Asistentit të Google"</translation>
 <translation id="4819818293886748542">Merr një lidhje për veglën e mbështetjes</translation>

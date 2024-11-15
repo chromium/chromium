@@ -867,6 +867,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1596286373007273895">Tilgængelig</translation>
 <translation id="1596709061955594992">Bluetooth er deaktiveret. Du kan se tilgængelige enheder ved at aktivere Bluetooth.</translation>
 <translation id="1596780725094407793">– omfatter underdomæner</translation>
+<translation id="1597806446183714225">Gør lydkvaliteten bedre, så stemmer lyder naturlige og klare.</translation>
 <translation id="1598163867407640634">Brug <ph name="SITE_ETLD_PLUS_ONE" /> hos <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Opdateringer er deaktiveret af din administrator.</translation>
 <translation id="1600541617401655593">Vær med til at forbedre funktionerne og ydeevnen i ChromeOS Flex. Dataene er sammenlagte og beskyttede.</translation>
@@ -1478,6 +1479,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="2002160221914907025">Eksperimentel AI</translation>
 <translation id="2003130567827682533">Hvis du vil aktivere data fra "<ph name="NAME" />", skal du først oprette forbindelse til et Wi-Fi-netværk</translation>
+<translation id="200321182559008924">Hold styr på dine faner</translation>
 <translation id="2003596238737586336">Den aktuelle tidsplan er indstillet til <ph name="SUNRISE" />-<ph name="SUNSET" />. Denne indstilling administreres af din administrator.</translation>
 <translation id="2004413981947727241">Brug dine adgangskoder på alle enheder</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
@@ -1512,6 +1514,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="2024195579772565064">Slet søgemaskine</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> er gået ned. Klik her for at genstarte udvidelsen.</translation>
+<translation id="2026377162111110983">Områdestemme</translation>
 <translation id="2028449514182362831">Funktioner, der skal bruge bevægelsessensorer, fungerer ikke</translation>
 <translation id="2028479214883337535">Importeret fra MacOS</translation>
 <translation id="202918510990975568">Angiv din adgangskode for at konfigurere sikkerhed og login</translation>
@@ -3513,6 +3516,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3446274660183028131">Start Parallels Desktop for at installere Windows.</translation>
 <translation id="344630545793878684">Læs dine data på en række websites</translation>
 <translation id="3447644283769633681">Bloker alle cookies fra tredjeparter</translation>
+<translation id="3447644827015694497">Vil du gennemgå inaktive faner?</translation>
 <translation id="3447797901512053632">Caster <ph name="TAB_NAME" /> til <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Opdater konto</translation>
 <translation id="3449393517661170867">Nyt fanevindue</translation>
@@ -4308,6 +4312,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3977145907578671392">Funktioner på visse websites fungerer muligvis ikke i inkognito</translation>
 <translation id="3977886311744775419">Automatiske opdateringer downloades ikke på denne netværkstype, men du kan kigge efter opdateringer manuelt.</translation>
 <translation id="3978325380690188371">Træge taster er ikke tilgængelige, når ChromeVox er aktiveret</translation>
+<translation id="3978732922947854545">Chrome gør PDF-filer bedre</translation>
 <translation id="3979395879372752341">Ny udvidelse er tilføjet (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Aktivér <ph name="NETWORKDEVICE" /></translation>
 <translation id="398095528354975981">Skjul disse faner</translation>
@@ -4360,6 +4365,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4010746393007464819">Der er en tilgængelig opgradering til Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> for at få dine bogmærker på alle dine mobilenheder.</translation>
 <translation id="4011073493055408531">Nordlys i lilla og grønne farver over en by.</translation>
+<translation id="4012509903424054869">PDF-filer konverteres automatisk, så du kan søge efter og markere tekst i dem</translation>
 <translation id="4014432863917027322">Vil du reparere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Har du nogen udvidelser? <ph name="BEGIN_LINK" />Administrer nemt dine udvidelser<ph name="END_LINK" /> fra ét sted.</translation>
 <translation id="4016762287427926315">De tilladelser, du giver <ph name="APP_NAME" />, gives også til denne app. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
@@ -4545,6 +4551,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="414800391140809654">kan bruge dine oplysninger, når du browser</translation>
 <translation id="4148195018520464922">Du kan angive begrænsninger, så det kun er bestemte brugere, der kan logge ind. Hvis du gør dette, fjernes valgmuligheden "Tilføj person" på loginskærmen. Du kan også fjerne aktuelle brugere.</translation>
 <translation id="4148957013307229264">Installerer...</translation>
+<translation id="4149385644005013189">Det ser godt ud!</translation>
 <translation id="4150201353443180367">Skærm</translation>
 <translation id="4150569944729499860">Skærmkontekst</translation>
 <translation id="4151449637210235443">Fortæl os om dit seneste gameplay</translation>
@@ -4621,6 +4628,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="42137655013211669">Serveren har forbudt dig adgang til denne ressource.</translation>
 <translation id="4213918571089943508">Barnets Google-konto</translation>
 <translation id="4214192212360095377">Deaktiver nu</translation>
+<translation id="4214313983951846766">{NUM_TABS,plural, =0{Ingen inaktive faner}=1{Gennemgå 1 inaktiv fane}one{Gennemgå # inaktiv fane}other{Gennemgå # inaktive faner}}</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218081191298393750">Klik på højttalerikonet for at slå lyden fra på denne fane</translation>
 <translation id="4220157655212610908">Brug en ekstern sikkerhedsnøgle</translation>
@@ -4963,6 +4971,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Præferencer for ekstern lagerplads</translation>
 <translation id="4471354919263203780">Downloader talegenkendelsesfiler... <ph name="PERCENT" /> %</translation>
+<translation id="4472194221638903160">Gruppér faner med AI</translation>
 <translation id="4472298120638043495">Du kan bruge dit foretrukne sprog fra din Google-konto (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Vær med til at forbedre Chromes funktioner og ydeevne</translation>
 <translation id="4472533928615930332">Billede <ph name="INDEX" /> af <ph name="SUBJECT" /> i stilen <ph name="STYLE" /> er genereret</translation>
@@ -5433,6 +5442,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bogmærke blev slettet}one{{COUNT} bogmærke blev slettet}other{{COUNT} bogmærker blev slettet}}</translation>
 <translation id="481689174647911539">Denne fil kan være en virus eller malware.<ph name="LINE_BREAK" />Du kan sende den til Google Beskyttet browsing for at tjekke, om den er usikker. Det tager normalt et par sekunder at scanne filer.</translation>
 <translation id="4816900689218414104">Opret en adgangsnøgle på en telefon eller tablet</translation>
+<translation id="481917177323309377">Faner, du ikke har brugt i mindst <ph name="COUNT" /> dage</translation>
 <translation id="4819323978093861656">{0,plural, =0{Lukker nu.}=1{Lukker om: 1 sekund}one{Lukker om: # sekund}other{Lukker om: # sekunder}}</translation>
 <translation id="4819607494758673676">Google Assistent-notifikationer</translation>
 <translation id="4819818293886748542">Få et link til supportværktøjet</translation>
@@ -6114,6 +6124,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5299558715747014286">Se og administrer dine fanegupper</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5300719150368506519">Sender webadresserne for de sider, du besøger, til Google</translation>
+<translation id="5301398529256275325">Prøv at spørge om ting som f.eks. "opsummer denne side" eller stille dit eget spørgsmål.</translation>
 <translation id="5301751748813680278">Anvender som gæst.</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
 <translation id="5302032366299160685">Vent, indtil filen er åben, før du prøver igen</translation>
@@ -7459,6 +7470,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="628699625505156622">Brug lokation. Tillad, at ChromeOS- og Android-apps, -websites og -tjenester med lokationstilladelse kan bruge denne enheds lokation. Lokationsnøjagtighed giver Android-apps og -tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra denne enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere brugere med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov. <ph name="BEGIN_LINK1" />Få flere oplysninger om lokationstilladelse<ph name="END_LINK1" /></translation>
 <translation id="628705218210359422">Hold styr på dine adgangskoder, og administrer dem ét sted.</translation>
 <translation id="628726841779494414">Administrer dine printere i printerindstillingerne</translation>
+<translation id="6287288864483377583">Import understøttes kun for et enkelt certifikat</translation>
 <translation id="6287828400772161253">Android-telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Der er ingen enheder, som deler i nærheden. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Gendannelsen mislykkedes på grund af manglende lagerplads.</translation>
@@ -7903,6 +7915,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6622980291894852883">Fortsæt blokering af billeder</translation>
 <translation id="6624036901798307345">I tablettilstand skal du trykke på knappen til faneoptælling på værktøjslinjen for at åbne den nye fanelinje, der viser miniaturebilleder af hver fane.</translation>
 <translation id="6624687053722465643">Sukkersød</translation>
+<translation id="6626581113916585374">Effekttilstand</translation>
 <translation id="6627743754845412571">Har ikke tilladelse til at registrere dine hænder</translation>
 <translation id="6628316682330029452">Klientcertifikater er certifikater, der identificerer dig over for andre servere.</translation>
 <translation id="6628328486509726751">Uploadet <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -8099,6 +8112,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="6774710250118040929">Tilføj en ny adgangskode</translation>
 <translation id="6775163072363532304">Tilgængelige enheder vises her.</translation>
+<translation id="6775992990195573904">Få dine faner sorteret</translation>
 <translation id="677646486571529447">Tilføj en note</translation>
 <translation id="6776589734354015877">Få yderligere funktioner</translation>
 <translation id="6776729248872343918">Aktivér Hurtig parring</translation>
@@ -10121,6 +10135,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8192944472786724289"><ph name="APP_NAME" /> vil gerne dele indholdet på din skærm.</translation>
 <translation id="8193195501228940758">Fjern <ph name="WEBSITE" /></translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dine enheder<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8194788147118885421">Gennemgå inaktive faner</translation>
 <translation id="8195265224453131880">Intensitet</translation>
 <translation id="8195854162863398249">Deaktiver <ph name="FEATURE_NAME" /></translation>
 <translation id="8197673340773315084">Tilføj et navn eller en etiket, f.eks. Arbejde eller Privat</translation>
@@ -11110,6 +11125,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Sådan administrerer du dine data:<ph name="END_BOLD" /> Vi sletter automatisk websites, der er ældre end 4 uger, fra listen for at beskytte dit privatliv. Et website, du besøger igen, kan blive vist på listen igen. Du kan også fjerne et website, hvis du ikke vil have, at websitet nogensinde skal definere interesser for dig igen.</translation>
 <translation id="8884570509232205463">Din enhed låses nu kl. <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8885449336974696155">Vær med til at gøre ChromeOS bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" /></translation>
+<translation id="8886745493279779790">Gennemgå inaktive faner</translation>
 <translation id="8888253246822647887">Din app åbner, når opgraderingen er fuldført. Opgraderinger kan tage et par minutter.</translation>
 <translation id="8888459276890791557">Du kan fastgøre dette sidepanel, så du nemt kan tilgå det</translation>
 <translation id="8889294078294184559">Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>

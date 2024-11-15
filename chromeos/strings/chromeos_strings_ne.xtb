@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1191518099344003522">APN अन गरिएको छ।</translation>
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
+<translation id="1196264380943975940">सारांश तयार पार्न सकिएन। अझ लामो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="1196959502276349371">संस्करण <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">प्ले/पज</translation>
 <translation id="1201402288615127009">अर्को</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्डहरू मिलेनन्</translation>
 <translation id="467715984478005772">फायरवालका कारणले हुन सक्छ</translation>
+<translation id="4678534708181186163">सारांश तयार पार्न सकिएन। अझ छोटो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="4683762547447150570">की असाइन गर्ने कार्यमा ध्यान कन्द्रित गर्न बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="4691278870498629773">रोकियो - प्रिन्टरमा ट्रे छैन</translation>
 <translation id="469379815867856270">सिग्नलको क्षमता</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">ब्याट्रीको अवस्था</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="517075088756846356">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> को पावर केबल निकालेर फेरि जोड्नुहोस्</translation>
+<translation id="5178021559562393163">नामहरू राख्न सकिएन। अझ छोटो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="5180108905184566358">बाओबाब ट्री</translation>
 <translation id="5180712487038406644">एक्स्प्रेसिभ</translation>
 <translation id="5190187232518914472">आफूलाई स्मरणीय पलहरूको आनन्द लिनुहोस्। एल्बमहरू हाल्न वा परिवर्तन गर्न <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा जानुहोस्।</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">पहिचान</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
+<translation id="5318310531701770497">नामहरू राख्न सकिएन। अझ लामो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="5318334351163689047">TCP सम्बन्धी अनुरोध गर्न सकिएन</translation>
 <translation id="53196409393069519">ट्रान्सक्रिप्सन अन गर्ने हो?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

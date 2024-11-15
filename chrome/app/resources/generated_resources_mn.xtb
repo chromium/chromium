@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">Сонгосон табыг бэхлэх</translation>
 <translation id="1297175357211070620">Хэвлэгч машин сонгох</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />-н санал хүсэлт илгээх</translation>
+<translation id="129808599775632797">&amp;Өөрчлөлт</translation>
 <translation id="130097046531636712">Энэ нь дэвсгэрийн үйл ажиллагаа болон жигд гүйлгэх зэрэг визуал эффектийг хязгаарласнаар батарейн цэнэгийг уртасгана</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> дараах файлыг засах боломжтой</translation>
 <translation id="130174306655812048">“Ok Google, энэ ямар дуу вэ?” гэж хэлж үзнэ үү</translation>
@@ -1776,6 +1777,7 @@
 <translation id="2214018885812055163">Хуваалцсан фолдер</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 мөрийг харуулаагүй&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> мөрийг харуулаагүй&gt;}}</translation>
 <translation id="2215070081105889450">Аудио хуваалцахын тулд оронд нь таб эсвэл дэлгэц хуваалцана уу</translation>
+<translation id="2217208085547223783">Итгэмжлэлийн төлөв</translation>
 <translation id="2218019600945559112">Хулгана, мэдрэгч самбар</translation>
 <translation id="2218515861914035131">Текст хэлбэрээр хуулан буулгах</translation>
 <translation id="221872881068107022">Урвуу гүйлгэх</translation>
@@ -2510,6 +2512,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Зочны профайлыг нээх</translation>
 <translation id="2723819893410108315">Нимбэг</translation>
+<translation id="2724822892847436256">Хязгаарлалт</translation>
 <translation id="2724841811573117416">WebRTC бүртгэлүүд</translation>
 <translation id="272488616838512378">Нэгж хөрвүүлэлт</translation>
 <translation id="2725200716980197196">Сүлжээний холболтыг дахин сэргээсэн байна.</translation>
@@ -3470,6 +3473,7 @@
 <translation id="3421835120203732951">Шинэ профайл нэмэх</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />-с олдсон илэрцүүд</translation>
 <translation id="3423226218833787854">Энэ ХОУ-ы онцлогийн талаар нэмэлт мэдээлэл авах</translation>
+<translation id="3423275441470187644">Итгэмжлэл</translation>
 <translation id="3423463006624419153">Таны '<ph name="PHONE_NAME_1" />' болон '<ph name="PHONE_NAME_2" />'-д:</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" />-ийг дахин эхлүүлнэ үү</translation>
 <translation id="3424969259347320884">Чихтэй Хуудас Гэмтсэн Үед Хийж Байсан Зүйлээ Тайлбарлана уу</translation>
@@ -4598,6 +4602,7 @@
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4195814663415092787">Орхисон хэсгээсээ үргэлжлүүлэх</translation>
 <translation id="4198268995694216131">Бусад сайт</translation>
+<translation id="4198420883535766848">Табыг жагсаалтаас хасах</translation>
 <translation id="4200609364258658652">Видеоны фреймийг хуулах</translation>
 <translation id="4200689466366162458">Өөрчлөх үг</translation>
 <translation id="4200983522494130825">Шинэ &amp;цонх</translation>
@@ -5161,6 +5166,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Табын бүлгийг устгах уу?}other{Табын бүлгүүдийг устгах уу?}}</translation>
 <translation id="4608500690299898628">&amp;Олох...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-д алдаа гарлаа</translation>
+<translation id="4610493438923139095">Итгэмжлэгдээгүй</translation>
 <translation id="4610637590575890427">Та энэ <ph name="SITE" /> руу орох гэж байсан уу?</translation>
 <translation id="4611114513649582138">Дата холболт боломжтой байна</translation>
 <translation id="4611759022973144129">Та энэ нууц үгээ <ph name="DEVICE_TYPE" />-д нэвтрэхийн тулд ашиглах боломжтой.</translation>
@@ -5186,6 +5192,7 @@
 <translation id="4627442949885028695">Өөр төхөөрөмжөөс үргэлжлүүлэх</translation>
 <translation id="4628762811416793313">Linux-н контейнерыг тохируулж дууссангүй. Дахин оролдоно уу.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> профайлыг нээх</translation>
+<translation id="4629803160911640220">Итгэмжлэгдсэн</translation>
 <translation id="4631955550884380853">Төвлөрсөн дуу хоолой</translation>
 <translation id="4632655012900268062">Картуудыг өөрчлөх</translation>
 <translation id="4633003931260532286">Өргөтгөлд хамгийн бага "<ph name="IMPORT_VERSION" />" хувилбартай "<ph name="IMPORT_NAME" />" шаардлагатай хэдий ч зөвхөн "<ph name="INSTALLED_VERSION" />" хувилбарыг суулгасан байна</translation>
@@ -5436,6 +5443,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 хавчуургыг устгасан}other{{COUNT} хавчуургыг устгасан}}</translation>
 <translation id="481689174647911539">Энэ файл вирус эсвэл хортой программ байж магадгүй.<ph name="LINE_BREAK" />Та үүнийг аюултай эсэхийг шалгуулахаар Google-н аюулгүй хөтөч рүү илгээх боломжтой. Скан хийхэд ихэвчлэн хэдэн секунд зарцуулдаг.</translation>
 <translation id="4816900689218414104">Утас эсвэл таблетад passkey үүсгэнэ үү</translation>
+<translation id="481917177323309377">Таны <ph name="COUNT" /> эсвэл түүнээс олон хоног ашиглаагүй табууд</translation>
 <translation id="4819323978093861656">{0,plural, =0{Одоо хааж байна.}=1{Дараах хугацааны дараа хаана: 1 секунд}other{Дараах хугацааны дараа хаана: # секунд}}</translation>
 <translation id="4819607494758673676">Google Туслахын мэдэгдэл</translation>
 <translation id="4819818293886748542">Тусламжийн хэрэгслийн холбоосыг авах</translation>
@@ -6842,6 +6850,7 @@
 <translation id="5842497610951477805">Bluetooth-г идэвхжүүлэх</translation>
 <translation id="5844284118433003733">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
 <translation id="5844574845205796324">Судлах шинэ контент санал болгох</translation>
+<translation id="5844685625984052392">Заавар</translation>
 <translation id="5846200638699387931">Холбоосын дүрмийн алдаа: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Сүүдэр байхгүй</translation>
 <translation id="5846504156837627898">Сайтын зөвшөөрлүүдийг удирдах</translation>

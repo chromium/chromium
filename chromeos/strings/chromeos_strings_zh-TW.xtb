@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1191518099344003522">APN 已啟用。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
+<translation id="1196264380943975940">無法提供重點摘要，請改用較長的轉錄稿。</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> 版</translation>
 <translation id="1199355487114804640">播放/暫停</translation>
 <translation id="1201402288615127009">繼續</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">編輯及刪除選單</translation>
 <translation id="2597774443162333062">檔案將傳送給 Google 進行偵錯</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
+<translation id="261322795497077164">講者身分識別</translation>
 <translation id="2617397783536231890">棉花</translation>
 <translation id="2618015542787108131">沙丘</translation>
 <translation id="2619761439309613843">每日變換新桌布</translation>
@@ -441,6 +443,7 @@
 <translation id="3140130301071865159">雪</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 專屬影片</translation>
 <translation id="315116470104423982">行動數據</translation>
+<translation id="3153094818810437149">你之後可以前往「錄音工具設定」變更</translation>
 <translation id="3156511682997763015">快轉 10 秒</translation>
 <translation id="3156846309055100599">正在掃描第 <ph name="PAGE_NUMBER" /> 頁…</translation>
 <translation id="315738237743207937">已偵測到網頁認證入口</translation>
@@ -563,6 +566,7 @@
 <translation id="3785643128701396311">像素畫</translation>
 <translation id="3799381533888781854">關閉 - 這項設定是由系統管理員管理。</translation>
 <translation id="380097101658023925">rgb 控制選項</translation>
+<translation id="380493988330050229">無法為這個轉錄稿語言建立摘要</translation>
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="382043424867370667">日落桌布</translation>
@@ -735,6 +739,7 @@
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4594021849294327751">建立轉錄稿</translation>
+<translation id="4594541568452132351">選取語音轉錄語言並下載模型</translation>
 <translation id="4607282946861182308">無法製作這類圖片，請試試其他提示。</translation>
 <translation id="4609350030397390689">鍵盤亮度調低</translation>
 <translation id="4623061655523261501">已順利產生錄製名稱</translation>
@@ -750,6 +755,7 @@
 <translation id="4665014895760275686">製造商</translation>
 <translation id="467510802200863975">密碼不相符</translation>
 <translation id="467715984478005772">可能有防火牆</translation>
+<translation id="4678534708181186163">無法提供重點摘要，請改用較短的轉錄稿。</translation>
 <translation id="4683762547447150570">輕觸按鈕即可將焦點移至按鍵指派區</translation>
 <translation id="4691278870498629773">已停止 - 缺少紙匣</translation>
 <translation id="469379815867856270">訊號強度</translation>
@@ -852,6 +858,7 @@
 <translation id="5168185087976003268">電池健康度</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="517075088756846356">請將「<ph name="DEVICE_NAME" />」的電源線拔除再重新接上，以繼續進行更新程序</translation>
+<translation id="5178021559562393163">無法建立名稱，請改用較短的轉錄稿。</translation>
 <translation id="5180108905184566358">猴麵包樹</translation>
 <translation id="5180712487038406644">栩栩如生</translation>
 <translation id="5190187232518914472">重溫你最珍視的美好回憶。如要新增或編輯相簿，請前往 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />。</translation>
@@ -886,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
+<translation id="5318310531701770497">無法建立名稱，請改用較長的轉錄稿。</translation>
 <translation id="5318334351163689047">TCP 要求失敗</translation>
 <translation id="53196409393069519">要開啟語音轉錄嗎？</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="COMPLETION_STATUS" /></translation>
@@ -1100,6 +1108,7 @@
 <translation id="6359919876285606596">這項操作無法復原</translation>
 <translation id="6368342879959028556">如果選取「使用 AI 製作」，請自行輸入提示；如果選取「AI 桌布」，只要再選擇主題並選取加上底線的字詞，就能打造個人化的 AI 桌布。</translation>
 <translation id="636850387210749493">企業註冊</translation>
+<translation id="6369221585240879141">無法為這個轉錄稿語言建立錄音檔名稱</translation>
 <translation id="6373461326814131011">漥池</translation>
 <translation id="6379086450106841622">觸控螢幕</translation>
 <translation id="6381741036071372448">測試鍵盤</translation>
@@ -1274,6 +1283,7 @@
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{名稱伺服器}other{名稱伺服器}}</translation>
 <translation id="7135814714616751706">搜尋捷徑</translation>
+<translation id="7138614237884624401">簡化的文字</translation>
 <translation id="7141470099673912333">內容轉移</translation>
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
@@ -1695,6 +1705,7 @@
 <translation id="9100765901046053179">進階設定</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃描第 <ph name="PAGE_NUMBER" /> 頁</translation>
+<translation id="9108856746036501072">錄音工具可轉錄內含語音內容的錄音。在下一個步驟中，請選取語音轉錄語言並下載模型 (最多 100 MB)。</translation>
 <translation id="9111102763498581341">解除鎖定</translation>
 <translation id="9122492456897874028">重點摘要內容、瞭解字義等</translation>
 <translation id="9122602430962285795">如要重新連線，請前往「設定」頁面</translation>

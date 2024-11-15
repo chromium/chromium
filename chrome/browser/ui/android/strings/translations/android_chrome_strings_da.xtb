@@ -802,6 +802,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4769632191812288342">Du har Standardbeskyttelse</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> er slettet</translation>
 <translation id="4778653490315793244">Der er intet at vise endnu</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> er din standardsøgemaskine</translation>
 <translation id="4787736314074622408">Vil du slette <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Se, hvordan Chrome beskytter dig</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1041,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5885378508678660271">Notifikationer <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser, fordi dette website er farligt</translation>
 <translation id="5895834791314695851">Snart vil adgangskoder på denne enhed muligvis ikke længere fungere. Opdater Google Play-tjenester, hvis du fortsat vil kunne bruge dine adgangskoder. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Feltet "Ingen tilgængelige adgangsnøgler" blev lukket</translation>
+<translation id="5907542076239273525">Bogmærket er gemt i <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5919204609460789179">Opdater <ph name="PRODUCT_NAME" /> for at starte synkroniseringen</translation>
 <translation id="5938820472109305350">Tilføj <ph name="INTEREST" /></translation>

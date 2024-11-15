@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించండి</translation>
 <translation id="1521774566618522728">ఈ రోజు యాక్టివ్‌గా ఉంది</translation>
 <translation id="153446405401665083">Chromeకు సంబంధించిన కొత్త వెర్షన్ అందుబాటులో ఉంది</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{ఈ పరికరంలో 1 బుక్‌మార్క్ మాత్రమే సేవ్ చేయబడింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో సేవ్ చేయండి.}other{ఈ పరికరంలో # బుక్‌మార్క్‌లు మాత్రమే సేవ్ చేయబడ్డాయి. మీ ఇతర పరికరాలలో వీటిని ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో సేవ్ చేయండి.}}</translation>
 <translation id="1544084554881119930">పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఎన్‌క్రిప్ట్ చేయబడవు. Chromeకు చెందిన బ్రౌజింగ్ హిస్టరీ సింక్ అవ్వదు.
 మీ రహస్య పదబంధం ఉన్న కొంత మంది మాత్రమే ఎన్‌క్రిప్ట్ చేసిన మీ డేటాను చదవగలరు. రహస్య పదబంధం Googleకు పంపబడదు లేదా Googleలో స్టోర్ చేయబడదు. మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తీసివేయండి<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">మీ Google ఖాతాను మేనేజ్ చేయడానికి, "ఖాతాను మేనేజ్ చేయండి" బటన్‌ను నొక్కండి</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను ఉపయోగించండి</translation>
 <translation id="160275202205869636">ఆన్‌లో ఉన్నప్పుడు, మీ Google ఖాతాలో డేటాను ఉపయోగించండి, దానిని సేవ్ చేయండి. ఆఫ్‌లో ఉన్నప్పుడు, డేటా ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ఎంచుకోబడిన 1 అంశాన్ని తీసివేస్తుంది}other{ఎంచుకోబడిన # అంశాలను తీసివేస్తుంది}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{ఈ పరికరంలో 1 బుక్‌మార్క్, ఇతర ఐటెమ్‌లు మాత్రమే సేవ్ చేయబడ్డాయి. మీ ఇతర పరికరాలలో వీటిని ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో సేవ్ చేయండి.}other{ఈ పరికరంలో # బుక్‌మార్క్‌లు, ఇతర ఐటెమ్‌లు మాత్రమే సేవ్ చేయబడ్డాయి. మీ ఇతర పరికరాలలో వీటిని ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో సేవ్ చేయండి.}}</translation>
 <translation id="1641113438599504367">సురక్షిత బ్రౌజింగ్</translation>
 <translation id="164269334534774161">మీరు <ph name="CREATION_TIME" /> నుండి ఈ పేజీ యొక్క ఆఫ్‌లైన్ కాపీని వీక్షిస్తున్నారు</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
@@ -802,6 +804,7 @@
 <translation id="4769632191812288342">మీరు స్టాండర్డ్ రక్షణను పొందుతున్నారు</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> తొలగించబడింది</translation>
 <translation id="4778653490315793244">ఇప్పటికైతే చూపడానికి ఏమీ లేవు</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్</translation>
 <translation id="4787736314074622408">మీరు <ph name="ITEM_TITLE" />‌ను తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="4793679854893018356">Chrome మిమ్మల్ని ఎలా సురక్షితంగా ఉంచుతుందో తెలుసుకోండి</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

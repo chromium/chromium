@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1191518099344003522">Точка доступа включена.</translation>
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
+<translation id="1196264380943975940">Невозможно создать краткий пересказ. Расшифровка слишком короткая.</translation>
 <translation id="1196959502276349371">Версия <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Воспроизведение/пауза</translation>
 <translation id="1201402288615127009">Далее</translation>
@@ -754,6 +755,7 @@
 <translation id="4665014895760275686">Производитель</translation>
 <translation id="467510802200863975">Пароли не совпадают.</translation>
 <translation id="467715984478005772">потенциальный брандмауэр</translation>
+<translation id="4678534708181186163">Невозможно создать краткий пересказ. Расшифровка слишком длинная.</translation>
 <translation id="4683762547447150570">Чтобы перейти к назначению клавиш, нажмите кнопку</translation>
 <translation id="4691278870498629773">Печать прервана: нет лотка для бумаги</translation>
 <translation id="469379815867856270">Уровень сигнала</translation>
@@ -856,6 +858,7 @@
 <translation id="5168185087976003268">Уровень заряда</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="517075088756846356">Чтобы продолжить обновление, отключите и снова вставьте кабель питания устройства "<ph name="DEVICE_NAME" />".</translation>
+<translation id="5178021559562393163">Невозможно создать названия. Расшифровка слишком длинная.</translation>
 <translation id="5180108905184566358">баобабы</translation>
 <translation id="5180712487038406644">Выразительная</translation>
 <translation id="5190187232518914472">Вспоминайте яркие моменты своей жизни. Чтобы добавить или изменить альбом, перейдите в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
@@ -890,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Идентификационные данные</translation>
 <translation id="5317780077021120954">Сохранить</translation>
+<translation id="5318310531701770497">Невозможно создать названия. Расшифровка слишком короткая.</translation>
 <translation id="5318334351163689047">Невыполненные запросы TCP.</translation>
 <translation id="53196409393069519">Включить расшифровку?</translation>
 <translation id="5326394068492324457">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, состояние: "<ph name="COMPLETION_STATUS" />"</translation>

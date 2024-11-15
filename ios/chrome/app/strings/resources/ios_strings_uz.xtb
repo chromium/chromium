@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Kod skanerlandi</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ta varaq}other{{count} ta varaq}}</translation>
 <translation id="1084365883616172403">Facebook’ka joylandi.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> faylini ochish imkonsiz</translation>
 <translation id="1096992026380844478">Sinxronizatsiya sozlamalari oxirgi zaxiraviy fayl asosida tiklanadi. <ph name="BEGIN_LINK" />Nimalarni sinxronlash mumkin<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
 <translation id="1108938384783527433">Tarix sinxronizatsiyasi</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Kerak emas</translation>
 <translation id="2320166752086256636">Klaviaturani berkitish</translation>
 <translation id="2321086116217818302">Parollar tayyorlanmoqda…</translation>
+<translation id="2323697864063408084">Muhim narsalarni oʻtkazib yubormaslik uchun ekran qulfida bildirishnomalarni banner shaklida oling.</translation>
 <translation id="2326302612031521902">Oʻlchov birligini tanlash</translation>
 <translation id="2330607597130465898">Himoyasiz</translation>
 <translation id="233375395665273385">Oʻchirish va hisobdan chiqish</translation>
@@ -384,6 +386,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2671423594960767771">Guruhni ulashish</translation>
 <translation id="2673508731173059946">Nusxalangan havolani ochish</translation>
 <translation id="2687403674020088961">Barcha cookie fayllarini taqiqlash (tavsiya etilmaydi)</translation>
+<translation id="2688535388040882469">Bannerlar</translation>
 <translation id="2690858294534178585">Kamera band.</translation>
 <translation id="2691653761409724435">Oflayn rejimda mavjud emas</translation>
 <translation id="2696180352517415858">Google hisobingizdan chiqmaysiz. Google hisobingizga kirganingizda <ph name="BEGIN_LINK" />boshqa shakldagi harakatlaringiz<ph name="END_LINK" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.
@@ -636,6 +639,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3986739045730058129">Varaqni ochish</translation>
 <translation id="3992684624889376114">Bu sahifa haqida</translation>
 <translation id="3994422733891749358">Qaysi bildirishnomalar kelishini tanlang</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> nomidan kirish</translation>
 <translation id="3995521777587992544">Sahifa yuklanishidagi kutish qatori: <ph name="EMAIL" /> yuklandi.</translation>
 <translation id="3997522473364371632">Parol ulashuvi administrator tomonidan faolsizlantirilgan.</translation>
 <translation id="4002066346123236978">Nomi</translation>
@@ -843,6 +847,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4936354130727646074">Hech qachon koʻchirilmasin</translation>
 <translation id="4937410517508563815">Parollarni hisobga saqlash</translation>
 <translation id="4938338714234463591">Bunda ayrim saytlarda ovozli funksiyalardan foydalanish mumkin.</translation>
+<translation id="4938716880833771969">Bildirishnomalar tovushsiz rejimda keladi</translation>
 <translation id="4941089862236492464">Yozuvni joylab bo‘lmadi.</translation>
 <translation id="4944543191714094452">Sahifa ichidan qidirish…</translation>
 <translation id="4945756290001680296">Parol sozlamalariga kirish</translation>
@@ -1609,6 +1614,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8319076807703933069">Yangi qidiruv</translation>
 <translation id="8343993175958086504">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching.</translation>
 <translation id="8349305172487531364">Xatcho‘plar paneli</translation>
+<translation id="8364563001733875155">PIN kodni oʻzgartirish uchun qurilmada kirish kodini sozlang</translation>
 <translation id="8366466717204352506">Hali tekshirilmagan</translation>
 <translation id="8368001212524806591">Narxni kuzatish</translation>
 <translation id="8370406443343902172">Sozlamalar ochilmoqda...</translation>

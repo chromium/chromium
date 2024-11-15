@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
+<translation id="1085677983426914530">无法打开“<ph name="FILENAME" />”</translation>
 <translation id="1096992026380844478">系统将根据上次备份来恢复您的同步设置。<ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">历史记录同步</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">不用了，谢谢</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
 <translation id="2321086116217818302">正在准备密码…</translation>
+<translation id="2323697864063408084">在锁屏状态下以横幅形式接收通知，确保不错过任何重要信息</translation>
 <translation id="2326302612031521902">单位选择器</translation>
 <translation id="2330607597130465898">无保护</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">分享组</translation>
 <translation id="2673508731173059946">访问复制的链接</translation>
 <translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
+<translation id="2688535388040882469">横幅</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
 <translation id="2696180352517415858">您不会因此而退出自己的 Google 账号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">前往标签页</translation>
 <translation id="3992684624889376114">关于此页面</translation>
 <translation id="3994422733891749358">选择要接收的通知</translation>
+<translation id="3994522032746736727">以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="3995521777587992544">网页加载进度条，已加载 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">您的管理员管理已禁用密码分享功能。</translation>
 <translation id="4002066346123236978">标题</translation>
@@ -777,6 +781,7 @@
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4647758699119474035">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。Google 账号错误，打开账号菜单。</translation>
 <translation id="4650125387981512669">继续以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份登录</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 分钟后隐藏}other{{count} 分钟后隐藏}}</translation>
 <translation id="4652817563047461855">确保密码安全，检查密码是否遭到泄露，并了解安全上网的建议。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">保存</translation>
 <translation id="4668929960204016307">、</translation>
@@ -843,6 +848,7 @@
 <translation id="4936354130727646074">一律不移动</translation>
 <translation id="4937410517508563815">将密码保存到账号</translation>
 <translation id="4938338714234463591">这样，您就可以通过语音在网站上使用某些功能。</translation>
+<translation id="4938716880833771969">系统当前以静音模式发送通知</translation>
 <translation id="4941089862236492464">很抱歉，分享您的信息时出现问题。</translation>
 <translation id="4944543191714094452">在网页中查找…</translation>
 <translation id="4945756290001680296">访问密码设置</translation>
@@ -1609,6 +1615,7 @@
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8343993175958086504">备份您的资料，以便在任意设备上使用。</translation>
 <translation id="8349305172487531364">书签栏</translation>
+<translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
 <translation id="8366466717204352506">从未检查过</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8370406443343902172">前往“设置”…</translation>

@@ -802,6 +802,7 @@
 <translation id="4769632191812288342">ଆପଣ ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା ପାଉଛନ୍ତି</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" />କୁ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="4778653490315793244">ଦେଖାଇବା ପାଇଁ ଏପର୍ଯ୍ୟନ୍ତ କିଛି ନାହିଁ</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> ହେଉଛି ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="4787736314074622408">ଆପଣ <ph name="ITEM_TITLE" />କୁ ଡିଲିଟ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="4793679854893018356">Chrome ଆପଣଙ୍କୁ କିପରି ସୁରକ୍ଷିତ ରଖେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1040,6 +1041,7 @@
 <translation id="5885378508678660271">ବିଜ୍ଞପ୍ତି <ph name="SEPARATOR" /> ଏହି ସାଇଟ ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
 <translation id="5895834791314695851">ଏହି ଡିଭାଇସରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ଶୀଘ୍ର କାମ କରିବା ବନ୍ଦ କରିପାରେ। ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିବା ପାଇଁ Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">କୌଣସି ପାସକୀ ସିଟ ବନ୍ଦ କରାଯାଇନାହିଁ</translation>
+<translation id="5907542076239273525"><ph name="FOLDER_NAME" />ରେ ବୁକମାର୍କ ସେଭ କରାଯାଇଛି</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5919204609460789179">ସିଙ୍କ ଆରମ୍ଭ କରିବା ପାଇଁ <ph name="PRODUCT_NAME" /> ଅପ୍‍‍ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ଯୋଗ କରନ୍ତୁ</translation>

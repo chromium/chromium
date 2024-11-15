@@ -127,6 +127,7 @@ Confira mais configurações que usam dados para melhorar sua experiência do Ch
 <translation id="1513858653616922153">Excluir senha</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="153446405401665083">Uma nova versão do Chrome está disponível</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 favorito foi salvo apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}one{# favorito foi salvo apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}other{# favoritos foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}}</translation>
 <translation id="1544084554881119930">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para gerenciar sua Conta do Google, toque no botão "Gerenciar conta".</translation>
@@ -142,6 +143,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Quando ativado, use e salve dados na sua Conta do Google. Quando essa opção está desativada, os dados são salvos apenas neste dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}one{Remover # item selecionado}other{Remover # itens selecionados}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}one{# favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}other{# favoritos e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}}</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="164269334534774161">Você está vendo uma cópia off-line desta página de <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histórico</translation>
@@ -1042,6 +1044,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5885378508678660271">Notificações <ph name="SEPARATOR" /> O Chrome removeu essa permissão porque esse site é perigoso</translation>
 <translation id="5895834791314695851">As senhas deixarão de funcionar neste dispositivo em breve. Para continuar usando suas senhas, atualize o Google Play Services. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Nenhuma página de chaves de acesso foi fechada</translation>
+<translation id="5907542076239273525">Favorito salvo na pasta <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Ativada</translation>
 <translation id="5919204609460789179">Atualize <ph name="PRODUCT_NAME" /> para iniciar a sincronização</translation>
 <translation id="5938820472109305350">Adicionar <ph name="INTEREST" /></translation>

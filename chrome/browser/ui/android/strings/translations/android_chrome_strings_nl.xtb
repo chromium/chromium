@@ -127,6 +127,7 @@ Ga naar <ph name="BEGIN_LINK2" />Google-services<ph name="END_LINK2" /> voor mee
 <translation id="1513858653616922153">Wachtwoord verwijderen</translation>
 <translation id="1521774566618522728">Vandaag actief</translation>
 <translation id="153446405401665083">Nieuwe versie van Chrome beschikbaar</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark wordt alleen op dit apparaat opgeslagen. Als je de bookmark op je andere apparaten wilt gebruiken, sla je deze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
 Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Tik op de knop 'Account beheren' om je Google-account te beheren</translation>
@@ -142,6 +143,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> gebruiken met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Als dit aanstaat, kun je gegevens gebruiken en opslaan in je Google-account. Staat dit uit, dan worden gegevens alleen opgeslagen op dit apparaat.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 geselecteerd item verwijderen}other{# geselecteerde items verwijderen}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bookmark en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Je bekijkt een offline exemplaar van deze pagina van <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
@@ -802,10 +804,11 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4769632191812288342">Je krijgt standaardbeveiliging</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> verwijderd</translation>
 <translation id="4778653490315793244">Er is nog niets om te laten zien</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> is je standaard zoekmachine</translation>
 <translation id="4787736314074622408">Wil je <ph name="ITEM_TITLE" /> verwijderen?</translation>
 <translation id="4793679854893018356">Meer informatie over hoe Chrome je beschermt</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
-<translation id="4807098396393229769">Naam op pas</translation>
+<translation id="4807098396393229769">Naam op kaart</translation>
 <translation id="480990236307250886">Open de homepage</translation>
 <translation id="481574578487123132">Gekoppelde apparaten</translation>
 <translation id="4822710610088666676">Tabbladgroep <ph name="TAB_GROUP_TITLE" /> gesloten en opgeslagen</translation>
@@ -1261,7 +1264,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="686366188661646310">Wachtwoord verwijderen?</translation>
 <translation id="6864459304226931083">Afbeelding downloaden</translation>
 <translation id="686490460830618322">Blad voor app-filter</translation>
-<translation id="6865313869410766144">Formuliergegevens voor 'Automatisch invullen'</translation>
+<translation id="6865313869410766144">Formuliergegevens voor automatisch invullen</translation>
 <translation id="6867400383614725881">Nieuw incognitotabblad</translation>
 <translation id="686899695320434745">Adressen worden niet versleuteld met je wachtwoordzin. Zo kun je ze gebruiken in andere Google-services.</translation>
 <translation id="6869056123412990582">computer</translation>

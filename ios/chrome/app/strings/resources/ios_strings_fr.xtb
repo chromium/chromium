@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Code scanné</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="1084365883616172403">Post Facebook publié.</translation>
+<translation id="1085677983426914530">Impossible d'ouvrir <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">Vos paramètres de synchronisation seront restaurés en fonction de votre dernière sauvegarde. <ph name="BEGIN_LINK" />Découvrez ce que vous pouvez synchroniser.<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
@@ -68,7 +69,7 @@
 <translation id="1296581780163690620">Télécharger le fichier ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Pour toujours pouvoir utiliser les mots de passe de votre compte Google, confirmez votre identité.</translation>
 <translation id="1310362642333088424">Pour télécharger des fichiers, des photos et plus, vous avez besoin de plus d'espace de stockage.</translation>
-<translation id="1312168552565502328">Effacer les cookies et les données du site</translation>
+<translation id="1312168552565502328">Cookies et données du site</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
 <translation id="1317821187353201763">Fermer l'onglet</translation>
 <translation id="1320164290882380380">{COUNT,plural, =1{Suivre ce colis}one{Suivre ce colis}other{Suivre ces colis}}</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Non merci</translation>
 <translation id="2320166752086256636">Masquer le clavier</translation>
 <translation id="2321086116217818302">Préparation des mots de passe…</translation>
+<translation id="2323697864063408084">Recevez des notifications sur votre écran de verrouillage et sous forme de bannières pour ne rien manquer d'important</translation>
 <translation id="2326302612031521902">Sélecteur d'unité</translation>
 <translation id="2330607597130465898">Aucune protection</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
@@ -384,6 +386,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2673508731173059946">Consulter le lien copié</translation>
 <translation id="2687403674020088961">Bloquer tous les cookies (non recommandé)</translation>
+<translation id="2688535388040882469">Bannières</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
 <translation id="2696180352517415858">Vous ne serez pas déconnecté de votre compte Google. D'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent y être enregistrées lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
@@ -636,6 +639,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3986739045730058129">Accéder à l'onglet</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
 <translation id="3994422733891749358">Sélectionnez les notifications que vous voulez recevoir</translation>
+<translation id="3994522032746736727">Se connecter en tant que <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Barre de progression du chargement de page, <ph name="EMAIL" /> chargé(s).</translation>
 <translation id="3997522473364371632">Le partage de mots de passe est désactivé par votre administrateur.</translation>
 <translation id="4002066346123236978">Titre</translation>
@@ -843,6 +847,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4936354130727646074">Ne jamais déplacer</translation>
 <translation id="4937410517508563815">Enregistrer les mots de passe dans le compte</translation>
 <translation id="4938338714234463591">Vous pourrez ainsi utiliser votre voix avec certaines fonctionnalités sur les sites Web.</translation>
+<translation id="4938716880833771969">Vos notifications sont affichées silencieusement</translation>
 <translation id="4941089862236492464">Désolé, un problème est survenu lors du partage de l'élément.</translation>
 <translation id="4944543191714094452">Rechercher sur la page…</translation>
 <translation id="4945756290001680296">Accéder aux paramètres des mots de passe</translation>
@@ -1609,6 +1614,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil.</translation>
 <translation id="8349305172487531364">Barre de favoris</translation>
+<translation id="8364563001733875155">Pour modifier votre code, configurez d'abord un code secret sur votre appareil.</translation>
 <translation id="8366466717204352506">Aucune vérification jusqu'à présent</translation>
 <translation id="8368001212524806591">Effectuer le suivi du prix</translation>
 <translation id="8370406443343902172">Accéder aux paramètres</translation>

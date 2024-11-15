@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Kód byl naskenován</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} karta}few{{count} karty}many{{count} karty}other{{count} karet}}</translation>
 <translation id="1084365883616172403">Příspěvek na Facebook byl odeslán.</translation>
+<translation id="1085677983426914530">Soubor <ph name="FILENAME" /> nelze otevřít</translation>
 <translation id="1096992026380844478">Nastavení synchronizace se obnoví podle vaší poslední zálohy. <ph name="BEGIN_LINK" />Co lze synchronizovat<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Vždy překládat jazyk <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Synchronizace historie</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Ne, děkuji</translation>
 <translation id="2320166752086256636">Skrýt klávesnici</translation>
 <translation id="2321086116217818302">Příprava hesel…</translation>
+<translation id="2323697864063408084">Zobrazovat oznámení na obrazovce uzamčení a jako bannery, abyste nic důležitého nezmeškali</translation>
 <translation id="2326302612031521902">Výběr jednotek</translation>
 <translation id="2330607597130465898">Bez ochrany</translation>
 <translation id="233375395665273385">Vymazat a odhlásit se</translation>
@@ -384,6 +386,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2671423594960767771">Sdílet skupinu</translation>
 <translation id="2673508731173059946">Navštívit zkopírovaný odkaz</translation>
 <translation id="2687403674020088961">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
+<translation id="2688535388040882469">Bannery</translation>
 <translation id="2690858294534178585">Kamera je používána</translation>
 <translation id="2691653761409724435">Není k dispozici offline</translation>
 <translation id="2696180352517415858">Z účtu Google odhlášeni nebudete. <ph name="BEGIN_LINK" />Další typy aktivity<ph name="END_LINK" /> se mohou ukládat do vašeho účtu Google, když jste přihlášeni. Můžete je kdykoli smazat.
@@ -636,6 +639,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3986739045730058129">Přejít na kartu</translation>
 <translation id="3992684624889376114">O této stránce</translation>
 <translation id="3994422733891749358">Vyberte oznámení, která chcete dostávat</translation>
+<translation id="3994522032746736727">Přihlaste se jako <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Ukazatel průběhu načtení stránky, načteno <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Administrátor sdílení hesel zakázal.</translation>
 <translation id="4002066346123236978">Název</translation>
@@ -843,6 +847,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4936354130727646074">Nikdy nepřesouvat</translation>
 <translation id="4937410517508563815">Uložení hesel do účtu</translation>
 <translation id="4938338714234463591">S určitými funkcemi na webech budete moci používat hlas.</translation>
+<translation id="4938716880833771969">Vaše oznámení se doručují tiše</translation>
 <translation id="4941089862236492464">Litujeme, ale při sdílení položky došlo k potížím.</translation>
 <translation id="4944543191714094452">Najít na stránce…</translation>
 <translation id="4945756290001680296">Otevřít nastavení hesla</translation>
@@ -1609,6 +1614,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8319076807703933069">Nové vyhledávání</translation>
 <translation id="8343993175958086504">Zálohujte si data a používejte je na libovolném zařízení.</translation>
 <translation id="8349305172487531364">Lišta záložek</translation>
+<translation id="8364563001733875155">Pokud chcete změnit PIN, nejdříve na zařízení nastavte heslo.</translation>
 <translation id="8366466717204352506">Kontrola nikdy neproběhla</translation>
 <translation id="8368001212524806591">Sledovat cenu</translation>
 <translation id="8370406443343902172">Přejít do Nastavení…</translation>

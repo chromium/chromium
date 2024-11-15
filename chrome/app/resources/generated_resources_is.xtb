@@ -449,6 +449,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1296911687402551044">Festa valinn flipa</translation>
 <translation id="1297175357211070620">Áfangastaður</translation>
 <translation id="129770436432446029">Senda ábendingu um <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Breytingar</translation>
 <translation id="130097046531636712">Þetta eykur rafhlöðuendingu með því að takmarka bakgrunnsvirkni og myndáhrif á borð við mjúkflettingu</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> getur breytt eftirfarandi skrám</translation>
 <translation id="130174306655812048">Prófaðu að spyrja „Ok Google, what song is this?“</translation>
@@ -1781,6 +1782,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2214018885812055163">Samnýttar möppur</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 lína er ekki sýnd&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> lína er ekki sýnd&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> línur eru ekki sýndar&gt;}}</translation>
 <translation id="2215070081105889450">Til að deila hljóði skaltu deila flipa eða skjá í staðinn</translation>
+<translation id="2217208085547223783">Staða trausts</translation>
 <translation id="2218019600945559112">Mús og snertiflötur</translation>
 <translation id="2218515861914035131">Líma sem ósniðinn texta</translation>
 <translation id="221872881068107022">Öfug fletting</translation>
@@ -2515,6 +2517,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2722547199758472013">Auðkenni: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Opna gestaprófíl</translation>
 <translation id="2723819893410108315">Sítróna</translation>
+<translation id="2724822892847436256">Takmarkanir</translation>
 <translation id="2724841811573117416">WebRTC-annálar</translation>
 <translation id="272488616838512378">Umreiknuð mæligildi</translation>
 <translation id="2725200716980197196">Nettengingu komið á aftur</translation>
@@ -3475,6 +3478,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3421835120203732951">Bæta nýjum prófíl við</translation>
 <translation id="3423111258700187173">Niðurstöður fundust í <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Nánar um þennan gervigreindareiginleika</translation>
+<translation id="3423275441470187644">Traust</translation>
 <translation id="3423463006624419153">Í „<ph name="PHONE_NAME_1" />“ og „<ph name="PHONE_NAME_2" />“:</translation>
 <translation id="3423858849633684918">Endurræstu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Lýstu því hvað þú varst að gera þegar flipinn hrundi</translation>
@@ -4604,6 +4608,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4195814663415092787">Halda áfram þaðan sem frá var horfið</translation>
 <translation id="4198268995694216131">Önnur vefsvæði</translation>
+<translation id="4198420883535766848">Fjarlægja flipa af lista</translation>
 <translation id="4200609364258658652">Afrita vídeóramma</translation>
 <translation id="4200689466366162458">Sérsniðin orð</translation>
 <translation id="4200983522494130825">Nýr flipi</translation>
@@ -5167,6 +5172,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Viltu eyða flipahópi?}one{Viltu eyða flipahópum?}other{Viltu eyða flipahópum?}}</translation>
 <translation id="4608500690299898628">&amp;Finna...</translation>
 <translation id="4610162781778310380">Villa kom upp í <ph name="PLUGIN_NAME" /></translation>
+<translation id="4610493438923139095">Ótraust</translation>
 <translation id="4610637590575890427">Ætlaðirðu að fara á <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Gagnatenging í boði</translation>
 <translation id="4611759022973144129">Þú getur notað þetta aðgangsorð til að skrá þig inn í <ph name="DEVICE_TYPE" />.</translation>
@@ -5192,6 +5198,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4627442949885028695">Halda áfram í öðru tæki</translation>
 <translation id="4628762811416793313">Uppsetningu á Linux-geyminum var ekki lokið. Reyndu aftur.</translation>
 <translation id="4629521233550547305">Opna prófílinn <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Traust</translation>
 <translation id="4631955550884380853">Áhersla á rödd</translation>
 <translation id="4632655012900268062">Sérsníða spjöld</translation>
 <translation id="4633003931260532286">Viðbótin krefst „<ph name="IMPORT_NAME" />“ með „<ph name="IMPORT_VERSION" />“ eða nýrri útgáfu en aðeins útgáfa „<ph name="INSTALLED_VERSION" />“ er uppsett</translation>
@@ -6848,6 +6855,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5842497610951477805">Virkjun á Bluetooth</translation>
 <translation id="5844284118433003733">Þegar þú ert innskráð(ur) eru þessi gögn tengd við Google-reikninginn þinn til að vernda þig í Google-þjónustum, t.d. með því að auka vernd í Gmail eftir öryggistilvik.</translation>
 <translation id="5844574845205796324">Leggja til nýtt efni til að skoða</translation>
+<translation id="5844685625984052392">Vísbending</translation>
 <translation id="5846200638699387931">Málskipunarvilla tengsla: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Enginn skuggi</translation>
 <translation id="5846504156837627898">Stjórna heimildum vefsvæðis</translation>

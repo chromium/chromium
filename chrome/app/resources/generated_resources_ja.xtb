@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">選択したタブを固定</translation>
 <translation id="1297175357211070620">送信先</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />についてのフィードバックを送信</translation>
+<translation id="129808599775632797">修正(&amp;M)</translation>
 <translation id="130097046531636712">バックグラウンド アクティビティとスムーズ スクロールのような視覚効果を制限することで、バッテリーの駆動時間を延ばします</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> は次のファイルを編集できます</translation>
 <translation id="130174306655812048">「OK Google、この曲はなに？」のようにきいてみましょう。</translation>
@@ -865,6 +866,7 @@
 <translation id="1596286373007273895">使用可能</translation>
 <translation id="1596709061955594992">Bluetooth　がオフになっています。使用可能なデバイスを表示するには、Bluetooth をオンにしてください。</translation>
 <translation id="1596780725094407793">- サブドメインを含める</translation>
+<translation id="1597806446183714225">音声が自然でクリアになるように、音質を改善します。</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
 <translation id="1598233202702788831">更新は管理者によって無効になっています。</translation>
 <translation id="1600541617401655593">ChromeOS Flex の機能とパフォーマンスの改善に協力します。データは集約され、厳重に保護されます。</translation>
@@ -1464,6 +1466,7 @@
 <translation id="2002109485265116295">リアルタイム</translation>
 <translation id="2002160221914907025">試験運用版 AI</translation>
 <translation id="2003130567827682533">「<ph name="NAME" />」データサービスを有効にするには、まず Wi-Fi ネットワークに接続してください</translation>
+<translation id="200321182559008924">タブを整理します</translation>
 <translation id="2003596238737586336">現在のスケジュールは <ph name="SUNRISE" />～<ph name="SUNSET" /> に設定されています。この設定は管理者によって管理されています。</translation>
 <translation id="2004413981947727241">任意のデバイスでパスワードを使用する</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
@@ -1498,6 +1501,7 @@
 <translation id="2024195579772565064">検索エンジンを削除</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> がクラッシュしました。このバルーンをクリックして再起動してください。</translation>
+<translation id="2026377162111110983">エリア音声</translation>
 <translation id="2028449514182362831">モーション センサーを必要とする機能は動作しなくなります</translation>
 <translation id="2028479214883337535">MacOS からインポート</translation>
 <translation id="202918510990975568">セキュリティとログインを設定するには、パスワードを入力してください</translation>
@@ -1764,6 +1768,7 @@
 <translation id="2214018885812055163">共有フォルダ</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 行が非表示です&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> 行が非表示です&gt;}}</translation>
 <translation id="2215070081105889450">音声を共有するには、タブまたは画面を共有してください</translation>
+<translation id="2217208085547223783">信頼状態</translation>
 <translation id="2218019600945559112">マウスとタッチパッド</translation>
 <translation id="2218515861914035131">プレーン テキストとして貼り付ける</translation>
 <translation id="221872881068107022">逆スクロール</translation>
@@ -2492,6 +2497,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">ゲスト プロフィールを開く</translation>
 <translation id="2723819893410108315">シトロン</translation>
+<translation id="2724822892847436256">制約</translation>
 <translation id="2724841811573117416">WebRTC ログ</translation>
 <translation id="272488616838512378">単位変換</translation>
 <translation id="2725200716980197196">ネットワーク接続を復元しました</translation>
@@ -3450,6 +3456,7 @@
 <translation id="3421835120203732951">新しいプロファイルを追加</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> で一致する結果が見つかりました</translation>
 <translation id="3423226218833787854">この AI 機能の詳細について</translation>
+<translation id="3423275441470187644">信頼</translation>
 <translation id="3423463006624419153">「<ph name="PHONE_NAME_1" />」と「<ph name="PHONE_NAME_2" />」で次の操作を行います。</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" /> を再起動してください</translation>
 <translation id="3424969259347320884">タブのクラッシュ時に行っていた操作をご説明ください</translation>
@@ -3491,6 +3498,7 @@
 <translation id="3446274660183028131">Windows をインストールするには Parallels Desktop を起動してください。</translation>
 <translation id="344630545793878684">多数のウェブサイトでのユーザーデータの読み取り</translation>
 <translation id="3447644283769633681">すべてのサードパーティの Cookie をブロック</translation>
+<translation id="3447644827015694497">アクティブでないタブを確認しますか？</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> を <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="3448492834076427715">アカウントを更新</translation>
 <translation id="3449393517661170867">新規タブ付きウィンドウ</translation>
@@ -4285,6 +4293,7 @@
 <translation id="3977145907578671392">シークレット モードでは、一部サイトの機能が使用できなくなる可能性があります</translation>
 <translation id="3977886311744775419">このネットワーク タイプでは自動更新はダウンロードされませんが、手動で更新を確認できます。</translation>
 <translation id="3978325380690188371">ChromeVox が有効になっている場合、固定キーは利用できません</translation>
+<translation id="3978732922947854545">Chrome で PDF が使いやすく</translation>
 <translation id="3979395879372752341">新しい拡張機能が追加されました（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> を有効にする</translation>
 <translation id="398095528354975981">これらのタブを非表示にする</translation>
@@ -4337,6 +4346,7 @@
 <translation id="4010746393007464819">Debian 12（Bookworm）へのアップグレードが利用可能です</translation>
 <translation id="4010917659463429001">ブックマークをモバイル デバイスで使用できるようにするには、<ph name="GET_IOS_APP_LINK" />してください。</translation>
 <translation id="4011073493055408531">市街の上空で紫色と緑色の模様を成すオーロラ。</translation>
+<translation id="4012509903424054869">PDF が自動変換され、テキストの検索や選択が可能になります</translation>
 <translation id="4014432863917027322">「<ph name="EXTENSION_NAME" />」を修復しますか？</translation>
 <translation id="4015163439792426608">拡張機能はご利用ですか？<ph name="BEGIN_LINK" />拡張機能の管理<ph name="END_LINK" />は 1 か所で簡単に行うことができます。</translation>
 <translation id="4016762287427926315"><ph name="APP_NAME" /> に許可した権限は、このアプリにも適用されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
@@ -4522,6 +4532,7 @@
 <translation id="414800391140809654">では次のサイトの閲覧時にあなたの情報を使用できます:</translation>
 <translation id="4148195018520464922">ログインを特定のユーザーに制限できます。制限すると、ログイン画面から [ユーザーを追加] オプションが削除されます。現在のユーザーを削除することもできます。</translation>
 <translation id="4148957013307229264">インストール中...</translation>
+<translation id="4149385644005013189">よく整理されています</translation>
 <translation id="4150201353443180367">ディスプレイ</translation>
 <translation id="4150569944729499860">画面のコンテキスト</translation>
 <translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
@@ -4573,6 +4584,7 @@
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
 <translation id="4198268995694216131">追加のサイト</translation>
+<translation id="4198420883535766848">リストからタブを削除</translation>
 <translation id="4200609364258658652">動画フレームをコピー(&amp;Y)</translation>
 <translation id="4200689466366162458">カスタムの単語</translation>
 <translation id="4200983522494130825">新しいタブ(&amp;T)</translation>
@@ -4597,6 +4609,7 @@
 <translation id="42137655013211669">このリソースへのアクセスはサーバーにより禁止されています。</translation>
 <translation id="4213918571089943508">お子様の Google アカウント</translation>
 <translation id="4214192212360095377">今すぐオフにする</translation>
+<translation id="4214313983951846766">{NUM_TABS,plural, =0{アクティブでないタブはありません}=1{1 個のアクティブでないタブを確認}other{# 個のアクティブでないタブを確認}}</translation>
 <translation id="4217571870635786043">音声入力</translation>
 <translation id="4218081191298393750">スピーカー アイコンをクリックしてこのタブをミュートする</translation>
 <translation id="4220157655212610908">外部セキュリティ キーを使用する</translation>
@@ -4938,6 +4951,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」のファイルを編集できます</translation>
 <translation id="4470957202018033307">外部ストレージの設定</translation>
 <translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
+<translation id="4472194221638903160">AI でタブをグループ化</translation>
 <translation id="4472298120638043495">Google アカウントの言語（<ph name="NEW_LOCALE_FROM_GAIA" />）を使用できます</translation>
 <translation id="447252321002412580">Chrome の機能と動作の改善に協力する</translation>
 <translation id="4472533928615930332">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" /></translation>
@@ -5133,6 +5147,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{タブグループを削除しますか？}other{タブグループを削除しますか？}}</translation>
 <translation id="4608500690299898628">検索(&amp;F)...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> でエラーが発生しました</translation>
+<translation id="4610493438923139095">信頼不可</translation>
 <translation id="4610637590575890427">もしかして: <ph name="SITE" /></translation>
 <translation id="4611114513649582138">データ接続が可能です</translation>
 <translation id="4611759022973144129">このパスワードを使用して、<ph name="DEVICE_TYPE" /> にログインできます。</translation>
@@ -5158,6 +5173,7 @@
 <translation id="4627442949885028695">他のデバイスで開いたタブ</translation>
 <translation id="4628762811416793313">Linux コンテナの設定を完了できませんでした。もう一度お試しください。</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> のプロフィールを開く</translation>
+<translation id="4629803160911640220">信頼済み</translation>
 <translation id="4631955550884380853">音声フォーカス</translation>
 <translation id="4632655012900268062">カードをカスタマイズする</translation>
 <translation id="4633003931260532286">拡張機能には「<ph name="IMPORT_NAME" />」のバージョン「<ph name="IMPORT_VERSION" />」以上が必要ですが、インストールされているのはバージョン「<ph name="INSTALLED_VERSION" />」のみです</translation>
@@ -5408,6 +5424,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 個のブックマークが削除されました}other{{COUNT} 個のブックマークが削除されました}}</translation>
 <translation id="481689174647911539">このファイルはウイルスや不正なソフトウェアの可能性があります。<ph name="LINE_BREAK" />Google セーフ ブラウジングに送信して、安全でないかどうかを確認できます。通常、スキャンには数秒かかります。</translation>
 <translation id="4816900689218414104">スマートフォンやタブレットでパスキーを作成する</translation>
+<translation id="481917177323309377"><ph name="COUNT" /> 日以上使用していないタブ</translation>
 <translation id="4819323978093861656">{0,plural, =0{まもなく終了します。}=1{1 秒後に終了します}other{# 秒後に終了します}}</translation>
 <translation id="4819607494758673676">Google アシスタントの通知</translation>
 <translation id="4819818293886748542">サポートツールのリンクを取得</translation>
@@ -6086,6 +6103,7 @@
 <translation id="5299558715747014286">タブグループの表示と管理</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5300719150368506519">アクセスしたページの URL を Google に送信</translation>
+<translation id="5301398529256275325">「このページを要約」など好きな表現で質問してみてください。</translation>
 <translation id="5301751748813680278">ゲストとしてログインしています。</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302032366299160685">ファイルが開くのを待ってから、もう一度お試しください</translation>
@@ -6808,6 +6826,7 @@
 <translation id="5842497610951477805">Bluetooth 有効</translation>
 <translation id="5844284118433003733">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
 <translation id="5844574845205796324">提案されるコンテンツの範囲を拡大する</translation>
+<translation id="5844685625984052392">ヒント</translation>
 <translation id="5846200638699387931">関係を表す構文にエラーがあります: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">シャドウなし</translation>
 <translation id="5846504156837627898">サイトの権限を管理</translation>
@@ -7430,6 +7449,7 @@
 <translation id="628699625505156622">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
 <translation id="628705218210359422">パスワードを 1 か所で管理できます。</translation>
 <translation id="628726841779494414">プリンタ設定でプリンタを管理</translation>
+<translation id="6287288864483377583">インポートは 1 つの証明書のみ可能です</translation>
 <translation id="6287828400772161253">Android スマートフォン（<ph name="HOST_DEVICE_NAME" />）</translation>
 <translation id="6290613030083731160">近くに共有可能なデバイスはありません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">ストレージの空き容量が不足しているため復元できません。</translation>
@@ -7871,6 +7891,7 @@
 <translation id="6622980291894852883">画像を引き続きブロックする</translation>
 <translation id="6624036901798307345">タブレット モードのときに、ツールバーのタブカウンタ ボタンをタップして、各タブのサムネイルが表示された新しいタブバーを開きます。</translation>
 <translation id="6624687053722465643">スイーツ</translation>
+<translation id="6626581113916585374">エフェクト モード</translation>
 <translation id="6627743754845412571">ハンド トラッキングを許可しないサイト</translation>
 <translation id="6628316682330029452">クライアント証明書は、他のサーバーに対してユーザーの認証を行う証明書です。</translation>
 <translation id="6628328486509726751">アップロード日時: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -8067,6 +8088,7 @@
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="6774710250118040929">新しいパスワードを追加</translation>
 <translation id="6775163072363532304">利用可能なデバイスはここに表示されます。</translation>
+<translation id="6775992990195573904">タブを分類します</translation>
 <translation id="677646486571529447">メモを追加</translation>
 <translation id="6776589734354015877">追加の機能を使用できます</translation>
 <translation id="6776729248872343918">ファスト ペアリングを有効にする</translation>
@@ -10087,6 +10109,7 @@
 <translation id="8192944472786724289"><ph name="APP_NAME" /> が画面コンテンツの共有をリクエストしています。</translation>
 <translation id="8193195501228940758"><ph name="WEBSITE" /> を削除</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />あなたのデバイス<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8194788147118885421">アクティブでないタブを確認</translation>
 <translation id="8195265224453131880">強さ</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> を無効にする</translation>
 <translation id="8197673340773315084">名前やラベル（仕事、個人など）を入力</translation>
@@ -11074,6 +11097,7 @@
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するため、4 週間以上経過したウェブサイトはリストから自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。ユーザーの興味 / 関心を定義させたくないウェブサイトを完全に削除することもできます。</translation>
 <translation id="8884570509232205463">デバイスは <ph name="UNLOCK_TIME" /> にロックされるようになりました。</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して ChromeOS の品質向上にご協力ください</translation>
+<translation id="8886745493279779790">アクティブでないタブを確認</translation>
 <translation id="8888253246822647887">アップグレードが完了するとアプリが起動します。アップグレードには数分かかることがあります。</translation>
 <translation id="8888459276890791557">このサイドパネルを固定すると簡単にアクセスできます</translation>
 <translation id="8889294078294184559">それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>
