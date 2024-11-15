@@ -472,8 +472,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       viz::ReleaseCallback release_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality,
-      bool is_origin_top_left);
+      cc::PaintFlags::FilterQuality);
 
   ~ExternalCanvasResource() override;
   bool IsRecycleable() const final { return IsValid(); }
@@ -482,7 +481,9 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   gfx::Size Size() const final { return transferable_resource_.size; }
-  bool IsOriginTopLeft() const final { return is_origin_top_left_; }
+  bool IsOriginTopLeft() const final {
+    return client_si_->surface_origin() == kTopLeft_GrSurfaceOrigin;
+  }
   void NotifyResourceLost() override { resource_is_lost_ = true; }
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
@@ -511,15 +512,13 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
                          viz::ReleaseCallback out_callback,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                          base::WeakPtr<CanvasResourceProvider>,
-                         cc::PaintFlags::FilterQuality,
-                         bool is_origin_top_left);
+                         cc::PaintFlags::FilterQuality);
 
   scoped_refptr<gpu::ClientSharedImage> client_si_;
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;
   viz::TransferableResource transferable_resource_;
   viz::ReleaseCallback release_callback_;
-  const bool is_origin_top_left_;
   bool is_origin_clean_ = true;
   bool resource_is_lost_ = false;
 };

@@ -861,15 +861,14 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     viz::ReleaseCallback release_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
   CHECK(client_si);
   CHECK(client_si->mailbox() == transferable_resource.mailbox());
   auto resource = AdoptRef(new ExternalCanvasResource(
       std::move(client_si), transferable_resource, std::move(release_callback),
-      std::move(context_provider_wrapper), std::move(provider), filter_quality,
-      is_origin_top_left));
+      std::move(context_provider_wrapper), std::move(provider),
+      filter_quality));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -915,10 +914,12 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       },
       base::RetainedRef(this));
 
+  const bool is_origin_top_left =
+      client_si_->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
       CreateSkImageInfo(), transferable_resource_.texture_target(),
-      is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
+      is_origin_top_left, context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback),
       /*supports_display_compositing=*/true,
       transferable_resource_.is_overlay_candidate);
@@ -976,8 +977,7 @@ ExternalCanvasResource::ExternalCanvasResource(
     viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left)
+    cc::PaintFlags::FilterQuality filter_quality)
     : CanvasResource(std::move(provider),
                      filter_quality,
                      viz::ToClosestSkColorType(/*gpu_compositing=*/true,
@@ -987,8 +987,7 @@ ExternalCanvasResource::ExternalCanvasResource(
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       transferable_resource_(transferable_resource),
-      release_callback_(std::move(out_callback)),
-      is_origin_top_left_(is_origin_top_left) {
+      release_callback_(std::move(out_callback)) {
   CHECK(client_si_);
   CHECK(client_si_->mailbox() == transferable_resource_.mailbox());
   DCHECK(!release_callback_ || transferable_resource_.sync_token().HasData());

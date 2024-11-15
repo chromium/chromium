@@ -884,12 +884,9 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
     color_buffer->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   }
 
-  const bool is_origin_top_left =
-      color_buffer->shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return ExternalCanvasResource::Create(
       color_buffer->shared_image, resource, viz::ReleaseCallback(),
-      context_provider_->GetWeakPtr(), resource_provider, filter_quality_,
-      /*is_origin_top_left=*/is_origin_top_left);
+      context_provider_->GetWeakPtr(), resource_provider, filter_quality_);
 }
 
 scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
@@ -914,13 +911,10 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   // * FinishPrepareTransferableResourceGpu() always populates `client_si` if it
   //   returns true
   CHECK(client_si);
-  const bool is_origin_top_left =
-      client_si->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return ExternalCanvasResource::Create(
       client_si, out_resource, std::move(out_release_callback),
       context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr,
-      filter_quality_,
-      /*is_origin_top_left=*/is_origin_top_left);
+      filter_quality_);
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(
