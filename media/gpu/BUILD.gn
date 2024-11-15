@@ -398,8 +398,8 @@ source_set("common") {
       "av1_builder.h",
       "h264_builder.cc",
       "h264_builder.h",
-      "vp9_svc_layers.cc",
-      "vp9_svc_layers.h",
+      "svc_layers.cc",
+      "svc_layers.h",
     ]
     if (enable_hevc_parser_and_hw_decoder) {
       sources += [
@@ -674,7 +674,7 @@ source_set("unit_tests") {
     sources += [
       "av1_builder_unittest.cc",
       "h264_builder_unittest.cc",
-      "vp9_svc_layers_unittest.cc",
+      "svc_layers_unittest.cc",
     ]
   }
 }

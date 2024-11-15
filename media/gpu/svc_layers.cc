@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/gpu/vp9_svc_layers.h"
+#include "media/gpu/svc_layers.h"
 
 #include "base/logging.h"
 
@@ -15,14 +15,13 @@ namespace media {
 
 namespace {
 
-constexpr static size_t kMaxNumUsedRefFramesEachSpatialLayer =
-    kVp9NumRefFrames / VP9SVCLayers::kMaxSpatialLayers;
+constexpr static size_t kMaxNumUsedRefFramesEachSpatialLayer = 2;
 static_assert(kMaxNumUsedRefFramesEachSpatialLayer == 2u,
-              "VP9SVCLayers uses two reference frames for each spatial layer");
+              "SVCLayers uses two reference frames for each spatial layer");
 constexpr static size_t kMaxNumUsedReferenceFrames =
-    kMaxNumUsedRefFramesEachSpatialLayer * VP9SVCLayers::kMaxSpatialLayers;
+    kMaxNumUsedRefFramesEachSpatialLayer * SVCLayers::kMaxSpatialLayers;
 static_assert(kMaxNumUsedReferenceFrames == 6u,
-              "VP9SVCLayers uses six reference frames");
+              "SVCLayers uses six reference frames");
 
 enum FrameFlags : uint8_t {
   kNone = 0,
@@ -40,7 +39,7 @@ struct FrameConfig {
         buffer_flags_{first, second},
         temporal_up_switch_(temporal_up_switch) {}
 
-  // VP9SVCLayers uses 2 reference frame slots for each spatial layer, and
+  // SVCLayers uses 2 reference frame slots for each spatial layer, and
   // totally uses up to 6 reference frame slots. SL0 uses the first two (0, 1)
   // slots, SL1 uses middle two (2, 3) slots, and SL2 uses last two (4, 5)
   // slots.
@@ -116,7 +115,7 @@ FrameConfig GetFrameConfig(size_t num_temporal_layers, size_t frame_num) {
 }
 }  // namespace
 
-VP9SVCLayers::Config::Config(
+SVCLayers::Config::Config(
     const std::vector<gfx::Size>& spatial_layer_resolutions,
     size_t begin_active_layer,
     size_t end_active_layer,
@@ -131,21 +130,21 @@ VP9SVCLayers::Config::Config(
           spatial_layer_resolutions.begin() + end_active_layer),
       inter_layer_pred(inter_layer_pred) {}
 
-VP9SVCLayers::Config::~Config() = default;
-VP9SVCLayers::Config::Config(const Config&) = default;
-VP9SVCLayers::PictureParam::PictureParam() = default;
-VP9SVCLayers::PictureParam::~PictureParam() = default;
-VP9SVCLayers::PictureParam::PictureParam(const PictureParam&) = default;
+SVCLayers::Config::~Config() = default;
+SVCLayers::Config::Config(const Config&) = default;
+SVCLayers::PictureParam::PictureParam() = default;
+SVCLayers::PictureParam::~PictureParam() = default;
+SVCLayers::PictureParam::PictureParam(const PictureParam&) = default;
 
-VP9SVCLayers::VP9SVCLayers(const Config& config) : config_(config) {}
+SVCLayers::SVCLayers(const Config& config) : config_(config) {}
 
-void VP9SVCLayers::Reset() {
+void SVCLayers::Reset() {
   CHECK_EQ(spatial_idx_, 0u);
   frame_num_ = 0;
   frame_num_ref_frames_.fill(0);
 }
 
-void VP9SVCLayers::PostEncode(uint8_t refresh_frame_flags) {
+void SVCLayers::PostEncode(uint8_t refresh_frame_flags) {
   for (size_t i = 0; i < kVp9NumRefFrames; ++i) {
     if (refresh_frame_flags & (1 << i)) {
       frame_num_ref_frames_[i] = frame_num_;
@@ -159,7 +158,7 @@ void VP9SVCLayers::PostEncode(uint8_t refresh_frame_flags) {
   }
 }
 
-bool VP9SVCLayers::IsKeyFrame() const {
+bool SVCLayers::IsKeyFrame() const {
   if (frame_num_ != 0) {
     return false;
   }
@@ -172,8 +171,8 @@ bool VP9SVCLayers::IsKeyFrame() const {
   return true;
 }
 
-void VP9SVCLayers::GetPictureParamAndMetadata(PictureParam& picture_param,
-                                              Vp9Metadata& metadata) const {
+void SVCLayers::GetPictureParamAndMetadata(PictureParam& picture_param,
+                                           Vp9Metadata& metadata) const {
   picture_param.frame_size =
       config_.active_spatial_layer_resolutions[spatial_idx_];
 
@@ -189,7 +188,7 @@ void VP9SVCLayers::GetPictureParamAndMetadata(PictureParam& picture_param,
                                picture_param.reference_frame_indices);
 }
 
-void VP9SVCLayers::FillMetadataForFirstFrame(
+void SVCLayers::FillMetadataForFirstFrame(
     Vp9Metadata& metadata,
     bool& key_frame,
     uint8_t& refresh_frame_flags,
@@ -252,7 +251,7 @@ void VP9SVCLayers::FillMetadataForFirstFrame(
   }
 }
 
-void VP9SVCLayers::FillMetadataForNonFirstFrame(
+void SVCLayers::FillMetadataForNonFirstFrame(
     Vp9Metadata& metadata,
     uint8_t& refresh_frame_flags,
     std::vector<uint8_t>& reference_frame_indices) const {

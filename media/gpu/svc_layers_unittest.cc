@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/gpu/vp9_svc_layers.h"
+#include "media/gpu/svc_layers.h"
 
 #include <algorithm>
 #include <array>
@@ -45,16 +45,16 @@ std::vector<gfx::Size> GetDefaultSVCResolutions(size_t num_spatial_layers) {
   return spatial_layer_resolutions;
 }
 
-VP9SVCLayers::Config GetDefaultSVCLayers2Config(
+SVCLayers::Config GetDefaultSVCLayers2Config(
     size_t num_spatial_layers,
     size_t num_temporal_layers,
     SVCInterLayerPredMode inter_layer_pred) {
   const auto& spatial_layer_resolutions =
       GetDefaultSVCResolutions(num_spatial_layers);
-  return VP9SVCLayers::Config(spatial_layer_resolutions,
-                              /*begin_active_layer=*/0,
-                              spatial_layer_resolutions.size(),
-                              num_temporal_layers, inter_layer_pred);
+  return SVCLayers::Config(spatial_layer_resolutions,
+                           /*begin_active_layer=*/0,
+                           spatial_layer_resolutions.size(),
+                           num_temporal_layers, inter_layer_pred);
 }
 
 uint8_t GetTemporalIndex(size_t num_temporal_layers, size_t frame_num) {
@@ -107,7 +107,7 @@ void VerifyReferenceFrame(const Vp9Metadata& metadata,
 }
 
 void VerifykSVCFrame(
-    const VP9SVCLayers::PictureParam& picture_param,
+    const SVCLayers::PictureParam& picture_param,
     const Vp9Metadata& metadata,
     const std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames>& ref_frames,
     size_t frame_num,
@@ -173,7 +173,7 @@ void VerifykSVCFrame(
 }
 
 void VerifySmodeFrame(
-    const VP9SVCLayers::PictureParam& picture_param,
+    const SVCLayers::PictureParam& picture_param,
     const Vp9Metadata& metadata,
     const std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames>& ref_frames,
     size_t frame_num,
@@ -224,21 +224,22 @@ void VerifySmodeFrame(
                        ref_frames[picture_param.reference_frame_indices[0]],
                        SVCInterLayerPredMode::kOff);
 }
+
 }  // namespace
 
-class VP9SVCLayersTest
+class SVCLayersTest
     : public ::testing::TestWithParam<
           ::testing::tuple<size_t, size_t, SVCInterLayerPredMode>> {};
 
-TEST_P(VP9SVCLayersTest, VerifyMetadata) {
+TEST_P(SVCLayersTest, VerifyMetadata) {
   const size_t num_spatial_layers = ::testing::get<0>(GetParam());
   const size_t num_temporal_layers = ::testing::get<1>(GetParam());
   const SVCInterLayerPredMode inter_layer_pred_mode =
       ::testing::get<2>(GetParam());
 
-  const VP9SVCLayers::Config config = GetDefaultSVCLayers2Config(
+  const SVCLayers::Config config = GetDefaultSVCLayers2Config(
       num_spatial_layers, num_temporal_layers, inter_layer_pred_mode);
-  VP9SVCLayers svc_layers(config);
+  SVCLayers svc_layers(config);
 
   constexpr size_t kNumFramesToEncode = 100;
   std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames> ref_frames;
@@ -260,7 +261,7 @@ TEST_P(VP9SVCLayersTest, VerifyMetadata) {
       }
 
       EXPECT_EQ(svc_layers.IsKeyFrame(), key_frame);
-      VP9SVCLayers::PictureParam picture_param;
+      SVCLayers::PictureParam picture_param;
       Vp9Metadata metadata;
       svc_layers.GetPictureParamAndMetadata(picture_param, metadata);
 
@@ -291,15 +292,15 @@ TEST_P(VP9SVCLayersTest, VerifyMetadata) {
   }
 }
 
-TEST_P(VP9SVCLayersTest, VerifyMetadataMultipleTimes) {
+TEST_P(SVCLayersTest, VerifyMetadataMultipleTimes) {
   const size_t num_spatial_layers = ::testing::get<0>(GetParam());
   const size_t num_temporal_layers = ::testing::get<1>(GetParam());
   const SVCInterLayerPredMode inter_layer_pred_mode =
       ::testing::get<2>(GetParam());
 
-  const VP9SVCLayers::Config config = GetDefaultSVCLayers2Config(
+  const SVCLayers::Config config = GetDefaultSVCLayers2Config(
       num_spatial_layers, num_temporal_layers, inter_layer_pred_mode);
-  VP9SVCLayers svc_layers(config);
+  SVCLayers svc_layers(config);
 
   constexpr size_t kNumFramesToEncode = 100;
   std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames> ref_frames;
@@ -327,7 +328,7 @@ TEST_P(VP9SVCLayersTest, VerifyMetadataMultipleTimes) {
         }
 
         EXPECT_EQ(svc_layers.IsKeyFrame(), key_frame);
-        VP9SVCLayers::PictureParam picture_param;
+        SVCLayers::PictureParam picture_param;
         Vp9Metadata metadata;
         svc_layers.GetPictureParamAndMetadata(picture_param, metadata);
 
@@ -365,7 +366,7 @@ TEST_P(VP9SVCLayersTest, VerifyMetadataMultipleTimes) {
 // inter_layer_pred_mode)
 INSTANTIATE_TEST_SUITE_P(
     ,
-    VP9SVCLayersTest,
+    SVCLayersTest,
     ::testing::Values(std::make_tuple(1, 2, SVCInterLayerPredMode::kOff),
                       std::make_tuple(1, 3, SVCInterLayerPredMode::kOff),
                       std::make_tuple(1, 2, SVCInterLayerPredMode::kOn),

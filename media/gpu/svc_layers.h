@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VP9_SVC_LAYERS_H_
-#define MEDIA_GPU_VP9_SVC_LAYERS_H_
+#ifndef MEDIA_GPU_SVC_LAYERS_H_
+#define MEDIA_GPU_SVC_LAYERS_H_
 
 #include <stdint.h>
 
@@ -17,14 +17,14 @@
 
 namespace media {
 
-class MEDIA_GPU_EXPORT VP9SVCLayers {
+class MEDIA_GPU_EXPORT SVCLayers {
  public:
   constexpr static size_t kMaxTemporalLayers = 3u;
   constexpr static size_t kMaxSpatialLayers = 3u;
 
-  // Config is the SVC configuration used in VP9SVCLayers. It cannot be changed
+  // Config is the SVC configuration used in SVCLayers. It cannot be changed
   // after creation. In other words, if active spatial layers or the number of
-  // temporal layers are changed, a client needs to recreate VP9SVCLayers with
+  // temporal layers are changed, a client needs to recreate SVCLayers with
   // the new Config.
   struct MEDIA_GPU_EXPORT Config {
     Config(const std::vector<gfx::Size>& spatial_layer_resolutions,
@@ -62,7 +62,7 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
     std::vector<uint8_t> reference_frame_indices;
   };
 
-  explicit VP9SVCLayers(const Config& config);
+  explicit SVCLayers(const Config& config);
 
   // These functions are constant functions. Unless Reset() or PostEncode() is
   // called, these functions returns the same result as the previous result.
@@ -108,4 +108,4 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
   std::array<size_t, kVp9NumRefFrames> frame_num_ref_frames_;
 };
 }  // namespace media
-#endif  // MEDIA_GPU_VP9_SVC_LAYERS_H_
+#endif  // MEDIA_GPU_SVC_LAYERS_H_
