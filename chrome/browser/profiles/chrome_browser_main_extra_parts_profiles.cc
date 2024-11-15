@@ -126,6 +126,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -1058,6 +1059,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   PasswordFieldClassificationModelHandlerFactory::GetInstance();
 #endif
+  PasswordChangeServiceFactory::GetInstance();
   PasswordManagerSettingsServiceFactory::GetInstance();
   PasswordReuseManagerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
