@@ -230,6 +230,7 @@ constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
 
 class MockReportSender : public AttributionReportSender {
  public:
+  MOCK_METHOD(void, SetInFirstBatch, (bool in_first_batch), (override));
   MOCK_METHOD(void,
               SendReport,
               (AttributionReport report,

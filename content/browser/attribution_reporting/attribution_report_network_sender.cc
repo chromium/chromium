@@ -84,6 +84,10 @@ AttributionReportNetworkSender::AttributionReportNetworkSender(
 
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
+void AttributionReportNetworkSender::SetInFirstBatch(bool in_first_batch) {
+  in_first_batch_ = in_first_batch;
+}
+
 void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
     bool is_debug_report,
@@ -239,6 +243,11 @@ void AttributionReportNetworkSender::OnReportSent(
       loader->GetNumRetries() > 0
           ? std::make_optional<bool>(status == Status::kOk)
           : std::nullopt;
+  if (in_first_batch_) {
+    base::UmaHistogramSparse(
+        "Conversions.FirstBatch.HttpResponseOrNetErrorCode",
+        response_or_net_error);
+  }
 
   std::optional<bool> has_trigger_context_id;
 
