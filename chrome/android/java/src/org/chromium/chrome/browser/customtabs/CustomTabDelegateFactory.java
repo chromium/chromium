@@ -399,17 +399,14 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     public CustomTabDelegateFactory(
             BaseCustomTabActivity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
-            BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager,
             TabCreatorManager tabCreatorManager,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Lazy<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
-            Lazy<AuthTabVerifier> authTabVerifier,
-            BrowserControlsManager browserControlsManager) {
+            Lazy<AuthTabVerifier> authTabVerifier) {
         this(
                 activity,
                 intentDataProvider.shouldEnableUrlBarHiding(),
@@ -421,10 +418,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 activity.getCustomTabBrowserControlsVisibilityDelegate(),
                 activity.getVerifier(),
                 activity,
-                browserControlsStateProvider,
+                activity.getBrowserControlsManager(),
                 fullscreenManager,
                 tabCreatorManager,
-                tabModelSelectorSupplier,
+                activity.getTabModelSelectorSupplier(),
                 compositorViewHolderSupplier,
                 modalDialogManagerSupplier,
                 snackbarManager,
@@ -433,7 +430,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 activity.getBottomSheetController(),
                 authTabVerifier,
                 !intentDataProvider.isAuthTab(),
-                browserControlsManager);
+                activity.getBrowserControlsManager());
     }
 
     /**

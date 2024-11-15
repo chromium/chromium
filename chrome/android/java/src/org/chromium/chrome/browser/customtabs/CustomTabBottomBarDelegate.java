@@ -108,26 +108,43 @@ public class CustomTabBottomBarDelegate
                 }
             };
 
-    @Inject
     public CustomTabBottomBarDelegate(
-            BaseCustomTabActivity activity,
+            Activity activity,
             WindowAndroid windowAndroid,
             BrowserServicesIntentDataProvider dataProvider,
             BrowserControlsSizer browserControlsSizer,
+            CustomTabNightModeStateController nightModeStateController,
+            Supplier<Tab> tabProvider,
             CustomTabCompositorContentInitializer compositorContentInitializer) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mDataProvider = dataProvider;
         mBrowserControlsSizer = browserControlsSizer;
-        mNightModeStateController = activity.getCustomTabNightModeStateController();
-        mTabProvider = activity.getCustomTabActivityTabProvider();
-        browserControlsSizer.addObserver(this);
+        mNightModeStateController = nightModeStateController;
+        mTabProvider = tabProvider;
+        mBrowserControlsSizer.addObserver(this);
         mKeepContentView = false;
         compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);
 
         Callback<ViewportInsets> insetObserver = this::onViewportInsetChange;
         // TODO(REVIEW): Is it ok this doesn't remove itself?
         mWindowAndroid.getApplicationBottomInsetSupplier().addObserver(insetObserver);
+    }
+
+    @Inject
+    public CustomTabBottomBarDelegate(
+            BaseCustomTabActivity activity,
+            WindowAndroid windowAndroid,
+            BrowserServicesIntentDataProvider dataProvider,
+            CustomTabCompositorContentInitializer compositorContentInitializer) {
+        this(
+                activity,
+                windowAndroid,
+                dataProvider,
+                activity.getBrowserControlsManager(),
+                activity.getCustomTabNightModeStateController(),
+                activity.getCustomTabActivityTabProvider(),
+                compositorContentInitializer);
     }
 
     /** Makes the bottom bar area to show, if any. */

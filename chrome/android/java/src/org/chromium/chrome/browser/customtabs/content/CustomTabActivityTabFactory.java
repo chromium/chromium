@@ -71,7 +71,6 @@ public class CustomTabActivityTabFactory {
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             BrowserServicesIntentDataProvider intentDataProvider,
             TabCreatorManager tabCreatorManager,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;
@@ -80,7 +79,7 @@ public class CustomTabActivityTabFactory {
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mIntentDataProvider = intentDataProvider;
         mTabCreatorManager = tabCreatorManager;
-        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mTabModelSelectorSupplier = activity.getTabModelSelectorSupplier();
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mCipherFactory = activity.getCipherFactory();
     }

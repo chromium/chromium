@@ -94,9 +94,6 @@ public class WebApkInitializationTest {
                     .setOverride(
                             ChromeActivityCommonsModule.Factory.class,
                             (activity,
-                                    tabModelSelectorSupplier,
-                                    browserControlsManager,
-                                    browserControlsVisibilityManager,
                                     fullscreenManager,
                                     layoutManagerSupplier,
                                     lifecycleDispatcher,
@@ -115,7 +112,6 @@ public class WebApkInitializationTest {
                                     startupMetricsTrackerSupplier,
                                     compositorViewHolderInitializer,
                                     modalDialogManagerSupplier,
-                                    browserControlsStateProvider,
                                     savedInstanceStateSupplier,
                                     autofillUiBottomInsetSupplier,
                                     shareDelegateSupplier,
@@ -124,9 +120,6 @@ public class WebApkInitializationTest {
                                 mTrackingActivityLifecycleDispatcher.init(lifecycleDispatcher);
                                 return new ChromeActivityCommonsModule(
                                         activity,
-                                        tabModelSelectorSupplier,
-                                        browserControlsManager,
-                                        browserControlsVisibilityManager,
                                         fullscreenManager,
                                         layoutManagerSupplier,
                                         mTrackingActivityLifecycleDispatcher,
@@ -145,7 +138,6 @@ public class WebApkInitializationTest {
                                         startupMetricsTrackerSupplier,
                                         compositorViewHolderInitializer,
                                         modalDialogManagerSupplier,
-                                        browserControlsStateProvider,
                                         savedInstanceStateSupplier,
                                         autofillUiBottomInsetSupplier,
                                         shareDelegateSupplier,

@@ -574,9 +574,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 overridenCommonsFactory == null
                         ? new ChromeActivityCommonsModule(
                                 this,
-                                getTabModelSelectorSupplier(),
-                                getBrowserControlsManager(),
-                                getBrowserControlsManager(),
                                 getFullscreenManager(),
                                 getLayoutManagerSupplier(),
                                 getLifecycleDispatcher(),
@@ -595,7 +592,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 this::getStartupMetricsTracker,
                                 /* compositorViewHolderInitializer= */ this,
                                 getModalDialogManagerSupplier(),
-                                getBrowserControlsManager(),
                                 this::getSavedInstanceState,
                                 mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
                                 getShareDelegateSupplier(),
@@ -603,9 +599,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 getActivityType())
                         : overridenCommonsFactory.create(
                                 this,
-                                getTabModelSelectorSupplier(),
-                                getBrowserControlsManager(),
-                                getBrowserControlsManager(),
                                 getFullscreenManager(),
                                 getLayoutManagerSupplier(),
                                 getLifecycleDispatcher(),
@@ -624,7 +617,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 this::getStartupMetricsTracker,
                                 /* CompositorViewHolder.Initializer */ this,
                                 getModalDialogManagerSupplier(),
-                                getBrowserControlsManager(),
                                 this::getSavedInstanceState,
                                 mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
                                 getShareDelegateSupplier(),
