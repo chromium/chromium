@@ -20,6 +20,8 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -403,7 +405,13 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 mProfile,
                 model -> {
                     if (mBrowsingDataModel != null) {
-                        mBrowsingDataModel.destroy();
+                        // Posting the task to destroy the model to avoid ANR hangs/crashes caused
+                        // by sometimes slow model building and JNI deadlock.
+                        // The old model reference needs to be captured before posting the destroy
+                        // task to avoid crashing caused by destroying the new model instead of the
+                        // old model.
+                        BrowsingDataModel oldModel = mBrowsingDataModel;
+                        PostTask.postTask(TaskTraits.UI_DEFAULT, oldModel::destroy);
                     }
                     mBrowsingDataModel = model;
                     callback.onResult(mBrowsingDataModel);
