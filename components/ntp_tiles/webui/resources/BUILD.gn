@@ -12,7 +12,7 @@ build_webui("build") {
     "ntp_tiles_internals.html",
   ]
 
-  non_web_component_files = [ "ntp_tiles_internals.js" ]
+  non_web_component_files = [ "ntp_tiles_internals.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
