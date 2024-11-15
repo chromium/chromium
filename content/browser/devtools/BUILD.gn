@@ -19,7 +19,7 @@ if (!is_android && !is_ios) {
     # on this target to grit action.
     public = []
 
-    deps = [ ":devtools_resources" ]
+    public_deps = [ ":devtools_resources" ]
   }
   grit("devtools_resources") {
     source = "$root_gen_dir/$devtools_grd_location"
