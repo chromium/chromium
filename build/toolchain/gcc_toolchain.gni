@@ -173,11 +173,6 @@ template("single_gcc_toolchain") {
     } else {
       toolchain_uses_reclient = use_reclient
     }
-    if (defined(toolchain_args.use_reclient_links)) {
-      toolchain_uses_reclient_links = toolchain_args.use_reclient_links
-    } else {
-      toolchain_uses_reclient_links = use_reclient_links
-    }
 
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
@@ -211,17 +206,6 @@ template("single_gcc_toolchain") {
       # Prevent warning about unused variable since it is not read in the code
       # paths when reclient is not needed.
       not_needed(invoker, [ "needs_rewrapper_path_arg" ])
-    }
-
-    if (toolchain_uses_reclient_links) {
-      if (defined(toolchain_args.reclient_link_cfg_file)) {
-        toolchain_reclient_link_cfg_file = toolchain_args.reclient_link_cfg_file
-      } else {
-        toolchain_reclient_link_cfg_file = reclient_link_cfg_file
-      }
-      link_prefix = "${reclient_bin_dir}/rewrapper -cfg=${toolchain_reclient_link_cfg_file} -exec_root=${rbe_exec_root} "
-    } else {
-      link_prefix = ""
     }
 
     # A specific toolchain may wish to avoid coverage instrumentation, so we
@@ -275,7 +259,7 @@ template("single_gcc_toolchain") {
     # assembler runs.
     asm = invoker.cc
     ar = invoker.ar
-    ld = link_prefix + invoker.ld
+    ld = invoker.ld
     if (defined(invoker.readelf)) {
       readelf = invoker.readelf
     } else {

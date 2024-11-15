@@ -151,7 +151,6 @@ findit/gofindit-culprit-verification
 findit/test-single-revision
 flaky-reproducer/runner
 infra/autosharder
-reclient/Comparison Linux (reclient vs reclient remote links)
 reclient/Comparison Linux (reclient)
 reclient/Comparison Linux (reclient)(CQ)
 reclient/Linux Builder (canonical wd) (reclient compare)

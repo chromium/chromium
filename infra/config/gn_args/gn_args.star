@@ -1123,15 +1123,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "reclient_with_remoteexec_links",
-    args = {
-        "use_reclient_links": True,
-        "concurrent_links": 50,
-    },
-    configs = ["remoteexec"],
-)
-
-gn_args.config(
     name = "release",
     args = {
         "is_debug": False,

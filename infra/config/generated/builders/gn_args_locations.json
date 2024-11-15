@@ -426,7 +426,6 @@
     "mac-ubsan-fyi-rel": "ci/mac-ubsan-fyi-rel/gn-args.json"
   },
   "chromium.reclient.fyi": {
-    "Comparison Linux (reclient vs reclient remote links)": "reclient/Comparison Linux (reclient vs reclient remote links)/gn-args.json",
     "Comparison Linux (reclient)": "reclient/Comparison Linux (reclient)/gn-args.json",
     "Comparison Linux (reclient)(CQ)": "reclient/Comparison Linux (reclient)(CQ)/gn-args.json",
     "Linux Builder (canonical wd) (reclient compare)": "reclient/Linux Builder (canonical wd) (reclient compare)/gn-args.json",

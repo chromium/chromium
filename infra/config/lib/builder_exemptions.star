@@ -521,7 +521,6 @@ exempted_from_description_builders = {
         "autosharder",
     ]),
     "reclient": set([
-        "Comparison Linux (reclient vs reclient remote links)",
         "Comparison Linux (reclient)",
     ]),
     "reviver": set([

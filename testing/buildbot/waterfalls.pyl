@@ -931,15 +931,6 @@
     'mixins': ['chromium-tester-service-account'],
     'machines': {
       # This builder uses a recipe that is incompatible with tests in starlark
-      'Comparison Linux (reclient vs reclient remote links)': {
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Linux (reclient)': {
         'mixins': [
           'isolate_profile_data',
