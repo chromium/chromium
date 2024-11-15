@@ -1350,6 +1350,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="BrowserRenderProcessHost.SubframeProcessReuseThreshold.TotalFrames"
+    units="frames" expires_after="2025-11-13">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>wjmaclean@chromium.org</owner>
+  <summary>
+    Records the total number of frames at the time the subframe memory threshold
+    is exceeded and the process is not reused. Only recorded the first time that
+    the threshold is exceeded in code that picks a process for a particular
+    SiteInstance.
+  </summary>
+</histogram>
+
+<histogram
     name="BrowserRenderProcessHost.SuspendedChild.KernelExecutionRecorded"
     enum="BooleanRecorded" expires_after="never">
 <!-- expires-never: For monitoring stability regressions. -->
