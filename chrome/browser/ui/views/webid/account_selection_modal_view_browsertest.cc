@@ -58,8 +58,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog_ = new AccountSelectionModalView(
         kRpETLDPlusOne, kIdpETLDPlusOne, blink::mojom::RpContext::kSignIn,
         browser()->tab_strip_model()->GetActiveWebContents(),
-        shared_url_loader_factory(), /*observer=*/nullptr,
-        /*widget_observer=*/nullptr);
+        shared_url_loader_factory(), /*observer=*/nullptr);
 
     // Loading dialog is always shown first. All other dialogs reuse the header
     // of this loading dialog.

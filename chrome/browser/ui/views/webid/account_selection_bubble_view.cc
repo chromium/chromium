@@ -171,8 +171,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     content::WebContents* web_contents,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    FedCmAccountSelectionView* owner,
-    views::WidgetObserver* widget_observer)
+    FedCmAccountSelectionView* owner)
     : views::BubbleDialogDelegateView(
           anchor_view,
           // Note that TOP_RIGHT means the bubble's top and right are anchored
@@ -183,7 +182,6 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
           /*autosize=*/true),
       AccountSelectionViewBase(web_contents,
                                owner,
-                               widget_observer,
                                std::move(url_loader_factory),
                                rp_for_display),
       rp_context_(rp_context) {
@@ -232,11 +230,6 @@ void AccountSelectionBubbleView::InitDialogWidget() {
   }
 
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
-
-  // Add the widget observer, if available. It is null in tests.
-  if (widget_observer_) {
-    widget->AddObserver(widget_observer_);
-  }
 
   dialog_widget_ = widget->GetWeakPtr();
   // TODO(https://crbug.com/377803489): Get rid of this and move all of
@@ -506,10 +499,6 @@ void AccountSelectionBubbleView::CloseDialog() {
   }
 
   CancelDialog();
-  // Remove the widget observer, if available. It is null in tests.
-  if (widget_observer_) {
-    dialog_widget_->RemoveObserver(widget_observer_);
-  }
   dialog_widget_.reset();
 }
 

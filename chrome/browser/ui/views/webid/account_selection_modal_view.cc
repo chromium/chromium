@@ -144,11 +144,9 @@ AccountSelectionModalView::AccountSelectionModalView(
     blink::mojom::RpContext rp_context,
     content::WebContents* web_contents,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    FedCmAccountSelectionView* owner,
-    views::WidgetObserver* widget_observer)
+    FedCmAccountSelectionView* owner)
     : AccountSelectionViewBase(web_contents,
                                owner,
-                               widget_observer,
                                std::move(url_loader_factory),
                                rp_for_display) {
   SetModalType(ui::mojom::ModalType::kChild);
@@ -202,11 +200,6 @@ void AccountSelectionModalView::InitDialogWidget() {
   widget->Show();
   DidShowWidget();
   UpdateDialogPosition();
-
-  // Add the widget observer, if available. It is null in tests.
-  if (widget_observer_) {
-    widget->AddObserver(widget_observer_);
-  }
 
   dialog_widget_ = widget->GetWeakPtr();
 
@@ -914,10 +907,6 @@ void AccountSelectionModalView::CloseDialog() {
   }
 
   CancelDialog();
-  // Remove the widget observer, if available. It is null in tests.
-  if (widget_observer_) {
-    dialog_widget_->RemoveObserver(widget_observer_);
-  }
   dialog_widget_.reset();
   scoped_ignore_input_events_.reset();
 }

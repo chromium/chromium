@@ -81,7 +81,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         kRpETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
         test_web_contents_.get(), anchor_widget_->GetContentsView(),
         shared_url_loader_factory(),
-        /*observer=*/nullptr, /*widget_observer=*/nullptr);
+        /*observer=*/nullptr);
   }
 
   void CreateAndShowSingleAccountPicker(

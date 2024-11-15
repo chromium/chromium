@@ -589,7 +589,7 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
     return new AccountSelectionModalView(
         rp_for_display, idp_title, rp_context, web_contents,
         SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
-        this, this);
+        this);
   }
 
   dialog_type_ = DialogType::BUBBLE;
@@ -598,7 +598,7 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   return new AccountSelectionBubbleView(
       rp_for_display, idp_title, rp_context, web_contents, anchor_view,
       SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
-      this, this);
+      this);
 }
 
 void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
@@ -868,6 +868,7 @@ void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
 }
 
 void FedCmAccountSelectionView::PostWidgetCreate(views::Widget* widget) {
+  widget->AddObserver(this);
   pip_occlusion_observation_ =
       std::make_unique<ScopedPictureInPictureOcclusionObservation>(this);
   pip_occlusion_observation_->Observe(widget);
@@ -1046,6 +1047,9 @@ FedCmAccountSelectionView::GetDialogType() {
 void FedCmAccountSelectionView::MaybeResetAccountSelectionView() {
   if (!account_selection_view_) {
     return;
+  }
+  if (GetDialogWidget()) {
+    GetDialogWidget()->RemoveObserver(this);
   }
   account_selection_view_->CloseDialog();
   account_selection_view_ = nullptr;

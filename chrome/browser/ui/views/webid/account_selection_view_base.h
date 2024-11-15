@@ -25,7 +25,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/widget/widget_observer.h"
 
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
@@ -205,7 +204,6 @@ class AccountSelectionViewBase {
   AccountSelectionViewBase(
       content::WebContents* web_contents,
       FedCmAccountSelectionView* owner,
-      views::WidgetObserver* widget_observer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::u16string rp_for_display);
   AccountSelectionViewBase();
@@ -338,10 +336,6 @@ class AccountSelectionViewBase {
 
   // Widget to control the dialog i.e. hide, show, add observer etc.
   base::WeakPtr<views::Widget> dialog_widget_;
-
-  // Observes events on `dialog_widget_`.
-  // Dangling when running Chromedriver's run_py_tests.py test suite.
-  raw_ptr<views::WidgetObserver, DanglingUntriaged> widget_observer_{nullptr};
 
   // Observes events on AccountSelectionBubbleView.
   // Dangling when running Chromedriver's run_py_tests.py test suite.

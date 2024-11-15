@@ -507,11 +507,9 @@ void AccountHoverButton::ReplaceSecondaryViewWithSpinner() {
 AccountSelectionViewBase::AccountSelectionViewBase(
     content::WebContents* web_contents,
     FedCmAccountSelectionView* owner,
-    views::WidgetObserver* widget_observer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::u16string rp_for_display)
     : web_contents_(web_contents->GetWeakPtr()),
-      widget_observer_(widget_observer),
       owner_(owner),
       rp_for_display_(rp_for_display) {
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
