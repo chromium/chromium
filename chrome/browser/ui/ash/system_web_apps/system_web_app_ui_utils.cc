@@ -297,8 +297,13 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
 
-  if (!provider->registrar_unsafe().IsInstalled(app_id.value()))
+  if (!provider->registrar_unsafe().IsInstallState(
+          app_id.value(),
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return nullptr;
+  }
 
   // Look through all the windows, find a browser for this app. Prefer the most
   // recently active app window.
