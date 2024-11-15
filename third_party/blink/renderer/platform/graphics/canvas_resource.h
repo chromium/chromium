@@ -356,7 +356,9 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   void WillDraw();
   bool IsLost() const { return owning_thread_data().is_lost; }
-  void CopyRenderingResultsToGpuMemoryBuffer(SkSurface* sk_surface);
+
+  // Uploads the contents of |sk_surface| to the resource's backing memory.
+  void UploadSoftwareRenderingResults(SkSurface* sk_surface);
   bool UsesClientSharedImage() override { return true; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const;

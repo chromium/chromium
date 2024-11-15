@@ -730,7 +730,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       if (!resource() || !GetSkSurface()) {
         return;
       }
-      resource()->CopyRenderingResultsToGpuMemoryBuffer(GetSkSurface());
+      resource()->UploadSoftwareRenderingResults(GetSkSurface());
     }
 
     current_resource_has_write_access_ = false;

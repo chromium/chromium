@@ -734,7 +734,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   return image;
 }
 
-void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
+void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
     SkSurface* sk_surface) {
   DCHECK(!is_cross_thread());
 
