@@ -188,11 +188,9 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNoMethod) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  auto maybe_result = algo->Run(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
-  ASSERT_FALSE(maybe_result.IsEmpty());
-  auto result = maybe_result.ToLocalChecked();
-  ASSERT_EQ(result->State(), v8::Promise::kFulfilled);
-  EXPECT_TRUE(result->Result()->IsUndefined());
+  auto result = algo->Run(scope.GetScriptState());
+  ASSERT_EQ(result.V8Promise()->State(), v8::Promise::kFulfilled);
+  EXPECT_TRUE(result.V8Promise()->Result()->IsUndefined());
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNullMethod) {
@@ -207,11 +205,10 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNullMethod) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
-  auto maybe_result = algo->Run(scope.GetScriptState(), exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_TRUE(maybe_result.IsEmpty());
+  v8::TryCatch try_catch(scope.GetIsolate());
+  auto result = algo->Run(scope.GetScriptState());
+  EXPECT_TRUE(try_catch.HasCaught());
+  EXPECT_TRUE(result.IsEmpty());
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmThrowingMethod) {
@@ -229,11 +226,10 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmThrowingMethod) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
-  auto maybe_result = algo->Run(scope.GetScriptState(), exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_TRUE(maybe_result.IsEmpty());
+  v8::TryCatch try_catch(scope.GetIsolate());
+  auto result = algo->Run(scope.GetScriptState());
+  EXPECT_TRUE(try_catch.HasCaught());
+  EXPECT_TRUE(result.IsEmpty());
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmReturningController) {
@@ -257,11 +253,9 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmReturningController) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  auto maybe_result = algo->Run(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
-  EXPECT_FALSE(maybe_result.IsEmpty());
-  v8::Local<v8::Value> result = maybe_result.ToLocalChecked();
-  ASSERT_TRUE(result->IsPromise());
-  ASSERT_EQ(result, controller);
+  auto result = algo->Run(scope.GetScriptState());
+  EXPECT_FALSE(result.IsEmpty());
+  ASSERT_EQ(result.V8Promise(), controller);
 }
 
 TEST(MiscellaneousOperationsTest, CallOrNoop1NoMethod) {

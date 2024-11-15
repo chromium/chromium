@@ -217,7 +217,7 @@ TransformStream* TransformStream::Create(
 
   // 8. Let startPromise be a new promise.
   auto* start_promise =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   // 9. Perform ! InitializeTransformStream(stream, startPromise,
   //    writableHighWaterMark, writableSizeAlgorithm, readableHighWaterMark,
@@ -237,14 +237,12 @@ TransformStream* TransformStream::Create(
 
   // 12. Let startResult be the result of performing startAlgorithm. (This may
   //     throw an exception.)
-  v8::MaybeLocal<v8::Promise> start_result_maybe =
-      start_algorithm->Run(script_state, exception_state);
-  v8::Local<v8::Promise> start_result;
-  if (!start_result_maybe.ToLocal(&start_result)) {
-    CHECK(exception_state.HadException());
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
+  auto start_result = start_algorithm->Run(script_state);
+  if (start_result.IsEmpty()) {
+    CHECK(rethrow_scope.HasCaught());
     return nullptr;
   }
-  DCHECK(!exception_state.HadException());
 
   // 13. Resolve startPromise with startResult.
   start_promise->Resolve(start_result);
@@ -282,11 +280,11 @@ class TransformStream::ReturnStartPromiseAlgorithm final
     : public StreamStartAlgorithm {
  public:
   explicit ReturnStartPromiseAlgorithm(
-      ScriptPromiseResolver<IDLAny>* start_promise)
+      ScriptPromiseResolver<IDLUndefined>* start_promise)
       : start_promise_(start_promise) {}
 
-  v8::MaybeLocal<v8::Promise> Run(ScriptState*, ExceptionState&) override {
-    return start_promise_->V8Promise();
+  ScriptPromise<IDLUndefined> Run(ScriptState*) override {
+    return start_promise_->Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -295,7 +293,7 @@ class TransformStream::ReturnStartPromiseAlgorithm final
   }
 
  private:
-  Member<ScriptPromiseResolver<IDLAny>> start_promise_;
+  Member<ScriptPromiseResolver<IDLUndefined>> start_promise_;
 };
 
 //
@@ -708,7 +706,7 @@ void TransformStream::InitInternal(ScriptState* script_state,
 
   // 15. Let startPromise be a new promise.
   auto* start_promise =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   // 16. Perform ! InitializeTransformStream(this, startPromise,
   //     writableHighWaterMark, writableSizeAlgorithm, readableHighWaterMark,
@@ -739,17 +737,19 @@ void TransformStream::InitInternal(ScriptState* script_state,
   DCHECK(!exception_state.HadException());
 
   // 19. Resolve startPromise with startResult.
-  start_promise->Resolve(start_result);
+  start_promise->Resolve(
+      ScriptPromise<IDLUndefined>::FromV8Value(script_state, start_result));
 }
 
-void TransformStream::Initialize(ScriptState* script_state,
-                                 TransformStream* stream,
-                                 ScriptPromiseResolver<IDLAny>* start_promise,
-                                 double writable_high_water_mark,
-                                 StrategySizeAlgorithm* writable_size_algorithm,
-                                 double readable_high_water_mark,
-                                 StrategySizeAlgorithm* readable_size_algorithm,
-                                 ExceptionState& exception_state) {
+void TransformStream::Initialize(
+    ScriptState* script_state,
+    TransformStream* stream,
+    ScriptPromiseResolver<IDLUndefined>* start_promise,
+    double writable_high_water_mark,
+    StrategySizeAlgorithm* writable_size_algorithm,
+    double readable_high_water_mark,
+    StrategySizeAlgorithm* readable_size_algorithm,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#initialize-transform-stream
   // 1. Let startAlgorithm be an algorithm that returns startPromise.
   auto* start_algorithm =

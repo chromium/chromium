@@ -137,25 +137,19 @@ void WritableStreamDefaultController::SetUp(
   // In this implementation, start_algorithm returns a Promise when it doesn't
   // throw.
   // 16. Let startPromise be a promise resolved with startResult.
-  v8::Local<v8::Promise> start_promise;
-  if (!start_algorithm->Run(script_state, exception_state)
-           .ToLocal(&start_promise)) {
-    if (!exception_state.HadException()) {
-      // Is this block really needed? Can we make this a DCHECK?
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "start algorithm failed with no exception thrown");
-    }
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
+  auto start_promise = start_algorithm->Run(script_state);
+  if (start_promise.IsEmpty()) {
+    CHECK(rethrow_scope.HasCaught());
     return;
   }
-  DCHECK(!exception_state.HadException());
 
-  class ResolvePromiseFunction final : public PromiseHandler {
+  class ResolvePromiseFunction final
+      : public ThenCallable<IDLUndefined, ResolvePromiseFunction> {
    public:
     explicit ResolvePromiseFunction(WritableStream* stream) : stream_(stream) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
+    void React(ScriptState* script_state) {
       // 17. Upon fulfillment of startPromise
       //      a. Assert: stream.[[state]] is "writable" or "erroring".
       const auto state = stream_->GetState();
@@ -174,19 +168,19 @@ void WritableStreamDefaultController::SetUp(
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLUndefined, ResolvePromiseFunction>::Trace(visitor);
     }
 
    private:
     Member<WritableStream> stream_;
   };
 
-  class RejectPromiseFunction final : public PromiseHandler {
+  class RejectPromiseFunction final
+      : public ThenCallable<IDLAny, RejectPromiseFunction> {
    public:
     explicit RejectPromiseFunction(WritableStream* stream) : stream_(stream) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       // 18. Upon rejection of startPromise with reason r,
       //      a. Assert: stream.[[state]] is "writable" or "erroring".
       const auto state = stream_->GetState();
@@ -198,21 +192,21 @@ void WritableStreamDefaultController::SetUp(
       controller->started_ = true;
 
       //      c. Perform ! WritableStreamDealWithRejection(stream, r).
-      WritableStream::DealWithRejection(script_state, stream_, r);
+      WritableStream::DealWithRejection(script_state, stream_, r.V8Value());
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectPromiseFunction>::Trace(visitor);
     }
 
    private:
     Member<WritableStream> stream_;
   };
 
-  StreamThenPromise(script_state, start_promise,
-                    MakeGarbageCollected<ResolvePromiseFunction>(stream),
-                    MakeGarbageCollected<RejectPromiseFunction>(stream));
+  start_promise.Then(script_state,
+                     MakeGarbageCollected<ResolvePromiseFunction>(stream),
+                     MakeGarbageCollected<RejectPromiseFunction>(stream));
 
   class ProcessWriteResolveFunction final : public PromiseHandler {
    public:

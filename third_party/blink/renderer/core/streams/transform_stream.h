@@ -106,7 +106,7 @@ class CORE_EXPORT TransformStream final : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#initialize-transform-stream
   static void Initialize(ScriptState*,
                          TransformStream*,
-                         ScriptPromiseResolver<IDLAny>* start_promise,
+                         ScriptPromiseResolver<IDLUndefined>* start_promise,
                          double writable_high_water_mark,
                          StrategySizeAlgorithm* writable_size_algorithm,
                          double readable_high_water_mark,

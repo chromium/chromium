@@ -57,8 +57,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
                              ToResolvedUndefinedPromise(script_state)) {}
   ~TestUnderlyingSource() override = default;
 
-  ScriptPromise<IDLUndefined> Start(ScriptState* script_state,
-                                    ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state) override {
     started_ = true;
     if (type_ == SourceType::kPush) {
       for (int element : sequence_) {

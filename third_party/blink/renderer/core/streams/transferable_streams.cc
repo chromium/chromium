@@ -812,10 +812,8 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
           source_->Controller()->GetOriginalController();
       auto* isolate = script_state->GetIsolate();
       if (controller) {
-        ExceptionState exception_state(script_state->GetIsolate());
         resolver_->Resolve(
-            source_->source2_
-                ->StartWrapper(script_state, controller, exception_state)
+            source_->source2_->StartWrapper(script_state, controller)
                 .Then(script_state,
                       MakeGarbageCollected<PullSource2>(source_)));
       } else {
@@ -863,8 +861,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         stream1_(stream1),
         source2_(source2) {}
 
-  ScriptPromise<IDLUndefined> Start(ScriptState* script_state,
-                                    ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state) override {
     v8::TryCatch try_catch(script_state->GetIsolate());
     reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
         script_state, stream1_,

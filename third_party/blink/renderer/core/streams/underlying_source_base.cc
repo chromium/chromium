@@ -16,8 +16,7 @@ namespace blink {
 
 ScriptPromise<IDLUndefined> UnderlyingSourceBase::StartWrapper(
     ScriptState* script_state,
-    ReadableStreamDefaultController* controller,
-    ExceptionState& exception_state) {
+    ReadableStreamDefaultController* controller) {
   // Cannot call start twice (e.g., cannot use the same UnderlyingSourceBase to
   // construct multiple streams).
   DCHECK(!controller_);
@@ -25,12 +24,11 @@ ScriptPromise<IDLUndefined> UnderlyingSourceBase::StartWrapper(
   controller_ =
       MakeGarbageCollected<ReadableStreamDefaultControllerWithScriptScope>(
           script_state, controller);
-  return Start(script_state, exception_state);
+  return Start(script_state);
 }
 
 ScriptPromise<IDLUndefined> UnderlyingSourceBase::Start(
-    ScriptState* script_state,
-    ExceptionState&) {
+    ScriptState* script_state) {
   return ToResolvedUndefinedPromise(script_state);
 }
 
@@ -72,11 +70,9 @@ void UnderlyingSourceBase::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-v8::MaybeLocal<v8::Promise> UnderlyingStartAlgorithm::Run(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  return source_->StartWrapper(script_state, controller_.Get(), exception_state)
-      .V8Promise();
+ScriptPromise<IDLUndefined> UnderlyingStartAlgorithm::Run(
+    ScriptState* script_state) {
+  return source_->StartWrapper(script_state, controller_.Get());
 }
 
 void UnderlyingStartAlgorithm::Trace(Visitor* visitor) const {

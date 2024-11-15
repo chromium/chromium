@@ -7,13 +7,13 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-class ExceptionState;
 class ScriptState;
 
 // Base class for algorithms that calculate the size of a given chunk as part of
@@ -40,7 +40,7 @@ class StreamStartAlgorithm : public GarbageCollected<StreamStartAlgorithm> {
  public:
   virtual ~StreamStartAlgorithm() = default;
 
-  virtual v8::MaybeLocal<v8::Promise> Run(ScriptState*, ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> Run(ScriptState*) = 0;
 
   virtual void Trace(Visitor*) const {}
 };

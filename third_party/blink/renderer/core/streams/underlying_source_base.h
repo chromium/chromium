@@ -27,9 +27,8 @@ class CORE_EXPORT UnderlyingSourceBase
   ~UnderlyingSourceBase() override = default;
 
   ScriptPromise<IDLUndefined> StartWrapper(ScriptState*,
-                                           ReadableStreamDefaultController*,
-                                           ExceptionState&);
-  virtual ScriptPromise<IDLUndefined> Start(ScriptState*, ExceptionState&);
+                                           ReadableStreamDefaultController*);
+  virtual ScriptPromise<IDLUndefined> Start(ScriptState*);
 
   virtual ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&);
 
@@ -65,8 +64,7 @@ class UnderlyingStartAlgorithm final : public StreamStartAlgorithm {
                            ReadableStreamDefaultController* controller)
       : source_(source), controller_(controller) {}
 
-  v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
-                                  ExceptionState&) final;
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state) final;
   void Trace(Visitor* visitor) const final;
 
  private:

@@ -42,7 +42,7 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
 
   // UnderlyingSourceBase
   ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&) override;
-  ScriptPromise<IDLUndefined> Start(ScriptState*, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Start(ScriptState*) override;
   ScriptPromise<IDLUndefined> Cancel(ScriptState*,
                                      ScriptValue reason,
                                      ExceptionState&) override;

@@ -32,8 +32,7 @@ class ForwardingUnderlyingSource : public UnderlyingSourceBase {
       : UnderlyingSourceBase(readable_stream_wrapper->GetScriptState()),
         readable_stream_wrapper_(readable_stream_wrapper) {}
 
-  ScriptPromise<IDLUndefined> Start(ScriptState* script_state,
-                                    ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state) override {
     readable_stream_wrapper_->SetController(Controller());
     return ToResolvedUndefinedPromise(script_state);
   }

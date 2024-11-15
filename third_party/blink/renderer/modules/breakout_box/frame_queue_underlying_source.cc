@@ -116,8 +116,7 @@ ScriptPromise<IDLUndefined> FrameQueueUnderlyingSource<NativeFrameType>::Pull(
 
 template <typename NativeFrameType>
 ScriptPromise<IDLUndefined> FrameQueueUnderlyingSource<NativeFrameType>::Start(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+    ScriptState* script_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   if (is_closed_) {
     // This was intended to be closed before Start() was called.
@@ -126,8 +125,9 @@ ScriptPromise<IDLUndefined> FrameQueueUnderlyingSource<NativeFrameType>::Start(
     if (!StartFrameDelivery()) {
       // There is only one way in which this can fail for now. Perhaps
       // implementations should return their own failure messages.
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Invalid track");
+      V8ThrowDOMException::Throw(script_state->GetIsolate(),
+                                 DOMExceptionCode::kInvalidStateError,
+                                 "Invalid track");
       return EmptyPromise();
     }
   }

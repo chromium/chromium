@@ -833,25 +833,20 @@ void ReadableByteStreamController::SetUp(
   // 15. Let startPromise be a promise resolved with startResult.
   // The conversion of startResult to a promise happens inside start_algorithm
   // in this implementation.
-  v8::Local<v8::Promise> start_promise;
-  if (!start_algorithm->Run(script_state, exception_state)
-           .ToLocal(&start_promise)) {
-    if (!exception_state.HadException()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "start algorithm failed with no exception thrown");
-    }
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
+  auto start_promise = start_algorithm->Run(script_state);
+  if (start_promise.IsEmpty()) {
+    CHECK(rethrow_scope.HasCaught());
     return;
   }
-  DCHECK(!exception_state.HadException());
 
-  class ResolveFunction final : public PromiseHandler {
+  class ResolveFunction final
+      : public ThenCallable<IDLUndefined, ResolveFunction> {
    public:
     explicit ResolveFunction(ReadableByteStreamController* controller)
         : controller_(controller) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
+    void React(ScriptState* script_state) {
       // 16. Upon fulfillment of startPromise,
       //   a. Set controller.[[started]] to true.
       controller_->started_ = true;
@@ -866,37 +861,36 @@ void ReadableByteStreamController::SetUp(
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLUndefined, ResolveFunction>::Trace(visitor);
     }
 
    private:
     const Member<ReadableByteStreamController> controller_;
   };
 
-  class RejectFunction final : public PromiseHandler {
+  class RejectFunction final : public ThenCallable<IDLAny, RejectFunction> {
    public:
     explicit RejectFunction(ReadableByteStreamController* controller)
         : controller_(controller) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       // 17. Upon rejection of startPromise with reason r,
       //   a. Perform ! ReadableByteStreamControllerError(controller, r).
-      Error(script_state, controller_, r);
+      Error(script_state, controller_, r.V8Value());
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectFunction>::Trace(visitor);
     }
 
    private:
     const Member<ReadableByteStreamController> controller_;
   };
 
-  StreamThenPromise(script_state, start_promise,
-                    MakeGarbageCollected<ResolveFunction>(controller),
-                    MakeGarbageCollected<RejectFunction>(controller));
+  start_promise.Then(script_state,
+                     MakeGarbageCollected<ResolveFunction>(controller),
+                     MakeGarbageCollected<RejectFunction>(controller));
 }
 
 void ReadableByteStreamController::SetUpFromUnderlyingSource(

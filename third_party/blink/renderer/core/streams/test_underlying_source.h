@@ -26,8 +26,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   void Error(ScriptValue value) { Controller()->Error(value.V8Value()); }
   double DesiredSize() { return Controller()->DesiredSize(); }
 
-  ScriptPromise<IDLUndefined> Start(ScriptState* script_state,
-                                    ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state) override {
     DCHECK(!is_start_called_);
     is_start_called_ = true;
     return ToResolvedUndefinedPromise(script_state);
