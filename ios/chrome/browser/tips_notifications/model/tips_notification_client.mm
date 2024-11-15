@@ -15,6 +15,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search/search.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -43,6 +44,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -562,10 +564,8 @@ void TipsNotificationClient::ShowWhatsNew(Browser* browser) {
 void TipsNotificationClient::ShowSignin(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If there are 0 identities, kInstantSignin requires less taps.
-  ProfileIOS* profile = browser->GetProfile();
   AuthenticationOperation operation =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile)
-              ->HasIdentities()
+      HasIdentitiesOnDevice(browser->GetProfile())
           ? AuthenticationOperation::kSigninOnly
           : AuthenticationOperation::kInstantSignin;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -765,4 +765,15 @@ void TipsNotificationClient::ClassifyUser() {
     user_type_ = TipsNotificationUserType::kActiveSeeker;
   }
   SetUserType(local_state_, user_type_);
+}
+
+bool TipsNotificationClient::HasIdentitiesOnDevice(ProfileIOS* profile) const {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    return !IdentityManagerFactory::GetForProfile(profile)
+                ->GetAccountsOnDevice()
+                .empty();
+  } else {
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile)
+        ->HasIdentities();
+  }
 }
