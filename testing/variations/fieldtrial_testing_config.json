@@ -12947,12 +12947,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CustomProfileStringsForSupervisedUsers",
-                        "ForceSafeSearchForUnauthenticatedSupervisedUsers",
-                        "ForceSupervisedUserReauthenticationForBlockedSites",
-                        "HideGuestModeForSupervisedUsers",
                         "IPH_SupervisedUserProfileSignin",
-                        "ShowKiteForSupervisedUsers",
-                        "UncredentialedFilteringFallbackForSupervisedUsers"
+                        "ShowKiteForSupervisedUsers"
                     ]
                 }
             ]

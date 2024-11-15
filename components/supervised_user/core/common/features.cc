@@ -105,12 +105,16 @@ BASE_FEATURE(kShowKiteForSupervisedUsers,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kHideGuestModeForSupervisedUsers,
              "HideGuestModeForSupervisedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
              "ForceSafeSearchForUnauthenticatedSupervisedUsers",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
@@ -119,7 +123,7 @@ BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
 
 BASE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites,
              "ForceSupervisedUserReauthenticationForBlockedSites",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
              "CloseSignTabsFromReauthenticationInterstitial",
@@ -131,9 +135,17 @@ BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// TODO: crbug.com/378636321 - Clean up the
+// kUncredentialedFilteringFallbackForSupervisedUsers and
+// kWaitUntilAccessTokenAvailableForClassifyUrl flags, by inlining the
+// platform #defines.
 BASE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers,
              "UncredentialedFilteringFallbackForSupervisedUsers",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
              "WaitUntilAccessTokenAvailableForClassifyUrl",
