@@ -13928,9 +13928,6 @@ This can include information about installed software, files, your browser, and 
           </else>
         </if>
 
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in: Kids of a certain age are motivated to get their parents’ help staying safer online, so the tone should be motivating. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account.">
-          To stay safer online with your parent’s choices, sign in as <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
-        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble">
           No thanks
         </message>
