@@ -26,6 +26,9 @@ class FileSystemChangeRecord : public ScriptWrappable {
 
   const FileSystemHandle* root() const { return root_.Get(); }
   const FileSystemHandle* changedHandle() const {
+    if (type_->is_disappeared() || type_->is_errored() || type_->is_unknown()) {
+      return nullptr;
+    }
     return changed_handle_.Get();
   }
   const Vector<String>& relativePathComponents() const {

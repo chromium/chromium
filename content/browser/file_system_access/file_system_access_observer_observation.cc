@@ -255,6 +255,9 @@ void FileSystemAccessObserverObservation::OnChanges(
             FileSystemAccessPermissionContext::HandleType::kFile;
         break;
     }
+    // TODO(crbug.com/377903461): Don't send a changedHandle for `kDisappeared`
+    // or `kUnknown` events. Renderer side, changedHandle() getter returns null
+    // for these cases.
     blink::mojom::FileSystemAccessEntryPtr changed_entry =
         CreateEntryForUrl(*manager, binding_context, handle_state, change.url,
                           changed_entry_handle_type);
@@ -376,6 +379,8 @@ void FileSystemAccessObserverObservation::HandleError() {
       handle_base.handle_state();
   FileSystemAccessManagerImpl* manager = handle_base.manager();
   const storage::FileSystemURL& handle_url = handle_base.url();
+  // TODO(crbug.com/377903461): Don't send changedHandle for `kErrored` events.
+  // Renderer side, changedHandle() getter returns null for this case.
   mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
       blink::mojom::FileSystemAccessChangeMetadata::New(
           CreateEntryForUrl(*manager, binding_context, handle_state, handle_url,

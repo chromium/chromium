@@ -563,6 +563,8 @@ class FileSystemAccessObserverBrowserTest
 
   TestFileSystemType GetTestFileSystemType() const { return GetParam(); }
 
+  // TODO(crbug.com/379052298): See if this helper and SupportsChangeInfo() can
+  // be removed.
   bool SupportsReportingModifiedPath() const {
     if (GetTestFileSystemType() == TestFileSystemType::kBucket) {
       return true;
@@ -941,19 +943,31 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 #endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       ObserveDirectoryReportsCorrectHandle) {
+                       ObserveDirectoryReportsCorrectChangeTypeForSubDir) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
-  const std::string changed_handle =
-      SupportsReportingModifiedPath() ? "subDir" : "dir";
 
   const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
+#if BUILDFLAG(IS_MAC)
+         "let appearedEventCount = 0;"
+#endif
          "async function onChange(records, observer) {"
          "  const record = records[0];"
+#if BUILDFLAG(IS_MAC)
+         // TODO(crbug.com/343801378): Check for and ignore at most, one
+         // appeared event.
+         "  if (record.type === 'appeared') {"
+         "    appearedEventCount += 1;"
+         "    if (appearedEventCount > 1) {"
+         "      promiseResolve(false);"
+         "    }"
+         "    return;"
+         "  }"
+#endif
          "  promiseResolve(await dir.isSameEntry(record.root) &&"
-         "await "+ changed_handle +".isSameEntry(record.changedHandle));"
+         "      record.changedHandle == null && record.type == 'disappeared');"
          "};"
          GET_DIRECTORY(GetTestFileSystemType())
          // Create and declare `subDir` before starting the observation, to
@@ -968,29 +982,32 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
 
-// There is no way to know the correct handle type on Windows in this scenario.
-//
-// Window's content::FilePathWatcher uses base::GetFileInfo to figure out the
-// file path type. Since `fileInDir` is deleted, there is nothing to call
-// base::GetFileInfo on.
-#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       ObserveDirectoryReportsCorrectHandleType) {
+                       ObserveDirectoryReportsCorrectChangeTypeForFileInDir) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
-
-  // The modified handle is a file, so the change record should contain a
-  // FileSystemFileHandle.
-  const std::string changed_handle =
-      SupportsReportingModifiedPath() ? "fileInDir" : "dir";
 
   const std::string script =
       // clang-format off
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
+#if BUILDFLAG(IS_MAC)
+         "let appearedEventCount = 0;"
+#endif
          "async function onChange(records, observer) {"
          "  const record = records[0];"
+#if BUILDFLAG(IS_MAC)
+         // TODO(crbug.com/343801378): Check for and ignore at most, one
+         // appeared event.
+         "  if (record.type === 'appeared') {"
+         "    appearedEventCount += 1;"
+         "    if (appearedEventCount > 1) {"
+         "      promiseResolve(false);"
+         "    }"
+         "    return;"
+         "  }"
+#endif
          "  promiseResolve(await dir.isSameEntry(record.root) &&"
-         "await "+ changed_handle +".isSameEntry(record.changedHandle));"
+         "      record.changedHandle == null && record.type == 'disappeared');"
          "};"
          GET_DIRECTORY(GetTestFileSystemType())
          // Create and declare `fileInDir` before starting the observation, to
@@ -1004,7 +1021,6 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
-#endif  // !BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectRelativePathComponents) {
