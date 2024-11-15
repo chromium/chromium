@@ -101,7 +101,7 @@ const content::EvalJsResult UpdateContextMenuItemTitle(
     const std::string& id,
     const std::string& new_title) {
   return content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.update) {
           reject('FAIL: frame, frame.contextMenus, or ' +
@@ -109,10 +109,8 @@ const content::EvalJsResult UpdateContextMenuItemTitle(
           return;
         }
 
-        frame.contextMenus.update(
-            /*id=*/$1,
-            { title: $2 },
-            () => { resolve('SUCCESS'); });
+        await frame.contextMenus.update(/*id=*/$1, { title: $2 });
+        resolve('SUCCESS');
       });
   )",
                                                        id, new_title));
@@ -122,7 +120,7 @@ const content::EvalJsResult RemoveContextMenuItem(
     content::RenderFrameHost* app_frame,
     const std::string& id) {
   return content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.remove) {
           reject('FAIL: frame, frame.contextMenus, or ' +
@@ -130,9 +128,8 @@ const content::EvalJsResult RemoveContextMenuItem(
           return;
         }
 
-        frame.contextMenus.remove(
-            /*id=*/$1,
-            () => { resolve('SUCCESS'); });
+        await frame.contextMenus.remove(/*id=*/$1);
+        resolve('SUCCESS');
       });
   )",
                                                        id));
@@ -141,7 +138,7 @@ const content::EvalJsResult RemoveContextMenuItem(
 const content::EvalJsResult RemoveAllContextMenuItems(
     content::RenderFrameHost* app_frame) {
   return content::EvalJs(app_frame, R"(
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.removeAll) {
           reject('FAIL: frame, frame.contextMenus, or ' +
@@ -149,7 +146,8 @@ const content::EvalJsResult RemoveAllContextMenuItems(
           return;
         }
 
-        frame.contextMenus.removeAll(() => { resolve('SUCCESS'); });
+        await frame.contextMenus.removeAll();
+        resolve('SUCCESS');
       });
   )");
 }

@@ -52,3 +52,24 @@ promise_test(async (test) => {
         callback);
   });
 }, 'Verify no callbacks are allowed for addContentScripts');
+
+promise_test(async (test) => {
+  const controlledFrame = await createControlledFrame('/simple.html');
+  await expectCallbackDeprecationError((callback) => {
+    controlledFrame.contextMenus.remove(/*id=*/"1", callback);
+  });
+}, "Verify no callbacks are allowed for Context Menus .remove()");
+
+promise_test(async (test) => {
+  const controlledFrame = await createControlledFrame('/simple.html');
+  await expectCallbackDeprecationError((callback) => {
+    controlledFrame.contextMenus.removeAll(callback);
+  });
+}, "Verify no callbacks are allowed for Context Menus .removeAll()");
+
+promise_test(async (test) => {
+  const controlledFrame = await createControlledFrame('/simple.html');
+  await expectCallbackDeprecationError((callback) => {
+    controlledFrame.contextMenus.update(/*id=*/"1", {title: "Title"}, callback);
+  });
+}, "Verify no callbacks are allowed for Context Menus .update()");

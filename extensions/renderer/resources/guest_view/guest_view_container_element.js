@@ -123,18 +123,11 @@ function createMethodHandler(
 };
 
 function promiseWrap(
-    handler, handlerArguments, callbackIndex, verifyEnvironment,
-    callbackAllowed) {
+    handler, handlerArguments, callbackIndex, verifyEnvironment) {
   const args = $Array.slice(handlerArguments);
   if (args[callbackIndex] !== undefined) {
-    // TODO: Remove the `callbackAllowed` handling when the context menus
-    // promise transition is complete.
-    if (callbackAllowed) {
-      return $Function.apply(handler, this, args);
-    } else {
-      throw new Error('Callback form deprecated, see API doc ' +
-                      'for correct usage.');
-    }
+    throw new Error('Callback form deprecated, see API doc ' +
+                    'for correct usage.');
   }
   return new $Promise.self((resolve, reject) => {
     if (!verifyEnvironment(reject)) {
