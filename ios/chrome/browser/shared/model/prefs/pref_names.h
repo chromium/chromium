@@ -91,10 +91,6 @@ inline constexpr char kDetectAddressesAccepted[] =
 inline constexpr char kDetectAddressesEnabled[] =
     "ios.settings.detect_addresses_enabled";
 
-// Whether to send the DNT header.
-// Note: The pref name is identical to the non-ios `kEnableDoNotTrack`.
-inline constexpr char kEnableDoNotTrackIos[] = "enable_do_not_track";
-
 // Number of times the First Follow UI has been shown.
 inline constexpr char kFirstFollowUIShownCount[] =
     "follow.first_follow_ui_modal_count";

@@ -96,9 +96,6 @@ void ProfileIOSIOData::InitializeOnUIThread(ProfileIOS* profile) {
   params->profile = profile;
   profile_params_ = std::move(params);
 
-  IOSChromeNetworkDelegate::InitializePrefsOnUIThread(&enable_do_not_track_,
-                                                      pref_service);
-
   accept_language_pref_watcher_ =
       std::make_unique<AcceptLanguagePrefWatcher>(pref_service);
   chrome_http_user_agent_settings_ =
@@ -174,7 +171,6 @@ void ProfileIOSIOData::Init(
   context_builder.set_net_log(io_thread->net_log());
   auto network_delegate = std::make_unique<IOSChromeNetworkDelegate>();
   network_delegate->set_cookie_settings(profile_params_->cookie_settings.get());
-  network_delegate->set_enable_do_not_track(&enable_do_not_track_);
   context_builder.set_network_delegate(std::move(network_delegate));
   auto quic_context = std::make_unique<net::QuicContext>();
   *quic_context->params() = io_thread->quic_params();
@@ -225,7 +221,6 @@ void ProfileIOSIOData::ShutdownOnUIThread(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   enable_referrers_.Destroy();
-  enable_do_not_track_.Destroy();
   enable_metrics_.Destroy();
   accept_language_pref_watcher_.reset();
 

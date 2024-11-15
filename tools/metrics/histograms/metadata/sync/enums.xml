@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="(obsolete) ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
-  <int value="200003" label="EnableDoNotTrack_IOS"/>
+  <int value="200003" label="(obsolete) EnableDoNotTrack_IOS"/>
   <int value="200004" label="IosHandoffToOtherDevices"/>
   <int value="200005" label="NetworkPredictionSetting"/>
   <int value="200006" label="NTPContentSuggestionsEnabled"/>

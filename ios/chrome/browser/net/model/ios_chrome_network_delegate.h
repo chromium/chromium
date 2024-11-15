@@ -41,20 +41,7 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
     cookie_settings_ = cookie_settings;
   }
 
-  void set_enable_do_not_track(BooleanPrefMember* enable_do_not_track) {
-    enable_do_not_track_ = enable_do_not_track;
-  }
-
-  // Binds the pref members to `pref_service` and moves them to the IO thread.
-  // This method should be called on the UI thread.
-  static void InitializePrefsOnUIThread(BooleanPrefMember* enable_do_not_track,
-                                        PrefService* pref_service);
-
  private:
-  // NetworkDelegate implementation.
-  int OnBeforeURLRequest(net::URLRequest* request,
-                         net::CompletionOnceCallback callback,
-                         GURL* new_url) override;
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
@@ -77,9 +64,6 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
       const GURL& referrer_url) const override;
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-
-  // Weak, owned by our owner.
-  raw_ptr<BooleanPrefMember> enable_do_not_track_;
 };
 
 #endif  // IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_NETWORK_DELEGATE_H_

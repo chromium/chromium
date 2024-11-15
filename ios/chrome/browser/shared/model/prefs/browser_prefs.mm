@@ -208,6 +208,9 @@ constexpr char
     kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness[] =
         "ios.magic_stack_segmentation.price_tracking_promo_freshness";
 
+// Deprecated 11/2024
+constexpr char kEnableDoNotTrackIos[] = "enable_do_not_track";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -846,9 +849,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
                                 true);
   registry->RegisterBooleanPref(
-      prefs::kEnableDoNotTrackIos, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
       translate::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
@@ -1134,6 +1134,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       std::string());
 
   registry->RegisterIntegerPref(prefs::kIOSLastKnownNTPWebStateIndex, -1);
+
+  // Deprecated 11/2024
+  registry->RegisterBooleanPref(kEnableDoNotTrackIos, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1393,6 +1396,9 @@ void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
   if (IsIosQuickDeleteEnabled()) {
     browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
   }
+
+  // Added 11/2024
+  prefs->ClearPref(kEnableDoNotTrackIos);
 }
 
 void MigrateObsoleteUserDefault() {

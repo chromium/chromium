@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include <cstddef>
 #include <iterator>
 #include <optional>
 
@@ -33,8 +34,6 @@
 
 namespace {
 
-const char kDNTHeader[] = "DNT";
-
 void ReportInvalidReferrerSend(const GURL& target_url,
                                const GURL& referrer_url) {
   LOG(ERROR) << "Cancelling request to " << target_url
@@ -47,30 +46,9 @@ void ReportInvalidReferrerSend(const GURL& target_url,
 
 }  // namespace
 
-IOSChromeNetworkDelegate::IOSChromeNetworkDelegate()
-    : enable_do_not_track_(nullptr) {}
+IOSChromeNetworkDelegate::IOSChromeNetworkDelegate() = default;
 
 IOSChromeNetworkDelegate::~IOSChromeNetworkDelegate() {}
-
-// static
-void IOSChromeNetworkDelegate::InitializePrefsOnUIThread(
-    BooleanPrefMember* enable_do_not_track,
-    PrefService* pref_service) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  if (enable_do_not_track) {
-    enable_do_not_track->Init(prefs::kEnableDoNotTrackIos, pref_service);
-    enable_do_not_track->MoveToSequence(web::GetIOThreadTaskRunner({}));
-  }
-}
-
-int IOSChromeNetworkDelegate::OnBeforeURLRequest(
-    net::URLRequest* request,
-    net::CompletionOnceCallback callback,
-    GURL* new_url) {
-  if (enable_do_not_track_ && enable_do_not_track_->GetValue())
-    request->SetExtraRequestHeaderByName(kDNTHeader, "1", true /* override */);
-  return net::OK;
-}
 
 bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
