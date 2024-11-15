@@ -320,7 +320,7 @@ final class FakeUrlRequest extends ExperimentalUrlRequest {
                         mCurrentFakeResponse.getResponseBody().length);
         mResponse = ByteBuffer.wrap(mCurrentFakeResponse.getResponseBody());
         // Check for a redirect.
-        if (responseCode >= 300 && responseCode < 400) {
+        if (responseCode >= 300 && responseCode < 400 && responseCode != 304) {
             processRedirectResponse();
         } else {
             closeUploadDataProvider();
