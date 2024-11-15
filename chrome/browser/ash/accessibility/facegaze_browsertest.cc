@@ -189,12 +189,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros(
-              {{FaceGazeGesture::JAW_OPEN, MacroName::RESET_CURSOR}})
-          .WithGestureConfidences({{FaceGazeGesture::JAW_OPEN, 70}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::JAW_OPEN, MacroName::RESET_CURSOR}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::JAW_OPEN, 70}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
@@ -222,12 +222,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
                        IgnoreGesturesWithLowConfidence) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros(
-              {{FaceGazeGesture::JAW_OPEN, MacroName::RESET_CURSOR}})
-          .WithGestureConfidences({{FaceGazeGesture::JAW_OPEN, 100}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::JAW_OPEN, MacroName::RESET_CURSOR}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::JAW_OPEN, 100}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
@@ -265,12 +265,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros(
-              {{FaceGazeGesture::MOUTH_LEFT, MacroName::KEY_PRESS_SPACE}})
-          .WithGestureConfidences({{FaceGazeGesture::MOUTH_LEFT, 70}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::MOUTH_LEFT, MacroName::KEY_PRESS_SPACE}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::MOUTH_LEFT, 70}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
 
   // Open jaw for space key press.
   event_handler().ClearEvents();
@@ -297,13 +297,15 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
 // ensures that the associated action is performed if either of the gestures is
 // detected.
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::BROWS_DOWN, MacroName::RESET_CURSOR}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::BROWS_DOWN, 40}};
   utils()->EnableFaceGaze(
       Config()
           .Default()
           .WithCursorLocation(gfx::Point(0, 0))
-          .WithGesturesToMacros(
-              {{FaceGazeGesture::BROWS_DOWN, MacroName::RESET_CURSOR}})
-          .WithGestureConfidences({{FaceGazeGesture::BROWS_DOWN, 40}})
+          .WithBindings(gestures_to_macros, gestures_to_confidences)
           .WithGestureRepeatDelayMs(0));
 
   // If neither gesture is detected, then don't perform the associated action.
@@ -351,12 +353,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros(
-              {{FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}})
-          .WithGestureConfidences({{FaceGazeGesture::MOUTH_PUCKER, 50}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::MOUTH_PUCKER, 50}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
   event_handler().ClearEvents();
 
   // Move mouth right to trigger mouse press event.
@@ -381,12 +383,14 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MousePressAndReleaseEvents) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MouseLongClick) {
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::MOUTH_RIGHT, MacroName::MOUSE_LONG_CLICK_LEFT}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::MOUTH_RIGHT, 30}};
   utils()->EnableFaceGaze(
       Config()
           .Default()
-          .WithGesturesToMacros({{FaceGazeGesture::MOUTH_RIGHT,
-                                  MacroName::MOUSE_LONG_CLICK_LEFT}})
-          .WithGestureConfidences({{FaceGazeGesture::MOUTH_RIGHT, 30}})
+          .WithBindings(gestures_to_macros, gestures_to_confidences)
           .WithGestureRepeatDelayMs(0));
   event_handler().ClearEvents();
 
@@ -436,12 +440,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MouseLongClick) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, PerformanceHistogram) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros(
-              {{FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}})
-          .WithGestureConfidences({{FaceGazeGesture::MOUTH_PUCKER, 50}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::MOUTH_PUCKER, 50}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
 
   HistogramWaiter waiter("Accessibility.FaceGaze.AverageFaceLandmarkerLatency");
   for (int i = 0; i < 100; ++i) {
@@ -453,12 +457,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, PerformanceHistogram) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, OpenSettingsPage) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros({{FaceGazeGesture::MOUTH_RIGHT,
-                                  MacroName::OPEN_FACEGAZE_SETTINGS}})
-          .WithGestureConfidences({{FaceGazeGesture::MOUTH_RIGHT, 30}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::MOUTH_RIGHT, MacroName::OPEN_FACEGAZE_SETTINGS}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::MOUTH_RIGHT, 30}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
 
   base::RunLoop waiter;
   AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
@@ -471,12 +475,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, OpenSettingsPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ToggleVirtualKeyboard) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros(
-              {{FaceGazeGesture::JAW_OPEN, MacroName::TOGGLE_VIRTUAL_KEYBOARD}})
-          .WithGestureConfidences({{FaceGazeGesture::JAW_OPEN, 30}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::JAW_OPEN, MacroName::TOGGLE_VIRTUAL_KEYBOARD}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::JAW_OPEN, 30}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
 
   base::RunLoop waiter;
   ash::Shell::Get()
@@ -491,12 +495,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ToggleVirtualKeyboard) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DoubleClick) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros({{FaceGazeGesture::MOUTH_FUNNEL,
-                                  MacroName::MOUSE_CLICK_LEFT_DOUBLE}})
-          .WithGestureConfidences({{FaceGazeGesture::MOUTH_FUNNEL, 50}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::MOUTH_FUNNEL, MacroName::MOUSE_CLICK_LEFT_DOUBLE}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::MOUTH_FUNNEL, 50}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
   event_handler().ClearEvents();
 
   // Mouth funnel to trigger double click event.
@@ -530,12 +534,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DoubleClick) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, TripleClick) {
-  utils()->EnableFaceGaze(
-      Config()
-          .Default()
-          .WithGesturesToMacros({{FaceGazeGesture::MOUTH_FUNNEL,
-                                  MacroName::MOUSE_CLICK_LEFT_TRIPLE}})
-          .WithGestureConfidences({{FaceGazeGesture::MOUTH_FUNNEL, 50}}));
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::MOUTH_FUNNEL, MacroName::MOUSE_CLICK_LEFT_TRIPLE}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::MOUTH_FUNNEL, 50}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
   event_handler().ClearEvents();
 
   // Mouth funnel to trigger triple click event.
@@ -630,12 +634,14 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, CancelDialog) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ScrollMode) {
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::JAW_LEFT, MacroName::TOGGLE_SCROLL_MODE}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::JAW_LEFT, 30}};
   utils()->EnableFaceGaze(
       Config()
           .Default()
-          .WithGesturesToMacros(
-              {{FaceGazeGesture::JAW_LEFT, MacroName::TOGGLE_SCROLL_MODE}})
-          .WithGestureConfidences({{FaceGazeGesture::JAW_LEFT, 30}})
+          .WithBindings(gestures_to_macros, gestures_to_confidences)
           // Ensure speeds are high so that head movements exceed the scroll
           // mode movement threshold.
           .WithCursorSpeeds({/*up=*/5, /*down=*/5, /*left=*/5, /*right=*/5})

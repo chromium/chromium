@@ -95,14 +95,10 @@ FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithDialogAccepted(
   return *this;
 }
 
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGesturesToMacros(
-    const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros) {
-  gestures_to_macros_ = std::move(gestures_to_macros);
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGestureConfidences(
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithBindings(
+    const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros,
     const base::flat_map<FaceGazeGesture, int>& gesture_confidences) {
+  gestures_to_macros_ = std::move(gestures_to_macros);
   gesture_confidences_ = std::move(gesture_confidences);
   return *this;
 }

@@ -79,8 +79,7 @@ AX_TEST_F(
                                       .set(FacialGesture.JAW_OPEN, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence);
+                         .withBindings(gestureToMacroName, gestureToConfidence);
       await this.configureFaceGaze(config);
 
       // Toggle sending on.
@@ -119,8 +118,7 @@ AX_TEST_F(
                                       .set(FacialGesture.JAW_OPEN, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence);
+                         .withBindings(gestureToMacroName, gestureToConfidence);
       await this.configureFaceGaze(config);
 
       const result =
@@ -550,8 +548,7 @@ AX_TEST_F(
                                       .set(FacialGesture.BROW_INNER_UP, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence);
+                         .withBindings(gestureToMacroName, gestureToConfidence);
       await this.configureFaceGaze(config);
 
       let result =
@@ -591,8 +588,7 @@ AX_TEST_F(
                                       .set(FacialGesture.BROW_INNER_UP, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withRepeatDelayMs(0);
       await this.configureFaceGaze(config);
 
@@ -642,8 +638,7 @@ AX_TEST_F(
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withCursorControlEnabled(true)
                          .withBufferSize(1)
                          .withRepeatDelayMs(0);
@@ -723,8 +718,7 @@ AX_TEST_F(
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withRepeatDelayMs(0);
       await this.configureFaceGaze(config);
 
@@ -784,8 +778,7 @@ AX_TEST_F(
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withRepeatDelayMs(0);
       await this.configureFaceGaze(config);
 
@@ -810,8 +803,7 @@ AX_TEST_F(
       const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withRepeatDelayMs(0);
       await this.configureFaceGaze(config);
 
@@ -837,8 +829,7 @@ AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.BROWS_DOWN, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 0, y: 0})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withBindings(gestureToMacroName, gestureToConfidence);
   await this.configureFaceGaze(config);
   this.mockAccessibilityPrivate.clearCursorPosition();
 
@@ -891,8 +882,7 @@ AX_TEST_F(
                                       .set(FacialGesture.BROW_INNER_UP, 0.6);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withCursorControlEnabled(true)
                          .withActionsEnabled(false);
       await this.configureFaceGaze(config);
@@ -941,8 +931,7 @@ AX_TEST_F(
           new Map().set(FacialGesture.MOUTH_PUCKER, 0.5);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withActionsEnabled(true)
                          .withCursorControlEnabled(false);
       await this.configureFaceGaze(config);
@@ -975,8 +964,7 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
                                   .set(FacialGesture.BROWS_DOWN, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(1000);
   await this.configureFaceGaze(config);
 
@@ -1060,10 +1048,13 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
           .set(FacialGesture.MOUTH_PUCKER, MacroName.MOUSE_LONG_CLICK_LEFT)
           .set(FacialGesture.EYE_SQUINT_LEFT, MacroName.MOUSE_CLICK_LEFT)
           .set(FacialGesture.EYE_SQUINT_RIGHT, MacroName.MOUSE_CLICK_RIGHT);
-
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.MOUTH_PUCKER, 0.6)
+                                  .set(FacialGesture.EYE_SQUINT_LEFT, 0.6)
+                                  .set(FacialGesture.EYE_SQUINT_RIGHT, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(0);
   await this.configureFaceGaze(config);
 
@@ -1165,8 +1156,7 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
                                   .set(FacialGesture.MOUTH_PUCKER, 0.7);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(1000);
   await this.configureFaceGaze(config);
 
@@ -1349,8 +1339,7 @@ AX_TEST_F('FaceGazeTest', 'DISABLED_ToggleFaceGazeGesturesShort', async function
                                   .set(FacialGesture.BROW_INNER_UP, 0.3);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(1);
   await this.configureFaceGaze(config);
 
@@ -1405,8 +1394,7 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
                                   .set(FacialGesture.EYE_SQUINT_LEFT, 0.3);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(-1);
   await this.configureFaceGaze(config);
 
@@ -1512,8 +1500,7 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeMouseMovement', async function() {
                      .withMouseLocation({x: 600, y: 400})
                      .withBufferSize(1)
                      .withCursorControlEnabled(true)
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(1);
   await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
@@ -1572,8 +1559,7 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withBindings(gestureToMacroName, gestureToConfidence);
   await this.configureFaceGaze(config);
 
   // Set the gestures to key combinations preference.
@@ -1622,8 +1608,7 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinationsRepeat', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withBindings(gestureToMacroName, gestureToConfidence);
   await this.configureFaceGaze(config);
 
   // Set the gestures to key combinations preference.
@@ -1722,8 +1707,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextSimple', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withBindings(gestureToMacroName, gestureToConfidence);
   await this.configureFaceGaze(config);
 
   assertNullOrUndefined(this.getBubbleText());
@@ -1750,8 +1734,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
                                   .set(FacialGesture.BROW_INNER_UP, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withBindings(gestureToMacroName, gestureToConfidence);
   await this.configureFaceGaze(config);
 
   assertNullOrUndefined(this.getBubbleText());
@@ -1778,8 +1761,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withBindings(gestureToMacroName, gestureToConfidence);
   await this.configureFaceGaze(config);
 
   assertNullOrUndefined(this.getBubbleText());
@@ -1834,8 +1816,7 @@ AX_TEST_F(
                                       .set(FacialGesture.JAW_OPEN, 0.7);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence);
+                         .withBindings(gestureToMacroName, gestureToConfidence);
       await this.configureFaceGaze(config);
 
       assertNullOrUndefined(this.getBubbleText());
@@ -1903,8 +1884,7 @@ AX_TEST_F(
                                       .set(FacialGesture.JAW_OPEN, 0.7);
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence);
+                         .withBindings(gestureToMacroName, gestureToConfidence);
       await this.configureFaceGaze(config);
 
       assertNullOrUndefined(this.getBubbleText());
@@ -1969,8 +1949,7 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(20 * 1000);
   await this.configureFaceGaze(config);
 
@@ -2012,8 +1991,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withBindings(gestureToMacroName, gestureToConfidence);
   await this.configureFaceGaze(config);
 
   assertNullOrUndefined(this.getBubbleText());
@@ -2041,8 +2019,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(0);
   await this.configureFaceGaze(config);
 
@@ -2083,8 +2060,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
   const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(0);
   await this.configureFaceGaze(config);
 
@@ -2139,8 +2115,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
                                   .set(FacialGesture.BROW_INNER_UP, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(0);
   await this.configureFaceGaze(config);
 
@@ -2193,8 +2168,7 @@ AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
                      .withMouseLocation({x: 600, y: 400})
                      .withBufferSize(1)
                      .withCursorControlEnabled(true)
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withBindings(gestureToMacroName, gestureToConfidence);
   await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
   // Toggle scroll mode on.
@@ -2226,8 +2200,7 @@ AX_TEST_F(
                          .withMouseLocation({x: 600, y: 400})
                          .withBufferSize(1)
                          .withCursorControlEnabled(true)
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence);
+                         .withBindings(gestureToMacroName, gestureToConfidence);
       await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
       // Toggle scroll mode on.
@@ -2261,8 +2234,7 @@ AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
                      .withMouseLocation({x: 600, y: 400})
                      .withBufferSize(1)
                      .withCursorControlEnabled(false)
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(-1);
   await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
@@ -2396,8 +2368,7 @@ AX_TEST_F('FaceGazeTest', 'GesturesDisabledDuringDictation', async function() {
                      .withMouseLocation({x: 600, y: 400})
                      .withBufferSize(1)
                      .withCursorControlEnabled(false)
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(0);
   await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
@@ -2437,8 +2408,7 @@ AX_TEST_F('FaceGazeTest', 'BlinkDoesNotTriggerEyeSquint', async function() {
                                   .set(FacialGesture.EYE_SQUINT_RIGHT, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(0);
   await this.configureFaceGaze(config);
 
@@ -2523,8 +2493,7 @@ AX_TEST_F(
       // Set min duration very long so no duration should trigger action.
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withRepeatDelayMs(0)
                          .withMinDurationMs(30 * 1000);
       await this.configureFaceGaze(config);
@@ -2563,8 +2532,7 @@ AX_TEST_F('FaceGazeTest', 'ValidTimeDurationGestureDetected', async function() {
   // threshold to -1 to ensure gestures with duration of 0 ms are recognized.
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
                      .withRepeatDelayMs(0)
                      .withMinDurationMs(-1);
   await this.configureFaceGaze(config);
@@ -2614,8 +2582,7 @@ AX_TEST_F(
       // recognized.
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withRepeatDelayMs(0)
                          .withMinDurationMs(-1);
       await this.configureFaceGaze(config);
@@ -2677,8 +2644,7 @@ AX_TEST_F(
       // recognized.
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
-                         .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence)
+                         .withBindings(gestureToMacroName, gestureToConfidence)
                          .withRepeatDelayMs(0)
                          .withMinDurationMs(-1);
       await this.configureFaceGaze(config);

@@ -45,18 +45,11 @@ class Config {
 
   /**
    * @param {!Map<FacialGesture, MacroName>} gestureToMacroName
-   * @return {!Config}
-   */
-  withGestureToMacroName(gestureToMacroName) {
-    this.gestureToMacroName = gestureToMacroName;
-    return this;
-  }
-
-  /**
    * @param {!Map<FacialGesture, number>} gestureToConfidence
    * @return {!Config}
    */
-  withGestureToConfidence(gestureToConfidence) {
+  withBindings(gestureToMacroName, gestureToConfidence) {
+    this.gestureToMacroName = gestureToMacroName;
     this.gestureToConfidence = gestureToConfidence;
     return this;
   }

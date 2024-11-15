@@ -165,9 +165,8 @@ class FaceGazeTestUtils {
     Config& WithBufferSize(int size);
     Config& WithCursorAcceleration(bool acceleration);
     Config& WithDialogAccepted(bool accepted);
-    Config& WithGesturesToMacros(
-        const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros);
-    Config& WithGestureConfidences(
+    Config& WithBindings(
+        const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros,
         const base::flat_map<FaceGazeGesture, int>& gesture_confidences);
     Config& WithCursorSpeeds(const CursorSpeeds& speeds);
     Config& WithGestureRepeatDelayMs(int delay);
