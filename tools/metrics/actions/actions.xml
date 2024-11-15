@@ -7068,6 +7068,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.Compare.ProactiveChipDisqualified">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the compare proactive entry point has been hidden because it's
+    no longer eligible to show.
+  </description>
+</action>
+
 <action name="Commerce.Compare.ProactiveChipIgnored">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

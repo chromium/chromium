@@ -189,6 +189,8 @@ void ProductSpecificationsButton::ShowEntryPointWithTitle(
 
 void ProductSpecificationsButton::HideEntryPoint() {
   Hide();
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.Compare.ProactiveChipDisqualified"));
 }
 
 void ProductSpecificationsButton::SetOpacity(float factor) {
