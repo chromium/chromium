@@ -244,11 +244,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) PriceCardMediator* priceCardMediator;
 // Mediator for remote Tabs.
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
-// TODO(crbug.com/346302283): Some tests depend on a
-// RecentTabsTableViewController to have been loaded and kept in memory.
-// Investigate and remove this dependency.
-@property(nonatomic, strong)
-    RecentTabsTableViewController* hackRecentTabsTableViewController;
 // Mediator for the inactive tabs button.
 @property(nonatomic, strong)
     InactiveTabsButtonMediator* inactiveTabsButtonMediator;
@@ -921,16 +916,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
         _tabGroupsPanelCoordinator.disabledViewController;
     baseViewController.tabGroupsGridContainerViewController =
         _tabGroupsPanelCoordinator.gridContainerViewController;
-
-    // TODO(crbug.com/346302283): Some tests depend on a
-    // RecentTabsTableViewController to have been loaded and kept in memory.
-    // Investigate and remove this dependency.
-    RecentTabsTableViewController* remoteTabsViewController =
-        [[RecentTabsTableViewController alloc] init];
-    remoteTabsViewController.browser = self.regularBrowser;
-    [remoteTabsViewController loadModel];
-    [remoteTabsViewController.tableView reloadData];
-    _hackRecentTabsTableViewController = remoteTabsViewController;
   } else {
     // TODO(crbug.com/41390276) : Remove RecentTabsTableViewController
     // dependency on ProfileIOS so that we don't need to expose the view
@@ -1086,11 +1071,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [_tabGroupsPanelCoordinator stop];
   _tabGroupsPanelCoordinator = nil;
-
-  if (IsTabGroupSyncEnabled()) {
-    // This disconnects the Recent Tabs' SigninPromoViewMediator.
-    [_hackRecentTabsTableViewController dismissModals];
-  }
 
   // TODO(crbug.com/41390276) : RecentTabsTableViewController behaves like a
   // coordinator and that should be factored out.
