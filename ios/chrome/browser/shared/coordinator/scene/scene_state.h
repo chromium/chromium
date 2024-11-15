@@ -106,6 +106,9 @@
 // Root view's safe area insets.
 @property(nonatomic, assign, readonly) UIEdgeInsets safeAreaInsets;
 
+// Root view's accessibility identifier.
+@property(nonatomic, assign, readonly) NSString* accessibilityIdentifier;
+
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.
 - (void)addObserver:(id<SceneStateObserver>)observer;

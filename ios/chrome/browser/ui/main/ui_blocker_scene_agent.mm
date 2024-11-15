@@ -57,7 +57,7 @@
   // bar.
   self.overlayWindow.windowLevel = UIWindowLevelStatusBar - 1;
   NSString* a11yIdentifier = [@"blocker-"
-      stringByAppendingString:self.sceneState.window.accessibilityIdentifier];
+      stringByAppendingString:self.sceneState.accessibilityIdentifier];
   self.overlayWindow.accessibilityIdentifier = a11yIdentifier;
 
   // TODO(crbug.com/40707167): Create a coordinator to own this view controller.

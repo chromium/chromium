@@ -132,6 +132,10 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return self.window.safeAreaInsets;
 }
 
+- (NSString*)accessibilityIdentifier {
+  return self.window.accessibilityIdentifier;
+}
+
 - (void)setScene:(UIWindowScene*)scene {
   _scene = scene;
   if (_scene) {
