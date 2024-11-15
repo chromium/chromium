@@ -183,8 +183,6 @@ inline constexpr char kFileSystemProviderCapabilities[] =
     "file_system_provider_capabilities";
 inline constexpr char kActionHandlers[] = "action_handlers";
 inline constexpr char kActionHandlerActionKey[] = "action";
-inline constexpr char kActionHandlerEnabledOnLockScreenKey[] =
-    "enabled_on_lock_screen";
 #endif
 
 }  // namespace manifest_keys
