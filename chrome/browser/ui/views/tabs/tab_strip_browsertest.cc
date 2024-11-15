@@ -974,8 +974,16 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
+#if BUILDFLAG(IS_MAC)
+// See https://crbug.com/379243862
+#define MAYBE_TabGroupHeaderAccessibleProperties \
+  DISABLED_TabGroupHeaderAccessibleProperties
+#else
+#define MAYBE_TabGroupHeaderAccessibleProperties \
+  TabGroupHeaderAccessibleProperties
+#endif
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
-                       TabGroupHeaderAccessibleProperties) {
+                       MAYBE_TabGroupHeaderAccessibleProperties) {
   browser()->set_update_ui_immediately_for_testing();
   AppendTab();
   AppendTab();
