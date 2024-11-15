@@ -24,12 +24,18 @@ import {
   NoSuchUserContextException,
 } from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
 
 export class BrowserProcessor {
   readonly #browserCdpClient: CdpClient;
+  readonly #browsingContextStorage: BrowsingContextStorage;
 
-  constructor(browserCdpClient: CdpClient) {
+  constructor(
+    browserCdpClient: CdpClient,
+    browsingContextStorage: BrowsingContextStorage,
+  ) {
     this.#browserCdpClient = browserCdpClient;
+    this.#browsingContextStorage = browsingContextStorage;
   }
 
   close(): EmptyResult {
@@ -99,5 +105,35 @@ export class BrowserProcessor {
         }),
       ],
     };
+  }
+
+  async #getWindowInfo(targetId: string): Promise<Browser.ClientWindowInfo> {
+    const windowInfo = await this.#browserCdpClient.sendCommand(
+      'Browser.getWindowForTarget',
+      {targetId},
+    );
+    return {
+      // Is not supported in CDP yet.
+      active: false,
+      clientWindow: `${windowInfo.windowId}`,
+      state: windowInfo.bounds.windowState ?? 'normal',
+      height: windowInfo.bounds.height ?? 0,
+      width: windowInfo.bounds.width ?? 0,
+      x: windowInfo.bounds.left ?? 0,
+      y: windowInfo.bounds.top ?? 0,
+    };
+  }
+
+  async getClientWindows(): Promise<Browser.GetClientWindowsResult> {
+    const topLevelTargetIds = this.#browsingContextStorage
+      .getTopLevelContexts()
+      .map((b) => b.cdpTarget.id);
+
+    const clientWindows = await Promise.all(
+      topLevelTargetIds.map(
+        async (targetId) => await this.#getWindowInfo(targetId),
+      ),
+    );
+    return {clientWindows};
   }
 }

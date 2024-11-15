@@ -96,7 +96,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#bluetoothProcessor = bluetoothProcessor;
 
     // keep-sorted start block=yes
-    this.#browserProcessor = new BrowserProcessor(browserCdpClient);
+    this.#browserProcessor = new BrowserProcessor(
+      browserCdpClient,
+      browsingContextStorage,
+    );
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       browserCdpClient,
       browsingContextStorage,
@@ -171,9 +174,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'browser.createUserContext':
         return await this.#browserProcessor.createUserContext(command.params);
       case 'browser.getClientWindows':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
-        );
+        return await this.#browserProcessor.getClientWindows();
       case 'browser.getUserContexts':
         return await this.#browserProcessor.getUserContexts();
       case 'browser.removeUserContext':
