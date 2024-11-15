@@ -1465,13 +1465,17 @@ bool PdfViewWebPlugin::IsInAnnotationMode() const {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
-  pdf_host_->OnSearchifyStateChange(busy);
-
-  if (busy && show_searchify_in_progress_) {
+  if (!busy) {
+    if (show_searchify_in_progress_) {
+      show_searchify_in_progress_ = false;
+      SetShowSearchifyInProgress(false);
+    }
     return;
   }
 
-  if (busy) {
+  pdf_host_->OnSearchifyStarted();
+
+  if (!show_searchify_in_progress_) {
     // The UI is asked to show the progress indicator with 1s delay, so that if
     // the task finishes in less than 1s, the indicator would not be shown.
     show_searchify_in_progress_ = true;
@@ -1481,11 +1485,6 @@ void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
                        weak_factory_.GetWeakPtr(), /*show=*/true),
         kSearchifyStatePropagationDelay);
     return;
-  }
-
-  if (show_searchify_in_progress_) {
-    show_searchify_in_progress_ = false;
-    SetShowSearchifyInProgress(false);
   }
 }
 

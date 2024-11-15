@@ -36,9 +36,8 @@ class PDFDocumentHelperClient {
   virtual void OnDidScroll(const gfx::SelectionBound& start,
                            const gfx::SelectionBound& end) {}
 
-  // See the comment for `OnSearchifyStateChange` in pdf/pdf.mojom.
-  virtual void OnSearchifyStateChange(bool busy,
-                                      content::WebContents* contents) = 0;
+  // Notifies that PDF searchifier started processing pages.
+  virtual void OnSearchifyStarted(content::WebContents* contents) = 0;
 };
 
 }  // namespace pdf

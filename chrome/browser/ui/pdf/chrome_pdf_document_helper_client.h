@@ -25,8 +25,7 @@ class ChromePDFDocumentHelperClient : public pdf::PDFDocumentHelperClient {
   void OnSaveURL(content::WebContents* contents) override;
   void SetPluginCanSave(content::RenderFrameHost* render_frame_host,
                         bool can_save) override;
-  void OnSearchifyStateChange(bool busy,
-                              content::WebContents* contents) override;
+  void OnSearchifyStarted(content::WebContents* contents) override;
 };
 
 #endif  // CHROME_BROWSER_UI_PDF_CHROME_PDF_DOCUMENT_HELPER_CLIENT_H_

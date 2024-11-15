@@ -101,17 +101,12 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
   }
 }
 
-void ChromePDFDocumentHelperClient::OnSearchifyStateChange(
-    bool busy,
+void ChromePDFDocumentHelperClient::OnSearchifyStarted(
     content::WebContents* contents) {
   // TODO(crbug.com/360803943): Add test.
   // Show the promo only when ScreenAI component is available and OCR can be
   // done.
-  if (busy &&
-      screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
+  if (screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
     MaybeShowFeaturePromo(contents);
   }
-
-  // TODO(crbug.com/360803943): Manage progress indicator. If it's done through
-  // WebUI, update this function and the call chain to only send promo trigger.
 }

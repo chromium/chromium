@@ -458,7 +458,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // if the page is not scheduled for searchify.
   void CancelPendingSearchify(int page_index);
 
-  // See the comment for `OnSearchifyStateChange` in pdf/pdf.mojom.
+  // Notifies that PDF searchifier has switched between busy or not busy.
+  // A busy state is when it has some queued pages to process or is processing a
+  // page at the moment. It comes out of this state either when all tasks are
+  // completed or canceled.
   void OnSearchifyStateChange(bool busy);
 
   // Called when searchify text is added.

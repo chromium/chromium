@@ -71,8 +71,7 @@ class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
     start_ = start;
     end_ = end;
   }
-  void OnSearchifyStateChange(bool busy,
-                              content::WebContents* contents) override {}
+  void OnSearchifyStarted(content::WebContents* contents) override {}
 
  private:
   // The last bounds reported by PDFDocumentHelper.

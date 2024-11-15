@@ -366,7 +366,7 @@ class FakePdfHost : public pdf::mojom::PdfHost {
               (override));
   MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  MOCK_METHOD(void, OnSearchifyStateChange, (bool), (override));
+  MOCK_METHOD(void, OnSearchifyStarted, (), (override));
 #endif
 };
 
