@@ -39,6 +39,44 @@ void D3D12ReferenceFrameList::emplace(size_t index,
   subresources_[index] = subresource;
 }
 
+ScopedD3D12ResourceMap::ScopedD3D12ResourceMap() = default;
+
+ScopedD3D12ResourceMap::~ScopedD3D12ResourceMap() {
+  Commit();
+}
+
+bool ScopedD3D12ResourceMap::Map(ID3D12Resource* resource,
+                                 UINT subresource,
+                                 const D3D12_RANGE* read_range) {
+  CHECK(data_.empty());
+  CHECK(resource);
+  CHECK_EQ(resource->GetDesc().Dimension, D3D12_RESOURCE_DIMENSION_BUFFER);
+  void* data;
+  HRESULT hr = resource->Map(subresource, read_range, &data);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to Map D3D12Resource: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  resource_ = resource;
+  subresource_ = subresource;
+  // SAFETY: A successful |ID3D12Resource::Map()| sets |data| with valid
+  // address, and for D3D12_RESOURCE_DIMENSION_BUFFER resource, the length is
+  // its |Width|. We will also reset the |data_| before we |Unmap()|.
+  data_ = UNSAFE_BUFFERS(
+      base::make_span(static_cast<uint8_t*>(data),
+                      static_cast<size_t>(resource_->GetDesc().Width)));
+  return true;
+}
+
+void ScopedD3D12ResourceMap::Commit(const D3D12_RANGE* written_range) {
+  if (!data_.empty()) {
+    data_ = {};
+    resource_->Unmap(subresource_, written_range);
+    resource_ = nullptr;
+  }
+}
+
 ComD3D12Device CreateD3D12Device(IDXGIAdapter* adapter) {
   if (!adapter) {
     // We've had at least a couple of scenarios where two calls to EnumAdapters

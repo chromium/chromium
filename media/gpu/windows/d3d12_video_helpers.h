@@ -8,6 +8,7 @@
 #include <d3d12video.h>
 
 #include "media/base/encoder_status.h"
+#include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 
 namespace media {
 
@@ -35,6 +36,15 @@ EncoderStatus CheckD3D12VideoEncoderResourceRequirements(
 EncoderStatus CheckD3D12VideoEncoderSupport(
     ID3D12VideoDevice* video_device,
     D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT* support);
+
+std::unique_ptr<D3D12VideoEncoderWrapper> CreateD3D12VideoEncoderWrapper(
+    ID3D12VideoDevice* video_device,
+    D3D12_VIDEO_ENCODER_CODEC codec,
+    const D3D12_VIDEO_ENCODER_PROFILE_DESC& profile,
+    const D3D12_VIDEO_ENCODER_LEVEL_SETTING& level,
+    DXGI_FORMAT input_format,
+    const D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION& codec_config,
+    const D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC& resolution);
 
 }  // namespace media
 

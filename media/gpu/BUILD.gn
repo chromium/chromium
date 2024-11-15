@@ -244,6 +244,8 @@ component("gpu") {
       "windows/d3d12_video_encode_accelerator.h",
       "windows/d3d12_video_encode_delegate.cc",
       "windows/d3d12_video_encode_delegate.h",
+      "windows/d3d12_video_encoder_wrapper.cc",
+      "windows/d3d12_video_encoder_wrapper.h",
       "windows/d3d12_video_helpers.cc",
       "windows/d3d12_video_helpers.h",
       "windows/d3d12_video_processor_wrapper.cc",

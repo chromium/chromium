@@ -222,4 +222,44 @@ EncoderStatus CheckD3D12VideoEncoderSupport(
   return EncoderStatus::Codes::kOk;
 }
 
+std::unique_ptr<D3D12VideoEncoderWrapper> CreateD3D12VideoEncoderWrapper(
+    ID3D12VideoDevice* video_device,
+    D3D12_VIDEO_ENCODER_CODEC codec,
+    const D3D12_VIDEO_ENCODER_PROFILE_DESC& profile,
+    const D3D12_VIDEO_ENCODER_LEVEL_SETTING& level,
+    DXGI_FORMAT input_format,
+    const D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION& codec_config,
+    const D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC& resolution) {
+  Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device3;
+  HRESULT hr = video_device->QueryInterface(IID_PPV_ARGS(&video_device3));
+  RETURN_ON_HR_FAILURE(hr, "QueryInterface for ID3D12VideoDevice3 failed",
+                       nullptr);
+
+  D3D12_VIDEO_ENCODER_HEAP_DESC video_encoder_heap_desc{
+      .EncodeCodec = codec,
+      .EncodeProfile = profile,
+      .EncodeLevel = level,
+      .ResolutionsListCount = 1,
+      .pResolutionList = &resolution,
+  };
+  Microsoft::WRL::ComPtr<ID3D12VideoEncoderHeap> video_encoder_heap;
+  hr = video_device3->CreateVideoEncoderHeap(&video_encoder_heap_desc,
+                                             IID_PPV_ARGS(&video_encoder_heap));
+  RETURN_ON_HR_FAILURE(hr, "CreateVideoEncoderHeap failed", nullptr);
+
+  D3D12_VIDEO_ENCODER_DESC video_encoder_desc{
+      .EncodeCodec = codec,
+      .EncodeProfile = profile,
+      .InputFormat = input_format,
+      .CodecConfiguration = codec_config,
+  };
+  Microsoft::WRL::ComPtr<ID3D12VideoEncoder> video_encoder;
+  hr = video_device3->CreateVideoEncoder(&video_encoder_desc,
+                                         IID_PPV_ARGS(&video_encoder));
+  RETURN_ON_HR_FAILURE(hr, "CreateVideoEncoder failed", nullptr);
+
+  return std::make_unique<D3D12VideoEncoderWrapper>(
+      std::move(video_encoder), std::move(video_encoder_heap));
+}
+
 }  // namespace media
