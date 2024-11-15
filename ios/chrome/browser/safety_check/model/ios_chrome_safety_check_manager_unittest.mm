@@ -10,6 +10,7 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/bind.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -39,6 +40,8 @@ namespace {
 class IOSChromeSafetyCheckManagerTest : public PlatformTest {
  public:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(kOmahaServiceRefactor);
+
     TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
@@ -66,6 +69,7 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
@@ -328,6 +332,20 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesExpiredOmahaResponse) {
             UpdateChromeSafetyCheckState::kOmahaError);
 }
 
+// Tests that the Omaha check is queued if the Omaha service has not yet
+// started.
+TEST_F(IOSChromeSafetyCheckManagerTest, OmahaCheckQueuedIfServiceNotStarted) {
+  // Start the Safety Check, which includes the Omaha check.
+  safety_check_manager_->StartSafetyCheck();
+
+  // Verify that the Update Chrome check is not marked as running, and the Omaha
+  // check is queued.
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kDefault);
+
+  EXPECT_TRUE(safety_check_manager_->IsOmahaCheckQueuedForTesting());
+}
+
 // Tests a valid, app-up-to-date Omaha response is properly handled.
 TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppIsUpToDate) {
   safety_check_manager_->StartOmahaCheckForTesting();
@@ -386,6 +404,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, true);
 
   safety_check_manager_->StartSafetyCheck();
+  safety_check_manager_->StartOmahaCheckForTesting();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kRunning);
@@ -417,6 +436,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, true);
 
   safety_check_manager_->StartSafetyCheck();
+  safety_check_manager_->StartOmahaCheckForTesting();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kRunning);
@@ -448,7 +468,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 // incoming Omaha response.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        StoppingRunningUpdateChromeCheckIgnoresOmahaResponse) {
-  safety_check_manager_->StartSafetyCheck();
+  safety_check_manager_->StartOmahaCheckForTesting();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kRunning);
@@ -474,7 +494,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 // incoming Omaha error.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        StoppingRunningUpdateChromeCheckIgnoresOmahaError) {
-  safety_check_manager_->StartSafetyCheck();
+  safety_check_manager_->StartOmahaCheckForTesting();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kRunning);

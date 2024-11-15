@@ -39,6 +39,9 @@ struct UpgradeRecommendedDetails;
 // `OmahaService` is created on.
 class OmahaServiceObserver : public base::CheckedObserver {
  public:
+  // Called when the Omaha service has successfully started.
+  virtual void OnServiceStarted(OmahaService* omaha_service) {}
+
   // Called whenever the Omaha Service determines a change in
   // `UpgradeRecommendedDetails`.
   virtual void UpgradeRecommendedDetailsChanged(
@@ -69,6 +72,16 @@ class OmahaService {
   static void Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
                         pending_url_loader_factory,
                     const UpgradeRecommendedCallback& callback);
+
+  // Returns `true` if the Omaha service is available and has been
+  // successfully started for this build variant. Returns `false` if
+  // the Omaha service is unavailable or not started.
+  //
+  // Clients should always check if the Omaha service was started by
+  // calling this method before invoking `CheckNow()`. Calling methods on
+  // an unstarted or unavailable Omaha service may result in undefined behavior
+  // or crashes.
+  static bool HasStarted();
 
   OmahaService(const OmahaService&) = delete;
   OmahaService& operator=(const OmahaService&) = delete;
