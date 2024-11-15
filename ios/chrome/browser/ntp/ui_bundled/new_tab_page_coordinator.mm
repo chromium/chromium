@@ -1151,9 +1151,7 @@
     return;
   }
 
-  BOOL hasUserIdentities = ChromeAccountManagerServiceFactory::GetForProfile(
-                               self.browser->GetProfile())
-                               ->HasIdentities();
+  BOOL hasUserIdentities = [self hasIdentitiesOnDevice];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -1178,12 +1176,10 @@
     return;
   }
 
-  ProfileIOS* profile = self.browser->GetProfile();
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   // If there are 0 identities, kInstantSignin requires less taps.
-  auto operation = ChromeAccountManagerServiceFactory::GetForProfile(profile)
-                           ->HasIdentities()
+  auto operation = [self hasIdentitiesOnDevice]
                        ? AuthenticationOperation::kSigninOnly
                        : AuthenticationOperation::kInstantSignin;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -1584,6 +1580,18 @@
 }
 
 #pragma mark - Private
+
+- (bool)hasIdentitiesOnDevice {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    return !IdentityManagerFactory::GetForProfile(profile)
+                ->GetAccountsOnDevice()
+                .empty();
+  } else {
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile)
+        ->HasIdentities();
+  }
+}
 
 // Update the state, to take into account that the menu coordinator is stopped.
 - (void)accountMenuCoordinatorIsStopped {
