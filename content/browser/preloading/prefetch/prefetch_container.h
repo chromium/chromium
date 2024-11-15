@@ -930,10 +930,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // The sizes information of the prefetched response.
   std::optional<PrefetchResponseSizes> prefetch_response_sizes_;
 
-  // The amount  of time it took for the prefetch to complete.
+  // The amount of time it took for the prefetch to complete.
   std::optional<base::TimeDelta> fetch_duration_;
 
-  // The amount  of time it took for the headers to be received.
+  // The amount of time it took for the headers to be received.
   std::optional<base::TimeDelta> header_latency_;
 
   // Whether or not a navigation to this prefetch occurred.
