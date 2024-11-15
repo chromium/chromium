@@ -446,17 +446,17 @@ inline constexpr char kAccessibilityLargeCursorDipSize[] =
 // A boolean pref which determines whether the bounce keys feature is enabled.
 inline constexpr char kAccessibilityBounceKeysEnabled[] =
     "settings.a11y.bounce_keys_enabled";
-// A TimeDelta pref which specifies the delay before accepting subsequent key
-// presses for the bounce keys feature.
-inline constexpr char kAccessibilityBounceKeysDelay[] =
-    "settings.a11y.bounce_keys_delay";
+// An integer pref which specifies the delay in milliseconds before accepting
+// subsequent key presses for the bounce keys feature.
+inline constexpr char kAccessibilityBounceKeysDelayMs[] =
+    "settings.a11y.bounce_keys_delay_ms";
 // A boolean pref which determines whether the slow keys feature is enabled.
 inline constexpr char kAccessibilitySlowKeysEnabled[] =
     "settings.a11y.slow_keys_enabled";
-// A TimeDelta pref which specifies the delay before accepting a held key press
-// for the slow keys feature.
-inline constexpr char kAccessibilitySlowKeysDelay[] =
-    "settings.a11y.slow_keys_delay";
+// An integer pref which specifies the delay in milliseconds before accepting
+// a held key press for the slow keys feature.
+inline constexpr char kAccessibilitySlowKeysDelayMs[] =
+    "settings.a11y.slow_keys_delay_ms";
 // A boolean pref which determines whether the sticky keys feature is enabled.
 inline constexpr char kAccessibilityStickyKeysEnabled[] =
     "settings.a11y.sticky_keys_enabled";

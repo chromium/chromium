@@ -603,7 +603,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityAutoclickMovementThreshold] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)[ash::prefs::kAccessibilityBounceKeysDelay] =
+  (*s_allowlist)[ash::prefs::kAccessibilityBounceKeysDelayMs] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityBounceKeysEnabled] =
       settings_api::PrefType::kBoolean;
@@ -632,7 +632,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityScreenMagnifierScale] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)[ash::prefs::kAccessibilitySlowKeysDelay] =
+  (*s_allowlist)[ash::prefs::kAccessibilitySlowKeysDelayMs] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilitySlowKeysEnabled] =
       settings_api::PrefType::kBoolean;

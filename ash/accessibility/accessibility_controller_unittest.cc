@@ -2595,17 +2595,19 @@ TEST_F(AccessibilityControllerFilterKeysTest, ToggleBounceKeysEnabledPref) {
 }
 
 TEST_F(AccessibilityControllerFilterKeysTest, UpdateBounceKeysDelayPref) {
-  ASSERT_EQ(prefs()->GetTimeDelta(prefs::kAccessibilityBounceKeysDelay),
-            kDefaultAccessibilityBounceKeysDelay);
+  ASSERT_EQ(prefs()->GetInteger(prefs::kAccessibilityBounceKeysDelayMs),
+            kDefaultAccessibilityBounceKeysDelay.InMilliseconds());
   ASSERT_EQ(filter_keys_event_rewriter()->GetBounceKeysDelay(),
             kDefaultAccessibilityBounceKeysDelay);
 
   base::TimeDelta expected_delta = base::Milliseconds(123);
-  prefs()->SetTimeDelta(prefs::kAccessibilityBounceKeysDelay, expected_delta);
+  prefs()->SetInteger(prefs::kAccessibilityBounceKeysDelayMs,
+                      expected_delta.InMilliseconds());
   EXPECT_EQ(filter_keys_event_rewriter()->GetBounceKeysDelay(), expected_delta);
 
   expected_delta = base::Milliseconds(789);
-  prefs()->SetTimeDelta(prefs::kAccessibilityBounceKeysDelay, expected_delta);
+  prefs()->SetInteger(prefs::kAccessibilityBounceKeysDelayMs,
+                      expected_delta.InMilliseconds());
   EXPECT_EQ(filter_keys_event_rewriter()->GetBounceKeysDelay(), expected_delta);
 }
 

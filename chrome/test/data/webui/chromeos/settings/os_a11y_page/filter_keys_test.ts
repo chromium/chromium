@@ -25,6 +25,8 @@ suite('<filter-keys>', () => {
   const bounceKeysToggleId = 'bounceKeysToggle';
   const bounceKeysDelaySliderId = 'bounceKeysDelaySlider';
 
+  const millisInSec = 1000;
+
   async function initPage() {
     prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
@@ -70,13 +72,13 @@ suite('<filter-keys>', () => {
       toggleId: slowKeysToggleId,
       sliderId: slowKeysDelaySliderId,
       enabledPrefKey: 'settings.a11y.slow_keys_enabled',
-      delayPrefKey: 'settings.a11y.slow_keys_delay',
+      delayPrefKey: 'settings.a11y.slow_keys_delay_ms',
     },
     {
       toggleId: bounceKeysToggleId,
       sliderId: bounceKeysDelaySliderId,
       enabledPrefKey: 'settings.a11y.bounce_keys_enabled',
-      delayPrefKey: 'settings.a11y.bounce_keys_delay',
+      delayPrefKey: 'settings.a11y.bounce_keys_delay_ms',
     },
   ];
 
@@ -107,7 +109,7 @@ suite('<filter-keys>', () => {
               assertTrue(enabledPref.value);
               assertTrue(isVisible(slider));
               const delayPref = page.getPref(delayPrefKey);
-              assertEquals(slider.pref.value * 1000000, delayPref.value);
+              assertEquals(slider.pref.value * millisInSec, delayPref.value);
 
               toggle.click();
               assertFalse(toggle.checked);
@@ -125,7 +127,7 @@ suite('<filter-keys>', () => {
 
               // Enable pref to make slider show up.
               page.setPrefValue(enabledPrefKey, true);
-              page.setPrefValue(delayPrefKey, 300000);
+              page.setPrefValue(delayPrefKey, 300);
 
               const toggle =
                   page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -150,7 +152,7 @@ suite('<filter-keys>', () => {
 
               assertEquals(slider.pref.value, 0.2);
               const delayPref = page.getPref(delayPrefKey);
-              assertEquals(delayPref.value, 200000);
+              assertEquals(delayPref.value, 200);
             });
       });
 

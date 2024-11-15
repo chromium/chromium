@@ -80,6 +80,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "components/live_caption/caption_util.h"
@@ -252,7 +253,7 @@ constexpr const char* const kA11yPrefsForRecommendedValueOnSignin[]{
 constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityAutoclickDelayMs,
     prefs::kAccessibilityAutoclickEnabled,
-    prefs::kAccessibilityBounceKeysDelay,
+    prefs::kAccessibilityBounceKeysDelayMs,
     prefs::kAccessibilityBounceKeysEnabled,
     prefs::kAccessibilityCaretHighlightEnabled,
     prefs::kAccessibilityChromeVoxAutoRead,
@@ -312,7 +313,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
     prefs::kAccessibilityScreenMagnifierScale,
     prefs::kAccessibilitySelectToSpeakEnabled,
-    prefs::kAccessibilitySlowKeysDelay,
+    prefs::kAccessibilitySlowKeysDelayMs,
     prefs::kAccessibilitySlowKeysEnabled,
     prefs::kAccessibilitySpokenFeedbackEnabled,
     prefs::kAccessibilityStickyKeysEnabled,
@@ -1410,9 +1411,9 @@ void AccessibilityController::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   if (::features::IsAccessibilityFilterKeysEnabled()) {
-    registry->RegisterTimeDeltaPref(
-        prefs::kAccessibilityBounceKeysDelay,
-        kDefaultAccessibilityBounceKeysDelay,
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityBounceKeysDelayMs,
+        kDefaultAccessibilityBounceKeysDelay.InMilliseconds(),
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
 
@@ -1438,8 +1439,9 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterDoublePref(prefs::kAccessibilityScreenMagnifierScale,
                                std::numeric_limits<double>::min());
   if (::features::IsAccessibilityFilterKeysEnabled()) {
-    registry->RegisterTimeDeltaPref(
-        prefs::kAccessibilitySlowKeysDelay, kDefaultAccessibilitySlowKeysDelay,
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilitySlowKeysDelayMs,
+        kDefaultAccessibilitySlowKeysDelay.InMilliseconds(),
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
   registry->RegisterDictionaryPref(
@@ -2605,12 +2607,12 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
           base::Unretained(this)));
   if (::features::IsAccessibilityFilterKeysEnabled()) {
     pref_change_registrar_->Add(
-        prefs::kAccessibilityBounceKeysDelay,
+        prefs::kAccessibilityBounceKeysDelayMs,
         base::BindRepeating(
             &AccessibilityController::UpdateBounceKeysDelayFromPref,
             base::Unretained(this)));
     pref_change_registrar_->Add(
-        prefs::kAccessibilitySlowKeysDelay,
+        prefs::kAccessibilitySlowKeysDelayMs,
         base::BindRepeating(
             &AccessibilityController::UpdateSlowKeysDelayFromPref,
             base::Unretained(this)));
@@ -2842,8 +2844,8 @@ void AccessibilityController::UpdateBounceKeysDelayFromPref() {
     return;
   }
   DCHECK(active_user_prefs_);
-  base::TimeDelta delay =
-      active_user_prefs_->GetTimeDelta(prefs::kAccessibilityBounceKeysDelay);
+  base::TimeDelta delay = base::Milliseconds(
+      active_user_prefs_->GetInteger(prefs::kAccessibilityBounceKeysDelayMs));
   filter_keys_event_rewriter_->SetBounceKeysDelay(delay);
 }
 
