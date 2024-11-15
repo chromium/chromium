@@ -480,10 +480,6 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
       return;
     }
 
-    if (end_access_desc.initialized) {
-      SetCleared();
-    }
-
     wgpu::SharedFenceExportInfo export_info;
     wgpu::SharedFenceSyncFDExportInfo sync_fd_export_info;
     export_info.nextInChain = &sync_fd_export_info;
