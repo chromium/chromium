@@ -67,6 +67,9 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       profile->IsOffTheRecord(),
       base::BindRepeating(
           &RealTimeUrlLookupServiceFactory::GetVariationsService),
+      // If referrer chains become supported, this callback will need to change
+      // to provide the minimum allowed timestamp instead.
+      /*min_allowed_timestamp_for_referrer_chains_getter=*/base::NullCallback(),
       // Referrer chain provider is currently not available on iOS. Once it
       // is implemented, inject it to enable referrer chain in real time
       // requests.

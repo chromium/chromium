@@ -23,6 +23,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -198,7 +199,8 @@ class SafeBrowsingServiceTest : public testing::Test {
     EXPECT_EQ(warning_action.interval_msec(), interval_msec);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<TestingBrowserProcess> browser_process_;
   scoped_refptr<SafeBrowsingService> sb_service_;
   TestingProfile::Builder profile_builder_;
@@ -395,6 +397,137 @@ TEST_F(SafeBrowsingServiceTest,
   // disabled now.
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated));
+}
+
+TEST_F(SafeBrowsingServiceTest, TestMinAllowedTimeForReferrerChains) {
+  sb_service_->OnProfileAdded(profile());
+  // If real-time URL lookups are disabled, referrer chains are not allowed.
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+
+  // Enable ESB and check the timestamp is updated.
+  auto time_esb_enabled = base::Time::Now();
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), true);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_esb_enabled);
+  // Enable MBB and check the timestamp hasn't changed, since ESB is already
+  // enabled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_esb_enabled);
+  // Disable MBB and check the timestamp hasn't changed, since ESB is still
+  // enabled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_esb_enabled);
+  // Disable ESB and confirm the timestamp is the max time (referrer chains are
+  // not allowed).
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), false);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+
+  // Enable MBB and check the timestamp is updated.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  auto time_mbb_enabled = base::Time::Now();
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_mbb_enabled);
+  // Enable ESB and check the timestamp hasn't changed, since MBB is already
+  // enabled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), true);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_mbb_enabled);
+  // Disable ESB and check the timestamp hasn't changed, since MBB is still
+  // enabled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), false);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_mbb_enabled);
+  // Disable MBB and confirm the timestamp is the max time (referrer chains are
+  // not allowed).
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       TestMinAllowedTimeForReferrerChains_EsbEnabledOnStartup) {
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), true);
+  sb_service_->OnProfileAdded(profile());
+  auto time_profile_added = base::Time::Now();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_profile_added);
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       TestMinAllowedTimeForReferrerChains_MbbEnabledOnStartup) {
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  sb_service_->OnProfileAdded(profile());
+  auto time_profile_added = base::Time::Now();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_profile_added);
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       TestMinAllowedTimeForReferrerChains_MultipleProfiles) {
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  sb_service_->OnProfileAdded(profile());
+  auto time_original_profile_enabled = base::Time::Now();
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_original_profile_enabled);
+
+  auto second_profile = std::make_unique<TestingProfile>();
+  second_profile->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  // Checking a profile not currently tracked is not expected, but if it
+  // happens, it should not cause a crash.
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            base::Time::Max());
+  // Confirm the original profile still returns the original time and the second
+  // profile does not.
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_original_profile_enabled);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            base::Time::Max());
+
+  // Now add the second profile and again confirm the two profile return
+  // different time stamps.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  sb_service_->OnProfileAdded(second_profile.get());
+  auto time_second_profile_enabled = base::Time::Now();
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_original_profile_enabled);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            time_second_profile_enabled);
+
+  // Triggering profile destruction should reset the timestamp back to the max
+  // timestamp.
+  sb_service_->OnProfileWillBeDestroyed(profile());
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            time_second_profile_enabled);
+  sb_service_->OnProfileWillBeDestroyed(second_profile.get());
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            base::Time::Max());
 }
 
 class SafeBrowsingServiceAntiPhishingTelemetryTest

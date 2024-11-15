@@ -55,6 +55,8 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
     bool is_off_the_record,
     base::RepeatingCallback<variations::VariationsService*()>
         variations_service_getter,
+    base::RepeatingCallback<base::Time()>
+        min_allowed_timestamp_for_referrer_chains_getter,
     ReferrerChainProvider* referrer_chain_provider,
     WebUIDelegate* delegate)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
@@ -67,17 +69,9 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
       token_fetcher_(std::move(token_fetcher)),
       client_token_config_callback_(client_token_config_callback),
       is_off_the_record_(is_off_the_record),
-      variations_service_getter_(variations_service_getter) {
-  pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kSafeBrowsingEnhanced,
-      base::BindRepeating(&RealTimeUrlLookupService::OnPrefChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-      base::BindRepeating(&RealTimeUrlLookupService::OnPrefChanged,
-                          base::Unretained(this)));
-}
+      variations_service_getter_(variations_service_getter),
+      min_allowed_timestamp_for_referrer_chains_getter_(
+          min_allowed_timestamp_for_referrer_chains_getter) {}
 
 void RealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
@@ -88,12 +82,6 @@ void RealTimeUrlLookupService::GetAccessToken(
       &RealTimeUrlLookupService::OnGetAccessToken, weak_factory_.GetWeakPtr(),
       url, std::move(response_callback), std::move(callback_task_runner),
       base::TimeTicks::Now(), tab_id));
-}
-
-void RealTimeUrlLookupService::OnPrefChanged() {
-  if (CanPerformFullURLLookup()) {
-    url_lookup_enabled_timestamp_ = base::Time::Now();
-  }
 }
 
 void RealTimeUrlLookupService::OnGetAccessToken(
@@ -190,8 +178,6 @@ void RealTimeUrlLookupService::Shutdown() {
   // KeyedServices by the embedder.
   token_fetcher_.reset();
   client_token_config_callback_ = ClientConfiguredForTokenFetchesCallback();
-
-  pref_change_registrar_.RemoveAll();
 }
 
 GURL RealTimeUrlLookupService::GetRealTimeLookupUrl() const {
@@ -257,7 +243,8 @@ bool RealTimeUrlLookupService::ShouldIncludeCredentials() const {
 
 std::optional<base::Time>
 RealTimeUrlLookupService::GetMinAllowedTimestampForReferrerChains() const {
-  return url_lookup_enabled_timestamp_;
+  CHECK(!min_allowed_timestamp_for_referrer_chains_getter_.is_null());
+  return min_allowed_timestamp_for_referrer_chains_getter_.Run();
 }
 
 void RealTimeUrlLookupService::MaybeLogLastProtegoPingTimeToPrefs(

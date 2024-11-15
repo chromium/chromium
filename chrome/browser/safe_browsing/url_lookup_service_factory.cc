@@ -91,6 +91,9 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->IsOffTheRecord(),
       base::BindRepeating(
           &RealTimeUrlLookupServiceFactory::GetVariationsService),
+      base::BindRepeating(&RealTimeUrlLookupServiceFactory::
+                              GetMinAllowedTimestampForReferrerChains,
+                          profile),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile),
       WebUIInfoSingleton::GetInstance());
@@ -114,6 +117,14 @@ RealTimeUrlLookupServiceFactory::GetURLLoaderFactory(
 variations::VariationsService*
 RealTimeUrlLookupServiceFactory::GetVariationsService() {
   return g_browser_process->variations_service();
+}
+
+// static
+base::Time
+RealTimeUrlLookupServiceFactory::GetMinAllowedTimestampForReferrerChains(
+    Profile* profile) {
+  return g_browser_process->safe_browsing_service()
+      ->GetMinAllowedTimestampForReferrerChains(profile);
 }
 
 void RealTimeUrlLookupServiceFactory::SetURLLoaderFactoryForTesting(

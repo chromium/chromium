@@ -140,6 +140,10 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context);
 
+  // Returns the minimum allowed timestamp for referrer chains. Used by the
+  // URL lookup service.
+  base::Time GetMinAllowedTimestampForReferrerChains(Profile* profile);
+
   // Flushes above two interfaces to avoid races in tests.
   void FlushNetworkInterfaceForTesting(
       content::BrowserContext* browser_context);
@@ -286,6 +290,17 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   FRIEND_TEST_ALL_PREFIXES(
       SafeBrowsingServiceTest,
       SaveExtendedReportingPrefValueOnProfileAddedFeatureFlagDisabled);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingServiceTest,
+                           TestMinAllowedTimeForReferrerChains);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingServiceTest,
+      TestMinAllowedTimeForReferrerChains_EsbEnabledOnStartup);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingServiceTest,
+      TestMinAllowedTimeForReferrerChains_MbbEnabledOnStartup);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingServiceTest,
+      TestMinAllowedTimeForReferrerChains_MultipleProfiles);
 
   void SetDatabaseManagerForTest(SafeBrowsingDatabaseManager* database_manager);
 
@@ -309,14 +324,22 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // Creates services for |profile|, which may be normal or off the record.
   void CreateServicesForProfile(Profile* profile);
 
-  // Refreshes the state (calls RefreshState()) and potentially shows a toast
-  // about Enhanced Protection setting changes when its preference value
-  // updates.
+  // Refreshes the state (calls RefreshState()), updates the min allowed time
+  // for referrer chains, and potentially shows a toast about Enhanced
+  // Protection setting changes when its preference value updates.
   void EnhancedProtectionPrefChange(Profile* profile);
+
+  // Maybe show a toast about Enhanced Protection setting changes. Called when
+  // its preference value updates.
+  void MaybeShowEnhancedProtectionSettingChangeToast(Profile* profile);
 
   // Checks if any profile is currently using the safe browsing service, and
   // starts or stops the service accordingly.
   void RefreshState();
+
+  // Updates the minimum allowed timestamp for referrer chains based on pref
+  // changes.
+  void UpdateMinAllowedTimeForReferrerChains(Profile* profile);
 
   void CreateTriggerManager();
 
@@ -375,6 +398,10 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // population whenever a relevant pref is changed.
   std::map<PrefService*, std::unique_ptr<PrefChangeRegistrar>>
       user_population_prefs_;
+
+  // Maps each profile to the time that real-time URL lookups are enabled.
+  std::map<Profile*, std::optional<base::Time>>
+      min_allowed_time_for_referrer_chains_;
 
   // Callbacks when SafeBrowsing state might have changed.
   // Should only be accessed on the UI thread.

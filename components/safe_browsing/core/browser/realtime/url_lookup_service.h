@@ -68,6 +68,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       bool is_off_the_record,
       base::RepeatingCallback<variations::VariationsService*()>
           variations_service_getter,
+      base::RepeatingCallback<base::Time()>
+          min_allowed_timestamp_for_referrer_chains_getter,
       ReferrerChainProvider* referrer_chain_provider,
       WebUIDelegate* delegate);
 
@@ -121,9 +123,6 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
                                            bool was_first_request,
                                            bool sent_with_token) override;
 
-  // Called when prefs that affect real time URL lookup are changed.
-  void OnPrefChanged();
-
   // Called when the access token is obtained from |token_fetcher_|.
   void OnGetAccessToken(
       const GURL& url,
@@ -136,10 +135,6 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // Unowned object used for getting preference settings.
   raw_ptr<PrefService> pref_service_;
 
-  // Observes changes to kSafeBrowsingEnhanced and
-  // kUrlKeyedAnonymizedDataCollectionEnabled;
-  PrefChangeRegistrar pref_change_registrar_;
-
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
 
@@ -151,14 +146,14 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // |url_lookup_service| is an off the record profile.
   bool is_off_the_record_;
 
-  // The time that real time URL lookup is enabled. Not set if it is already
-  // enabled at startup.
-  std::optional<base::Time> url_lookup_enabled_timestamp_ = std::nullopt;
-
   // Callback used to fetch the variations service to check whether real-time
   // checks can be enabled in a given location.
   base::RepeatingCallback<variations::VariationsService*()>
       variations_service_getter_;
+
+  // Callback used to fetch the minimum allowed timestamp for referrer chains.
+  base::RepeatingCallback<base::Time()>
+      min_allowed_timestamp_for_referrer_chains_getter_;
 
   // Bypasses the check for probability when sending Protego sample pings.
   // Only for unit tests.

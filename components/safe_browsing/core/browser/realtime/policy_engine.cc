@@ -64,8 +64,9 @@ bool RealTimePolicyEngine::CanPerformFullURLLookup(
     PrefService* pref_service,
     bool is_off_the_record,
     variations::VariationsService* variations_service) {
-  if (is_off_the_record)
+  if (is_off_the_record) {
     return false;
+  }
 
   // |variations_service| can be nullptr during shutdown and in tests.
   if (variations_service &&
@@ -73,7 +74,7 @@ bool RealTimePolicyEngine::CanPerformFullURLLookup(
     return false;
   }
 
-  return IsUserEpOptedIn(pref_service) || IsUserMbbOptedIn(pref_service);
+  return HasPrefPermissionsToPerformFullURLLookup(pref_service);
 }
 
 // static
@@ -88,6 +89,12 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
   }
 
   return std::move(client_callback).Run(IsUserEpOptedIn(pref_service));
+}
+
+// static
+bool RealTimePolicyEngine::HasPrefPermissionsToPerformFullURLLookup(
+    PrefService* pref_service) {
+  return IsUserEpOptedIn(pref_service) || IsUserMbbOptedIn(pref_service);
 }
 
 // static
