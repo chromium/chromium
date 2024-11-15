@@ -773,6 +773,7 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSNumber*)index {
+  // Keep logic consistent with `-[AXPlatformNodeCocoa accessibilityIndex]`
   if (![self instanceActive])
     return nil;
 

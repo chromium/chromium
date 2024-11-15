@@ -629,6 +629,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 
 // Parameterized attributes
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIndexTable) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-index-table.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIndexTree) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-index-tree.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXAttributedStringForRange) {
   RunTypedTest<kMacParameterizedAttributes>(

@@ -55,11 +55,16 @@ class AXPlatformNodeCocoaTest
     }
   }
 
-  AXPlatformNodeCocoa* GetCocoaNode(const AXNodeID id) const {
+  AXPlatformNodeCocoa* GetCocoaNode(AXNode* node) const {
     TestAXNodeWrapper* wrapper =
-        TestAXNodeWrapper::GetOrCreate(GetTree(), GetNode(id));
+        TestAXNodeWrapper::GetOrCreate(GetTree(), node);
+    wrapper->SetNode(*node);
     return [[AXPlatformNodeCocoa alloc]
         initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  }
+
+  AXPlatformNodeCocoa* GetCocoaNode(const AXNodeID id) const {
+    return GetCocoaNode(GetNode(id));
   }
 
   void TestAddTextAnnotationsTo(bool skip_nodes = false) {
@@ -381,9 +386,9 @@ TEST_P(AXPlatformNodeCocoaTest, TestCocoaActionListLayout) {
 TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   NSArray<NSString*>* array = @[
     @"accessibilityDisclosedByRow", @"accessibilityDisclosedRows",
-    @"accessibilityDisclosureLevel", @"accessibilitySortDirection",
-    @"isAccessibilityDisclosed", @"isAccessibilityExpanded",
-    @"isAccessibilityFocused"
+    @"accessibilityDisclosureLevel", @"accessibilityIndex",
+    @"accessibilitySortDirection", @"isAccessibilityDisclosed",
+    @"isAccessibilityExpanded", @"isAccessibilityFocused"
   ];
 
   AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc] initWithNode:nil];
@@ -475,10 +480,7 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilitySortDirectionOnCell) {
   root.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                        static_cast<int>(ax::mojom::SortDirection::kAscending));
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kCell);
@@ -493,10 +495,7 @@ TEST_P(AXPlatformNodeCocoaTest,
   root.id = 1;
   root.role = ax::mojom::Role::kRowHeader;
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kRowHeader);
@@ -512,11 +511,7 @@ TEST_P(AXPlatformNodeCocoaTest,
   root.id = 1;
   root.role = ax::mojom::Role::kColumnHeader;
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
-
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kColumnHeader);
@@ -534,10 +529,7 @@ TEST_P(AXPlatformNodeCocoaTest,
   root.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                        static_cast<int>(ax::mojom::SortDirection::kAscending));
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kRowHeader);
@@ -555,10 +547,7 @@ TEST_P(AXPlatformNodeCocoaTest,
   root.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                        static_cast<int>(ax::mojom::SortDirection::kAscending));
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kColumnHeader);
@@ -576,10 +565,7 @@ TEST_P(AXPlatformNodeCocoaTest,
   root.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                        static_cast<int>(ax::mojom::SortDirection::kDescending));
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kRowHeader);
@@ -597,10 +583,7 @@ TEST_P(AXPlatformNodeCocoaTest,
   root.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                        static_cast<int>(ax::mojom::SortDirection::kDescending));
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kColumnHeader);
@@ -617,10 +600,7 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilitySortDirectionOtherOnRowHeader) {
   root.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                        static_cast<int>(ax::mojom::SortDirection::kOther));
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kRowHeader);
@@ -637,10 +617,7 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilitySortDirectionOtherOnColumnHeader) {
   root.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                        static_cast<int>(ax::mojom::SortDirection::kOther));
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE(
       [[node accessibilityRole] isEqualToString:NSAccessibilityCellRole]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kColumnHeader);
@@ -656,10 +633,7 @@ TEST_P(AXPlatformNodeCocoaTest, IsAccessibilityExpandedSetToExpanded) {
   root.role = ax::mojom::Role::kMenuItem;
   root.AddState(ax::mojom::State::kExpanded);
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_TRUE([node isAccessibilityExpanded]);
 }
 
@@ -671,10 +645,7 @@ TEST_P(AXPlatformNodeCocoaTest, IsAccessibilityExpandedSetToCollapsed) {
   root.role = ax::mojom::Role::kMenuItem;
   root.AddState(ax::mojom::State::kCollapsed);
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_FALSE([node isAccessibilityExpanded]);
 }
 
@@ -685,11 +656,53 @@ TEST_P(AXPlatformNodeCocoaTest, IsAccessibilityExpandedNotSet) {
   root.id = 1;
   root.role = ax::mojom::Role::kMenuItem;
   Init(root);
-  TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
-  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
-      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_FALSE([node isAccessibilityExpanded]);
+}
+
+// `accessibilityIndex` on rows and columns.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityIndexOnRowsAndColumns) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+    ++++++4 kCell
+    ++++5 kRow
+    ++++++6 kCell
+    ++++++7 kCell
+    ++++8 kRow
+    ++++++9 kCell
+    ++++++10 kCell
+  )HTML"));
+  Init(update);
+  EXPECT_EQ([GetCocoaNode(2) accessibilityIndex], 0U);
+  EXPECT_EQ([GetCocoaNode(5) accessibilityIndex], 1U);
+  EXPECT_EQ([GetCocoaNode(8) accessibilityIndex], 2U);
+
+  // Exposing accessible column objects is unique to NSAccessibility so we
+  // retrieve them via `GetExtraMacNodes`.
+  const std::vector<raw_ptr<AXNode, VectorExperimental>>& nodes =
+      *GetRoot()->GetExtraMacNodes();
+  EXPECT_EQ(nodes.size(), 3U);
+
+  // The first extra node is the first column, with index of 0.
+  AXPlatformNodeCocoa* child = GetCocoaNode(nodes[0]);
+  EXPECT_TRUE(
+      [[child accessibilityRole] isEqualToString:NSAccessibilityColumnRole]);
+  EXPECT_EQ([child accessibilityIndex], 0U);
+
+  // The second extra node is the second column, with index of 1.
+  child = GetCocoaNode(nodes[1]);
+  EXPECT_TRUE(
+      [[child accessibilityRole] isEqualToString:NSAccessibilityColumnRole]);
+  EXPECT_EQ([child accessibilityIndex], 1U);
+
+  // The final extra node is to hold the headers, and is present even without
+  // headers. Index does not apply to this object.
+  child = GetCocoaNode(nodes[2]);
+  EXPECT_TRUE(
+      [[child accessibilityRole] isEqualToString:NSAccessibilityGroupRole]);
+  EXPECT_EQ([child accessibilityIndex], NSNotFound);
 }
 
 }  // namespace ui

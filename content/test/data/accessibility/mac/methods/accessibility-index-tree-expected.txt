@@ -1,0 +1,6 @@
+outeritem1.accessibilityIndex=0
+outeritem2.accessibilityIndex=5
+middleitem1.accessibilityIndex=1
+middleitem2.accessibilityIndex=4
+inneritem1.accessibilityIndex=2
+inneritem2.accessibilityIndex=3
