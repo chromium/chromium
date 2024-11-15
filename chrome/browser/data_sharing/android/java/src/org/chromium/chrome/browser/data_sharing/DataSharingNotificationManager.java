@@ -72,7 +72,7 @@ public class DataSharingNotificationManager {
     @VisibleForTesting
     protected NotificationWrapperBuilder getNotificationBuilder() {
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                ChromeChannelDefinitions.ChannelId.BROWSER,
+                ChromeChannelDefinitions.ChannelId.COLLABORATION,
                 new NotificationMetadata(
                         NotificationUmaTracker.SystemNotificationType.DATA_SHARING,
                         TAG,

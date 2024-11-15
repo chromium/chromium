@@ -76,6 +76,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      */
     @StringDef({
         ChannelId.BROWSER,
+        ChannelId.COLLABORATION,
         ChannelId.DOWNLOADS,
         ChannelId.INCOGNITO,
         ChannelId.MEDIA_PLAYBACK,
@@ -102,6 +103,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
         String BROWSER = "browser";
+        String COLLABORATION = "collaboration";
         String DOWNLOADS = "downloads";
         String INCOGNITO = "incognito";
         String MEDIA_PLAYBACK = "media";
@@ -168,6 +170,14 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             NotificationManager.IMPORTANCE_LOW,
                             ChannelGroupId.GENERAL));
             startup.add(ChannelId.BROWSER);
+
+            map.put(
+                    ChannelId.COLLABORATION,
+                    PredefinedChannel.create(
+                            ChannelId.COLLABORATION,
+                            R.string.notification_category_collaboration,
+                            NotificationManager.IMPORTANCE_LOW,
+                            ChannelGroupId.GENERAL));
 
             map.put(
                     ChannelId.DOWNLOADS,

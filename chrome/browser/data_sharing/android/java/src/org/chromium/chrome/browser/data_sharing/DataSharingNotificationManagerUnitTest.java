@@ -30,6 +30,7 @@ import org.robolectric.shadows.ShadowNotification;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.components.browser_ui.notifications.AsyncNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -66,7 +67,7 @@ public class DataSharingNotificationManagerUnitTest {
         NotificationWrapper notificationWrapper = mNotifyCaptor.getValue();
         Notification notification = notificationWrapper.getNotification();
         assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
-        assertEquals(ChromeChannelDefinitions.ChannelId.BROWSER, notification.getChannelId());
+        assertEquals(ChromeChannelDefinitions.ChannelId.COLLABORATION, notification.getChannelId());
 
         NotificationMetadata notificationMetadata = notificationWrapper.getMetadata();
         assertEquals(
@@ -92,7 +93,7 @@ public class DataSharingNotificationManagerUnitTest {
         NotificationWrapper notificationWrapper = mNotifyCaptor.getValue();
         Notification notification = notificationWrapper.getNotification();
         assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
-        assertEquals(ChromeChannelDefinitions.ChannelId.BROWSER, notification.getChannelId());
+        assertEquals(ChannelId.COLLABORATION, notification.getChannelId());
 
         NotificationMetadata notificationMetadata = notificationWrapper.getMetadata();
         assertEquals(
