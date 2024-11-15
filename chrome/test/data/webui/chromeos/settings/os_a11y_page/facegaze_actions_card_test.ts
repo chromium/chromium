@@ -321,7 +321,7 @@ suite('<facegaze-actions-card>', () => {
     assertTrue(!!alert);
     assertEquals(
         alert!.innerText,
-        'Assigned gesture Blink both eyes to Left-click the mouse');
+        'Assigned gesture Briefly close both eyes to Left-click the mouse');
 
     const addButton = getAddButton();
     assertFalse(addButton.disabled);

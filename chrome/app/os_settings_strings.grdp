@@ -1331,7 +1331,7 @@
     Assign a gesture
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ASSIGNED_GESTURE_ALERT" desc="Spoken feedback for when a user has assigned a gesture to an action in the action settings." is_accessibility_with_no_ui="true">
-    Assigned gesture <ph name="GESTURE">$1<ex>Blink both eyes</ex></ph> to <ph name="ACTION">$2<ex>Click a mouse button</ex></ph>
+    Assigned gesture <ph name="GESTURE">$1<ex>Raise eyebrows</ex></ph> to <ph name="ACTION">$2<ex>Click a mouse button</ex></ph>
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_REMOVED_ACTION_ALERT" desc="Spoken description when a user has removed a specific action in the action settings." is_accessibility_with_no_ui="true">
     Removed action <ph name="REMOVED_ACTION">$1<ex>Click a mouse button</ex></ph>
@@ -1462,8 +1462,8 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYE_SQUINT_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should partly close their right eye. See go/face-gestures-loc for illustrations of the gestures.">
     Squint right eye
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_BLINK" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should shut and open both eyes quickly. See go/face-gestures-loc for illustrations of the gestures.">
-    Blink both eyes
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_BLINK" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should briefly close then open both eyes. See go/face-gestures-loc for illustrations of the gestures.">
+    Briefly close both eyes
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_LOOK_DOWN" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyes down. See go/face-gestures-loc for illustrations of the gestures.">
     Look down

@@ -111,8 +111,8 @@
   <message name="IDS_FACEGAZE_GESTURE_TEXT_EYE_SQUINT_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should squint their right eye.">
     Squint right eye
   </message>
-  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYES_BLINK" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should raise blink.">
-    Blink both eyes
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYES_BLINK" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should briefly close then open both eyes.">
+    Briefly close both eyes
   </message>
   <message name="IDS_FACEGAZE_GESTURE_TEXT_EYES_LOOK_DOWN" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should look down.">
     Look down
