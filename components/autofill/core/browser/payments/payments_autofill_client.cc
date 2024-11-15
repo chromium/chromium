@@ -245,4 +245,8 @@ PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return nullptr;
 }
 
+payments::BnplManager* PaymentsAutofillClient::GetPaymentsBnplManager() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

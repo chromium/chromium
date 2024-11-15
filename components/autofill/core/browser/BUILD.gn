@@ -411,6 +411,8 @@ static_library("browser") {
     "payments/autofill_payments_feature_availability.h",
     "payments/autofill_wallet_data_type_controller.cc",
     "payments/autofill_wallet_data_type_controller.h",
+    "payments/bnpl_manager.cc",
+    "payments/bnpl_manager.h",
     "payments/card_unmask_delegate.cc",
     "payments/card_unmask_delegate.h",
     "payments/client_behavior_constants.h",

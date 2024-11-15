@@ -67,6 +67,7 @@ class VirtualCardEnrollmentManager;
 
 namespace payments {
 
+class BnplManager;
 class MandatoryReauthManager;
 class PaymentsWindowManager;
 
@@ -207,6 +208,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
+  payments::BnplManager* GetPaymentsBnplManager() override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillMessageController is used to show a message notification
@@ -316,6 +318,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;
+
+  std::unique_ptr<payments::BnplManager> bnpl_manager_;
 
   // Used to cache client side risk data. The cache is invalidated when the
   // chrome browser tab is closed.
