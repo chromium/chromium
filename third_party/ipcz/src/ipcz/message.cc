@@ -14,6 +14,7 @@
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/safe_math.h"
@@ -107,11 +108,13 @@ bool IsArrayValid(Message& message,
 }
 
 // Deserializes a driver object encoded within `message`, returning the object
-// on success. On failure, an invalid DriverObject is returned.
+// on success and marking its constituent handles as consumed. On failure, an
+// invalid DriverObject is returned.
 DriverObject DeserializeDriverObject(
     Message& message,
     const internal::DriverObjectData& object_data,
     absl::Span<const IpczDriverHandle> handles,
+    absl::Span<bool> is_handle_consumed,
     const DriverTransport& transport) {
   if (!IsArrayValid(message, object_data.driver_data_array, sizeof(uint8_t))) {
     return {};
@@ -128,6 +131,11 @@ DriverObject DeserializeDriverObject(
     return {};
   }
 
+  for (auto i = object_data.first_driver_handle;
+       i < object_data.first_driver_handle + object_data.num_driver_handles;
+       ++i) {
+    is_handle_consumed[i] = true;
+  }
   return DriverObject::Deserialize(
       transport, driver_data,
       handles.subspan(object_data.first_driver_handle,
@@ -273,6 +281,19 @@ bool Message::Serialize(const DriverTransport& transport) {
 
 bool Message::DeserializeUnknownType(const DriverTransport::RawMessage& message,
                                      const DriverTransport& transport) {
+  // Ensure that upon return we explicitly close any handles that weren't
+  // consumed by some object deserialization below.
+  absl::InlinedVector<bool, 8> is_handle_consumed(message.handles.size());
+  const IpczDriver* driver = transport.driver_object().driver();
+  const absl::Cleanup close_unused_handles = [&message, &is_handle_consumed,
+                                              driver] {
+    for (size_t i = 0; i < message.handles.size(); ++i) {
+      if (!is_handle_consumed[i]) {
+        driver->Close(message.handles[i], IPCZ_NO_FLAGS, nullptr);
+      }
+    }
+  };
+
   if (!CopyDataAndValidateHeader(message.data)) {
     return false;
   }
@@ -292,8 +313,9 @@ bool Message::DeserializeUnknownType(const DriverTransport::RawMessage& message,
         GetArrayView<internal::DriverObjectData>(driver_object_array_offset);
     driver_objects_.reserve(driver_object_data.size());
     for (const internal::DriverObjectData& object_data : driver_object_data) {
-      DriverObject object = DeserializeDriverObject(*this, object_data,
-                                                    message.handles, transport);
+      DriverObject object = DeserializeDriverObject(
+          *this, object_data, message.handles,
+          absl::MakeSpan(is_handle_consumed), transport);
       if (object.is_valid()) {
         driver_objects_.push_back(std::move(object));
       } else {
@@ -364,6 +386,12 @@ bool Message::ValidateParameters(
   // Validate parameter data. There must be at least enough bytes following the
   // header to encode a StructHeader and to account for all parameter data for
   // some known version of the message.
+  const size_t minimum_size =
+      static_cast<size_t>(header().size) + sizeof(internal::StructHeader);
+  if (data_.size() < minimum_size) {
+    return false;
+  }
+
   absl::Span<uint8_t> params_data = params_data_view();
   if (params_data.size() < sizeof(internal::StructHeader)) {
     return false;
