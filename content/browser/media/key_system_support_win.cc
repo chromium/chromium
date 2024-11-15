@@ -31,8 +31,9 @@ void OnKeySystemCapability(
     const media::KeySystemCapability& key_system_capability) {
   DVLOG(1) << __func__ << ": is_hw_secure=" << is_hw_secure;
 
-  const auto& cdm_capability_or_status =
-      key_system_capability.ToCdmCapabilityOrStatus(is_hw_secure);
+  const media::CdmCapabilityOrStatus& cdm_capability_or_status =
+      is_hw_secure ? key_system_capability.hw_cdm_capability_or_status
+                   : key_system_capability.sw_cdm_capability_or_status;
 
   // Key system must support at least 1 video codec, 1 encryption scheme,
   // and 1 encryption scheme to be considered. Support for audio codecs is

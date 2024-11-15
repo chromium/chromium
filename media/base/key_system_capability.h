@@ -25,12 +25,6 @@ struct MEDIA_EXPORT KeySystemCapability {
       base::unexpected(CdmCapabilityQueryStatus::kUnknown);
   CdmCapabilityOrStatus hw_cdm_capability_or_status =
       base::unexpected(CdmCapabilityQueryStatus::kUnknown);
-
-  // Helper functions since Mojo doesn't support base::expected<T, E> yet. See
-  // crbug.com/40841428
-  CdmCapabilityOrStatus ToCdmCapabilityOrStatus(bool is_hw_secure) const;
-  std::optional<CdmCapabilityQueryStatus> ToCdmCapabilityQueryStatus(
-      bool is_hw_secure) const;
 };
 
 bool MEDIA_EXPORT operator==(const KeySystemCapability& lhs,

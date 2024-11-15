@@ -4,7 +4,6 @@
 
 #include "media/base/key_system_capability.h"
 
-#include "base/types/expected.h"
 #include "media/base/cdm_capability.h"
 
 namespace media {
@@ -21,26 +20,6 @@ KeySystemCapability::KeySystemCapability(const KeySystemCapability& other) =
     default;
 
 KeySystemCapability::~KeySystemCapability() = default;
-
-CdmCapabilityOrStatus KeySystemCapability::ToCdmCapabilityOrStatus(
-    bool is_hw_secure) const {
-  if (is_hw_secure) {
-    return hw_cdm_capability_or_status;
-  }
-  return sw_cdm_capability_or_status;
-}
-
-std::optional<CdmCapabilityQueryStatus>
-KeySystemCapability::ToCdmCapabilityQueryStatus(bool is_hw_secure) const {
-  if (is_hw_secure) {
-    return hw_cdm_capability_or_status.has_value()
-               ? std::nullopt
-               : std::optional(hw_cdm_capability_or_status.error());
-  }
-  return sw_cdm_capability_or_status.has_value()
-             ? std::nullopt
-             : std::optional(sw_cdm_capability_or_status.error());
-}
 
 bool operator==(const KeySystemCapability& lhs,
                 const KeySystemCapability& rhs) {

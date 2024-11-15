@@ -30,12 +30,16 @@ struct StructTraits<media::mojom::KeySystemCapabilityDataView,
 
   static const std::optional<media::CdmCapabilityQueryStatus>
   sw_secure_capability_query_status(const media::KeySystemCapability& input) {
-    return input.ToCdmCapabilityQueryStatus(false);
+    return input.sw_cdm_capability_or_status.has_value()
+               ? std::nullopt
+               : std::optional(input.sw_cdm_capability_or_status.error());
   }
 
   static const std::optional<media::CdmCapabilityQueryStatus>
   hw_secure_capability_query_status(const media::KeySystemCapability& input) {
-    return input.ToCdmCapabilityQueryStatus(true);
+    return input.hw_cdm_capability_or_status.has_value()
+               ? std::nullopt
+               : std::optional(input.hw_cdm_capability_or_status.error());
   }
 
   static bool Read(media::mojom::KeySystemCapabilityDataView input,
