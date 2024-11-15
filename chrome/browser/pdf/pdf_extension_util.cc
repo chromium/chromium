@@ -104,6 +104,7 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"rotationStateLabel90", IDS_PDF_ROTATION_STATE_LABEL_90},
       {"rotationStateLabel180", IDS_PDF_ROTATION_STATE_LABEL_180},
       {"rotationStateLabel270", IDS_PDF_ROTATION_STATE_LABEL_270},
+      {"searchifyInProgress", IDS_PDF_SEARCHIFY_IN_PROGRESS},
       {"thumbnailPageAriaLabel", IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL},
       {"tooltipAttachments", IDS_PDF_TOOLTIP_ATTACHMENTS},
       {"tooltipDocumentOutline", IDS_PDF_TOOLTIP_DOCUMENT_OUTLINE},
