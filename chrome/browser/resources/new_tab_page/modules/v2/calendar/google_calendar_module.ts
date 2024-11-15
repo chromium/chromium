@@ -106,7 +106,7 @@ export class GoogleCalendarModuleElement extends
       composed: true,
       detail: {
         message: this.i18n('modulesGoogleCalendarDismissToastMessage'),
-        restoreCallback: this.handler_.restoreModule,
+        restoreCallback: () => this.handler_.restoreModule(),
       },
     }));
   }
