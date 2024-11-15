@@ -501,7 +501,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
 }
 
 TEST_F(FileSystemAccessObserverObservationTest,
-       FileObservationNotDestructedAfterFileDeleted) {
+       FileObservationDestructedAfterFileDeleted) {
   base::FilePath file_path = CreateFile();
   storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
@@ -517,21 +517,22 @@ TEST_F(FileSystemAccessObserverObservationTest,
   FakeObservation observation =
       observer.Observe(file_handle.get(), /*recursive=*/false);
 
-  // Deleting the file should only result in a disappeared event.
+  // Deleting the file should result in a disappeared and an errored event.
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
   EXPECT_TRUE(observation.EventsReceivedMatches(
       {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {}},
-       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}}}));
+       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kErrored, MojoFilePathType::kFile, {}}}));
 
-  // The remote observation should not have been destructed and disconnected.
-  // So, further events should be received.
+  // The remote observation should have been destructed and disconnected. So,
+  // further events should not be received.
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
-  EXPECT_TRUE(observation.EventsReceivedMatches(
-      {{MojoChangeType::kModified, MojoFilePathType::kFile, {}}}));
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation.RemoteObservationDisconnected());
 }
 
 TEST_F(FileSystemAccessObserverObservationTest,
@@ -561,11 +562,9 @@ TEST_F(FileSystemAccessObserverObservationTest,
   // event on the file observation.
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
-  // We handle directory deletion by first signaling a deleted event on the file
-  // and then an error.
+  // We handle directory deletion by signaling a deleted event on the file
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
-  source.SignalError();
   EXPECT_TRUE(observation.EventsReceivedMatches(
       {{MojoChangeType::kModified, MojoFilePathType::kFile, {}},
        {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}},

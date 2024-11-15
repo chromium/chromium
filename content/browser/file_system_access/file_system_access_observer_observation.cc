@@ -190,6 +190,11 @@ void FileSystemAccessObserverObservation::OnChanges(
         changes_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // We should never receive changes for an observation with
+  // `WatchType::kAllBucketFileSystems`.
+  CHECK(observation_->scope().GetWatchType() !=
+        FileSystemAccessWatchScope::WatchType::kAllBucketFileSystems);
+
   if (received_error_while_in_bf_cache_) {
     return;
   }
@@ -319,10 +324,6 @@ void FileSystemAccessObserverObservation::OnChanges(
     }
 
     observation_root_disappeared =
-        (observation_->scope().GetWatchType() ==
-             FileSystemAccessWatchScope::WatchType::kDirectoryRecursive ||
-         observation_->scope().GetWatchType() ==
-             FileSystemAccessWatchScope::WatchType::kDirectoryNonRecursive) &&
         mojo_change_type->is_disappeared() &&
         observation_->scope().root_url() == change.url;
 

@@ -136,8 +136,6 @@ void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
           FilePathWatcher::FilePathType::kFile,
           FilePathWatcher::ChangeType::kDeleted, root_path};
       NotifyOfChange(base::FilePath(), error, file_change_info);
-      NotifyOfChange(base::FilePath(), /*error=*/true,
-                     FilePathWatcher::ChangeInfo());
     } else if (change_info.moved_from_path == root_path) {
       // If the file is renamed, we report a kDeleted event for the `root_path`.
       // If we were directly watching the file, this would be handled in the
