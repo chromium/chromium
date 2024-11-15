@@ -2179,17 +2179,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "win11-23h2",
-    generate_pyl_entry = False,
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "Windows-11-22631",
-        },
-        expiration_sec = 36000,
-    ),
-)
-
-targets.mixin(
     name = "win11-any",
     generate_pyl_entry = False,
     swarming = targets.swarming(

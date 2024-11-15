@@ -1545,9 +1545,6 @@ standalone_trybot_excluded_builders = [
     # The UTR-tester recipe doesn't currently support real CI-try mirroring.
     "linux-utr-tester",
     "win-utr-tester",
-    # Temporary builder for win11-rel 23h2 upgrade. This will eventially become
-    # win11-rel.
-    "win11-23h2-rel",
 ]
 
 standalone_trybot_excluded_builder_groups = [

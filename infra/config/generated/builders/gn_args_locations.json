@@ -969,7 +969,6 @@
     "win-rel": "try/win-rel/gn-args.json",
     "win10-code-coverage": "try/win10-code-coverage/gn-args.json",
     "win10-dbg": "try/win10-dbg/gn-args.json",
-    "win11-23h2-rel": "try/win11-23h2-rel/gn-args.json",
     "win11-rel": "try/win11-rel/gn-args.json",
     "win32-clobber-rel": "try/win32-clobber-rel/gn-args.json",
     "win_chromium_compile_dbg_ng": "try/win_chromium_compile_dbg_ng/gn-args.json",
