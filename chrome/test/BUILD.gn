@@ -4163,6 +4163,7 @@ if (!is_android) {
         "../browser/extensions/service_worker_apitest.cc",
         "../browser/extensions/service_worker_apitest.h",
         "../browser/extensions/service_worker_event_dispatching_browsertest.cc",
+        "../browser/extensions/service_worker_installation_browsertest.cc",
         "../browser/extensions/service_worker_lifetime_keepalive_browsertest.cc",
         "../browser/extensions/service_worker_registration_apitest.cc",
         "../browser/extensions/service_worker_tracking_browsertest.cc",
