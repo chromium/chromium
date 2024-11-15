@@ -49,3 +49,24 @@ source_set("test_sources") {
   data_deps = [ "//chrome/updater/mac/client_lib/test_helpers" ]
   frameworks = [ "Foundation.framework" ]
 }
+
+copy("archive_literal_sources") {
+  sources = [
+    "CRURegistration-Private.h",
+    "CRURegistration.m",
+  ]
+  outputs = [ "$root_out_dir/CRURegistration/{{source_file_part}}" ]
+}
+
+copy("archive_interpolated_sources") {
+  sources = [ "$target_gen_dir/CRURegistration.h" ]
+  outputs = [ "$root_out_dir/CRURegistration/{{source_file_part}}" ]
+  deps = [ ":cruregistration_header_branding" ]
+}
+
+group("archive_sources") {
+  public_deps = [
+    ":archive_interpolated_sources",
+    ":archive_literal_sources",
+  ]
+}

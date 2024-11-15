@@ -616,6 +616,9 @@ artifact_zip("updater_zip") {
     "$root_out_dir/qualification_app",
     "$root_out_dir/${updater_product_full_name}Util",
     "$root_out_dir/LICENSE.$updater_product_full_name_dashed_lowercase",
+    "$root_out_dir/CRURegistration/CRURegistration.h",
+    "$root_out_dir/CRURegistration/CRURegistration-Private.h",
+    "$root_out_dir/CRURegistration/CRURegistration.m",
   ]
   inputs += rebase_path(get_path_info(updater_signing_sources, "file"),
                         "",
@@ -625,6 +628,7 @@ artifact_zip("updater_zip") {
     ":updater_bundle_test",
     ":updater_install_script",
     "//chrome/updater:updater_license",
+    "//chrome/updater/mac/client_lib:archive_sources",
     "//chrome/updater/mac/signing",
     "//chrome/updater/test/qualification_app",
     "//chrome/updater/tools:${updater_product_full_name}Util",
