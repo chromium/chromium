@@ -655,6 +655,10 @@ mojom("mojom") {
           mojom = "media.mojom.CdmCapability"
           cpp = "::media::CdmCapability"
         },
+        {
+          mojom = "media.mojom.CdmCapabilityQueryStatus"
+          cpp = "::media::CdmCapabilityQueryStatus"
+        },
       ]
       traits_headers = [ "cdm_capability_mojom_traits.h" ]
       traits_sources = [ "cdm_capability_mojom_traits.cc" ]

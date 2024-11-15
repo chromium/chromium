@@ -28,7 +28,7 @@ TEST(KeySystemSupportAndroidTest, SoftwareSecureWidevine) {
   scoped_feature_list.InitAndDisableFeature(
       media::kAllowMediaCodecCallsInSeparateProcess);
 
-  base::test::TestFuture<std::optional<media::CdmCapability>> capability;
+  base::test::TestFuture<media::CdmCapabilityOrStatus> capability;
   GetAndroidCdmCapability(kWidevineKeySystem,
                           CdmInfo::Robustness::kSoftwareSecure,
                           capability.GetCallback());
@@ -36,7 +36,7 @@ TEST(KeySystemSupportAndroidTest, SoftwareSecureWidevine) {
   // As the capabilities depend on the device this is running on, just check
   // that we get something back. All Android devices should support some
   // form of Widevine for software secure operation.
-  ASSERT_TRUE(capability.Get().has_value());
+  ASSERT_TRUE(capability.Get<media::CdmCapabilityOrStatus>().has_value());
 }
 
 TEST(KeySystemSupportAndroidTest, HardwareSecureWidevine) {
@@ -44,7 +44,7 @@ TEST(KeySystemSupportAndroidTest, HardwareSecureWidevine) {
   scoped_feature_list.InitAndDisableFeature(
       media::kAllowMediaCodecCallsInSeparateProcess);
 
-  base::test::TestFuture<std::optional<media::CdmCapability>> capability;
+  base::test::TestFuture<media::CdmCapabilityOrStatus> capability;
   GetAndroidCdmCapability(kWidevineKeySystem,
                           CdmInfo::Robustness::kHardwareSecure,
                           capability.GetCallback());
@@ -60,13 +60,16 @@ TEST(KeySystemSupportAndroidTest, UnknownKeySystem) {
   scoped_feature_list.InitAndDisableFeature(
       media::kAllowMediaCodecCallsInSeparateProcess);
 
-  base::test::TestFuture<std::optional<media::CdmCapability>> capability;
+  base::test::TestFuture<media::CdmCapabilityOrStatus> capability;
   GetAndroidCdmCapability(kUnsupportedKeySystem,
                           CdmInfo::Robustness::kSoftwareSecure,
                           capability.GetCallback());
 
   // Keysystem should not exist, so no capabilities should be found.
-  ASSERT_FALSE(capability.Get().has_value());
+  auto cdm_capability_or_status = capability.Get();
+  ASSERT_FALSE(cdm_capability_or_status.has_value());
+  ASSERT_TRUE(std::move(cdm_capability_or_status).error() ==
+              media::CdmCapabilityQueryStatus::kUnsupportedKeySystem);
 }
 
 }  // namespace content

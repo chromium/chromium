@@ -19,8 +19,8 @@ namespace {
 bool IsValidKeySystemCapabilities(KeySystemCapabilities capabilities) {
   for (const auto& entry : capabilities) {
     auto& capability = entry.second;
-    if (!capability.sw_secure_capability.has_value() &&
-        !capability.hw_secure_capability.has_value()) {
+    if (!capability.sw_cdm_capability_or_status.has_value() &&
+        !capability.hw_cdm_capability_or_status.has_value()) {
       return false;
     }
   }

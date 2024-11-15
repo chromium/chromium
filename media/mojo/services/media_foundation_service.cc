@@ -21,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/cdm_capability.h"
@@ -299,18 +300,36 @@ HRESULT CreateDummyMediaFoundationCdm(
   return hr;
 }
 
-std::optional<CdmCapability> GetCdmCapability(
+// Reports the HRESULT of the CDM capability query status.
+void ReportCapabilityQueryStatusHresultUMA(const std::string& key_system,
+                                           const std::string& uma_name_postfix,
+                                           HRESULT hresult) {
+  auto uma_prefix =
+      "Media.EME." + media::GetKeySystemNameForUMA(key_system, std::nullopt);
+  base::UmaHistogramSparse(
+      uma_prefix + ".CdmCapabilityQueryStatus." + uma_name_postfix, hresult);
+}
+
+CdmCapabilityOrStatus GetCdmCapability(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
     const std::string& key_system,
     bool is_hw_secure) {
-  DVLOG(2) << __func__ << ", is_hw_secure=" << is_hw_secure;
+  DVLOG(2) << __func__ << ": key_system=" << key_system
+           << ", is_hw_secure=" << is_hw_secure;
 
   // For hardware secure decryption, even when IsTypeSupportedInternal() says
   // it's supported, CDM creation could fail immediately. Therefore, create a
   // dummy CDM instance to detect this case.
-  if (is_hw_secure &&
-      FAILED(CreateDummyMediaFoundationCdm(cdm_factory, key_system))) {
-    return std::nullopt;
+  HRESULT hresult = S_OK;
+  if (is_hw_secure && FAILED(hresult = CreateDummyMediaFoundationCdm(
+                                 cdm_factory, key_system))) {
+    DVLOG(1) << __func__
+             << ": CreateDummyMediaFoundationCdm() failed with hresult="
+             << hresult;
+    ReportCapabilityQueryStatusHresultUMA(
+        key_system, kCreateDummyMediaFoundationCdmHresultUmaPostfix, hresult);
+    return base::unexpected(
+        CdmCapabilityQueryStatus::kCreateDummyMediaFoundationCdmFailed);
   }
 
   // TODO(hmchen): make this generic for more key systems.
@@ -377,7 +396,7 @@ std::optional<CdmCapability> GetCdmCapability(
   // codecs are supported.
   if (capability.video_codecs.empty()) {
     DVLOG(2) << "No video codecs supported for is_hw_secure=" << is_hw_secure;
-    return std::nullopt;
+    return base::unexpected(CdmCapabilityQueryStatus::kNoSupportedVideoCodec);
   }
 
   // Query audio codecs.
@@ -411,7 +430,8 @@ std::optional<CdmCapability> GetCdmCapability(
 
   if (intersection.empty()) {
     // Fail if no supported encryption scheme.
-    return std::nullopt;
+    return base::unexpected(
+        CdmCapabilityQueryStatus::kNoSupportedEncryptionScheme);
   }
 
   capability.encryption_schemes = intersection;
@@ -420,7 +440,7 @@ std::optional<CdmCapability> GetCdmCapability(
   // session which is required by EME spec.
   capability.session_types.insert(CdmSessionType::kTemporary);
 
-  return capability;
+  return std::move(capability);
 }
 
 }  // namespace
@@ -439,36 +459,51 @@ MediaFoundationService::~MediaFoundationService() {
 void MediaFoundationService::IsKeySystemSupported(
     const std::string& key_system,
     IsKeySystemSupportedCallback callback) {
-  DVLOG(2) << __func__ << ", key_system=" << key_system;
+  DVLOG(1) << __func__ << ": key_system=" << key_system;
 
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Media.EME.MediaFoundationService.IsKeySystemSupported");
 
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
-  HRESULT hr = MediaFoundationCdmModule::GetInstance()->GetCdmFactory(
+  HRESULT hresult = MediaFoundationCdmModule::GetInstance()->GetCdmFactory(
       key_system, cdm_factory);
 
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to GetCdmFactory.";
-    std::move(callback).Run(false, std::nullopt);
+  if (FAILED(hresult)) {
+    DLOG(ERROR) << __func__
+                << ": Failed to GetCdmFactory with hresult=" << hresult;
+    ReportCapabilityQueryStatusHresultUMA(
+        key_system, kMediaFoundationGetCdmFactoryHresultUmaPostfix, hresult);
+    std::move(callback).Run(
+        false,
+        KeySystemCapability(
+            base::unexpected(
+                CdmCapabilityQueryStatus::kMediaFoundationGetCdmFactoryFailed),
+            base::unexpected(CdmCapabilityQueryStatus::
+                                 kMediaFoundationGetCdmFactoryFailed)));
     return;
   }
 
-  std::optional<CdmCapability> sw_secure_capability =
+  auto sw_cdm_capability_or_status =
       GetCdmCapability(cdm_factory, key_system, /*is_hw_secure=*/false);
-  std::optional<CdmCapability> hw_secure_capability =
+  auto hw_cdm_capability_or_status =
       GetCdmCapability(cdm_factory, key_system, /*is_hw_secure=*/true);
-
-  if (!sw_secure_capability && !hw_secure_capability) {
-    DVLOG(2) << "Get empty CdmCapability.";
-    std::move(callback).Run(false, std::nullopt);
+  auto key_system_capability = KeySystemCapability(sw_cdm_capability_or_status,
+                                                   hw_cdm_capability_or_status);
+  if (!key_system_capability.sw_cdm_capability_or_status.has_value() &&
+      !key_system_capability.hw_cdm_capability_or_status.has_value()) {
+    DVLOG(2)
+        << __func__
+        << ": Get empty CdmCapability. sw_cdm_capability_or_status.error()="
+        << CdmCapabilityQueryStatusToString(
+               key_system_capability.sw_cdm_capability_or_status.error())
+        << ", hw_cdm_capability_or_status.error()="
+        << CdmCapabilityQueryStatusToString(
+               key_system_capability.hw_cdm_capability_or_status.error());
+    std::move(callback).Run(false, std::move(key_system_capability));
     return;
   }
 
-  auto capability = media::KeySystemCapability();
-  capability.sw_secure_capability = sw_secure_capability;
-  capability.hw_secure_capability = hw_secure_capability;
-  std::move(callback).Run(true, std::move(capability));
+  std::move(callback).Run(true, std::move(key_system_capability));
 }
 
 void MediaFoundationService::CreateInterfaceFactory(

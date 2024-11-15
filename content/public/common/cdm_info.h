@@ -81,6 +81,11 @@ struct CONTENT_EXPORT CdmInfo {
   // CDM capability, e.g. video codecs, encryption schemes and session types.
   std::optional<media::CdmCapability> capability;
 
+  // Status of the CDM capability query. Optional since this is done only by a
+  // lazy capability query. Used to inspect the reason when no capability
+  // reported.
+  std::optional<media::CdmCapabilityQueryStatus> capability_query_status;
+
   // Whether the CdmInfo is enabled etc. This only affects capability query.
   Status status = Status::kEnabled;
 

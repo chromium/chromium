@@ -3150,6 +3150,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.Widevine.CdmCapabilityQueryStatus.CreateDummyMediaFoundationCdmHresult"
+    enum="Hresult" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    HRESULT code if CreateDummyMediaFoundationCdm call fails when querying
+    Widevine CDM capability.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.Widevine.CdmCapabilityQueryStatus.MediaFoundationGetCdmFactoryHresult"
+    enum="Hresult" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    HRESULT code if MediaFoundationCdmModule::GetCdmFactory call fails when
+    querying Widevine CDM capability.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.Widevine.HardwareSecure.AllowedForSite"
     enum="BooleanEnabled" expires_after="2025-05-04">
   <owner>feras@chromium.org</owner>
@@ -3159,6 +3181,17 @@ chromium-metrics-reviews@google.com.
     previous disabled timestamps in a &quot;User Profile&quot; pref. This is
     reported once per browsing session when user requests hardware secure
     playback if Media Foundation Widevine CDM is enabled and available.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.Widevine.HardwareSecure.CdmCapabilityQueryStatus"
+    enum="CdmCapabilityQueryStatus" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The status of the CDM capability query. This can be used to inspect the
+    reason when no capability reported. Reported at most once per browser
+    session per key system when EME query is triggered by a website.
   </summary>
 </histogram>
 
