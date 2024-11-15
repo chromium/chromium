@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/webauthn/enclave_manager.h"
 
 #include <array>
@@ -213,16 +208,10 @@ static const uint8_t kHashPrefix[] = {0x82, 0x40, 32};
 // `std::vector<uint8_t>`), functions for jumping between these representations
 // are needed.
 
-base::span<const uint8_t> ToSpan(const std::string& s) {
-  const uint8_t* data = reinterpret_cast<const uint8_t*>(s.data());
-  return base::span<const uint8_t>(data, s.size());
-}
-
 template <size_t N>
 base::span<const uint8_t, N> ToSizedSpan(const std::string& s) {
   CHECK_EQ(s.size(), N);
-  const uint8_t* data = reinterpret_cast<const uint8_t*>(s.data());
-  return base::span<const uint8_t, N>(data, N);
+  return base::span<const uint8_t, N>(base::as_byte_span(s));
 }
 
 template <size_t N>
@@ -233,13 +222,12 @@ std::array<uint8_t, N> ToArray(base::span<const uint8_t, N> in) {
 }
 
 std::vector<uint8_t> ToVector(const std::string& s) {
-  const auto span = ToSpan(s);
+  const auto span = base::as_byte_span(s);
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 
 std::string VecToString(base::span<const uint8_t> v) {
-  const char* data = reinterpret_cast<const char*>(v.data());
-  return std::string(data, data + v.size());
+  return std::string(base::as_string_view(v));
 }
 
 bool IsValidSubjectPublicKeyInfo(base::span<const uint8_t> spki) {
@@ -299,7 +287,8 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
   if (!user.identity_public_key().empty() &&
-      !IsValidSubjectPublicKeyInfo(ToSpan(user.identity_public_key()))) {
+      !IsValidSubjectPublicKeyInfo(
+          base::as_byte_span(user.identity_public_key()))) {
     return __LINE__;
   }
   if (user.wrapped_identity_private_key().empty() != user.device_id().empty()) {
@@ -310,7 +299,7 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
   if (!user.uv_public_key().empty() &&
-      !IsValidSubjectPublicKeyInfo(ToSpan(user.uv_public_key()))) {
+      !IsValidSubjectPublicKeyInfo(base::as_byte_span(user.uv_public_key()))) {
     return __LINE__;
   }
 
@@ -325,7 +314,8 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
   if (!user.member_public_key().empty() &&
-      !IsValidUncompressedP256X962(ToSpan(user.member_public_key()))) {
+      !IsValidUncompressedP256X962(
+          base::as_byte_span(user.member_public_key()))) {
     return __LINE__;
   }
 
@@ -648,7 +638,7 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
     const std::string& contents_str) {
   auto ret = std::make_unique<EnclaveLocalState>();
 
-  const base::span<const uint8_t> contents = ToSpan(contents_str);
+  const base::span<const uint8_t> contents = base::as_byte_span(contents_str);
   if (contents.size() < crypto::kSHA256Length + sizeof(kHashPrefix)) {
     FIDO_LOG(ERROR) << "Enclave state too small to be valid";
     return ret;
@@ -2094,9 +2084,10 @@ class EnclaveManager::StateMachine {
     enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token), std::nullopt,
-        BuildPINRenewalRequest(std::move(*cert_xml_), std::move(*sig_xml_),
-                               GetCurrentWrappedSecretForUser(user_).second,
-                               ToSpan(user_->wrapped_pin().wrapped_pin())),
+        BuildPINRenewalRequest(
+            std::move(*cert_xml_), std::move(*sig_xml_),
+            GetCurrentWrappedSecretForUser(user_).second,
+            base::as_byte_span(user_->wrapped_pin().wrapped_pin())),
         manager_->IdentityKeySigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -2181,7 +2172,7 @@ class EnclaveManager::StateMachine {
         vault_->application_keys()[0].asymmetric_key_pair().public_key();
     const auto secure_box_pub_key =
         trusted_vault::SecureBoxPublicKey::CreateByImport(
-            ToSpan(vault_public_key));
+            base::as_byte_span(vault_public_key));
 
     std::string wrapped_pin_proto_serialized =
         wrapped_pin_proto_->SerializeAsString();
@@ -2235,8 +2226,7 @@ class EnclaveManager::StateMachine {
 
     if (!StoreWrappedSecrets(
             user_, GetNewSecretsToStore(*user_, *store_keys_args_for_joining_),
-            base::span<const cbor::Value>(&wrapping_response_->GetArray()[1],
-                                          1ul))) {
+            base::span_from_ref(wrapping_response_->GetArray()[1]))) {
       FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed resposne: "
                       << cbor::DiagnosticWriter::Write(*wrapping_response_);
       state_ = State::kStop;
@@ -2422,7 +2412,7 @@ class EnclaveManager::StateMachine {
     state_ = State::kJoiningDomain;
     const auto secure_box_pub_key =
         trusted_vault::SecureBoxPublicKey::CreateByImport(
-            ToSpan(user_->member_public_key()));
+            base::as_byte_span(user_->member_public_key()));
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
         *primary_account_info_,
         trusted_vault::GetTrustedVaultKeysWithVersions(
@@ -2515,10 +2505,11 @@ class EnclaveManager::StateMachine {
     map.emplace(1, base::span<const uint8_t>(hashed_pin.hashed));
     map.emplace(2, generation);
     map.emplace(3, claim_key);
-    map.emplace(4, ToSpan(vault->vault_parameters().counter_id()));
+    map.emplace(4, base::as_byte_span(vault->vault_parameters().counter_id()));
     // The vault handle in the wrapped PIN doesn't include the first byte,
     // which is the type of the vault entry.
-    map.emplace(5, ToSpan(vault->vault_parameters().vault_handle()).subspan(1));
+    map.emplace(5, base::as_byte_span(vault->vault_parameters().vault_handle())
+                       .subspan(1));
     const std::vector<uint8_t> cbor_bytes =
         cbor::Writer::Write(cbor::Value(std::move(map))).value();
     return VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes));
@@ -3354,7 +3345,7 @@ std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
   static constexpr uint8_t kAAD[] = {'P', 'I', 'N', ' ', 'c',
                                      'l', 'a', 'i', 'm'};
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(ToSpan(wrapped_pin->claim_key()));
+  aead.Init(base::as_byte_span(wrapped_pin->claim_key()));
   uint8_t nonce[12];
   crypto::RandBytes(nonce);
   std::vector<uint8_t> ciphertext = aead.Seal(hashed, nonce, kAAD);
