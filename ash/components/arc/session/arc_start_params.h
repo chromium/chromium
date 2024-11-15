@@ -87,9 +87,6 @@ struct StartParams {
   // Flag to enable TTS caching.
   bool enable_tts_caching = false;
 
-  // Flag to enable disable consumer auto update toggle as part of EU new deal.
-  bool enable_consumer_auto_update_toggle = false;
-
   // Flag that indicates whether ARCVM uses virtio-blk for /data.
   bool use_virtio_blk_data = false;
 

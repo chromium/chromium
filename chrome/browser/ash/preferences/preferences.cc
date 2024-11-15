@@ -771,18 +771,11 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
 
   // Re-enable OTA update when feature flag is disabled by owner.
   auto* update_engine_client = UpdateEngineClient::Get();
-  if (user_manager::UserManager::Get()->IsCurrentUserOwner() &&
-      !features::IsConsumerAutoUpdateToggleAllowed()) {
-    // Write into the platform will signal back so pref gets synced.
-    update_engine_client->ToggleFeature(
-        update_engine::kFeatureConsumerAutoUpdate, true);
-  } else {
-    // Otherwise, trigger a read + sync with signal.
-    update_engine_client->IsFeatureEnabled(
-        update_engine::kFeatureConsumerAutoUpdate,
-        base::BindOnce(&Preferences::OnIsConsumerAutoUpdateEnabled,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Trigger a read + sync with signal.
+  update_engine_client->IsFeatureEnabled(
+      update_engine::kFeatureConsumerAutoUpdate,
+      base::BindOnce(&Preferences::OnIsConsumerAutoUpdateEnabled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void Preferences::Init(Profile* profile, const user_manager::User* user) {

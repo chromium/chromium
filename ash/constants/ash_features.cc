@@ -427,12 +427,6 @@ BASE_FEATURE(kConchSystemAudioFromMic,
              "ConchSystemAudioFromMic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled and account falls under the new deal, will be allowed to toggle
-// auto updates.
-BASE_FEATURE(kConsumerAutoUpdateToggleAllowed,
-             "ConsumerAutoUpdateToggleAllowed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a smooth overview mode transition based on the gesture position.
 BASE_FEATURE(kContinuousOverviewScrollAnimation,
              "ContinuousOverviewScrollAnimation",
@@ -3481,10 +3475,6 @@ bool IsCoralSavedDeskFeatureEnabled() {
 
 bool IsCryptauthAttestationSyncingEnabled() {
   return base::FeatureList::IsEnabled(kCryptauthAttestationSyncing);
-}
-
-bool IsConsumerAutoUpdateToggleAllowed() {
-  return base::FeatureList::IsEnabled(kConsumerAutoUpdateToggleAllowed);
 }
 
 bool IsCopyClientKeysCertsToChapsEnabled() {

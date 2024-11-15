@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -548,8 +547,6 @@ void UpdateScreen::MakeSureScreenIsShown() {
     view_->SetAutoTransition(
         !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   }
-  // `is_opt_out_enabled_` can be true only if the feature is enabled.
-  DCHECK(!is_opt_out_enabled_ || features::IsConsumerAutoUpdateToggleAllowed());
   view_->Show(is_opt_out_enabled_);
 }
 
@@ -588,8 +585,6 @@ void UpdateScreen::OnErrorScreenHidden() {
 
 // static
 bool UpdateScreen::CheckIfOptOutIsEnabled() {
-  if (!features::IsConsumerAutoUpdateToggleAllowed())
-    return false;
   auto country = system::GetCountryCodeFromTimezoneIfAvailable(
       g_browser_process->local_state()->GetString(
           ::prefs::kSigninScreenTimezone));

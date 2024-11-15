@@ -441,9 +441,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   AppendParamsFromStartParams(request, start_params);
 
   auto* mini_instance_request = request.mutable_mini_instance_request();
-  mini_instance_request->set_enable_consumer_auto_update_toggle(
-      base::FeatureList::IsEnabled(
-          ash::features::kConsumerAutoUpdateToggleAllowed));
+  mini_instance_request->set_enable_consumer_auto_update_toggle(true);
 
   mini_instance_request->set_enable_privacy_hub_for_chrome(
       base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub));

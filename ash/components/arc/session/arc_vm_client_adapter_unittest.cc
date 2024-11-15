@@ -2434,27 +2434,11 @@ TEST_F(ArcVmClientAdapterTest,
 
 TEST_F(ArcVmClientAdapterTest,
        StartArc_EnableConsumerAutoUpdateToggle_Enabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      ash::features::kConsumerAutoUpdateToggleAllowed);
   StartMiniArc();
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_TRUE(
-      request.mini_instance_request().enable_consumer_auto_update_toggle());
-}
-
-TEST_F(ArcVmClientAdapterTest,
-       StartArc_EnableConsumerAutoUpdateToggle_Disabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      ash::features::kConsumerAutoUpdateToggleAllowed);
-  StartMiniArc();
-  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
-  EXPECT_FALSE(is_system_shutdown().has_value());
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(
       request.mini_instance_request().enable_consumer_auto_update_toggle());
 }
 

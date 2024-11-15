@@ -602,13 +602,9 @@ bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(account_id.GetGaiaId());
   // If the user falls under New Deal..
-  if (account_info.capabilities.can_toggle_auto_updates() ==
-      signin::Tribool::kTrue) {
-    // Show toggle based on user's capabilities.
-    return features::IsConsumerAutoUpdateToggleAllowed();
-  }
-
-  return false;
+  // Show toggle based on user's capabilities.
+  return account_info.capabilities.can_toggle_auto_updates() ==
+         signin::Tribool::kTrue;
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
