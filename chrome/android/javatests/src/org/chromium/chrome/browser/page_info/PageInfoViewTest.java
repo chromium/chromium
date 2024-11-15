@@ -21,6 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,13 +35,20 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.text.format.DateUtils;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Root;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -49,6 +57,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -59,13 +68,17 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -84,6 +97,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.browser_ui.util.date.StringUtils;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -100,6 +114,9 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.GURLUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.GURL;
 
@@ -1079,7 +1096,8 @@ public class PageInfoViewTest {
                             null,
                             PageInfoController.OpenedFromSource.MENU,
                             pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight());
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
                 });
         onViewWaiting(
                 allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()), true);
@@ -1114,7 +1132,8 @@ public class PageInfoViewTest {
                             null,
                             PageInfoController.OpenedFromSource.MENU,
                             pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight());
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
                 });
         onViewWaiting(
                 allOf(withText(R.string.page_info_connection_transient_pdf), isDisplayed()), true);
@@ -1149,7 +1168,8 @@ public class PageInfoViewTest {
                             null,
                             PageInfoController.OpenedFromSource.MENU,
                             pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight());
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
                 });
         onViewWaiting(
                 allOf(
@@ -1187,7 +1207,8 @@ public class PageInfoViewTest {
                             null,
                             PageInfoController.OpenedFromSource.MENU,
                             pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight());
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
                 });
         onViewWaiting(
                 allOf(withText(R.string.page_info_connection_local_pdf), isDisplayed()), true);
@@ -1361,6 +1382,126 @@ public class PageInfoViewTest {
         // Leave settings view.
         onView(withContentDescription("Navigate up")).perform(click());
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testBottomGravity() {
+        float cornerRadius =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ChromeActivity activity = sActivityTestRule.getActivity();
+                            BrowserControlsManager browserControlsManager =
+                                    BrowserControlsManagerSupplier.getValueOrNullFrom(
+                                            activity.getWindowAndroid());
+                            browserControlsManager.setControlsPosition(
+                                    ControlsPosition.BOTTOM,
+                                    0,
+                                    0,
+                                    browserControlsManager.getTopControlsHeight(),
+                                    0);
+                            return activity.getResources()
+                                    .getDimension(R.dimen.page_info_popup_corners_radius);
+                        });
+
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
+        Matcher<Root> isBottomMatcher =
+                new TypeSafeMatcher<>() {
+                    @Override
+                    protected boolean matchesSafely(Root root) {
+                        return (root.getWindowLayoutParams().get().gravity & Gravity.BOTTOM) != 0;
+                    }
+
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("Root view with bottom gravity");
+                    }
+                };
+        onViewWaiting(instanceOf(FadingEdgeScrollView.class))
+                .inRoot(allOf(isDialog(), isBottomMatcher))
+                .check(
+                        matches(
+                                new TypeSafeMatcher<>() {
+                                    private final float[] mCornerRadii =
+                                            new float[] {
+                                                cornerRadius,
+                                                cornerRadius,
+                                                cornerRadius,
+                                                cornerRadius,
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            };
+
+                                    @Override
+                                    public void describeTo(Description description) {
+                                        description.appendText(
+                                                "View with bg drawable with top rounded"
+                                                        + " corners");
+                                    }
+
+                                    @Override
+                                    protected boolean matchesSafely(View view) {
+                                        Drawable bg = view.getBackground();
+                                        if (!(bg instanceof GradientDrawable drawable)) {
+                                            return false;
+                                        }
+
+                                        return Arrays.equals(
+                                                drawable.getCornerRadii(), mCornerRadii);
+                                    }
+
+                                    @Override
+                                    public void describeMismatchSafely(
+                                            View view, Description description) {
+                                        Drawable bg = view.getBackground();
+                                        if (!(bg instanceof GradientDrawable drawable)) {
+                                            description.appendText("Bg not a GradientDrawable");
+                                            return;
+                                        }
+
+                                        description.appendText(
+                                                "Expected corner radii "
+                                                        + Arrays.toString(mCornerRadii)
+                                                        + " but received "
+                                                        + Arrays.toString(
+                                                                drawable.getCornerRadii()));
+                                    }
+                                }));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.TABLET})
+    public void testBottomGravityTablets() {
+        ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ChromeActivity activity = sActivityTestRule.getActivity();
+                            BrowserControlsManager browserControlsManager =
+                                    BrowserControlsManagerSupplier.getValueOrNullFrom(
+                                            activity.getWindowAndroid());
+                            browserControlsManager.setControlsPosition(
+                                    ControlsPosition.BOTTOM,
+                                    0,
+                                    0,
+                                    browserControlsManager.getTopControlsHeight(),
+                                    0);
+                            return activity.getModalDialogManagerSupplier();
+                        });
+
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
+        assertTrue(modalDialogManagerSupplier.get().isShowing());
+        assertEquals(
+                PageInfoController.getLastPageInfoControllerForTesting(),
+                modalDialogManagerSupplier
+                        .get()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CONTROLLER));
     }
 
     // TODO(crbug.com/40685274): Add tests for preview pages, offline pages, offline
