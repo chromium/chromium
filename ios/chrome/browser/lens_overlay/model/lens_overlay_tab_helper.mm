@@ -54,8 +54,17 @@ void LensOverlayTabHelper::DidStartNavigation(
     web::NavigationContext* navigation_context) {
   if (IsLensOverlaySameTabNavigationEnabled() && is_ui_attached_and_alive_ &&
       navigation_context && !navigation_context->IsSameDocument()) {
-    if (invokation_navigation_id_ ==
-        web_state_->GetNavigationManager()->GetPendingItem()->GetUniqueID()) {
+    bool is_reloading =
+        invokation_navigation_id_ ==
+        web_state_->GetNavigationManager()->GetVisibleItem()->GetUniqueID();
+    // The lens overlay should be:
+    // - Shown on navigating to where it was invoked.
+    // - Hidden on navigating somewhere else or reloading the navigation where
+    // it was invoked (crbug.com/376235288)
+    if (!is_reloading &&
+        invokation_navigation_id_ == web_state_->GetNavigationManager()
+                                         ->GetPendingItem()
+                                         ->GetUniqueID()) {
       [commands_handler_ showLensUI:NO];
     } else {
       [commands_handler_ hideLensUI:NO];
