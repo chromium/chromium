@@ -17,7 +17,6 @@
 namespace tracing {
 namespace {
 
-constexpr char kTracingStateKey[] = "state";
 constexpr char kTracingEnabledScenariosKey[] = "enabled_scenarios";
 constexpr char kTracingPrivacyFilterKey[] = "privacy_filter";
 
@@ -59,17 +58,6 @@ void BackgroundTracingStateManager::Initialize() {
   const base::Value::Dict& dict =
       local_state_->GetDict(kBackgroundTracingSessionState);
 
-  std::optional<int> state = dict.FindInt(kTracingStateKey);
-
-  if (state) {
-    if (*state >= 0 &&
-        *state <= static_cast<int>(BackgroundTracingState::LAST)) {
-      last_session_end_state_ = static_cast<BackgroundTracingState>(*state);
-    } else {
-      last_session_end_state_ = BackgroundTracingState::NOT_ACTIVATED;
-    }
-  }
-
   auto* scenarios = dict.FindList(kTracingEnabledScenariosKey);
   if (scenarios) {
     for (const auto& item : *scenarios) {
@@ -85,10 +73,6 @@ void BackgroundTracingStateManager::Initialize() {
   if (privacy_filter_enabled) {
     privacy_filter_enabled_ = *privacy_filter_enabled;
   }
-
-  // Save state to update the current session state, replacing the previous
-  // session state.
-  SaveState();
 }
 
 void BackgroundTracingStateManager::SaveState() {
@@ -96,7 +80,6 @@ void BackgroundTracingStateManager::SaveState() {
   DCHECK(local_state_);
 
   base::Value::Dict dict;
-  dict.Set(kTracingStateKey, static_cast<int>(state_));
 
   if (!enabled_scenarios_.empty()) {
     base::Value::List scenarios;
@@ -111,45 +94,6 @@ void BackgroundTracingStateManager::SaveState() {
   local_state_->CommitPendingWrite();
 }
 
-bool BackgroundTracingStateManager::DidLastSessionEndUnexpectedly() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (last_session_end_state_) {
-    case BackgroundTracingState::NOT_ACTIVATED:
-    case BackgroundTracingState::RAN_30_SECONDS:
-    case BackgroundTracingState::FINALIZATION_STARTED:
-      return false;
-    case BackgroundTracingState::STARTED:
-      // If the browser did not run for 30 seconds after tracing started in
-      // previous session then do not start tracing in current session as a
-      // safeguard. This would be impacted by short sessions (eg: on Android),
-      // but worth the tradeoff of crashing loop on startup. Checking for
-      // previous session crash status is platform dependent and the crash
-      // status is initialized at later point than when tracing begins. So, this
-      // check is safer than waiting for crash metrics to be available. Note
-      // that this setting only checks for last session and not sessions before
-      // that. So, the next session might still crash due to tracing if the user
-      // has another tracing experiment. But, meanwhile we would be able to turn
-      // off tracing experiments based on uploaded crash metrics.
-      return true;
-  }
-}
-
-void BackgroundTracingStateManager::OnTracingStarted() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetState(BackgroundTracingState::STARTED);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce([]() {
-        BackgroundTracingStateManager::GetInstance().SetState(
-            BackgroundTracingState::RAN_30_SECONDS);
-      }),
-      base::Seconds(30));
-}
-
-void BackgroundTracingStateManager::OnTracingStopped() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetState(BackgroundTracingState::FINALIZATION_STARTED);
-}
-
 void BackgroundTracingStateManager::UpdateEnabledScenarios(
     std::vector<std::string> enabled_scenarios) {
   enabled_scenarios_ = std::move(enabled_scenarios);
@@ -161,23 +105,7 @@ void BackgroundTracingStateManager::UpdatePrivacyFilter(bool enabled) {
   SaveState();
 }
 
-void BackgroundTracingStateManager::SetState(BackgroundTracingState new_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (state_ == new_state) {
-    return;
-  }
-  // If finalization started before 30 seconds, skip recording the new state.
-  if (new_state == BackgroundTracingState::RAN_30_SECONDS &&
-      state_ == BackgroundTracingState::FINALIZATION_STARTED) {
-    return;
-  }
-  state_ = new_state;
-  SaveState();
-}
-
 void BackgroundTracingStateManager::ResetForTesting() {
-  state_ = BackgroundTracingState::NOT_ACTIVATED;
-  last_session_end_state_ = BackgroundTracingState::NOT_ACTIVATED;
   enabled_scenarios_ = {};
   privacy_filter_enabled_ = false;
   Initialize();

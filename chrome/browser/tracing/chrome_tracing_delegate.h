@@ -38,42 +38,12 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   ChromeTracingDelegate();
   ~ChromeTracingDelegate() override;
 
-  // Returns if the tracing session is allowed to begin. Also updates the
-  // background tracing state in prefs using BackgroundTracingStateManager. So,
-  // this is required to be called exactly once per background tracing session
-  // before tracing is started. If this returns true, a tasks is posted 30
-  // seconds into the future that will mark a successful startup / run of a
-  // trace and will allow tracing to run next time.
-  bool OnBackgroundTracingActive(bool requires_anonymized_data) override;
-
-  // Updates the background tracing state in prefs using
-  // BackgroundTracingStateManager. This is required to be called before
-  // stopping background tracing.
-  void OnBackgroundTracingIdle() override;
-
-  // Returns true if tracing is allowed to end.
-  bool CanFinalizeTrace(bool requires_anonymized_data) override;
+  // content::TracingDelegate implementation:
+  bool IsRecordingAllowed(bool requires_anonymized_data) const override;
 
   bool ShouldSaveUnuploadedTrace() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
-                           BackgroundTracingThrottleTimeElapsed);
-  FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
-                           BackgroundTracingTimeThrottledAfterPreviousDay);
-  FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
-                           BackgroundTracingUnexpectedSessionEnd);
-  FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
-                           BackgroundTracingSessionRanLong);
-  FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
-                           BackgroundTracingTimeThrottledUpdatedScenario);
-  FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
-                           BackgroundTracingTimeThrottledDifferentScenario);
-  FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
-                           BackgroundTracingFinalizationStarted);
-  FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
-                           BackgroundTracingFinalizationBefore30Seconds);
-
 #if BUILDFLAG(IS_ANDROID)
   // TabModelListObserver implementation.
   void OnTabModelAdded() override;
@@ -82,10 +52,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   // BrowserListObserver implementation.
   void OnBrowserAdded(Browser* browser) override;
 #endif
-
-  // Returns true if the delegate should be allowed to perform an action
-  // given `requires_anonymized_data`.
-  bool IsActionAllowed(bool requires_anonymized_data) const;
 
   bool incognito_launched_ = false;
 

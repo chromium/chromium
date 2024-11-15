@@ -1319,20 +1319,20 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="BackgroundTracingState">
   <int value="0" label="Scenario activation requested"/>
   <int value="1" label="Scenario successfully activated"/>
-  <int value="2" label="Trace recording enabled"/>
-  <int value="3" label="Running preemptive scenario triggered"/>
-  <int value="4" label="Running reactive scenario triggered"/>
-  <int value="5" label="Trace finalization allowed"/>
-  <int value="6" label="Trace finalization disallowed"/>
+  <int value="2" label="Trace recording enabled (obsolete)"/>
+  <int value="3" label="Running preemptive scenario triggered (obsolete)"/>
+  <int value="4" label="Running reactive scenario triggered (obsolete)"/>
+  <int value="5" label="Trace finalization allowed (obsolete)"/>
+  <int value="6" label="Trace finalization disallowed (obsolete)"/>
   <int value="7" label="Trace finalization started"/>
-  <int value="8" label="Trace finalization complete"/>
+  <int value="8" label="Trace finalization complete (obsolete)"/>
   <int value="9" label="Scenario activation failed due to lowres clock"/>
   <int value="10" label="Trace upload failed"/>
   <int value="11" label="Trace upload succeeded"/>
-  <int value="12" label="Startup scenario triggered"/>
+  <int value="12" label="Startup scenario triggered (obsolete)"/>
   <int value="13" label="Large upload waiting to retry"/>
-  <int value="14" label="System scenario triggered"/>
-  <int value="15" label="Reached code scenario triggered"/>
+  <int value="14" label="System scenario triggered (obsolete)"/>
+  <int value="15" label="Reached code scenario triggered (obsolete)"/>
   <int value="16"
       label="Trace finalization started with a local output location"/>
   <int value="17" label="Failed to initialize the trace report database"/>

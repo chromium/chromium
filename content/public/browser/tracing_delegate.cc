@@ -10,13 +10,7 @@
 
 namespace content {
 
-bool TracingDelegate::OnBackgroundTracingActive(bool requires_anonymized_data) {
-  return false;
-}
-
-void TracingDelegate::OnBackgroundTracingIdle() {}
-
-bool TracingDelegate::CanFinalizeTrace(bool requires_anonymized_data) {
+bool TracingDelegate::IsRecordingAllowed(bool requires_anonymized_data) const {
   return false;
 }
 

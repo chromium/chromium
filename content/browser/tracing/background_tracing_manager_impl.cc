@@ -137,15 +137,18 @@ void AddTraceOnDatabaseTaskRunner(
 
 void GetProtoValueOnDatabaseTaskRunner(
     TraceReportDatabase* database,
-    base::Token uuid,
+    BaseTraceReport base_report,
     base::OnceCallback<void(std::optional<std::string>,
                             std::optional<std::string>)> receive_callback,
     base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
         on_finalize_complete) {
+  base::Token uuid = base_report.uuid;
   auto trace_content = database->GetTraceContent(uuid);
   auto serialized_system_profile = database->GetSystemProfile(uuid);
   std::optional<ClientTraceReport> next_report;
   if (trace_content) {
+    base::UmaHistogramSparse("Tracing.Background.Scenario.Upload",
+                             variations::HashName(base_report.scenario_name));
     if (database->UploadComplete(uuid, base::Time::Now())) {
       next_report = database->GetNextReportPendingUpload();
     }
@@ -645,7 +648,7 @@ bool BackgroundTracingManagerImpl::OnScenarioActive(
       kMaxTracesPerScenario) {
     return false;
   }
-  if (delegate_ && !delegate_->OnBackgroundTracingActive(
+  if (delegate_ && !delegate_->IsRecordingAllowed(
                        active_scenario->privacy_filter_enabled())) {
     return false;
   }
@@ -675,14 +678,11 @@ bool BackgroundTracingManagerImpl::OnScenarioIdle(
   for (EnabledStateTestObserver* observer : background_tracing_observers_) {
     observer->OnScenarioIdle(idle_scenario->scenario_name());
   }
-  if (delegate_) {
-    delegate_->OnBackgroundTracingIdle();
-  }
   for (auto& scenario : enabled_scenarios_) {
     scenario->Enable();
   }
   return !delegate_ ||
-         delegate_->CanFinalizeTrace(idle_scenario->privacy_filter_enabled());
+         delegate_->IsRecordingAllowed(idle_scenario->privacy_filter_enabled());
 }
 
 bool BackgroundTracingManagerImpl::OnScenarioCloned(
@@ -691,8 +691,8 @@ bool BackgroundTracingManagerImpl::OnScenarioCloned(
   base::UmaHistogramSparse(
       "Tracing.Background.Scenario.Clone",
       variations::HashName(cloned_scenario->scenario_name()));
-  return !delegate_ ||
-         delegate_->CanFinalizeTrace(cloned_scenario->privacy_filter_enabled());
+  return !delegate_ || delegate_->IsRecordingAllowed(
+                           cloned_scenario->privacy_filter_enabled());
 }
 
 void BackgroundTracingManagerImpl::OnScenarioRecording(
@@ -751,30 +751,13 @@ void BackgroundTracingManagerImpl::GetTraceToUpload(
     return;
   }
 
-  // Trace content was kept in memory.
-  if (!trace_report_to_upload_->trace_content.empty()) {
-    std::move(receive_callback)
-        .Run(std::move(trace_report_to_upload_->trace_content),
-             std::move(trace_report_to_upload_->system_profile));
-    database_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](TraceReportDatabase* trace_database, const base::Token& uuid) {
-              trace_database->UploadComplete(uuid, base::Time::Now());
-            },
-            base::Unretained(trace_database_.get()),
-            trace_report_to_upload_->uuid));
-    OnFinalizeComplete(std::nullopt, true);
-    return;
-  }
-
   DCHECK(trace_database_);
   BaseTraceReport trace_report = *std::move(trace_report_to_upload_);
   database_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           GetProtoValueOnDatabaseTaskRunner,
-          base::Unretained(trace_database_.get()), trace_report.uuid,
+          base::Unretained(trace_database_.get()), trace_report,
           std::move(receive_callback),
           base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
                          weak_factory_.GetWeakPtr())));

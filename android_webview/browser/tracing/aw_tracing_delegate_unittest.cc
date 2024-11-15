@@ -50,10 +50,9 @@ class AwTracingDelegateTest : public testing::Test {
   std::unique_ptr<android_webview::AwTracingDelegate> delegate_;
 };
 
-TEST_F(AwTracingDelegateTest, IsAllowedToBegin) {
-  EXPECT_TRUE(delegate_->OnBackgroundTracingActive(
+TEST_F(AwTracingDelegateTest, IsRecordingAllowed) {
+  EXPECT_TRUE(delegate_->IsRecordingAllowed(
       /*requires_anonymized_data=*/false));
-  delegate_->OnBackgroundTracingIdle();
 }
 
 }  // namespace android_webview

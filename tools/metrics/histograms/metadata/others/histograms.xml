@@ -9712,6 +9712,7 @@ features through Chrome Labs. -->
     <variant name="Idle"/>
     <variant name="Recording"/>
     <variant name="SaveTrace"/>
+    <variant name="Upload"/>
   </token>
 </histogram>
 

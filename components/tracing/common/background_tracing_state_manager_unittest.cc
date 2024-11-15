@@ -55,42 +55,7 @@ class BackgroundTracingStateManagerTest : public testing::Test {
 };
 
 TEST_F(BackgroundTracingStateManagerTest, InitializeEmptyPrefs) {
-  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":false,"state":0})");
-}
-
-TEST_F(BackgroundTracingStateManagerTest, InitializeInvalidState) {
-  base::Value::Dict dict;
-  dict.Set("state",
-           static_cast<int>(tracing::BackgroundTracingState::LAST) + 1);
-  SetSessionState(std::move(dict));
-  ResetStateManager();
-
-  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":false,"state":0})");
-}
-
-TEST_F(BackgroundTracingStateManagerTest, SessionEndedUnexpectedly) {
-  base::Value::Dict dict;
-  dict.Set("state", static_cast<int>(tracing::BackgroundTracingState::STARTED));
-  SetSessionState(std::move(dict));
-  ResetStateManager();
-
-  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":false,"state":0})");
-  EXPECT_TRUE(tracing::BackgroundTracingStateManager::GetInstance()
-                  .DidLastSessionEndUnexpectedly());
-}
-
-TEST_F(BackgroundTracingStateManagerTest, OnTracingStarted) {
-  tracing::BackgroundTracingStateManager::GetInstance().OnTracingStarted();
-  EXPECT_TRUE(base::MatchPattern(GetSessionStateJson(),
-                                 R"({"privacy_filter":false,"state":1})"))
-      << "Actual: " << GetSessionStateJson();
-}
-
-TEST_F(BackgroundTracingStateManagerTest, OnTracingStopped) {
-  tracing::BackgroundTracingStateManager::GetInstance().OnTracingStopped();
-  EXPECT_TRUE(base::MatchPattern(GetSessionStateJson(),
-                                 R"({"privacy_filter":false,"state":3})"))
-      << "Actual: " << GetSessionStateJson();
+  EXPECT_EQ(GetSessionStateJson(), R"({})");
 }
 
 TEST_F(BackgroundTracingStateManagerTest, EnablePrivacyFilter) {
@@ -100,8 +65,8 @@ TEST_F(BackgroundTracingStateManagerTest, EnablePrivacyFilter) {
   tracing::BackgroundTracingStateManager::GetInstance().UpdatePrivacyFilter(
       true);
 
-  EXPECT_TRUE(base::MatchPattern(GetSessionStateJson(),
-                                 R"({"privacy_filter":true,"state":0})"))
+  EXPECT_TRUE(
+      base::MatchPattern(GetSessionStateJson(), R"({"privacy_filter":true})"))
       << "Actual: " << GetSessionStateJson();
   EXPECT_TRUE(tracing::BackgroundTracingStateManager::GetInstance()
                   .privacy_filter_enabled());
@@ -113,8 +78,8 @@ TEST_F(BackgroundTracingStateManagerTest, PrivacyFilterEnabled) {
   SetSessionState(std::move(dict));
   ResetStateManager();
 
-  EXPECT_TRUE(base::MatchPattern(GetSessionStateJson(),
-                                 R"({"privacy_filter":true,"state":0})"))
+  EXPECT_TRUE(
+      base::MatchPattern(GetSessionStateJson(), R"({"privacy_filter":true})"))
       << "Actual: " << GetSessionStateJson();
   EXPECT_TRUE(tracing::BackgroundTracingStateManager::GetInstance()
                   .privacy_filter_enabled());
@@ -126,9 +91,8 @@ TEST_F(BackgroundTracingStateManagerTest, LoadEnabledScenarios) {
   SetSessionState(std::move(dict));
   ResetStateManager();
 
-  EXPECT_TRUE(base::MatchPattern(
-      GetSessionStateJson(),
-      R"({"enabled_scenarios":["1","3"],"privacy_filter":false,"state":0})"))
+  EXPECT_TRUE(base::MatchPattern(GetSessionStateJson(),
+                                 R"({"enabled_scenarios":["1","3"]})"))
       << "Actual: " << GetSessionStateJson();
   EXPECT_EQ(std::vector<std::string>({"1", "3"}),
             tracing::BackgroundTracingStateManager::GetInstance()
@@ -141,7 +105,7 @@ TEST_F(BackgroundTracingStateManagerTest, UpdateEnabledScenarios) {
 
   EXPECT_TRUE(base::MatchPattern(
       GetSessionStateJson(),
-      R"({"enabled_scenarios":["1","3"],"privacy_filter":false,"state":0})"))
+      R"({"enabled_scenarios":["1","3"],"privacy_filter":false})"))
       << "Actual: " << GetSessionStateJson();
   EXPECT_EQ(std::vector<std::string>({"1", "3"}),
             tracing::BackgroundTracingStateManager::GetInstance()

@@ -54,7 +54,6 @@
 namespace {
 
 using tracing::BackgroundTracingSetupMode;
-using tracing::BackgroundTracingState;
 using tracing::BackgroundTracingStateManager;
 
 bool IsBackgroundTracingCommandLine() {
@@ -147,7 +146,7 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-bool ChromeTracingDelegate::IsActionAllowed(
+bool ChromeTracingDelegate::IsRecordingAllowed(
     bool requires_anonymized_data) const {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced and uploaded.
@@ -163,29 +162,6 @@ bool ChromeTracingDelegate::IsActionAllowed(
   }
 
   return true;
-}
-
-bool ChromeTracingDelegate::OnBackgroundTracingActive(
-    bool requires_anonymized_data) {
-  BackgroundTracingStateManager& state =
-      BackgroundTracingStateManager::GetInstance();
-
-  if (!IsActionAllowed(requires_anonymized_data)) {
-    return false;
-  }
-
-  state.OnTracingStarted();
-  return true;
-}
-
-void ChromeTracingDelegate::OnBackgroundTracingIdle() {
-  BackgroundTracingStateManager& state =
-      BackgroundTracingStateManager::GetInstance();
-  state.OnTracingStopped();
-}
-
-bool ChromeTracingDelegate::CanFinalizeTrace(bool requires_anonymized_data) {
-  return IsActionAllowed(requires_anonymized_data);
 }
 
 bool ChromeTracingDelegate::ShouldSaveUnuploadedTrace() const {

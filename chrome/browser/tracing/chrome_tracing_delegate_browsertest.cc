@@ -159,30 +159,6 @@ void SetSessionState(base::Value::Dict dict) {
                    base::Value(std::move(dict)));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
-                       BackgroundTracingSessionRanLong) {
-  base::Value::Dict dict;
-  dict.Set("state",
-           static_cast<int>(tracing::BackgroundTracingState::RAN_30_SECONDS));
-  SetSessionState(std::move(dict));
-  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
-
-  EXPECT_TRUE(
-      StartScenario(content::BackgroundTracingManager::NO_DATA_FILTERING));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
-                       BackgroundTracingFinalizationStarted) {
-  base::Value::Dict dict;
-  dict.Set("state", static_cast<int>(
-                        tracing::BackgroundTracingState::FINALIZATION_STARTED));
-  SetSessionState(std::move(dict));
-  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
-
-  EXPECT_TRUE(
-      StartScenario(content::BackgroundTracingManager::NO_DATA_FILTERING));
-}
-
 // If we need a PII-stripped trace, any existing OTR session should block the
 // trace.
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,

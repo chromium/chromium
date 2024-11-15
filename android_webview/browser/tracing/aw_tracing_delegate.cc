@@ -30,19 +30,9 @@ void AwTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(tracing::kBackgroundTracingSessionState);
 }
 
-bool AwTracingDelegate::OnBackgroundTracingActive(
-    bool requires_anonymized_data) {
-  tracing::BackgroundTracingStateManager& state =
-      tracing::BackgroundTracingStateManager::GetInstance();
-
-  state.OnTracingStarted();
+bool AwTracingDelegate::IsRecordingAllowed(
+    bool requires_anonymized_data) const {
   return true;
-}
-
-void AwTracingDelegate::OnBackgroundTracingIdle() {
-  tracing::BackgroundTracingStateManager& state =
-      tracing::BackgroundTracingStateManager::GetInstance();
-  state.OnTracingStopped();
 }
 
 }  // namespace android_webview
