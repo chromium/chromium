@@ -32,6 +32,9 @@ extern NSString* const kGridCellIdentifierPrefix;
 // kGroupGridCellIdentifierPrefix, index].
 extern NSString* const kGroupGridCellIdentifierPrefix;
 
+// Accessibility identifier for the group colored dot.
+extern NSString* const kGroupGridCellColoredDotIdentifier;
+
 // Accessibility identifier for the close button in a grid cell.
 extern NSString* const kGridCellCloseButtonIdentifier;
 

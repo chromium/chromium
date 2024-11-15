@@ -33,7 +33,14 @@ NSInteger kIconSymbolPointSize = 13;
 const CGFloat kSnapshotViewLeadingOffset = 4;
 const CGFloat kSnapshotViewTrailingOffset = 4;
 const CGFloat kSnapShotViewBottomOffset = 4;
-const CGFloat kGroupColorViewSize = 18;
+// The size of the group color dot under normal font size.
+const CGFloat kColorDotSize = 16;
+// The size of the group color dot under accessibility font size.
+const CGFloat kColorDotLargeSize = 24;
+// The insets of the group color dot under normal font size.
+const CGFloat kColorDotInset = 10;
+// The insets of the group color dot under accessibility font size.
+const CGFloat kColorDotLargeInset = 20;
 
 }  // namespace
 
@@ -104,8 +111,6 @@ const CGFloat kGroupColorViewSize = 18;
 
     self.contentView.backgroundColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
-
-
 
     _groupSnapshotsView.backgroundColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -305,8 +310,8 @@ const CGFloat kGroupColorViewSize = 18;
   _topBar.translatesAutoresizingMaskIntoConstraints = NO;
 
   _groupColorView = [[UIView alloc] init];
+  _groupColorView.accessibilityIdentifier = kGroupGridCellColoredDotIdentifier;
   _groupColorView.translatesAutoresizingMaskIntoConstraints = NO;
-  _groupColorView.layer.cornerRadius = kGroupColorViewSize / 2;
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -334,25 +339,17 @@ const CGFloat kGroupColorViewSize = 18;
   [_topBar addSubview:_closeIconView];
 
   _accessibilityConstraints = @[
-    [_titleLabel.leadingAnchor
-        constraintEqualToAnchor:_topBar.leadingAnchor
-                       constant:kGridCellHeaderLeadingInset],
-    [_groupColorView.widthAnchor constraintEqualToConstant:0],
-    [_groupColorView.heightAnchor constraintEqualToConstant:0],
+    [_groupColorView.widthAnchor constraintEqualToConstant:kColorDotLargeSize],
+    [_groupColorView.heightAnchor constraintEqualToConstant:kColorDotLargeSize],
+    [_groupColorView.leadingAnchor constraintEqualToAnchor:_topBar.leadingAnchor
+                                                  constant:kColorDotLargeInset],
   ];
 
   _nonAccessibilityConstraints = @[
-    [_groupColorView.heightAnchor
-        constraintEqualToConstant:kGroupColorViewSize],
-    [_groupColorView.widthAnchor constraintEqualToConstant:kGroupColorViewSize],
-    [_groupColorView.leadingAnchor
-        constraintEqualToAnchor:_topBar.leadingAnchor
-                       constant:kGridCellHeaderLeadingInset],
-    [_groupColorView.centerYAnchor
-        constraintEqualToAnchor:_topBar.centerYAnchor],
-    [_titleLabel.leadingAnchor
-        constraintEqualToAnchor:_groupColorView.trailingAnchor
-                       constant:kGridCellHeaderLeadingInset],
+    [_groupColorView.widthAnchor constraintEqualToConstant:kColorDotSize],
+    [_groupColorView.heightAnchor constraintEqualToConstant:kColorDotSize],
+    [_groupColorView.leadingAnchor constraintEqualToAnchor:_topBar.leadingAnchor
+                                                  constant:kColorDotInset],
   ];
 
   _topBarHeightConstraint =
@@ -382,7 +379,6 @@ const CGFloat kGroupColorViewSize = 18;
     [_selectIconView.trailingAnchor
         constraintEqualToAnchor:_topBar.trailingAnchor
                        constant:-kGridCellSelectIconContentInset],
-
   ];
 
   [self updateTopBarSize];
@@ -390,7 +386,12 @@ const CGFloat kGroupColorViewSize = 18;
 
   NSArray* constraints = @[
     _topBarHeightConstraint,
+    [_groupColorView.centerYAnchor
+        constraintEqualToAnchor:_topBar.centerYAnchor],
     [_titleLabel.centerYAnchor constraintEqualToAnchor:_topBar.centerYAnchor],
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_groupColorView.trailingAnchor
+                       constant:kGridCellHeaderLeadingInset],
   ];
 
   [NSLayoutConstraint activateConstraints:constraints];
@@ -419,18 +420,18 @@ const CGFloat kGroupColorViewSize = 18;
 }
 
 // Update constraints of top bar when system font size changes. If accessibility
-// font size is chosen, the favicon will be hidden, and the title text will be
-// shown in two lines.
+// font size is chosen, the favicon will be enlarged, and the title text will be
+// shown on two lines.
 - (void)updateTopBarSize {
   _topBarHeightConstraint.constant = [self topBarHeight];
 
   if (UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory)) {
-    _titleLabel.numberOfLines = 2;
+    _groupColorView.layer.cornerRadius = kColorDotLargeSize / 2;
     [NSLayoutConstraint deactivateConstraints:_nonAccessibilityConstraints];
     [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
   } else {
-    _titleLabel.numberOfLines = 1;
+    _groupColorView.layer.cornerRadius = kColorDotSize / 2;
     [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
     [NSLayoutConstraint activateConstraints:_nonAccessibilityConstraints];
   }

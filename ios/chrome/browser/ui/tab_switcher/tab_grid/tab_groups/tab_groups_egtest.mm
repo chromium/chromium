@@ -23,6 +23,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_traits_overrider.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -232,6 +233,19 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 // Identifier for the cell at the given `index` in the grid.
 NSString* IdentifierForGridCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
+}
+
+// Get the top presented view controller, in this case the bottom sheet view
+// controller.
+UIViewController* TopPresentedViewController() {
+  UIViewController* topController =
+      chrome_test_util::GetAnyKeyWindow().rootViewController;
+  for (UIViewController* controller = [topController presentedViewController];
+       controller && ![controller isBeingDismissed];
+       controller = [controller presentedViewController]) {
+    topController = controller;
+  }
+  return topController;
 }
 
 }  // namespace
@@ -1663,6 +1677,31 @@ NSString* IdentifierForGridCellAtIndex(unsigned int index) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kTabGroupViewTitleIdentifier)]
       assertWithMatcher:grey_accessibilityLabel(kGroup1Name)];
+}
+
+// Tests that the group colored dot is present even when the Dynamic Font is set
+// to a large Accessibility size.
+- (void)testColoredDotPresent {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Check that the dot is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kGroupGridCellColoredDotIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Change trait collection to use accessibility large content size.
+  ScopedTraitOverrider overrider(TopPresentedViewController());
+  overrider.SetContentSizeCategory(UIContentSizeCategoryAccessibilityLarge);
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Check that the dot is still visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kGroupGridCellColoredDotIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
