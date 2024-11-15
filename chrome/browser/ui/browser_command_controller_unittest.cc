@@ -314,6 +314,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
       ExclusiveAccessBubbleHideCallback first_hide_callback) override {}
   bool IsExclusiveAccessBubbleDisplayed() const override { return false; }
   void OnExclusiveAccessUserInput() override {}
+  bool CanUserEnterFullscreen() const override { return true; }
   bool CanUserExitFullscreen() const override { return true; }
 
   void set_toolbar_showing(bool showing) { toolbar_showing_ = showing; }

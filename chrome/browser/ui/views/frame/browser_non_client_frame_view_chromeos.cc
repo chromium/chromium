@@ -632,7 +632,7 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   // If fullscreen mode is not what it should be, toggle fullscreen mode.
   if (ShouldEnableFullscreenMode(enabled) != was_fullscreen) {
     exclusive_access_manager->fullscreen_controller()
-        ->ToggleBrowserFullscreenMode();
+        ->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
   }
 
   // Set immersive mode to what it should be. Note that we need to call this

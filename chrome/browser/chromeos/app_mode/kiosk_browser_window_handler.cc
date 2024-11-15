@@ -151,7 +151,7 @@ void KioskBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
         KioskBrowserWindowType::kOpenedRegularBrowser);
     LOG(WARNING) << "Open additional fullscreen browser window in kiosk session"
                  << ", url=" << url_string;
-    chrome::ToggleFullscreenMode(browser);
+    chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
     on_browser_window_added_callback_.Run(/*is_closing=*/false);
     return;
   }

@@ -231,7 +231,7 @@ gfx::Rect PresentationReceiverWindowView::GetWindowBounds() const {
 void PresentationReceiverWindowView::ShowInactiveFullscreen() {
   frame_->ShowInactive();
   exclusive_access_manager_.fullscreen_controller()
-      ->ToggleBrowserFullscreenMode();
+      ->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
 }
 
 void PresentationReceiverWindowView::UpdateWindowTitle() {
@@ -278,7 +278,7 @@ std::u16string PresentationReceiverWindowView::GetWindowTitle() const {
 bool PresentationReceiverWindowView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   exclusive_access_manager_.fullscreen_controller()
-      ->ToggleBrowserFullscreenMode();
+      ->ToggleBrowserFullscreenMode(/*user_initiated=*/true);
   return true;
 }
 
@@ -354,6 +354,10 @@ void PresentationReceiverWindowView::OnExclusiveAccessUserInput() {}
 content::WebContents*
 PresentationReceiverWindowView::GetWebContentsForExclusiveAccess() {
   return delegate_->web_contents();
+}
+
+bool PresentationReceiverWindowView::CanUserEnterFullscreen() const {
+  return true;
 }
 
 bool PresentationReceiverWindowView::CanUserExitFullscreen() const {

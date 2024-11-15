@@ -586,7 +586,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                        ExitBrowserAndTabFullscreenOnPressAndHoldEsc) {
   // Enter tab fullscreen and browser fullscreen.
-  GetFullscreenController()->ToggleBrowserFullscreenMode();
+  GetFullscreenController()->ToggleBrowserFullscreenMode(
+      /*user_initiated=*/false);
   GetFullscreenController()->EnterFullscreenModeForTab(
       browser()
           ->tab_strip_model()
@@ -617,7 +618,8 @@ IN_PROC_BROWSER_TEST_F(
     ExitBrowserFullscreenAndUnlockKeyboardOnPressAndHoldEsc) {
   // Enter tab fullscreen and browser fullscreen. Then request keyboard lock
   // with Esc locked.
-  GetFullscreenController()->ToggleBrowserFullscreenMode();
+  GetFullscreenController()->ToggleBrowserFullscreenMode(
+      /*user_initiated=*/false);
   GetFullscreenController()->EnterFullscreenModeForTab(
       browser()
           ->tab_strip_model()

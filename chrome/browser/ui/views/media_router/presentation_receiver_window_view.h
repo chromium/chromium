@@ -100,6 +100,7 @@ class PresentationReceiverWindowView final
   bool IsExclusiveAccessBubbleDisplayed() const final;
   void OnExclusiveAccessUserInput() final;
   content::WebContents* GetWebContentsForExclusiveAccess() final;
+  bool CanUserEnterFullscreen() const final;
   bool CanUserExitFullscreen() const final;
 
   // ExclusiveAccessBubbleViewsContext overrides.

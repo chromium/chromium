@@ -744,6 +744,7 @@ class BrowserView : public BrowserWindow,
   Profile* GetProfile() override;
   void UpdateUIForTabFullscreen() override;
   content::WebContents* GetWebContentsForExclusiveAccess() override;
+  bool CanUserEnterFullscreen() const override;
   bool CanUserExitFullscreen() const override;
 
   // ExclusiveAccessBubbleViewsContext:

@@ -512,6 +512,10 @@ ChromeNativeAppWindowViewsAuraAsh::GetWebContentsForExclusiveAccess() {
   return web_view()->web_contents();
 }
 
+bool ChromeNativeAppWindowViewsAuraAsh::CanUserEnterFullscreen() const {
+  return true;
+}
+
 bool ChromeNativeAppWindowViewsAuraAsh::CanUserExitFullscreen() const {
   return true;
 }

@@ -539,7 +539,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ConvertPopupToTabbedBrowser(browser_);
       break;
     case IDC_FULLSCREEN:
-      chrome::ToggleFullscreenMode(browser_);
+      chrome::ToggleFullscreenMode(browser_, /*user_initiated=*/true);
       break;
     case IDC_OPEN_IN_PWA_WINDOW:
       base::RecordAction(base::UserMetricsAction("OpenActiveTabInPwaWindow"));

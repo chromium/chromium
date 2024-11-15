@@ -166,9 +166,10 @@ bool FullscreenController::IsFullscreenForBrowser() const {
          !IsFullscreenCausedByTab();
 }
 
-void FullscreenController::ToggleBrowserFullscreenMode() {
+void FullscreenController::ToggleBrowserFullscreenMode(bool user_initiated) {
   extension_caused_fullscreen_ = GURL();
-  ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId);
+  ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId,
+                               user_initiated);
 }
 
 void FullscreenController::ToggleBrowserFullscreenModeWithExtension(
@@ -176,7 +177,8 @@ void FullscreenController::ToggleBrowserFullscreenModeWithExtension(
   // |extension_caused_fullscreen_| will be reset if this causes fullscreen to
   // exit.
   extension_caused_fullscreen_ = extension_url;
-  ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId);
+  ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId,
+                               /*user_initiated=*/false);
 }
 
 bool FullscreenController::IsWindowFullscreenForTabOrPending() const {
@@ -338,7 +340,7 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
 
   if (IsFullscreenCausedByTab()) {
     // Tab Fullscreen -> Normal.
-    ToggleFullscreenModeInternal(TAB, nullptr, display::kInvalidDisplayId);
+    ExitFullscreenModeInternal();
     return;
   }
 
@@ -558,15 +560,21 @@ void FullscreenController::NotifyTabExclusiveAccessLost() {
 void FullscreenController::ToggleFullscreenModeInternal(
     FullscreenInternalOption option,
     content::RenderFrameHost* requesting_frame,
-    const int64_t display_id) {
+    const int64_t display_id,
+    bool user_initiated) {
   ExclusiveAccessContext* const exclusive_access_context =
       exclusive_access_manager()->context();
   bool enter_fullscreen = !exclusive_access_context->IsFullscreen();
 
-  if (enter_fullscreen)
+  if (enter_fullscreen &&
+      (exclusive_access_context->CanUserEnterFullscreen() || !user_initiated)) {
     EnterFullscreenModeInternal(option, requesting_frame, display_id);
-  else
+  }
+
+  if (!enter_fullscreen &&
+      (exclusive_access_context->CanUserExitFullscreen() || !user_initiated)) {
     ExitFullscreenModeInternal();
+  }
 }
 
 void FullscreenController::EnterFullscreenModeInternal(

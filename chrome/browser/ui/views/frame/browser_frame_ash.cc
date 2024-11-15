@@ -52,11 +52,12 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 
   // Overridden from ash::WindowStateDelegate.
   bool ToggleFullscreen(ash::WindowState* window_state) override {
+    // TODO(crbug.com/377507116): Replace CanMaximize() with CanFullscreen().
     DCHECK(window_state->IsFullscreen() || window_state->CanMaximize());
     // Windows which cannot be maximized should not be fullscreened.
     if (!window_state->IsFullscreen() && !window_state->CanMaximize())
       return true;
-    chrome::ToggleFullscreenMode(browser_);
+    chrome::ToggleFullscreenMode(browser_, /*user_initiated=*/true);
     return true;
   }
 

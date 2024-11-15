@@ -5507,6 +5507,10 @@ void BrowserView::HideDownloadShelf() {
     status_bubble->Hide();
 }
 
+bool BrowserView::CanUserEnterFullscreen() const {
+  return CanFullscreen();
+}
+
 bool BrowserView::CanUserExitFullscreen() const {
   return frame_->GetFrameView()->CanUserExitFullscreen();
 }

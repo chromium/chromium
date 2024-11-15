@@ -282,7 +282,7 @@ WebContents* OpenApplicationTab(Profile* profile,
   // this case?
   if (launch_type == extensions::LAUNCH_TYPE_FULLSCREEN &&
       !browser->window()->IsFullscreen()) {
-    chrome::ToggleFullscreenMode(browser);
+    chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return contents;

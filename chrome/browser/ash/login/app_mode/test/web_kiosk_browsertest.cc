@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -397,6 +398,11 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NewPopupBrowserInKioskAllowedByPolicy) {
   EXPECT_FALSE(DidSessionCloseNewWindow(session));
   ASSERT_NE(new_popup_browser, nullptr);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+
+  EXPECT_FALSE(initial_browser->GetBrowserView().CanUserEnterFullscreen());
+  EXPECT_FALSE(new_popup_browser->GetBrowserView().CanUserEnterFullscreen());
+  EXPECT_TRUE(initial_browser->GetBrowserView().IsFullscreen());
+  EXPECT_TRUE(new_popup_browser->GetBrowserView().IsFullscreen());
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskTest,

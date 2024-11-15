@@ -2176,7 +2176,8 @@ void TabDragController::MaximizeAttachedWindow() {
         GetAttachedBrowserWidget()->GetNativeWindow());
     DCHECK(browser_view);
     if (!browser_view->IsFullscreen())
-      chrome::ToggleFullscreenMode(browser_view->browser());
+      chrome::ToggleFullscreenMode(browser_view->browser(),
+                                   /*user_initiated=*/false);
   }
 #endif
 }

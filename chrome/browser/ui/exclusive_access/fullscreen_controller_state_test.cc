@@ -274,7 +274,8 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
 
   switch (event) {
     case TOGGLE_FULLSCREEN:
-      GetFullscreenController()->ToggleBrowserFullscreenMode();
+      GetFullscreenController()->ToggleBrowserFullscreenMode(
+          /*user_initiated=*/false);
       break;
     case ENTER_TAB_FULLSCREEN:
     case EXIT_TAB_FULLSCREEN: {
