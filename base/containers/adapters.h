@@ -5,6 +5,9 @@
 #ifndef BASE_CONTAINERS_ADAPTERS_H_
 #define BASE_CONTAINERS_ADAPTERS_H_
 
+#include <utility>
+
+#include "base/compiler_specific.h"
 #include "base/containers/adapters_internal.h"
 
 namespace base {
@@ -18,9 +21,9 @@ namespace base {
 //   for (int i : base::Reversed(v)) {
 //     // iterates through v from back to front
 //   }
-template <typename T>
-internal::ReversedAdapter<T> Reversed(T& t) {
-  return internal::ReversedAdapter<T>(t);
+template <typename Range>
+auto Reversed(Range&& range LIFETIME_BOUND) {
+  return internal::ReversedAdapter<Range>(std::forward<Range>(range));
 }
 
 }  // namespace base
