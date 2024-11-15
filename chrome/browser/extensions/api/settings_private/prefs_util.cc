@@ -1226,9 +1226,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // AI settings.
-  (*s_allowlist)
-      [optimization_guide::prefs::kModelExecutionMainToggleSettingState] =
-          settings_api::PrefType::kNumber;
   (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
       optimization_guide::UserVisibleFeatureKey::kCompose)] =
       settings_api::PrefType::kNumber;

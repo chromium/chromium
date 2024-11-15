@@ -22,7 +22,6 @@ export enum ModelExecutionEnterprisePolicyValue {
 
 // Exporting pref names so that they can be referenced by tests.
 export enum SettingsAiPageFeaturePrefName {
-  MAIN = 'optimization_guide.model_execution_main_toggle_setting_state',
   HISTORY_SEARCH = 'optimization_guide.history_search_setting_state',
   COMPOSE = 'optimization_guide.compose_setting_state',
   TAB_ORGANIZATION = 'optimization_guide.tab_organization_setting_state',

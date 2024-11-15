@@ -240,62 +240,6 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
 }
 
-TEST_F(ModelExecutionFeaturesControllerTest,
-       MainToggleEnablesAllVisibleFeatures) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::internal::kComposeSettingsVisibility,
-       features::internal::kTabOrganizationSettingsVisibility,
-       features::internal::kWallpaperSearchSettingsVisibility},
-      {features::internal::kComposeGraduated,
-       features::internal::kTabOrganizationGraduated,
-       features::internal::kWallpaperSearchGraduated});
-  CreateController();
-  EnableSignIn();
-  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(
-      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(
-      controller()->IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
-
-  // Enabling the main toggle enables visible features.
-  pref_service()->SetInteger(
-      prefs::kModelExecutionMainToggleSettingState,
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kWallpaperSearch));
-  // Only the visible feature prefs should be enabled.
-  EXPECT_EQ(prefs::FeatureOptInState::kEnabled,
-            GetFeaturePrefValue(UserVisibleFeatureKey::kCompose));
-  EXPECT_EQ(prefs::FeatureOptInState::kEnabled,
-            GetFeaturePrefValue(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_EQ(prefs::FeatureOptInState::kEnabled,
-            GetFeaturePrefValue(UserVisibleFeatureKey::kWallpaperSearch));
-
-  // Disabling the main toggle disables all features.
-  pref_service()->SetInteger(
-      prefs::kModelExecutionMainToggleSettingState,
-      static_cast<int>(
-          optimization_guide::prefs::FeatureOptInState::kDisabled));
-  EXPECT_FALSE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kWallpaperSearch));
-  // Only the visible feature prefs should be disabled.
-  EXPECT_EQ(prefs::FeatureOptInState::kDisabled,
-            GetFeaturePrefValue(UserVisibleFeatureKey::kCompose));
-  EXPECT_EQ(prefs::FeatureOptInState::kDisabled,
-            GetFeaturePrefValue(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_EQ(prefs::FeatureOptInState::kDisabled,
-            GetFeaturePrefValue(UserVisibleFeatureKey::kWallpaperSearch));
-}
-
 TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(

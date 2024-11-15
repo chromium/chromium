@@ -845,47 +845,6 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
-                       PRE_NewFeaturesEnabledWhenMainToggleEnabled) {
-  EnableSignin();
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kModelExecutionMainToggleSettingState,
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(
-      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kHistorySearch));
-}
-
-IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
-                       NewFeaturesEnabledWhenMainToggleEnabled) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(IsSignedIn());
-#endif
-  // The new feature should have got enabled since main toggle was on.
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(
-      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
-  // The feature with automatic enabling disallowed should be visible but not
-  // enabled.
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#else
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#endif
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kHistorySearch));
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 
 class ModelExecutionEnterprisePolicyBrowserTest

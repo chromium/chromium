@@ -368,8 +368,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
       {"aiInnovationsPageTitle", IDS_SETTINGS_AI_INNOVATIONS_PAGE_TITLE},
-      {"aiPageMainLabel", IDS_SETTINGS_AI_PAGE_MAIN_LABEL},
-      {"aiPageMainSublabel", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL},
       {"aiPageMainTitle", IDS_SETTINGS_AI_PAGE_MAIN_TITLE},
       {"aiPageMainSublabel1", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_1},
       {"aiPageMainSublabel2", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_2},
@@ -440,7 +438,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
 
       // Compose strings.
       {"aiComposeLabel", IDS_COMPOSE_SUGGESTION_MAIN_TEXT},
-      {"aiComposeSublabel", IDS_SETTINGS_AI_COMPOSE_SUBLABEL},
       {"aiComposeSublabelV2", IDS_SETTINGS_AI_COMPOSE_SUBLABEL_V2},
       {"offerWritingHelpToggleLabel",
        IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL},
@@ -461,8 +458,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       // Tab Organization strings.
       {"tabOrganizationSettingLabel",
        IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL},
-      {"tabOrganizationSettingSublabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL},
       {"tabOrganizationSettingSublabelV2",
        IDS_SETTINGS_TAB_ORGANIZER_SUB_LABEL},
       {"tabOrganizationSettingLearnMoreA11y",
@@ -475,8 +470,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       // Themes strings.
       {"wallpaperSearchSettingLabel",
        IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
-      {"wallpaperSearchSettingSublabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL},
       {"wallpaperSearchSettingSublabelV2", IDS_SETTINGS_AI_THEMES_SUB_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
-import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import './ai_tab_organization_subpage.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -69,17 +66,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       showWallpaperSearchControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showWallpaperSearchControl'),
-      },
-
-      featureOptInStateEnum_: {
-        type: Object,
-        value: FeatureOptInState,
-      },
-
-      numericUncheckedValues_: {
-        type: Array,
-        value: () =>
-            [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED],
       },
 
       focusConfig_: {
@@ -151,25 +137,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.Themes',
         this.showWallpaperSearchControl_);
-  }
-
-  private isExpanded_(): boolean {
-    return this.getPref(SettingsAiPageFeaturePrefName.MAIN).value ===
-        FeatureOptInState.ENABLED;
-  }
-
-  private shouldShowMainToggle_(): boolean {
-    return this.showComposeControl_ || this.showTabOrganizationControl_ ||
-        this.showWallpaperSearchControl_;
-  }
-
-  private getTabOrganizationHrCssClass_(): string {
-    return this.showComposeControl_ ? 'hr' : '';
-  }
-
-  private getWallpaperSearchHrCssClass_(): string {
-    return this.showComposeControl_ || this.showTabOrganizationControl_ ? 'hr' :
-                                                                          '';
   }
 
   private onHistorySearchRowClick_() {

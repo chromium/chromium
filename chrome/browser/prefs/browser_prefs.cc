@@ -1052,6 +1052,10 @@ inline constexpr char kWhatsNewHatsActivationThreshold[] =
     "browser.whats_new_hats_activation_threshold";
 #endif
 
+// Deprecated 10/2024.
+const char kModelExecutionMainToggleSettingState[] =
+    "optimization_guide.model_execution_main_toggle_setting_state";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 10/2024
 // An integer pref which determines how much FaceGaze should smooth cursor
@@ -1520,6 +1524,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(kTabResumeDismissedTabsPrefName,
                              base::Value::List());
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 10/2024.
+  registry->RegisterIntegerPref(kModelExecutionMainToggleSettingState, 0);
 
 // Deprecated 10/2024
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2848,6 +2855,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kTabResumeDismissedTabsPrefName);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Added 10/2024.
+  profile_prefs->ClearPref(kModelExecutionMainToggleSettingState);
 
 // Added 10/2024
 #if BUILDFLAG(IS_CHROMEOS)

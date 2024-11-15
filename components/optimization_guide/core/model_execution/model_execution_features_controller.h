@@ -119,9 +119,6 @@ class ModelExecutionFeaturesController
     kInvalidModelExecutionCapability,
   };
 
-  // Called when the main setting toggle pref is changed.
-  void OnMainToggleSettingStatePrefChanged();
-
   // Called when the feature-specific toggle pref is changed.
   void OnFeatureSettingPrefChanged(UserVisibleFeatureKey feature);
 
