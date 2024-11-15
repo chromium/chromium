@@ -6085,6 +6085,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.SharedMemoryVersion.SharedMemoryAllocationSucceeded"
+    enum="Boolean" expires_after="2025-09-10">
+  <owner>olivierli@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <summary>
+    Logs whether mojo managed to allocate shared memory for the
+    SharedMemoryVersionController..
+
+    Logged on SharedMemoryVersionController construction.
+  </summary>
+</histogram>
+
 <histogram name="Mouse.PointerSensitivity.Changed" enum="PointerSensitivity"
     expires_after="2025-09-22">
   <owner>zhangwenyu@google.com</owner>

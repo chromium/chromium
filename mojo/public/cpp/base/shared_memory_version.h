@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -32,6 +33,10 @@ using VersionType = uint64_t;
 // fresh copy. But it couldn't use a copy of the object in shared memory and
 // assume that it matches the updated version, because writes to the object and
 // the version number can be reordered.
+//
+// Shared memory allocation can fail like any allocation. In that case it's not
+// always possible to know why. When that happens classes in this file default
+// to consistently falling back on IPCs.
 //
 // Example:
 //
@@ -115,7 +120,7 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionController {
   void SetVersion(VersionType version);
 
  private:
-  const base::AtomicSharedMemory<VersionType> mapped_region_;
+  const std::optional<base::AtomicSharedMemory<VersionType>> mapped_region_;
 };
 
 // Used to keep track of a remote version number and compare it to a
@@ -142,7 +147,7 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionClient {
   // Returns the current value in shared memory.
   VersionType GetSharedVersion() const;
 
-  const base::AtomicSharedMemory<VersionType>::ReadOnlyMapping
+  const std::optional<base::AtomicSharedMemory<VersionType>::ReadOnlyMapping>
       read_only_mapping_;
 };
 
