@@ -8490,3 +8490,7 @@ crbug.com/377938333 external/wpt/webdriver/tests/interop/beforeunload_prompt.py 
 
 # Gardener 2024-11-08
 crbug.com/377927602 external/wpt/selection/caret/collapse-pre-linestart-1.html [ Failure Pass ]
+
+# Gardener 2024-11-12
+crbug.com/378566920 [ Debug Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
+crbug.com/378566920 [ Debug Mac14 ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
