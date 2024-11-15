@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -82,11 +81,7 @@ public class SingleActionMessageTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivity = sActivityTestRule.getActivity();
-                });
+        sActivity = sActivityTestRule.launchActivity(null);
     }
 
     @Before

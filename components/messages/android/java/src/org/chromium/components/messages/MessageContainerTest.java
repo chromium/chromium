@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -46,11 +45,7 @@ public class MessageContainerTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivity = sActivityTestRule.getActivity();
-                });
+        sActivity = sActivityTestRule.launchActivity(null);
     }
 
     @Test

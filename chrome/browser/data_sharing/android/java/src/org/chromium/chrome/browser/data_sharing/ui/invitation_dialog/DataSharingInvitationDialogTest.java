@@ -42,8 +42,7 @@ public class DataSharingInvitationDialogTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-        sActivity = runOnUiThreadBlocking(() -> sActivityTestRule.getActivity());
+        sActivity = sActivityTestRule.launchActivity(null);
     }
 
     @Before

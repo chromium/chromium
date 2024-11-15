@@ -208,11 +208,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     @Override
-    public void launchActivity(Intent startIntent) {
+    public T launchActivity(Intent startIntent) {
         // Avoid relying on explicit intents, bypassing LaunchIntentDispatcher, created by null
         // startIntent launch behavior.
         assertNotNull(startIntent);
-        super.launchActivity(startIntent);
+        return super.launchActivity(startIntent);
     }
 
     /**

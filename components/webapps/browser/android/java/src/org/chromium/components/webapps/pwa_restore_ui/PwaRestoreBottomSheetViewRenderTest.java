@@ -66,11 +66,7 @@ public class PwaRestoreBottomSheetViewRenderTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivity = sActivityTestRule.getActivity();
-                });
+        sActivity = sActivityTestRule.launchActivity(null);
     }
 
     @Mock private PwaRestoreBottomSheetMediator.Natives mNativeMock;

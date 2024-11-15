@@ -70,8 +70,7 @@ public class MinimizedCardViewBinderTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-        sActivity = ThreadUtils.runOnUiThreadBlocking(() -> sActivityTestRule.getActivity());
+        sActivity = sActivityTestRule.launchActivity(null);
     }
 
     @Before

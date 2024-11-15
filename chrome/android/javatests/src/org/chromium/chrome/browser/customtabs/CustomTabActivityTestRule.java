@@ -57,9 +57,9 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
     }
 
     @Override
-    public void launchActivity(@NonNull Intent intent) {
+    public CustomTabActivity launchActivity(@NonNull Intent intent) {
         putCustomTabIdInIntent(intent);
-        super.launchActivity(intent);
+        return super.launchActivity(intent);
     }
 
     /**
