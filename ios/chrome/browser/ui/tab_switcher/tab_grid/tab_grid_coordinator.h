@@ -17,12 +17,11 @@ class Browser;
 
 @interface TabGridCoordinator : ChromeCoordinator
 
-- (instancetype)initWithWindow:(UIWindow*)window
-     applicationCommandEndpoint:
-         (id<ApplicationCommands>)applicationCommandEndpoint
-                 regularBrowser:(Browser*)regularBrowser
-                inactiveBrowser:(Browser*)inactiveBrowser
-               incognitoBrowser:(Browser*)incognitoBrowser
+- (instancetype)initWithApplicationCommandEndpoint:
+                    (id<ApplicationCommands>)applicationCommandEndpoint
+                                    regularBrowser:(Browser*)regularBrowser
+                                   inactiveBrowser:(Browser*)inactiveBrowser
+                                  incognitoBrowser:(Browser*)incognitoBrowser
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

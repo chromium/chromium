@@ -268,8 +268,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // The page configuration used when create the tab grid view controller;
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
 
-@property(weak, nonatomic, readonly) UIWindow* window;
-
 @end
 
 @implementation TabGridCoordinator
@@ -278,16 +276,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // Ivars are not auto-synthesized when accessors are overridden.
 @synthesize regularBrowser = _regularBrowser;
 
-- (instancetype)initWithWindow:(nullable UIWindow*)window
-     applicationCommandEndpoint:
-         (id<ApplicationCommands>)applicationCommandEndpoint
-                 regularBrowser:(Browser*)regularBrowser
-                inactiveBrowser:(Browser*)inactiveBrowser
-               incognitoBrowser:(Browser*)incognitoBrowser {
+- (instancetype)initWithApplicationCommandEndpoint:
+                    (id<ApplicationCommands>)applicationCommandEndpoint
+                                    regularBrowser:(Browser*)regularBrowser
+                                   inactiveBrowser:(Browser*)inactiveBrowser
+                                  incognitoBrowser:(Browser*)incognitoBrowser {
   if ((self = [super initWithBaseViewController:nil browser:nullptr])) {
     CHECK(inactiveBrowser->IsInactive());
     CHECK(!regularBrowser->IsInactive());
-    _window = window;
     _dispatcher = [[CommandDispatcher alloc] init];
     [_dispatcher startDispatchingToTarget:applicationCommandEndpoint
                               forProtocol:@protocol(ApplicationCommands)];
@@ -989,7 +985,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // that the view is loaded only by an explicit placement in the view
   // hierarchy. As a workaround, the view controller hierarchy is loaded here
   // before `RecentTabsMediator` updates are started.
-  self.window.rootViewController = self.baseViewController;
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
+  [sceneState setRootViewController:self.baseViewController
+                  makeKeyAndVisible:NO];
   if (regularProfile) {
     [self.remoteTabsMediator initObservers];
     [self.remoteTabsMediator refreshSessionsView];
@@ -1035,7 +1033,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       startDispatchingToTarget:[self bookmarksCoordinator]
                    forProtocol:@protocol(BookmarksCommands)];
 
-  SceneState* sceneState = self.regularBrowser->GetSceneState();
   [sceneState addObserver:self];
 
   // Once the mediators are set up, stop keeping pointers to the browsers used

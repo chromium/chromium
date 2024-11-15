@@ -505,11 +505,10 @@ void OnListFamilyMembersResponse(
   if (!_mainCoordinator) {
     // Lazily create the main coordinator.
     TabGridCoordinator* tabGridCoordinator = [[TabGridCoordinator alloc]
-                    initWithWindow:self.sceneState.window
-        applicationCommandEndpoint:self
-                    regularBrowser:self.mainInterface.browser
-                   inactiveBrowser:self.mainInterface.inactiveBrowser
-                  incognitoBrowser:self.incognitoInterface.browser];
+        initWithApplicationCommandEndpoint:self
+                            regularBrowser:self.mainInterface.browser
+                           inactiveBrowser:self.mainInterface.inactiveBrowser
+                          incognitoBrowser:self.incognitoInterface.browser];
     tabGridCoordinator.delegate = self;
     _mainCoordinator = tabGridCoordinator;
   }
@@ -1146,7 +1145,7 @@ void OnListFamilyMembersResponse(
 
   if (base::FeatureList::IsEnabled(
           kMakeKeyAndVisibleBeforeMainCoordinatorStart)) {
-    [self.sceneState.window makeKeyAndVisible];
+    [self.sceneState setRootViewControllerKeyAndVisible];
   }
 
   // Lazy init of mainCoordinator.
@@ -1158,7 +1157,7 @@ void OnListFamilyMembersResponse(
     // `mainCoordinator start` as it sets self.window.rootViewController to work
     // around crbug.com/850387, causing a flicker if -makeKeyAndVisible has been
     // called.
-    [self.sceneState.window makeKeyAndVisible];
+    [self.sceneState setRootViewControllerKeyAndVisible];
   }
 
   if (!self.sceneState.profileState.startupInformation.isFirstRun) {
