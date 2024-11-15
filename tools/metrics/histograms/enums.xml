@@ -18087,6 +18087,7 @@ from previous Chrome versions.
   <int value="-885209667" label="FilesZipMount:disabled"/>
   <int value="-884864731" label="WebPaymentsSingleAppUiSkip:enabled"/>
   <int value="-884783216" label="ForceEnableFastCheckoutCapabilities:enabled"/>
+  <int value="-884480360" label="ServiceWorkerAutoPreload:disabled"/>
   <int value="-884142134" label="TaskManagerDesktopRefresh:enabled"/>
   <int value="-883694393" label="SyncPseudoUSSSupervisedUsers:disabled"/>
   <int value="-883608641" label="enable-cros-action-recorder"/>
@@ -24902,6 +24903,7 @@ from previous Chrome versions.
   <int value="1843847665" label="SyncPromoAfterSigninIntercept:disabled"/>
   <int value="1844110073" label="enable-app-view"/>
   <int value="1844222711" label="AssistantConsentV2:disabled"/>
+  <int value="1845138535" label="ServiceWorkerAutoPreload:enabled"/>
   <int value="1845205143" label="ShowSuggestionsOnAutofocus:disabled"/>
   <int value="1845781020" label="DesktopSharePreview:disabled"/>
   <int value="1846717591" label="CaptureMode:disabled"/>

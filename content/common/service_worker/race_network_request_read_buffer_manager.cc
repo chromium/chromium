@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "content/common/features.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
 #include "services/network/public/cpp/features.h"

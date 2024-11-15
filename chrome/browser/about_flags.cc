@@ -4248,6 +4248,15 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) &&
         // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+const FeatureEntry::FeatureParam kServiceWorkerAutoPreload_SWNotRunningOnly[] =
+    {
+        {"enable_only_when_service_worker_not_running", "true"},
+};
+const FeatureEntry::FeatureVariation kServiceWorkerAutoPreloadVariations[] = {
+    {"only when SW is not running", kServiceWorkerAutoPreload_SWNotRunningOnly,
+     std::size(kServiceWorkerAutoPreload_SWNotRunningOnly), nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11830,6 +11839,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},
 #endif // ENABLE_GLIC
+
+    {"service-worker-auto-preload",
+     flag_descriptions::kServiceWorkerAutoPreloadName,
+     flag_descriptions::kServiceWorkerAutoPreloadDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kServiceWorkerAutoPreload,
+                                    kServiceWorkerAutoPreloadVariations,
+                                    "ServiceWorkerAutoPreload")},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

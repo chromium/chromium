@@ -504,19 +504,6 @@ BASE_FEATURE(kRunStableVideoDecoderFactoryProcessServiceOnIOThread,
              "RunStableVideoDecoderFactoryProcessServiceOnIOThread",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables auto preloading for fetch requests before invoking the fetch handler
-// in ServiceWorker. The fetch request inside the fetch handler is resolved with
-// this preload response. If the fetch handler result is fallback, uses this
-// preload request as a fallback network request.
-//
-// Unlike navigation preload, this preloading is applied to subresources. Also,
-// it doesn't require a developer opt-in.
-//
-// crbug.com/1472634 for more details.
-BASE_FEATURE(kServiceWorkerAutoPreload,
-             "ServiceWorkerAutoPreload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kServiceWorkerAvoidMainThreadForInitialization,
              "ServiceWorkerAvoidMainThreadForInitialization",
 #if BUILDFLAG(IS_ANDROID)
