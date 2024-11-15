@@ -19,7 +19,7 @@ import org.chromium.ui.base.ViewUtils;
 class FadeTransitionHandler {
     // Minimum width (in dp) of the tab strip for it to be shown.
     // 284 = 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) + modelSelectorButton(48).
-    private static final int TRANSITION_THRESHOLD_DP = 284;
+    static final int TRANSITION_THRESHOLD_DP = 284;
     private static final int FADE_TRANSITION_DURATION_MS = 200;
 
     private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
@@ -37,13 +37,7 @@ class FadeTransitionHandler {
     }
 
     void updateTabStripTransitionThreshold(DisplayMetrics displayMetrics) {
-        mTabStripTransitionThreshold = ViewUtils.dpToPx(displayMetrics, getStripWidthThresholdDp());
-
-        // TODO (crbug/342641516): Find an alternate way to trigger #requestTransition in
-        // instrumentation testing.
-        if (TabStripTransitionCoordinator.sFadeTransitionThresholdForTesting != null) {
-            requestTransition();
-        }
+        mTabStripTransitionThreshold = ViewUtils.dpToPx(displayMetrics, TRANSITION_THRESHOLD_DP);
     }
 
     void onTabStripSizeChanged(int width) {
@@ -77,13 +71,5 @@ class FadeTransitionHandler {
         delegate.onFadeTransitionRequested(newOpacity, FADE_TRANSITION_DURATION_MS);
         // Reset internal state after use.
         mForceFadeInStrip = false;
-    }
-
-    /** Get the min strip width (in dp) required for it to become visible. */
-    private static int getStripWidthThresholdDp() {
-        if (TabStripTransitionCoordinator.sFadeTransitionThresholdForTesting != null) {
-            return TabStripTransitionCoordinator.sFadeTransitionThresholdForTesting;
-        }
-        return TRANSITION_THRESHOLD_DP;
     }
 }

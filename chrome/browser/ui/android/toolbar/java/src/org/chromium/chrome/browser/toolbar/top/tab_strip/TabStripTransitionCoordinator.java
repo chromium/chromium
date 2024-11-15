@@ -14,6 +14,7 @@ import android.view.View.OnLayoutChangeListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
@@ -31,7 +32,6 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 /** Class used to manage tab strip visibility and height updates. */
 public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHeaderObserver {
     static Integer sHeightTransitionThresholdForTesting;
-    static Integer sFadeTransitionThresholdForTesting;
 
     // Delay to kickoff the transition to avoid frame drops while application is too busy when the
     // configuration changed.
@@ -365,13 +365,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     }
 
     /**
-     * Set the tab strip fade transition threshold for testing.
-     *
-     * @param transitionThresholdForTesting Threshold for the tab strip to become visible.
+     * @return The min strip width (in dp) required for it to become visible by a fade transition.
      */
-    public static void setFadeTransitionThresholdForTesting(int transitionThresholdForTesting) {
-        sFadeTransitionThresholdForTesting = transitionThresholdForTesting;
-        ResettersForTesting.register(() -> sFadeTransitionThresholdForTesting = null);
+    @VisibleForTesting
+    public static int getFadeTransitionThresholdDp() {
+        return FadeTransitionHandler.TRANSITION_THRESHOLD_DP;
     }
 
     HeightTransitionHandler getHeightTransitionHandlerForTesting() {
