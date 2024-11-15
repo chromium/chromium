@@ -814,7 +814,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Ensure the root node is opened, by verifying Mobile Bookmarks is seen in a
   // table cell.
-  [BookmarkEarlGreyUI verifyBookmarkFolderIsSeen:@"Mobile Bookmarks"];
+  [BookmarkEarlGreyUI verifyBookmarkFolderIsSeen:@"Mobile bookmarks"];
 }
 
 // Verify root node is opened when cache position is a permanent node and is

@@ -251,7 +251,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
       obstructions, bookmark_model_, BookmarkStorageType::kLocalOrSyncable);
   ASSERT_EQ(13u, result.size());
 
-  EXPECT_EQ(result[0]->GetTitle(), u"Mobile Bookmarks");
+  EXPECT_EQ(result[0]->GetTitle(), u"Mobile bookmarks");
   EXPECT_EQ(result[1]->GetTitle(), u"animals");
   EXPECT_EQ(result[2]->GetTitle(), u"camel");
   EXPECT_EQ(result[3]->GetTitle(), u"al paca");
@@ -262,7 +262,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   EXPECT_EQ(result[8]->GetTitle(), u"f31");
   EXPECT_EQ(result[9]->GetTitle(), u"opeth");
   EXPECT_EQ(result[10]->GetTitle(), u"pop");
-  EXPECT_EQ(result[11]->GetTitle(), u"Other Bookmarks");
+  EXPECT_EQ(result[11]->GetTitle(), u"Other bookmarks");
   EXPECT_EQ(result[12]->GetTitle(), u"buildings");
 }
 

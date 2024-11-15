@@ -717,7 +717,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Verify only single "Mobile Bookmarks" is visible.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(@"Mobile Bookmarks"),
+                                   grey_accessibilityLabel(@"Mobile bookmarks"),
                                    grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 

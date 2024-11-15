@@ -2027,12 +2027,12 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   NSString* snackbarMessage = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           pattern, "count", 2, "title",
-          base::SysNSStringToUTF16(@"Mobile Bookmarks")));
+          base::SysNSStringToUTF16(@"Mobile bookmarks")));
   [self waitForSnackBarMessageText:snackbarMessage
       triggeredByTappingItemWithMatcher:grey_allOf(grey_kindOfClassName(
                                                        @"UITableViewCell"),
                                                    grey_descendant(grey_text(
-                                                       @"Mobile Bookmarks")),
+                                                       @"Mobile bookmarks")),
                                                    nil)];
 
   [BookmarkEarlGrey

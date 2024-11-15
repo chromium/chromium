@@ -293,7 +293,7 @@ id<GREYMatcher> AddBookmarkButton() {
       tapOnContextMenuButton:IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT
                   openEditor:kBookmarkEditViewContainerIdentifier
            setParentFolderTo:@"Folder 1.1"
-                        from:@"Mobile Bookmarks"
+                        from:@"Mobile bookmarks"
                   kindOfTest:chrome_test_util::KindOfTest::kSignedOut];
 
   // Verify edit mode remains.
@@ -740,7 +740,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Bookmarks" folder.
 
   [BookmarkEarlGreyUI
-      assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
+      assertChangeFolderIsCorrectlySet:@"Mobile bookmarks"
                             kindOfTest:chrome_test_util::KindOfTest::
                                            kSignedOut];
 

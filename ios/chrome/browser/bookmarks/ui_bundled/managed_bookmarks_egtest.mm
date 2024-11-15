@@ -150,7 +150,7 @@ void SearchBookmarksForText(NSString* search_text) {
 
   // Managed bookmarks folder does not exist.
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
-                                          @"Managed Bookmarks")]
+                                          @"Managed bookmarks")]
       assertWithMatcher:grey_nil()];
 }
 
@@ -179,7 +179,7 @@ void SearchBookmarksForText(NSString* search_text) {
   [BookmarkEarlGreyUI openBookmarks];
 
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
-                                          @"Managed Bookmarks")]
+                                          @"Managed bookmarks")]
       performAction:grey_tap()];
 
   VerifyBookmarkNodeWithLabelNotNil(@"First_Managed_URL");

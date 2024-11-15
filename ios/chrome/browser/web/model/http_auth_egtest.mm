@@ -29,7 +29,8 @@ namespace {
 // Returns matcher for HTTP Authentication dialog.
 id<GREYMatcher> HttpAuthDialog() {
   NSString* title = l10n_util::GetNSStringWithFixup(IDS_LOGIN_DIALOG_TITLE);
-  return chrome_test_util::StaticTextWithAccessibilityLabel(title);
+  return grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(title),
+                    grey_ancestor(grey_kindOfClass(UIButton.class)), nil);
 }
 
 // Returns matcher for Username text field.
