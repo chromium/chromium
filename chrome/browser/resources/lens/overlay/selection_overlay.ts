@@ -32,7 +32,7 @@ import type {RegionSelectionElement} from './region_selection.js';
 import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
 import {renderScreenshot} from './screenshot_utils.js';
 import {getTemplate} from './selection_overlay.html.js';
-import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, GestureState, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
+import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, GestureState, ShimmerControlRequester} from './selection_utils.js';
 import type {GestureEvent, OverlayShimmerFocusedRegion} from './selection_utils.js';
 import type {TextLayerElement} from './text_layer.js';
 import type {TranslateState} from './translate_button.js';
@@ -600,13 +600,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private handlePointerLeave() {
     this.isPointerInside = false;
-
-    // Unfocus the shimmer from the cursor. If the cursor is dragging, force
-    // shimmer to follow cursor.
-    if (!this.disableShimmer &&
-        this.currentGesture.state !== GestureState.DRAGGING) {
-      unfocusShimmer(this, ShimmerControlRequester.CURSOR);
-    }
   }
 
   private onImageRendered() {
@@ -971,14 +964,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.$.textSelectionLayer.selectAndSendWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
     this.$.postSelectionRenderer.clearSelection();
-    unfocusShimmer(this, ShimmerControlRequester.CURSOR);
   }
 
   private handleTranslateDetectedText() {
     this.$.textSelectionLayer.selectAndTranslateWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
     this.$.postSelectionRenderer.clearSelection();
-    unfocusShimmer(this, ShimmerControlRequester.CURSOR);
   }
 
   private handleTranslate() {
@@ -1018,7 +1009,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           composed: true,
           detail: {tooltipType: CursorTooltipType.NONE},
         }));
-    unfocusShimmer(this, ShimmerControlRequester.CURSOR);
   }
 
   private handlePointerLeaveContextMenu() {

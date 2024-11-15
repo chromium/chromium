@@ -159,7 +159,7 @@ export class PostSelectionRendererElement extends PolymerElement {
       this.browserProxy.callbackRouter.clearAllSelections.addListener(
           this.clearSelection.bind(this)),
       this.browserProxy.callbackRouter.clearRegionSelection.addListener(
-          this.clearSelection.bind(this)),
+          this.clearRegionSelection.bind(this)),
       this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
           this.setSelection.bind(this)),
     ];
@@ -180,6 +180,12 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.canvasHeight = height;
     this.canvasPhysicalWidth = width * window.devicePixelRatio;
     this.canvasPhysicalHeight = height * window.devicePixelRatio;
+  }
+
+  clearRegionSelection() {
+    unfocusShimmer(this, ShimmerControlRequester.CURSOR);
+    unfocusShimmer(this, ShimmerControlRequester.MANUAL_REGION);
+    this.clearSelection();
   }
 
   clearSelection() {
