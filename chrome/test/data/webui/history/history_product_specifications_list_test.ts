@@ -504,4 +504,14 @@ suite('ProductSpecificationsListTest', () => {
     assertTrue(!!displayList);
     assertTrue(displayList.hidden);
   });
+
+  test('all items are deselected when a set is removed', async function() {
+    productSpecificationsList.selectOrUnselectAll();
+    assertTrue(productSpecificationsList.getSelectedItemCount() > 0);
+
+    callbackRouterRemote.onProductSpecificationsSetRemoved({value: 'ex2'});
+    await flushTasks();
+
+    assertTrue(productSpecificationsList.getSelectedItemCount() === 0);
+  });
 });

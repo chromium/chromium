@@ -375,6 +375,11 @@ export class ProductSpecificationsListsElement extends PolymerElement {
       return;
     }
     this.splice('allItems_', setIndex, 1);
+
+    // Unselect all items in case the table was removed from the
+    // chrome://compare UI.
+    this.selectedItems.clear();
+    this.fire_('unselect-all');
   }
 
   private computeDisplayedItems_() {
