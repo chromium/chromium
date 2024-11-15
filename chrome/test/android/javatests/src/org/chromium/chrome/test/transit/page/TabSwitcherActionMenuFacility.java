@@ -9,6 +9,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
@@ -60,6 +62,14 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         elements.declareView(CLOSE_TAB_MENU_ITEM);
         elements.declareView(NEW_TAB_MENU_ITEM);
         elements.declareView(NEW_INCOGNITO_TAB_MENU_ITEM);
+        if (mHostStation.isIncognito()
+                && mHostStation.getActivity().getTabModelSelector().getModel(false).getCount()
+                        > 0) {
+            elements.declareView(SWITCH_OUT_OF_INCOGNITO_MENU_ITEM);
+        } else if (!mHostStation.isIncognito()
+                && mHostStation.getActivity().getTabModelSelector().getModel(true).getCount() > 0) {
+            elements.declareView(SWITCH_TO_INCOGNITO_MENU_ITEM);
+        }
     }
 
     /**
@@ -159,13 +169,10 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     }
 
     /** Switches out of incognito tab model to regular tab model */
-    public WebPageStation selectSwitchOutOfIncognito() {
-        WebPageStation destination =
-                WebPageStation.newBuilder()
-                        .withIsOpeningTabs(0)
-                        .withIsSelectingTabs(1)
-                        .withIncognito(false)
-                        .build();
+    public <T extends PageStation> T selectSwitchOutOfIncognito(
+            PageStation.Builder<T> destinationBuilder) {
+        assertTrue(mHostStation.isIncognito());
+        T destination = destinationBuilder.withIsOpeningTabs(0).withIsSelectingTabs(1).build();
         return mHostStation.travelToSync(
                 destination,
                 Transition.conditionOption(createTabModelChangedCondition()),
@@ -173,13 +180,10 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     }
 
     /** Switches to incognito tab model from regular tab model */
-    public PageStation selectSwitchToIncognito() {
-        WebPageStation destination =
-                WebPageStation.newBuilder()
-                        .withIsOpeningTabs(0)
-                        .withIsSelectingTabs(1)
-                        .withIncognito(true)
-                        .build();
+    public <T extends PageStation> T selectSwitchToIncognito(
+            PageStation.Builder<T> destinationBuilder) {
+        assertFalse(mHostStation.isIncognito());
+        T destination = destinationBuilder.withIsOpeningTabs(0).withIsSelectingTabs(1).build();
         return mHostStation.travelToSync(
                 destination,
                 Transition.conditionOption(createTabModelChangedCondition()),

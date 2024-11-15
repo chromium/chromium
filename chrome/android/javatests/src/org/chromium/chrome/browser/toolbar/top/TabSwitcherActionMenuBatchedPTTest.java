@@ -152,16 +152,16 @@ public class TabSwitcherActionMenuBatchedPTTest {
     @LargeTest
     public void testSwitchIntoAndOutOfIncognito() {
         // Open 1 regular and 1 incognito tab.
-        WebPageStation blankPage = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
+        PageStation blankPage = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
         PageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
 
         // Open action menu and switch out of incognito.
         TabSwitcherActionMenuFacility actionMenu = incognitoNtp.openTabSwitcherActionMenu();
-        blankPage = actionMenu.selectSwitchOutOfIncognito();
+        blankPage = actionMenu.selectSwitchOutOfIncognito(WebPageStation.newBuilder());
 
         // Open action menu and switch into incognito.
         actionMenu = blankPage.openTabSwitcherActionMenu();
-        incognitoNtp = actionMenu.selectSwitchToIncognito();
+        incognitoNtp = actionMenu.selectSwitchToIncognito(IncognitoNewTabPageStation.newBuilder());
 
         // Return to regular blank tab
         actionMenu = incognitoNtp.openTabSwitcherActionMenu();
