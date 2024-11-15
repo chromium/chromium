@@ -37,6 +37,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   AutocompleteControllerAndroid(const AutocompleteControllerAndroid&) = delete;
   AutocompleteControllerAndroid& operator=(
       const AutocompleteControllerAndroid&) = delete;
+  ~AutocompleteControllerAndroid() override;
 
   // Methods that forward to AutocompleteController:
   void Start(JNIEnv* env,
@@ -139,12 +140,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
     ~Factory() override;
 
     // BrowserContextKeyedServiceFactory
-    KeyedService* BuildServiceInstanceFor(
+    std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
         content::BrowserContext* profile) const override;
   };
 
  private:
-  ~AutocompleteControllerAndroid() override;
 
   // AutocompleteController::Observer implementation.
   void OnResultChanged(AutocompleteController* controller,

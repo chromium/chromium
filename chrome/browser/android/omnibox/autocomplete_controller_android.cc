@@ -587,10 +587,11 @@ AutocompleteControllerAndroid::Factory::Factory()
 
 AutocompleteControllerAndroid::Factory::~Factory() = default;
 
-KeyedService* AutocompleteControllerAndroid::Factory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutocompleteControllerAndroid::Factory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = static_cast<Profile*>(context);
-  return new AutocompleteControllerAndroid(
+  return std::make_unique<AutocompleteControllerAndroid>(
       profile, std::make_unique<ChromeAutocompleteProviderClient>(profile),
       false);
 }
