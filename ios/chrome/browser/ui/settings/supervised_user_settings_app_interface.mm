@@ -4,12 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
 
-#import <memory>
-
-#import "base/ios/block_types.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/singleton.h"
-#import "base/test/ios/wait_util.h"
 #import "base/version_info/channel.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -22,9 +18,7 @@
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
-#import "components/supervised_user/test_support/browser_state_management.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -39,7 +33,6 @@
 #import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
-#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
 
@@ -77,34 +70,6 @@ class TestUrlLoaderFactoryHelper {
  private:
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-};
-
-// Helper class that holds a instance of the Family Link BrowserState.
-// It allows the callers of this class to keep an alive instance
-// of a BrowserState for the duration of a test.
-class TestFamilyLinkBrowserStateHelper {
- public:
-  static TestFamilyLinkBrowserStateHelper* SharedInstance() {
-    return base::Singleton<TestFamilyLinkBrowserStateHelper>::get();
-  }
-
-  void SetUpBrowserStateWithResetIntent() {
-    SetUpBrowserState(new supervised_user::BrowserState::ResetIntent());
-  }
-
-  void TearDown() { family_link_browser_state_.reset(); }
-
-  supervised_user::BrowserState* family_link_browser_state() {
-    return family_link_browser_state_.get();
-  }
-
- private:
-  void SetUpBrowserState(const supervised_user::BrowserState::Intent* intent) {
-    CHECK(family_link_browser_state_ == nullptr);
-    family_link_browser_state_ =
-        std::make_unique<supervised_user::BrowserState>(intent);
-  }
-  std::unique_ptr<supervised_user::BrowserState> family_link_browser_state_;
 };
 
 void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
@@ -268,15 +233,6 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   TestUrlLoaderFactoryHelper::SharedInstance()->TearDown();
 }
 
-+ (void)setUpTestFamilyLinkBrowserStateHelperWithResetIntent {
-  TestFamilyLinkBrowserStateHelper::SharedInstance()
-      ->SetUpBrowserStateWithResetIntent();
-}
-
-+ (void)tearDownTestFamilyLinkBrowserStateHelper {
-  TestFamilyLinkBrowserStateHelper::SharedInstance()->TearDown();
-}
-
 + (NSInteger)countSupervisedUserIntersitialsForExistingWebStates {
   int count = 0;
   int tab_count = chrome_test_util::GetMainTabCount();
@@ -287,29 +243,6 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
     }
   }
   return count;
-}
-
-+ (void)seedFamilyLinkBrowserStateWithCompletion:(ProceduralBlock)completion {
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-  auto shared_url_loader_factory =
-      GetApplicationContext()->GetSharedURLLoaderFactory();
-  CHECK(shared_url_loader_factory);
-  CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-
-  // The TestFamilyLinkBrowserStateHelper must already be set up by tests.
-  supervised_user::BrowserState* family_link_browser_state =
-      TestFamilyLinkBrowserStateHelper::SharedInstance()
-          ->family_link_browser_state();
-  CHECK(family_link_browser_state);
-
-  family_link_browser_state->SeedWithCompletion(
-      *identity_manager, shared_url_loader_factory, account_id.ToString(),
-      base::BindOnce(completion));
 }
 
 @end

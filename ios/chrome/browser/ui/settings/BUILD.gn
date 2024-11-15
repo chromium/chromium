@@ -406,6 +406,8 @@ source_set("eg_app_support+eg2") {
   sources = [
     "settings_app_interface.h",
     "settings_app_interface.mm",
+    "supervised_user_family_link_app_interface.h",
+    "supervised_user_family_link_app_interface.mm",
     "supervised_user_settings_app_interface.h",
     "supervised_user_settings_app_interface.mm",
   ]
@@ -445,6 +447,8 @@ source_set("eg_test_support+eg2") {
   sources = [
     "settings_app_interface.h",
     "settings_app_interface_stub.mm",
+    "supervised_user_family_link_app_interface.h",
+    "supervised_user_family_link_app_interface_stub.mm",
     "supervised_user_settings_app_interface.h",
     "supervised_user_settings_app_interface_stub.mm",
   ]
