@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.Fido2VsPasskeyCache.SuccessState"
-    units="SuccessState" expires_after="2025-03-30">
+    enum="SuccessState" expires_after="2025-03-30">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
