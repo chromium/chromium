@@ -36,6 +36,53 @@ chromium-metrics-reviews@google.com.
       summary="Aggregated metrics for ProfileMenuViewBase bubbles"/>
 </variants>
 
+<!-- LINT.IfChange(TopChromeWebUIName) -->
+
+<variants name="TopChromeWebUIName">
+  <variant name=""/>
+  <variant name=".BookmarksSidePanel"/>
+  <variant name=".CompanionSidePanelUntrusted"/>
+  <variant name=".Compose"/>
+  <variant name=".CustomizeChrome"/>
+  <variant name=".DataSharingBubble"/>
+  <variant name=".Emoji"/>
+  <variant name=".Feed"/>
+  <variant name=".HistoryClustersSidePanel"/>
+  <variant name=".LensOverlayUntrusted"/>
+  <variant name=".LensSidePanelUntrusted"/>
+  <variant name=".MakoUntrusted"/>
+  <variant name=".PerformanceSidePanel"/>
+  <variant name=".ReadAnythingUntrusted"/>
+  <variant name=".ReadingList"/>
+  <variant name=".ShoppingInsightsSidePanel"/>
+  <variant name=".TabSearch"/>
+  <variant name=".UserNotesSidePanel"/>
+</variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:TopChromeWebUIName) -->
+
+<!-- LINT.IfChange(WebUIHostname) -->
+
+<variants name="WebUIHostname">
+  <variant name="Bookmarks"/>
+  <variant name="BookmarksSidePanel"/>
+  <variant name="CustomizeChromeSidePanel"/>
+  <variant name="Downloads"/>
+  <variant name="History"/>
+  <variant name="HistoryClustersSidePanel"/>
+  <variant name="NewTabPage"/>
+  <variant name="NewTabPageThirdParty"/>
+  <variant name="ReadAnythingSidePanel"/>
+  <variant name="ReadLater"/>
+  <variant name="Resources"/>
+  <variant name="Settings"/>
+  <variant name="TabSearch"/>
+  <variant name="Theme"/>
+  <variant name="TopChrome"/>
+</variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/others/histograms.xml:WebUIHostnameForCodeCache) -->
+
 <histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"
     expires_after="2025-05-11">
   <owner>kerenzhu@chromium.org</owner>
@@ -195,6 +242,218 @@ chromium-metrics-reviews@google.com.
     <variant name="Browser"/>
     <variant name="NonBrowser"/>
   </token>
+</histogram>
+
+<histogram name="WebUI.ColorsStylesheetServingDuration" units="ms"
+    expires_after="2025-03-23">
+  <owner>skau@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time in milliseconds to generate chrome://theme/colors.css and queue it
+    to be sent to the renderer for WebUI. Does not include url parsing time.
+    Recorded for every request for colors.css. Lower is better.
+
+    Expired Jan 2024. Revived M124.
+  </summary>
+</histogram>
+
+<histogram name="WebUI.CreatedForUrl" enum="WebUIUrlHashes"
+    expires_after="2025-05-04">
+  <owner>dpapad@chromium.org</owner>
+  <owner>chrome-webui@google.com</owner>
+  <summary>URLs for which Chrome creates WebUIControllers.</summary>
+</histogram>
+
+<histogram name="WebUI.Settings.PathVisited" enum="WebUISettingsPathHashes"
+    expires_after="2025-04-13">
+  <owner>dschuyler@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <owner>bettes@chromium.org</owner>
+  <summary>
+    Paths within chrome://settings visited. For evaluating popularity and
+    priorities for chrome://settings GUI. Note that this metric used to include
+    paths that were part of OS settings, but starting with M-81, this metric
+    only records browser settings paths.
+
+    For Android settings usage check Settings.FragmentAttached.
+  </summary>
+</histogram>
+
+<histogram name="WebUI.ShownUrl" enum="WebUIUrlHashes"
+    expires_after="2025-03-02">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dpapad@chromium.org</owner>
+  <owner>chrome-webui@google.com</owner>
+  <summary>
+    WebUI URLs that are painted. Recorded on the first paint of a WebUI document
+    after navigation. This differs from WebUI.CreatedForUrl as it only logs
+    WebUIs that are actually painted and excludes those that are created but not
+    shown (e.g., opened in a background tab, or preloaded but never shown).
+    Caveat: this won't log on an iframe WebUI's subsequent navigations becuase
+    the paint event is emitted only once from the main frame.
+  </summary>
+</histogram>
+
+<histogram name="WebUI.TopChrome.Preload.Result" enum="WebUIPreloadResult"
+    expires_after="2025-05-04">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>elainechien@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The result of attempting to use a preloaded WebUI when a new Top Chrome
+    WebUI is requested.
+  </summary>
+</histogram>
+
+<histogram name="WebUI.TopChrome.RequestToFCP{WebUIName}" units="ms"
+    expires_after="2025-03-30">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>chrome-webui-for-features@google.com</owner>
+  <summary>
+    Measures the time elapsed from the initiation of a WebUI request to its
+    first contentful paint. This metric applies to the main frame documents of
+    top-chrome WebUI pages, such as side-panel content. The request initiation
+    is marked by the call to WebUIContentsPreloadManager::Request().
+  </summary>
+  <token key="WebUIName" variants="TopChromeWebUIName"/>
+</histogram>
+
+<histogram name="WebUI.TopChrome.RequestToLCP{WebUIName}" units="ms"
+    expires_after="2025-01-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>chrome-webui-for-features@google.com</owner>
+  <summary>
+    Measures the time elapsed from the initiation of a WebUI request to its
+    largest contentful paint. This metric applies to the main frame documents of
+    top-chrome WebUI pages, such as side-panel content. The request initiation
+    is marked by the call to WebUIContentsPreloadManager::Request().
+  </summary>
+  <token key="WebUIName" variants="TopChromeWebUIName"/>
+</histogram>
+
+<histogram name="WebUI.WebUIURLLoaderFactory.URLRequestLoadTime" units="ms"
+    expires_after="2022-10-30">
+  <owner>dpapad@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The elapsed time for URL requests made through the WebUIURLLoaderFactory.
+    The reported duration is the time spent in the browser process from the
+    reception of the mojo request up to the content delivery through mojo call.
+  </summary>
+</histogram>
+
+<histogram name="WebUICodeCache.FeatureEnabled" enum="Boolean"
+    expires_after="2025-03-30">
+  <owner>temao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    True if WebUICodeCache feature is enabled. This counts the number of times
+    generated WebUICodeCache JS code cache is instantiated.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.CloseAction" enum="WebUITabStripCloseActions"
+    expires_after="2025-03-30">
+  <owner>collinbaker@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The WebUI tab strip is a more touch-friendly tab strip used in place of
+    Chrome's native tab strip in some cases. It can be opened and closed. This
+    records how a user closed it.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.CloseTabAction"
+    enum="WebUITabStripCloseTabActions" expires_after="2025-03-30">
+  <owner>johntlee@chromium.org</owner>
+  <owner>dpapad@chromium.org</owner>
+  <summary>
+    The WebUI tab strip is a more touch-friendly tab strip used in place of
+    Chrome's native tab strip in some cases. This records how a user closed a
+    tab within the WebUI tab strip.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.LoadCompletedTime" units="ms"
+    expires_after="2025-03-30">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    The amount of time between the RenderFrameHost StartProvisionalLoad event
+    and the RenderFrameHost DocumentOnLoadCompleted event for the WebUI tab
+    strip page. This happens once when a browser window with WebUI tab strip
+    enabled is created. WebUITabStrip.LoadDocumentTime should be smaller or
+    equal to WebUITabStrip.LoadCoimpletedTime.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.LoadDocumentTime" units="ms"
+    expires_after="2025-03-30">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    The amount of time between the RenderFrameHost StartProvisionalLoad and
+    DidFinishDocumentLoad events for the WebUI tab strip page. This happens once
+    when a browser window with WebUI tab strip enabled is created.
+    WebUITabStrip.LoadDocumentTime should be smaller or equal to
+    WebUITabStrip.LoadCoimpletedTime.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
+    expires_after="2025-03-30">
+  <owner>collinbaker@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The WebUI tab strip is a more touch-friendly tab strip used in place of
+    Chrome's native tab strip in some cases. It can be opened and closed. This
+    records how a user opened it.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.OpenDuration" units="ms"
+    expires_after="2025-03-30">
+  <owner>collinbaker@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The WebUI tab strip is a more touch-friendly tab strip used in place of
+    Chrome's native tab strip in some cases. It can be opened and closed. This
+    records how long it was open when closing.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.TabActivation" units="ms"
+    expires_after="2025-03-30">
+  <owner>robliao@chromium.org</owner>
+  <owner>johntlee@chromium.org</owner>
+  <summary>
+    WebUI Tabstrip: Time from activating a tab from WebUI to receiving an
+    activation notification in WebUI.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.TabCreation" units="ms"
+    expires_after="2025-03-30">
+  <owner>robliao@chromium.org</owner>
+  <owner>johntlee@chromium.org</owner>
+  <summary>
+    WebUI Tabstrip: Time needed to create all of the tab elements at launch.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.TabDataReceived" units="ms"
+    expires_after="2025-03-30">
+  <owner>robliao@chromium.org</owner>
+  <owner>johntlee@chromium.org</owner>
+  <summary>
+    WebUI Tabstrip: Time from requesting the tab data to receiving the data.
+  </summary>
 </histogram>
 
 </histograms>
