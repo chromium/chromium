@@ -765,7 +765,7 @@ UIColor* BackgroundColor() {
   staleCredentialsViewController.actionHandler = self;
   staleCredentialsViewController.presentationController.delegate = self;
   [self presentViewController:staleCredentialsViewController
-                     animated:YES
+                     animated:NO
                    completion:nil];
 }
 
@@ -845,7 +845,7 @@ UIColor* BackgroundColor() {
   savingEnterpriseDisabledViewController.actionHandler = self;
   savingEnterpriseDisabledViewController.presentationController.delegate = self;
   [self presentViewController:savingEnterpriseDisabledViewController
-                     animated:YES
+                     animated:NO
                    completion:nil];
 }
 
@@ -857,7 +857,7 @@ UIColor* BackgroundColor() {
   signedOutUserViewController.actionHandler = self;
   signedOutUserViewController.presentationController.delegate = self;
   [self presentViewController:signedOutUserViewController
-                     animated:YES
+                     animated:NO
                    completion:nil];
 }
 
