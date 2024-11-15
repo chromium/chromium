@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 
 #include <map>
-#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/metrics/statistics_recorder.h"
@@ -372,73 +371,4 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
   // History Cluster metrics are recorded on WebUI destruction.
   web_contents.reset();
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.InitialState", 1);
-}
-
-class WebUIContentsPreloadMetricsHelperTest
-    : public WebUIContentsPreloadManagerBrowserTestBase {
- public:
-  static constexpr std::string_view kTestPreloadedUrl =
-      chrome::kChromeUITabSearchURL;
-  static constexpr std::string_view kTestNonPreloadedUrl = kTestWebUIURL;
-  static constexpr std::string_view kTestNonPreloadedHost = kTestWebUIHost;
-
-  // WebUIContentsPreloadManagerBrowserTestBase:
-  void SetUpFeature() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        features::kPreloadTopChromeWebUI,
-        {{features::kPreloadTopChromeWebUISmartPreloadName, "true"}});
-  }
-  void SetUpPreloadURL() override {
-    config_registration_ =
-        std::make_unique<content::ScopedWebUIConfigRegistration>(
-            std::make_unique<TestTopChromeWebUIConfig>(kTestNonPreloadedHost));
-    ON_CALL(*mock_preload_candidate_selector(), GetURLToPreload(_))
-        .WillByDefault(Return(GURL(kTestPreloadedUrl)));
-  }
-
- private:
-  std::unique_ptr<content::ScopedWebUIConfigRegistration> config_registration_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadMetricsHelperTest, PreloadAndShow) {
-  base::HistogramTester histogram_tester;
-  test_api().MaybePreloadForBrowserContext(browser()->profile());
-  navigation_waiter()->Wait();
-  ASSERT_EQ(test_api().GetPreloadedURL(), GURL(kTestPreloadedUrl));
-  histogram_tester.ExpectTotalCount("WebUI.PreloadedUrl", 1);
-  // The WebUI is not shown, so the metric is not recorded.
-  histogram_tester.ExpectTotalCount("WebUI.PreloadedAndShownUrl", 0);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      WebUIContentsPreloadManager::GetInstance()
-          ->Request(GURL(kTestPreloadedUrl), browser()->profile())
-          .web_contents;
-  content::WebContents* web_contents_ptr = web_contents.get();
-  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  /*foreground=*/true);
-  content::WaitForFirstNonEmptyPaint(web_contents_ptr);
-  histogram_tester.ExpectTotalCount("WebUI.PreloadedAndShownUrl", 1);
-}
-
-// Tests that a WebUI is preloaded and then a different WebUI is requested.
-// The histogram PreloadedAndShownUrl should not be recorded.
-IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadMetricsHelperTest, PreloadMiss) {
-  base::HistogramTester histogram_tester;
-  test_api().MaybePreloadForBrowserContext(browser()->profile());
-  navigation_waiter()->Wait();
-  ASSERT_EQ(test_api().GetPreloadedURL(), GURL(kTestPreloadedUrl));
-  histogram_tester.ExpectTotalCount("WebUI.PreloadedUrl", 1);
-  // The WebUI is not shown, so the metric is not recorded.
-  histogram_tester.ExpectTotalCount("WebUI.PreloadedAndShownUrl", 0);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      WebUIContentsPreloadManager::GetInstance()
-          ->Request(GURL(kTestNonPreloadedUrl), browser()->profile())
-          .web_contents;
-  content::WebContents* web_contents_ptr = web_contents.get();
-  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  /*foreground=*/true);
-  content::WaitForFirstNonEmptyPaint(web_contents_ptr);
-  // The metric is not recorded because the request is for a different WebUI.
-  histogram_tester.ExpectTotalCount("WebUI.PreloadedAndShownUrl", 0);
 }

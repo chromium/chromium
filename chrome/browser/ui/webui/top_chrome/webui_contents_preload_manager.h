@@ -136,12 +136,9 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // and handling the "ready-to-show" event emitted by the WebContents.
   void SetPreloadedContents(std::unique_ptr<content::WebContents> web_contents);
 
-  // Creates a new WebContents for the given `browser_context` and `url`.
-  // If `preloading` is true, this WebContents is created for preloading.
   std::unique_ptr<content::WebContents> CreateNewContents(
       content::BrowserContext* browser_context,
-      GURL url,
-      bool preloading);
+      GURL url);
 
   void LoadURLForContents(content::WebContents* web_contents, GURL url);
 
@@ -174,6 +171,9 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   std::unique_ptr<content::WebContents> preloaded_web_contents_;
 
   std::unique_ptr<PendingPreload> pending_preload_;
+
+  // Tracks the timeticks when Request() is called.
+  std::map<raw_ptr<content::WebContents>, base::TimeTicks> request_time_map_;
 
   // Tracks the WebUI presence state under a profile.
   std::unique_ptr<PerProfileWebUITracker> webui_tracker_;

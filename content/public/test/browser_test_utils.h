@@ -293,9 +293,6 @@ void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents);
 // navigations should be refactored to do EXPECT_TRUE(WaitForLoadStop()).
 bool WaitForLoadStop(WebContents* web_contents);
 
-// Waits for `web_contents` to issue the first non-empty paint.
-void WaitForFirstNonEmptyPaint(WebContents* web_contents);
-
 // If a test uses a beforeunload dialog, it must be prepared to avoid flakes.
 // This function collects everything that needs to be done, except for user
 // activation which is triggered only when |trigger_user_activation| is true.

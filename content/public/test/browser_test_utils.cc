@@ -852,35 +852,6 @@ bool WaitForLoadStop(WebContents* web_contents) {
   return IsLastCommittedPageNormal(web_contents);
 }
 
-namespace {
-
-class WebContentsFirstNonEmptyPaintWaiter
-    : public content::WebContentsObserver {
- public:
-  explicit WebContentsFirstNonEmptyPaintWaiter(
-      content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-
-  void Wait() {
-    if (web_contents()->CompletedFirstVisuallyNonEmptyPaint()) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- private:
-  // WebContentsObserver:
-  void DidFirstVisuallyNonEmptyPaint() override { run_loop_.Quit(); }
-
-  base::RunLoop run_loop_;
-};
-
-}  // namespace
-
-void WaitForFirstNonEmptyPaint(WebContents* web_contents) {
-  WebContentsFirstNonEmptyPaintWaiter(web_contents).Wait();
-}
-
 bool WaitForNavigationFinished(WebContents* web_contents,
                                TestNavigationObserver& observer) {
   TRACE_EVENT0("test", "content::WaitForNavigationFinished");
