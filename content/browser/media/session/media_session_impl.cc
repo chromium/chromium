@@ -361,11 +361,26 @@ void MediaSessionImpl::DidUpdateFaviconURL(
     icons.push_back(image);
   }
 
+  bool should_update_observers = true;
   auto it = images_.find(MediaSessionImageType::kSourceIcon);
-  if (it != images_.end() && it->second == icons)
-    return;
+  if (it != images_.end() && it->second == icons) {
+    should_update_observers = false;
+  }
 
   images_.insert_or_assign(MediaSessionImageType::kSourceIcon, icons);
+
+  // Notify the VideoPictureInPictureWindowControllerImpl regardless of whether
+  // or not the images have actually changed, since there may or may not have
+  // been a picture-in-picture window last time we updated.
+  if (auto* pip_window_controller_ =
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller_->MediaSessionImagesChanged(images_);
+  }
+
+  if (!should_update_observers) {
+    return;
+  }
 
   for (auto& observer : observers_)
     observer->MediaSessionImagesChanged(this->images_);
@@ -1739,6 +1754,14 @@ const base::UnguessableToken& MediaSessionImpl::GetSourceId() const {
 
 const base::UnguessableToken& MediaSessionImpl::GetRequestId() const {
   return delegate_->request_id();
+}
+
+void MediaSessionImpl::UpdateVideoPictureInPictureWindowController(
+    VideoPictureInPictureWindowControllerImpl* pip_controller) const {
+  pip_controller->MediaSessionActionsChanged(actions_);
+  pip_controller->MediaSessionImagesChanged(images_);
+  pip_controller->MediaSessionPositionChanged(position_);
+  pip_controller->MediaSessionInfoChanged(session_info_);
 }
 
 base::WeakPtr<MediaSessionImpl> MediaSessionImpl::GetWeakPtr() {

@@ -115,6 +115,13 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(NextSlide, void());
   MOCK_METHOD1(SeekTo, void(base::TimeDelta time));
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
+  void GetMediaImage(
+      const media_session::MediaImage& image,
+      int minimum_size_px,
+      int desired_size_px,
+      content::MediaSession::GetMediaImageBitmapCallback callback) override {
+    std::move(callback).Run(SkBitmap());
+  }
   MOCK_METHOD0(GetWindowBounds, std::optional<gfx::Rect>());
   MOCK_METHOD0(GetOrigin, std::optional<url::Origin>());
   MOCK_METHOD1(SetOnWindowCreatedNotifyObserversCallback,

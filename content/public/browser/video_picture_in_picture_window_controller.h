@@ -8,7 +8,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
+#include "services/media_session/public/cpp/media_image.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -62,6 +64,13 @@ class VideoPictureInPictureWindowController
   // Returns the source bounds of the video, in the WebContents top-level
   // coordinate space, of the video before it enters picture in picture.
   virtual const gfx::Rect& GetSourceBounds() const = 0;
+
+  // Retrieves the SkBitmap of the given media_session::MediaImage.
+  virtual void GetMediaImage(
+      const media_session::MediaImage& image,
+      int minimum_size_px,
+      int desired_size_px,
+      MediaSession::GetMediaImageBitmapCallback callback) = 0;
 
   // Called to set the callback to notify the observers that window has been
   // created.

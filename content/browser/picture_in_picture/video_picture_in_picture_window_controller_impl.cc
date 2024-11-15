@@ -48,7 +48,13 @@ VideoPictureInPictureWindowControllerImpl::
     VideoPictureInPictureWindowControllerImpl(WebContents* web_contents)
     : WebContentsUserData<VideoPictureInPictureWindowControllerImpl>(
           *web_contents),
-      WebContentsObserver(web_contents) {}
+      WebContentsObserver(web_contents) {
+  MediaSessionImpl* media_session =
+      MediaSessionImpl::FromWebContents(web_contents);
+  if (media_session) {
+    media_session->UpdateVideoPictureInPictureWindowController(this);
+  }
+}
 
 void VideoPictureInPictureWindowControllerImpl::Show() {
   DCHECK(window_);
@@ -99,6 +105,7 @@ void VideoPictureInPictureWindowControllerImpl::Show() {
       media_session_action_next_slide_handled_);
   window_->SetPreviousSlideButtonVisibility(
       media_session_action_previous_slide_handled_);
+  window_->SetFaviconImages(favicon_images_);
   window_->ShowInactive();
   GetWebContentsImpl()->SetHasPictureInPictureVideo(true);
 }
@@ -471,6 +478,28 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionPositionChanged(
   }
 }
 
+void VideoPictureInPictureWindowControllerImpl::MediaSessionImagesChanged(
+    const base::flat_map<media_session::mojom::MediaSessionImageType,
+                         std::vector<media_session::MediaImage>>& images) {
+  auto it =
+      images.find(media_session::mojom::MediaSessionImageType::kSourceIcon);
+  if (it == images.end()) {
+    if (favicon_images_.empty()) {
+      return;
+    }
+    favicon_images_.clear();
+  } else {
+    if (it->second == favicon_images_) {
+      return;
+    }
+    favicon_images_ = it->second;
+  }
+
+  if (window_) {
+    window_->SetFaviconImages(favicon_images_);
+  }
+}
+
 gfx::Size VideoPictureInPictureWindowControllerImpl::GetSize() {
   return window_->GetBounds().size();
 }
@@ -537,6 +566,17 @@ void VideoPictureInPictureWindowControllerImpl::CloseInternal(
 const gfx::Rect& VideoPictureInPictureWindowControllerImpl::GetSourceBounds()
     const {
   return source_bounds_;
+}
+
+void VideoPictureInPictureWindowControllerImpl::GetMediaImage(
+    const media_session::MediaImage& image,
+    int minimum_size_px,
+    int desired_size_px,
+    MediaSession::GetMediaImageBitmapCallback callback) {
+  MediaSessionImpl* media_session = MediaSessionImpl::Get(web_contents());
+  CHECK(media_session);
+  media_session->GetMediaImageBitmap(image, minimum_size_px, desired_size_px,
+                                     std::move(callback));
 }
 
 std::optional<gfx::Rect>

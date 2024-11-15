@@ -42,6 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
+#include "services/media_session/public/cpp/media_image_manager.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -51,7 +52,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/resize_utils.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/non_client_view.h"
@@ -112,6 +115,37 @@ constexpr gfx::Size kActionButtonSize(28, 28);
 
 // The amount of time the seek buttons next to the play button seek.
 constexpr base::TimeDelta kSeekTime = base::Seconds(10);
+
+// The size of the view containing the favicon.
+constexpr gfx::Size kFaviconSize(24, 24);
+
+// The size of the favicon image itself.
+constexpr gfx::Size kFaviconIconSize(16, 16);
+
+gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
+                                  const gfx::Size& view_size) {
+  const float scale =
+      std::max(view_size.width() / static_cast<float>(image_size.width()),
+               view_size.height() / static_cast<float>(image_size.height()));
+  return gfx::ScaleToFlooredSize(image_size, scale);
+}
+
+// Converts the given bitmap to the correct color type.
+gfx::ImageSkia GetCorrectColorTypeImage(const SkBitmap& bitmap) {
+  if (bitmap.info().colorType() == kN32_SkColorType) {
+    return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  }
+  SkImageInfo color_type_info = bitmap.info().makeColorType(kN32_SkColorType);
+  SkBitmap color_type_copy;
+  if (!color_type_copy.tryAllocPixels(color_type_info)) {
+    return gfx::ImageSkia();
+  }
+  if (!bitmap.readPixels(color_type_info, color_type_copy.getPixels(),
+                         color_type_copy.rowBytes(), 0, 0)) {
+    return gfx::ImageSkia();
+  }
+  return gfx::ImageSkia::CreateFrom1xBitmap(color_type_copy);
+}
 
 // Returns the quadrant the VideoOverlayWindowViews is primarily in on the
 // current work area.
@@ -841,6 +875,7 @@ void VideoOverlayWindowViews::SetUpViews() {
 
   // These controls may be different (or even nonexistent) depending on whether
   // the 2024 updated UI is enabled.
+  std::unique_ptr<views::ImageView> favicon_view;
   std::unique_ptr<OverlayWindowMinimizeButton> minimize_button;
   std::unique_ptr<OverlayWindowBackToTabButton> back_to_tab_button;
   std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button;
@@ -860,6 +895,8 @@ void VideoOverlayWindowViews::SetUpViews() {
   if (Use2024UI()) {
     play_pause_controls_view->SetSize(
         {kPlaybackButtonSize, kPlaybackButtonSize});
+    favicon_view = std::make_unique<views::ImageView>();
+    favicon_view->SetSize(kFaviconSize);
     minimize_button = std::make_unique<
         OverlayWindowMinimizeButton>(base::BindRepeating(
         [](VideoOverlayWindowViews* overlay) {
@@ -1057,19 +1094,23 @@ void VideoOverlayWindowViews::SetUpViews() {
   close_controls_view->layer()->SetFillsBoundsOpaquely(false);
   close_controls_view->layer()->SetName("CloseControlsView");
 
-  // views::View that closes the window without pausing. ----------------------
   if (Use2024UI()) {
+    // views::View that displays the website's favicon. -----------------------
+    favicon_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+    favicon_view->layer()->SetFillsBoundsOpaquely(false);
+    favicon_view->layer()->SetName("FaviconView");
+
+    // views::View that closes the window without pausing. --------------------
     minimize_button->SetPaintToLayer(ui::LAYER_TEXTURED);
     minimize_button->layer()->SetFillsBoundsOpaquely(false);
     minimize_button->layer()->SetName("OverlayWindowMinimizeButton");
-  }
 
-  // views::View that closes the window and focuses initiator tab. ------------
-  if (Use2024UI()) {
+    // views::View that closes the window and focuses initiator tab. ----------
     back_to_tab_button->SetPaintToLayer(ui::LAYER_TEXTURED);
     back_to_tab_button->layer()->SetFillsBoundsOpaquely(false);
     back_to_tab_button->layer()->SetName("BackToTabControlsView");
   } else {
+    // views::View that closes the window and focuses initiator tab. ----------
     CHECK(back_to_tab_label_button);
     back_to_tab_label_button->SetPaintToLayer(ui::LAYER_TEXTURED);
     back_to_tab_label_button->layer()->SetFillsBoundsOpaquely(false);
@@ -1155,6 +1196,11 @@ void VideoOverlayWindowViews::SetUpViews() {
   close_controls_view_ =
       controls_container_view->AddChildView(std::move(close_controls_view));
   if (Use2024UI()) {
+    // Initialize the favicon view with the default icon.
+    favicon_view_ =
+        controls_container_view->AddChildView(std::move(favicon_view));
+    UpdateFavicon(gfx::ImageSkia());
+
     minimize_button_ =
         controls_container_view->AddChildView(std::move(minimize_button));
     back_to_tab_button_ =
@@ -1299,6 +1345,8 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   if (Use2024UI()) {
     constexpr int kTopControlsHeight = 34;
     constexpr int kBottomControlsHeight = 64;
+    constexpr int kFaviconLeftMargin = 8;
+    constexpr int kFaviconTopMargin = 8;
     constexpr int kProgressBarHeight = 26;
     constexpr int kPlayPauseButtonMargin = 16;
     constexpr int kControlHorizontalMargin = 8;
@@ -1326,6 +1374,8 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     gfx::Rect middle_controls_bounds = gfx::BoundingRect(
         top_controls_bounds.bottom_left(), bottom_controls_bounds.top_right());
 
+    favicon_view_->SetPosition({top_controls_bounds.x() + kFaviconLeftMargin,
+                                top_controls_bounds.y() + kFaviconTopMargin});
     minimize_button_->SetPosition(GetBounds().size(), quadrant);
     back_to_tab_button_->SetPosition(GetBounds().size(), quadrant);
 
@@ -1726,6 +1776,27 @@ void VideoOverlayWindowViews::SetMediaPosition(
   UpdateTimestampLabel(position_.GetPosition(), position_.duration());
 }
 
+void VideoOverlayWindowViews::SetFaviconImages(
+    const std::vector<media_session::MediaImage>& images) {
+  if (!Use2024UI()) {
+    return;
+  }
+
+  media_session::MediaImageManager manager(gfx::kFaviconSize,
+                                           gfx::kFaviconSize);
+  std::optional<media_session::MediaImage> image = manager.SelectImage(images);
+
+  if (!image) {
+    UpdateFavicon(gfx::ImageSkia());
+    return;
+  }
+
+  controller_->GetMediaImage(
+      *image, gfx::kFaviconSize, gfx::kFaviconSize,
+      base::BindOnce(&VideoOverlayWindowViews::OnFaviconReceived,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void VideoOverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
   // The PiP window may have a previous surface set. If the window stays open
   // since then, we need to unregister the previous frame sink; otherwise the
@@ -2011,6 +2082,10 @@ views::Label* VideoOverlayWindowViews::timestamp_for_testing() const {
   return timestamp_;
 }
 
+views::ImageView* VideoOverlayWindowViews::favicon_view_for_testing() const {
+  return favicon_view_;
+}
+
 CloseImageButton* VideoOverlayWindowViews::close_button_for_testing() const {
   return close_controls_view_;
 }
@@ -2107,4 +2182,20 @@ void VideoOverlayWindowViews::UpdateTimestampLabel(base::TimeDelta current_time,
   timestamp_->SetText(base::StrCat(
       {global_media_controls::GetFormattedDuration(current_time), u" / ",
        global_media_controls::GetFormattedDuration(duration)}));
+}
+
+void VideoOverlayWindowViews::OnFaviconReceived(const SkBitmap& image) {
+  UpdateFavicon(GetCorrectColorTypeImage(image));
+}
+
+void VideoOverlayWindowViews::UpdateFavicon(const gfx::ImageSkia& favicon) {
+  if (favicon.isNull()) {
+    favicon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kGlobeIcon, ui::kColorSysOnSurface,
+        kFaviconIconSize.width()));
+  } else {
+    favicon_view_->SetImageSize(
+        ScaleImageSizeToFitView(favicon.size(), kFaviconIconSize));
+    favicon_view_->SetImage(ui::ImageModel::FromImageSkia(favicon));
+  }
 }

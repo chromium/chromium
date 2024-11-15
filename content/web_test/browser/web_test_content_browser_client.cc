@@ -150,6 +150,8 @@ class BoundsMatchVideoSizeOverlayWindow : public VideoOverlayWindow {
   void SetNextSlideButtonVisibility(bool is_visible) override {}
   void SetPreviousSlideButtonVisibility(bool is_visible) override {}
   void SetMediaPosition(const media_session::MediaPosition&) override {}
+  void SetFaviconImages(
+      const std::vector<media_session::MediaImage>& images) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
 
  private:

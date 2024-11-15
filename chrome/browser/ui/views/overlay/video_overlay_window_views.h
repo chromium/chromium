@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"
@@ -21,6 +22,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace views {
+class ImageView;
 class Label;
 }  // namespace views
 
@@ -84,6 +86,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void SetPreviousSlideButtonVisibility(bool is_visible) override;
   void SetNextSlideButtonVisibility(bool is_visible) override;
   void SetMediaPosition(const media_session::MediaPosition& position) override;
+  void SetFaviconImages(
+      const std::vector<media_session::MediaImage>& images) override;
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
 
   // views::Widget:
@@ -179,6 +183,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
       const;
   global_media_controls::MediaProgressView* progress_view_for_testing() const;
   views::Label* timestamp_for_testing() const;
+  views::ImageView* favicon_view_for_testing() const;
   CloseImageButton* close_button_for_testing() const;
   OverlayWindowMinimizeButton* minimize_button_for_testing() const;
   OverlayWindowBackToTabButton* back_to_tab_button_for_testing() const;
@@ -303,6 +308,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void UpdateTimestampLabel(base::TimeDelta current_time,
                             base::TimeDelta duration);
 
+  void OnFaviconReceived(const SkBitmap& image);
+  void UpdateFavicon(const gfx::ImageSkia& favicon);
+
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
 
@@ -355,6 +363,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<views::View> video_view_ = nullptr;
   raw_ptr<views::View> controls_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_container_view_ = nullptr;
+  raw_ptr<views::ImageView> favicon_view_ = nullptr;
   raw_ptr<CloseImageButton> close_controls_view_ = nullptr;
   raw_ptr<OverlayWindowMinimizeButton> minimize_button_ = nullptr;
   raw_ptr<OverlayWindowBackToTabButton> back_to_tab_button_ = nullptr;
@@ -435,6 +444,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.
   GetOverlayViewCb get_overlay_view_cb_;
+
+  base::WeakPtrFactory<VideoOverlayWindowViews> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_VIDEO_OVERLAY_WINDOW_VIEWS_H_

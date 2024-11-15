@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +30,7 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
@@ -37,6 +39,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -120,6 +123,19 @@ class TestVideoPictureInPictureWindowController
   void HangUp() override {}
   MOCK_METHOD(void, SeekTo, (base::TimeDelta time));
   const gfx::Rect& GetSourceBounds() const override { return source_bounds_; }
+  void GetMediaImage(
+      const media_session::MediaImage& image,
+      int minimum_size_px,
+      int desired_size_px,
+      content::MediaSession::GetMediaImageBitmapCallback callback) override {
+    std::move(callback).Run(
+        GetMediaImageImpl(image, minimum_size_px, desired_size_px));
+  }
+  MOCK_METHOD(SkBitmap,
+              GetMediaImageImpl,
+              (const media_session::MediaImage& image,
+               int minimum_size_px,
+               int desired_size_px));
   std::optional<gfx::Rect> GetWindowBounds() override { return std::nullopt; }
   std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
   void SetOnWindowCreatedNotifyObserversCallback(base::OnceClosure) override {}
@@ -758,6 +774,12 @@ TEST_F(VideoOverlayWindowViewsTest,
   ASSERT_EQ(nullptr, forward_10_seconds_button);
 }
 
+TEST_F(VideoOverlayWindowViewsTest, FaviconNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::ImageView* favicon = overlay_window().favicon_view_for_testing();
+  ASSERT_EQ(nullptr, favicon);
+}
+
 class VideoOverlayWindowViewsWith2024UITest
     : public VideoOverlayWindowViewsTest {
  public:
@@ -894,4 +916,48 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest,
   EXPECT_CALL(pip_window_controller(), SeekTo(base::Seconds(100)));
   forward_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysFavicon) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::ImageView* favicon_view = overlay_window().favicon_view_for_testing();
+  ASSERT_NE(nullptr, favicon_view);
+  EXPECT_TRUE(favicon_view->IsDrawn());
+
+  // Before any favicon is set, the default favicon should be displayed.
+  {
+    ui::ImageModel image_model = favicon_view->GetImageModel();
+    EXPECT_TRUE(image_model.IsVectorIcon());
+    EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
+              &vector_icons::kGlobeIcon);
+  }
+
+  // Setting the favicon should use that instead.
+  {
+    media_session::MediaImage test_favicon;
+    test_favicon.src = GURL("https://google.com");
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(100, 100);
+    bitmap.eraseColor(SK_ColorBLUE);
+    PictureInPictureWindowManager::GetInstance()
+        ->set_window_controller_for_testing(&pip_window_controller());
+    EXPECT_CALL(pip_window_controller(),
+                GetMediaImageImpl(test_favicon, 16, 16))
+        .WillOnce(testing::Return(bitmap));
+
+    overlay_window().SetFaviconImages({test_favicon});
+    ui::ImageModel image_model = favicon_view->GetImageModel();
+    EXPECT_FALSE(image_model.IsVectorIcon());
+    EXPECT_TRUE(image_model.IsImage());
+  }
+
+  // Setting the favicon back to empty should change back to the default
+  // favicon.
+  {
+    overlay_window().SetFaviconImages({});
+    ui::ImageModel image_model = favicon_view->GetImageModel();
+    EXPECT_TRUE(image_model.IsVectorIcon());
+    EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
+              &vector_icons::kGlobeIcon);
+  }
 }
