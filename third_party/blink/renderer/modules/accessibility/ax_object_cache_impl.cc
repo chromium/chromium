@@ -32,9 +32,11 @@
 #include <numeric>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -6243,13 +6245,52 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
 
     // Moves to first LayoutObject that a11y cares about.
     line_cursor.MoveToNextInlineLeaf();
+
+    // Maximum number of attempts to try to find a next object on the line. Used
+    // to
+    // detect unlikely (but theoretically possible), loops.
+    constexpr int kMaxInlineCursorNextObjectCalls = 250000;
+    int runs = 0;
     while (line_cursor) {
+      runs++;
+
+      if (runs >= kMaxInlineCursorNextObjectCalls) [[unlikely]] {
+        // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to CHECK().
+        DUMP_WILL_BE_NOTREACHED()
+            << "Did not find an end to the processing of next / previous on "
+               "line candidates for "
+            << layout_object << "(" << Get(layout_object) << ") after " << runs
+            << " runs.";
+        break;
+      }
       auto* line_object = line_cursor.CurrentMutableLayoutObject();
       line_cursor.MoveToNextInlineLeafOnLine();
 
+      if (!line_object) [[unlikely]] {
+        // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to CHECK().
+        DUMP_WILL_BE_NOTREACHED()
+            << "InlineCursor says that has an existing position however no "
+               "LayoutObject was found. Found this while processing "
+            << layout_object << "(" << Get(layout_object) << ") after " << runs
+            << " runs.";
+        break;
+      }
       if (line_object) {
         auto* next_line_object =
             line_cursor ? line_cursor.CurrentMutableLayoutObject() : nullptr;
+
+        if (line_object == next_line_object) [[unlikely]] {
+          // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to
+          // CHECK().
+          DUMP_WILL_BE_NOTREACHED()
+              << "InlineCursor says it moved to the next inline leaf object "
+                 "for a different LayyoutObject, but returned value is the "
+                 "same as previous inline leaf."
+              << "same object was: " << line_object << "(" << Get(line_object)
+              << ") while processing " << layout_object << " after " << runs
+              << " runs.";
+          break;
+        }
         if (next_line_object) {
           next_on_line_map_.insert(line_object, next_line_object);
           previous_on_line_map_.insert(next_line_object, line_object);
