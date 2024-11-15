@@ -592,8 +592,7 @@ std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
 
 void QuicTestPacketMaker::AddPriorityHeader(spdy::SpdyPriority spdy_priority,
                                             quiche::HttpHeaderBlock* headers) {
-  if (use_priority_header_ &&
-      base::FeatureList::IsEnabled(net::features::kPriorityHeader)) {
+  if (use_priority_header_) {
     quic::HttpStreamPriority priority{
         spdy_priority, quic::HttpStreamPriority::kDefaultIncremental};
     if (client_priority_uses_incremental_) {

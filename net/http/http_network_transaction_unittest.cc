@@ -412,21 +412,15 @@ TransportInfo EmbeddedHttpServerTransportInfo() {
 }
 
 struct TestParams {
-  TestParams(bool priority_header_enabled, bool happy_eyeballs_v3_enabled)
-      : priority_header_enabled(priority_header_enabled),
-        happy_eyeballs_v3_enabled(happy_eyeballs_v3_enabled) {}
+  explicit TestParams(bool happy_eyeballs_v3_enabled)
+      : happy_eyeballs_v3_enabled(happy_eyeballs_v3_enabled) {}
 
-  bool priority_header_enabled;
   bool happy_eyeballs_v3_enabled;
 };
 
 std::vector<TestParams> GetTestParams() {
-  return {TestParams(/*priority_header_enabled=*/true,
-                     /*happy_eyeballs_v3_enabled=*/false),
-          TestParams(/*priority_header_enabled=*/false,
-                     /*happy_eyeballs_v3_enabled=*/false),
-          TestParams(/*priority_header_enabled=*/true,
-                     /*happy_eyeballs_v3_enabled=*/true)};
+  return {TestParams(/*happy_eyeballs_v3_enabled=*/false),
+          TestParams(/*happy_eyeballs_v3_enabled=*/true)};
 }
 
 }  // namespace
@@ -678,12 +672,6 @@ class HttpNetworkTransactionTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (PriorityHeaderEnabled()) {
-      enabled_features.emplace_back(features::kPriorityHeader);
-    } else {
-      disabled_features.emplace_back(features::kPriorityHeader);
-    }
-
     if (HappyEyeballsV3Enabled()) {
       enabled_features.emplace_back(features::kHappyEyeballsV3);
     } else {
@@ -691,10 +679,6 @@ class HttpNetworkTransactionTest
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  bool PriorityHeaderEnabled() const {
-    return GetParam().priority_header_enabled;
   }
 
   bool HappyEyeballsV3Enabled() const {

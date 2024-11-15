@@ -104,21 +104,15 @@ using testing::Eq;
 const int32_t kBufferSize = SpdyHttpStream::kRequestBodyBufferSize;
 
 struct TestParams {
-  TestParams(bool priority_header_enabled, bool happy_eyeballs_v3_enabled)
-      : priority_header_enabled(priority_header_enabled),
-        happy_eyeballs_v3_enabled(happy_eyeballs_v3_enabled) {}
+  explicit TestParams(bool happy_eyeballs_v3_enabled)
+      : happy_eyeballs_v3_enabled(happy_eyeballs_v3_enabled) {}
 
-  bool priority_header_enabled;
   bool happy_eyeballs_v3_enabled;
 };
 
 std::vector<TestParams> GetTestParams() {
-  return {TestParams(/*priority_header_enabled=*/true,
-                     /*happy_eyeballs_v3_enabled=*/false),
-          TestParams(/*priority_header_enabled=*/false,
-                     /*happy_eyeballs_v3_enabled=*/false),
-          TestParams(/*priority_header_enabled=*/true,
-                     /*happy_eyeballs_v3_enabled=*/true)};
+  return {TestParams(/*happy_eyeballs_v3_enabled=*/false),
+          TestParams(/*happy_eyeballs_v3_enabled=*/true)};
 }
 
 }  // namespace
@@ -137,12 +131,6 @@ class SpdyNetworkTransactionTest
         spdy_util_(/*use_priority_header=*/true) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (PriorityHeaderEnabled()) {
-      enabled_features.emplace_back(features::kPriorityHeader);
-    } else {
-      disabled_features.emplace_back(features::kPriorityHeader);
-    }
 
     if (HappyEyeballsV3Enabled()) {
       enabled_features.emplace_back(features::kHappyEyeballsV3);
@@ -535,10 +523,6 @@ class SpdyNetworkTransactionTest
   base::RepeatingClosure FastForwardByCallback(base::TimeDelta delta) {
     return base::BindRepeating(&SpdyNetworkTransactionTest::FastForwardBy,
                                base::Unretained(this), delta);
-  }
-
-  bool PriorityHeaderEnabled() const {
-    return GetParam().priority_header_enabled;
   }
 
   bool HappyEyeballsV3Enabled() const {
@@ -3702,11 +3686,7 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
   ASSERT_TRUE(entries[pos].HasParams());
   auto* header_list = entries[pos].params.FindList("headers");
   ASSERT_TRUE(header_list);
-  if (base::FeatureList::IsEnabled(net::features::kPriorityHeader)) {
-    ASSERT_EQ(6u, header_list->size());
-  } else {
-    ASSERT_EQ(5u, header_list->size());
-  }
+  ASSERT_EQ(6u, header_list->size());
 
   ASSERT_TRUE((*header_list)[0].is_string());
   EXPECT_EQ(":method: GET", (*header_list)[0].GetString());

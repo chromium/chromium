@@ -125,26 +125,16 @@ static IsolationInfo CreateIsolationInfo() {
                                origin, SiteForCookies::FromOrigin(origin));
 }
 
-class WebSocketStreamCreateTest
-    : public TestWithParam<std::tuple<HandshakeStreamType, bool>>,
-      public WebSocketStreamCreateTestBase {
+class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
+                                  public WebSocketStreamCreateTestBase {
  protected:
   WebSocketStreamCreateTest()
-      : stream_type_(std::get<HandshakeStreamType>(GetParam())),
-        spdy_util_(/*use_priority_header=*/true) {
+      : stream_type_(GetParam()), spdy_util_(/*use_priority_header=*/true) {
     // Make sure these tests all pass with connection partitioning enabled. The
     // disabled case is less interesting, and is tested more directly at lower
     // layers.
-    if (PriorityHeaderEnabled()) {
-      feature_list_.InitWithFeatures(
-          {features::kPartitionConnectionsByNetworkIsolationKey,
-           net::features::kPriorityHeader},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {features::kPartitionConnectionsByNetworkIsolationKey},
-          {net::features::kPriorityHeader});
-    }
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   ~WebSocketStreamCreateTest() override {
@@ -423,8 +413,6 @@ class WebSocketStreamCreateTest
                            additional_headers, std::move(timer_));
   }
 
-  bool PriorityHeaderEnabled() const { return std::get<bool>(GetParam()); }
-
  private:
   void AddWrite(const spdy::SpdySerializedFrame* frame) {
     writes_.emplace_back(ASYNC, frame->data(), frame->size(),
@@ -461,16 +449,14 @@ class WebSocketStreamCreateTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketStreamCreateTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM));
 
 using WebSocketMultiProtocolStreamCreateTest = WebSocketStreamCreateTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketMultiProtocolStreamCreateTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM,
-                                                 HTTP2_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM,
+                                HTTP2_HANDSHAKE_STREAM));
 
 // There are enough tests of the Sec-WebSocket-Extensions header that they
 // deserve their own test fixture.
@@ -492,9 +478,8 @@ class WebSocketStreamCreateExtensionTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketStreamCreateExtensionTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM,
-                                                 HTTP2_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM,
+                                HTTP2_HANDSHAKE_STREAM));
 
 // Common code to construct expectations for authentication tests that receive
 // the auth challenge on one connection and then create a second connection to
@@ -579,8 +564,7 @@ class WebSocketStreamCreateBasicAuthTest : public WebSocketStreamCreateTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketStreamCreateBasicAuthTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM));
 
 class WebSocketStreamCreateDigestAuthTest : public WebSocketStreamCreateTest {
  protected:
@@ -592,8 +576,7 @@ class WebSocketStreamCreateDigestAuthTest : public WebSocketStreamCreateTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketStreamCreateDigestAuthTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM));
 
 const char WebSocketStreamCreateBasicAuthTest::kUnauthorizedResponse[] =
     "HTTP/1.1 401 Unauthorized\r\n"
