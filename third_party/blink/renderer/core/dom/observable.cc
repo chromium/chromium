@@ -672,7 +672,7 @@ class OperatorFromPromiseSubscribeDelegate final
       : promise_(promise) {}
 
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
-    promise_.Unwrap().React(
+    promise_.Unwrap().Then(
         script_state,
         MakeGarbageCollected<ObservablePromiseResolverFunction>(
             subscriber,
@@ -1737,7 +1737,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       //
       // See continued documentation in
       // `AsyncIteratorNextResolverFunction::Call()`.
-      next_promise.React(
+      next_promise.Then(
           script_state,
           MakeGarbageCollected<AsyncIteratorNextResolverFunction>(
               this, subscriber,

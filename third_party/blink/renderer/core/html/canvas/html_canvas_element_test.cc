@@ -394,7 +394,7 @@ TEST_P(HTMLCanvasElementWithTracingAsyncTest,
 
   auto promise =
       ToResolvedPromise<IDLAny>(script_state, script_result.GetSuccessValue());
-  promise.React(script_state, resolve, resolve);
+  promise.Then(script_state, resolve, resolve);
 
   // Avoid the NOTREACHED in CanvasPerformanceMonitor::WillProcessTask().
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();

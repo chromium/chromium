@@ -556,7 +556,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
       MakeGarbageCollected<SelectURLResolutionFailureCallback>(
           unresolved_request);
 
-  promise.React(script_state, success_callback, failure_callback);
+  promise.Then(script_state, success_callback, failure_callback);
 }
 
 void SharedStorageWorkletGlobalScope::RunOperation(
@@ -633,7 +633,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   auto* failure_callback =
       MakeGarbageCollected<RunResolutionFailureCallback>(unresolved_request);
 
-  promise.React(script_state, success_callback, failure_callback);
+  promise.Then(script_state, success_callback, failure_callback);
 }
 
 SharedStorage* SharedStorageWorkletGlobalScope::sharedStorage(

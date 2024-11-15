@@ -118,7 +118,7 @@ PromiseAggregator::PromiseAggregator(ScriptState* script_state,
     // wait for the promise (or then-able) to settle, or will immediately finish
     // with the value. Thus, it's safe to just do this for every value.
     ToResolvedPromise<IDLAny>(script_state, values[i])
-        .React(
+        .Then(
             script_state,
             MakeGarbageCollected<OnSettled>(this, i, /*was_fulfilled=*/true),
             MakeGarbageCollected<OnSettled>(this, i, /*was_fulfilled=*/false));

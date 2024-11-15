@@ -81,7 +81,7 @@ TEST(PromiseAllTest, ResolveUndefined) {
 
   auto* resolve = MakeGarbageCollected<ResolveUndefined>();
   auto* reject = MakeGarbageCollected<Reject>();
-  promise.React(script_state, resolve, reject);
+  promise.Then(script_state, resolve, reject);
 
   EXPECT_FALSE(resolve->react_called);
   EXPECT_FALSE(reject->react_called);
@@ -107,7 +107,7 @@ TEST(PromiseAllTest, ResolveStrings) {
 
   auto* resolve = MakeGarbageCollected<ResolveStrings>();
   auto* reject = MakeGarbageCollected<Reject>();
-  promise.React(script_state, resolve, reject);
+  promise.Then(script_state, resolve, reject);
 
   EXPECT_FALSE(resolve->react_called);
   EXPECT_FALSE(reject->react_called);
@@ -136,7 +136,7 @@ TEST(PromiseAllTest, Reject) {
 
   auto* resolve = MakeGarbageCollected<ResolveUndefined>();
   auto* reject = MakeGarbageCollected<Reject>();
-  promise.React(script_state, resolve, reject);
+  promise.Then(script_state, resolve, reject);
 
   EXPECT_FALSE(resolve->react_called);
   EXPECT_FALSE(reject->react_called);
@@ -165,7 +165,7 @@ TEST(PromiseAllTest, RejectTypeMismatch) {
 
   auto* resolve = MakeGarbageCollected<ResolveDocuments>();
   auto* reject = MakeGarbageCollected<Reject>();
-  promise.React(script_state, resolve, reject);
+  promise.Then(script_state, resolve, reject);
 
   EXPECT_FALSE(resolve->react_called);
   EXPECT_FALSE(reject->react_called);

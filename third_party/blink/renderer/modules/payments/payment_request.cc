@@ -913,7 +913,7 @@ ScriptPromise<PaymentResponse> PaymentRequest::show(
     // If the website does not calculate the final shopping cart contents within
     // 10 seconds, abort payment.
     update_payment_details_timer_.StartOneShot(base::Seconds(10), FROM_HERE);
-    details_promise.React(
+    details_promise.Then(
         script_state, MakeGarbageCollected<UpdatePaymentDetailsResolve>(this),
         MakeGarbageCollected<UpdatePaymentDetailsReject>(this));
   }

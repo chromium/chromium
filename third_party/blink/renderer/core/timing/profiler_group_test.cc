@@ -218,8 +218,8 @@ TEST_F(ProfilerGroupTest, Bug1119865) {
       scope.GetExceptionState());
 
   profiler->stop(scope.GetScriptState())
-      .React(scope.GetScriptState(),
-             MakeGarbageCollected<ExpectNoCallFunction>());
+      .Then(scope.GetScriptState(),
+            MakeGarbageCollected<ExpectNoCallFunction>());
 }
 
 /*

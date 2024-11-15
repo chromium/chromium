@@ -64,9 +64,9 @@ void PaymentRequestUpdateEvent::updateWith(
   stopImmediatePropagation();
   wait_for_update_ = true;
 
-  promise.React(script_state,
-                MakeGarbageCollected<UpdatePaymentDetailsResolve>(request_),
-                MakeGarbageCollected<UpdatePaymentDetailsReject>(request_));
+  promise.Then(script_state,
+               MakeGarbageCollected<UpdatePaymentDetailsResolve>(request_),
+               MakeGarbageCollected<UpdatePaymentDetailsReject>(request_));
 }
 
 void PaymentRequestUpdateEvent::Trace(Visitor* visitor) const {

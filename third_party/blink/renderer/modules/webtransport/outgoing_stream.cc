@@ -269,8 +269,8 @@ void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
     ScriptValue reason_;
     Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
-  abort_promise.React(script_state_, MakeGarbageCollected<ResolveFunction>(
-                                         reason, pending_operation));
+  abort_promise.Then(script_state_, MakeGarbageCollected<ResolveFunction>(
+                                        reason, pending_operation));
 }
 
 void OutgoingStream::OnOutgoingStreamClosed() {

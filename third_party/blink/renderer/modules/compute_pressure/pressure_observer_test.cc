@@ -111,8 +111,8 @@ class PressureRecordAccumulator final : public ScriptFunction {
 void WaitForPromiseFulfillment(ScriptState* script_state,
                                ScriptPromise<IDLUndefined> promise) {
   base::RunLoop run_loop;
-  promise.React(script_state, MakeGarbageCollected<ThenClosureRunner>(
-                                  run_loop.QuitClosure()));
+  promise.Then(script_state,
+               MakeGarbageCollected<ThenClosureRunner>(run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(

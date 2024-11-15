@@ -291,9 +291,9 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
     {
       ScriptState::Scope scope(MainScriptState());
       property->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
-          .React(CurrentScriptState(),
-                 StubResolve<T>(actual_value, n_resolve_calls),
-                 NotReachedReject());
+          .Then(CurrentScriptState(),
+                StubResolve<T>(actual_value, n_resolve_calls),
+                NotReachedReject());
     }
     property->Resolve(value);
     PerformMicrotaskCheckpoint();
@@ -391,13 +391,13 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
   {
     ScriptState::Scope scope(MainScriptState());
-    promise.React(CurrentScriptState(), reaction, NotReachedReject());
+    promise.Then(CurrentScriptState(), reaction, NotReachedReject());
   }
 
   {
     ScriptState::Scope scope(OtherScriptState());
-    other_promise.React(CurrentScriptState(), other_reaction,
-                        NotReachedReject());
+    other_promise.Then(CurrentScriptState(), other_reaction,
+                       NotReachedReject());
   }
 
   EXPECT_NE(promise, other_promise);
@@ -425,7 +425,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
   {
     ScriptState::Scope scope(MainScriptState());
-    promise.React(CurrentScriptState(), reaction, NotReachedReject());
+    promise.Then(CurrentScriptState(), reaction, NotReachedReject());
   }
 
   EXPECT_NE(promise, other_promise);
@@ -439,8 +439,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   EXPECT_EQ(0u, other_reaction->CallCount());
   {
     ScriptState::Scope scope(OtherScriptState());
-    other_promise.React(CurrentScriptState(), other_reaction,
-                        NotReachedReject());
+    other_promise.Then(CurrentScriptState(), other_reaction,
+                       NotReachedReject());
   }
 
   PerformMicrotaskCheckpoint();
@@ -463,16 +463,16 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
     ScriptState::Scope scope(MainScriptState());
     GetProperty()
         ->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
-        .React(CurrentScriptState(), NotReachedResolve(),
-               StubReject(actual, n_reject_calls));
+        .Then(CurrentScriptState(), NotReachedResolve(),
+              StubReject(actual, n_reject_calls));
   }
 
   {
     ScriptState::Scope scope(OtherScriptState());
     GetProperty()
         ->Promise(OtherWorld())
-        .React(CurrentScriptState(), NotReachedResolve(),
-               StubReject(other_actual, n_other_reject_calls));
+        .Then(CurrentScriptState(), NotReachedResolve(),
+              StubReject(other_actual, n_other_reject_calls));
   }
 
   PerformMicrotaskCheckpoint();
@@ -500,7 +500,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Resolve_DeadContext) {
     ScriptState::Scope scope(MainScriptState());
     GetProperty()
         ->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
-        .React(CurrentScriptState(), NotReachedResolve(), NotReachedReject());
+        .Then(CurrentScriptState(), NotReachedResolve(), NotReachedReject());
   }
 
   DestroyContext();
@@ -529,7 +529,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
     ScriptState::Scope scope2(MainScriptState());
     GetProperty()->Resolve(old_value);
     old_promise = GetProperty()->Promise(MainWorld());
-    old_promise.React(CurrentScriptState(), old_reaction, NotReachedReject());
+    old_promise.Then(CurrentScriptState(), old_reaction, NotReachedReject());
   }
 
   GetProperty()->Reset();
@@ -537,8 +537,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   {
     ScriptState::Scope scope2(MainScriptState());
     new_promise = GetProperty()->Promise(MainWorld());
-    new_promise.React(CurrentScriptState(), NotReachedResolve(),
-                      StubReject(new_actual, n_new_reject_calls));
+    new_promise.Then(CurrentScriptState(), NotReachedResolve(),
+                     StubReject(new_actual, n_new_reject_calls));
     GetProperty()->Reject(new_value);
   }
 

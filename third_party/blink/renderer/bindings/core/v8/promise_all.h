@@ -47,9 +47,9 @@ class CORE_EXPORT PromiseAll final
         values_(promises.size()),
         resolver_(resolver) {
     for (wtf_size_t i = 0; i < number_of_pending_promises_; ++i) {
-      promises[i].Unwrap().React(script_state,
-                                 MakeGarbageCollected<Resolve>(i, this),
-                                 MakeGarbageCollected<Reject>(this));
+      promises[i].Unwrap().Then(script_state,
+                                MakeGarbageCollected<Resolve>(i, this),
+                                MakeGarbageCollected<Reject>(this));
     }
   }
 

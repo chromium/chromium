@@ -519,9 +519,9 @@ void ClipboardPromise::HandleWriteWithPermission(
   ScriptState* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);
   PromiseAll<V8UnionBlobOrString>::Create(script_state, promise_list)
-      .React(script_state,
-             MakeGarbageCollected<ClipboardItemDataPromiseFulfill>(this),
-             MakeGarbageCollected<ClipboardItemDataPromiseReject>(this));
+      .Then(script_state,
+            MakeGarbageCollected<ClipboardItemDataPromiseFulfill>(this),
+            MakeGarbageCollected<ClipboardItemDataPromiseReject>(this));
 }
 
 void ClipboardPromise::HandleWriteTextWithPermission(

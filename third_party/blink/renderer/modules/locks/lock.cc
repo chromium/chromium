@@ -90,7 +90,7 @@ void Lock::HoldUntil(ScriptPromise<IDLAny> promise,
 
   ScriptState* script_state = resolver->GetScriptState();
   resolver_ = resolver;
-  promise.React(
+  promise.Then(
       script_state,
       MakeGarbageCollected<ThenFunction>(this, ThenFunction::kFulfilled),
       MakeGarbageCollected<ThenFunction>(this, ThenFunction::kRejected));

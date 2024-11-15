@@ -333,8 +333,8 @@ MockPermissionService& WakeLockTestingContext::GetPermissionService() {
 void WakeLockTestingContext::WaitForPromiseFulfillment(
     ScriptPromise<WakeLockSentinel> promise) {
   base::RunLoop run_loop;
-  promise.React(GetScriptState(),
-                MakeGarbageCollected<ClosureOnResolve>(run_loop.QuitClosure()));
+  promise.Then(GetScriptState(),
+               MakeGarbageCollected<ClosureOnResolve>(run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(

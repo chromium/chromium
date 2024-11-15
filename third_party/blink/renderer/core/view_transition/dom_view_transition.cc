@@ -243,9 +243,9 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
   }
 
   // Note, the DOMChangeFinishedCallback will be invoked asynchronously.
-  result.React(script_state,
-               MakeGarbageCollected<DOMChangeFinishedCallback>(*this),
-               MakeGarbageCollected<DOMChangeRejectedCallback>(*this));
+  result.Then(script_state,
+              MakeGarbageCollected<DOMChangeFinishedCallback>(*this),
+              MakeGarbageCollected<DOMChangeRejectedCallback>(*this));
 }
 
 void DOMViewTransition::Trace(Visitor* visitor) const {

@@ -211,9 +211,9 @@ TEST(TransferableStreamsTest, SmokeTest) {
 
   bool got_response = false;
   reader->read(script_state, ASSERT_NO_EXCEPTION)
-      .React(script_state,
-             MakeGarbageCollected<ExpectNullResponse>(&got_response),
-             MakeGarbageCollected<ExpectNotReached>());
+      .Then(script_state,
+            MakeGarbageCollected<ExpectNullResponse>(&got_response),
+            MakeGarbageCollected<ExpectNotReached>());
 
   // Need to run the event loop to pass messages through the MessagePort.
   test::RunPendingTasks();

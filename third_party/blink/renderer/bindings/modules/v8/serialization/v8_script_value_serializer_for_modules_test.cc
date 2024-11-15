@@ -357,7 +357,7 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLType>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
-  resolver->Promise().React(
+  resolver->Promise().Then(
       script_state,
       MakeGarbageCollected<WebCryptoResultAdapter<IDLType, T>>(
           std::move(function)),

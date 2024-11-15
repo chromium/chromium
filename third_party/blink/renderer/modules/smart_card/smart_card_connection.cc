@@ -688,9 +688,9 @@ void SmartCardConnection::OnBeginTransactionDone(
   }
 
   auto promise = transaction_result.FromJust();
-  promise.React(script_state,
-                MakeGarbageCollected<TransactionFulfilledFunction>(this),
-                MakeGarbageCollected<TransactionRejectedFunction>(this));
+  promise.Then(script_state,
+               MakeGarbageCollected<TransactionFulfilledFunction>(this),
+               MakeGarbageCollected<TransactionRejectedFunction>(this));
 }
 
 void SmartCardConnection::OnEndTransactionDone(

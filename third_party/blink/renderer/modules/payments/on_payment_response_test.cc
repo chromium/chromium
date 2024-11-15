@@ -478,7 +478,7 @@ TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .React(scope.GetScriptState(), response_function);
+      .Then(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
@@ -507,7 +507,7 @@ TEST(OnPaymentResponseTest, CanRequestName) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .React(scope.GetScriptState(), response_function);
+      .Then(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
@@ -534,7 +534,7 @@ TEST(OnPaymentResponseTest, CanRequestEmail) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .React(scope.GetScriptState(), response_function);
+      .Then(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
@@ -561,7 +561,7 @@ TEST(OnPaymentResponseTest, CanRequestPhone) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .React(scope.GetScriptState(), response_function);
+      .Then(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
@@ -584,7 +584,7 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .React(scope.GetScriptState(), response_function);
+      .Then(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(BuildPaymentResponseForTest());
@@ -612,7 +612,7 @@ TEST(OnPaymentResponseTest, PhoneNotRequired) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .React(scope.GetScriptState(), response_function);
+      .Then(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
@@ -639,7 +639,7 @@ TEST(OnPaymentResponseTest, NameNotRequired) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .React(scope.GetScriptState(), response_function);
+      .Then(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
@@ -666,7 +666,7 @@ TEST(OnPaymentResponseTest, EmailNotRequired) {
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .React(scope.GetScriptState(), response_function);
+      .Then(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));

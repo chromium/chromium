@@ -161,11 +161,11 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
       // FinishDynamicImport(referencingScriptOrModule, specifier,
       // promiseCapability, promise).</spec>
       result.GetPromise(script_state)
-          .React(script_state,
-                 MakeGarbageCollected<ModuleResolutionSuccessCallback>(
-                     promise_resolver_, module_script),
-                 MakeGarbageCollected<ModuleResolutionFailureCallback>(
-                     promise_resolver_));
+          .Then(script_state,
+                MakeGarbageCollected<ModuleResolutionSuccessCallback>(
+                    promise_resolver_, module_script),
+                MakeGarbageCollected<ModuleResolutionFailureCallback>(
+                    promise_resolver_));
       break;
     }
   }

@@ -70,8 +70,8 @@ v8::Local<v8::Value> ModuleTestBase::GetResult(ScriptState* script_state,
   }
 
   auto* resolve_function = MakeGarbageCollected<SaveResultFunction>();
-  script_promise.React(script_state, resolve_function,
-                       MakeGarbageCollected<ExpectNotReached>());
+  script_promise.Then(script_state, resolve_function,
+                      MakeGarbageCollected<ExpectNotReached>());
 
   script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
       script_state->GetIsolate());
@@ -92,8 +92,8 @@ v8::Local<v8::Value> ModuleTestBase::GetException(
   }
 
   auto* reject_function = MakeGarbageCollected<SaveResultFunction>();
-  script_promise.React(script_state, MakeGarbageCollected<ExpectNotReached>(),
-                       reject_function);
+  script_promise.Then(script_state, MakeGarbageCollected<ExpectNotReached>(),
+                      reject_function);
 
   script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
       script_state->GetIsolate());

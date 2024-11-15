@@ -272,114 +272,66 @@ class ScriptPromise {
     return !operator==(value);
   }
 
-  template <typename ReturnPromiseResolveType = IDLResolvedType,
-            typename ResolveClass>
-  ScriptPromise<ReturnPromiseResolveType> Then(
-      ScriptState* script_state,
-      ThenCallable<IDLResolvedType, ResolveClass, ReturnPromiseResolveType>*
-          on_fulfilled) const {
-    if (IsEmpty()) {
-      return ScriptPromise<ReturnPromiseResolveType>();
-    }
-    v8::Local<v8::Promise> v8_promise =
-        V8Promise()
-            ->Then(script_state->GetContext(),
-                   on_fulfilled->ToV8Function(script_state))
-            .FromMaybe(v8::Local<v8::Promise>());
-    return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
-        script_state->GetIsolate(), v8_promise);
-  }
-
-  template <typename ReturnPromiseResolveType = IDLResolvedType,
-            typename ReturnPromiseRejectType = IDLUndefined,
+  template <typename ResolveReactType,
+            typename RejectReactType = IDLUndefined,
             typename ResolveClass,
-            typename RejectClass>
+            typename RejectClass = void,
+            typename ReturnPromiseResolveType = std::conditional_t<
+                std::is_same_v<ResolveReactType, IDLPromise<IDLResolvedType>>,
+                IDLResolvedType,
+                ResolveReactType>>
   ScriptPromise<ReturnPromiseResolveType> Then(
       ScriptState* script_state,
-      ThenCallable<IDLResolvedType, ResolveClass, ReturnPromiseResolveType>*
+      ThenCallable<IDLResolvedType, ResolveClass, ResolveReactType>*
           on_fulfilled,
-      ThenCallable<IDLAny, RejectClass, ReturnPromiseRejectType>* on_rejected)
-      const {
+      ThenCallable<IDLAny, RejectClass, RejectReactType>* on_rejected =
+          nullptr) const {
     if (IsEmpty()) {
       return ScriptPromise<ReturnPromiseResolveType>();
     }
-    on_fulfilled->SetTypingFailureCallable(on_rejected);
-    v8::Local<v8::Promise> v8_promise =
-        V8Promise()
-            ->Then(script_state->GetContext(),
-                   on_fulfilled->ToV8Function(script_state),
-                   on_rejected->ToV8Function(script_state))
-            .FromMaybe(v8::Local<v8::Promise>());
-    return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
-        script_state->GetIsolate(), v8_promise);
-  }
-
-  // For chaining promises in ThenCallable<>::React().
-  template <typename ReturnPromiseResolveType, typename ResolveClass>
-  ScriptPromise<ReturnPromiseResolveType> Then(
-      ScriptState* script_state,
-      ThenCallable<IDLResolvedType,
-                   ResolveClass,
-                   IDLPromise<ReturnPromiseResolveType>>* on_fulfilled) const {
-    if (IsEmpty()) {
-      return ScriptPromise<ReturnPromiseResolveType>();
+    v8::MaybeLocal<v8::Promise> v8_promise;
+    if constexpr (std::is_void_v<RejectClass>) {
+      v8_promise = V8Promise()->Then(script_state->GetContext(),
+                                     on_fulfilled->ToV8Function(script_state));
+    } else {
+      on_fulfilled->SetTypingFailureCallable(on_rejected);
+      v8_promise = V8Promise()->Then(script_state->GetContext(),
+                                     on_fulfilled->ToV8Function(script_state),
+                                     on_rejected->ToV8Function(script_state));
     }
-    v8::Local<v8::Promise> v8_promise =
-        V8Promise()
-            ->Then(script_state->GetContext(),
-                   on_fulfilled->ToV8Function(script_state))
-            .FromMaybe(v8::Local<v8::Promise>());
     return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
-        script_state->GetIsolate(), v8_promise);
-  }
-
-  template <typename ResolveClass>
-  void React(ScriptState* script_state,
-             ThenCallable<IDLResolvedType, ResolveClass, IDLUndefined>*
-                 on_fulfilled) const {
-    if (IsEmpty()) {
-      return;
-    }
-    std::ignore = V8Promise()->Then(script_state->GetContext(),
-                                    on_fulfilled->ToV8Function(script_state));
+        script_state->GetIsolate(),
+        v8_promise.FromMaybe(v8::Local<v8::Promise>()));
   }
 
   template <typename ResolveClass, typename RejectClass>
-  void React(
-      ScriptState* script_state,
-      ThenCallable<IDLResolvedType, ResolveClass, IDLUndefined>* on_fulfilled,
-      ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
-    if (IsEmpty()) {
-      return;
-    }
-    on_fulfilled->SetTypingFailureCallable(on_rejected);
-    std::ignore = V8Promise()->Then(script_state->GetContext(),
-                                    on_fulfilled->ToV8Function(script_state),
-                                    on_rejected->ToV8Function(script_state));
-  }
-
-  template <typename ResolveClass, typename RejectClass>
-  void ReactNoTypeChecks(
+  ScriptPromise<IDLAny> ThenWithNoTypeChecks(
       ScriptState* script_state,
       ThenCallable<IDLAny, ResolveClass, IDLUndefined>* on_fulfilled,
       ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
     if (IsEmpty()) {
-      return;
+      return ScriptPromise<IDLAny>();
     }
-    std::ignore = V8Promise()->Then(script_state->GetContext(),
-                                    on_fulfilled->ToV8Function(script_state),
-                                    on_rejected->ToV8Function(script_state));
+    auto v8_promise = V8Promise()->Then(
+        script_state->GetContext(), on_fulfilled->ToV8Function(script_state),
+        on_rejected->ToV8Function(script_state));
+    return ScriptPromise<IDLAny>::FromV8Promise(
+        script_state->GetIsolate(),
+        v8_promise.FromMaybe(v8::Local<v8::Promise>()));
   }
 
-  template <typename RejectClass>
-  void Catch(
+  template <typename RejectReactType, typename RejectClass>
+  ScriptPromise<IDLResolvedType> Catch(
       ScriptState* script_state,
-      ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
+      ThenCallable<IDLAny, RejectClass, RejectReactType>* on_rejected) const {
     if (IsEmpty()) {
-      return;
+      return ScriptPromise<IDLResolvedType>();
     }
-    std::ignore = V8Promise()->Catch(script_state->GetContext(),
-                                     on_rejected->ToV8Function(script_state));
+    auto v8_promise = V8Promise()->Catch(
+        script_state->GetContext(), on_rejected->ToV8Function(script_state));
+    return ScriptPromise<IDLResolvedType>::FromV8Promise(
+        script_state->GetIsolate(),
+        v8_promise.FromMaybe(v8::Local<v8::Promise>()));
   }
 
   // NOLINTNEXTLINE(google-explicit-constructor)

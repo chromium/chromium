@@ -130,7 +130,7 @@ TEST(ScriptPromiseTest, ThenResolve) {
   auto promise = resolver->Promise();
   auto* resolve = MakeGarbageCollected<ResolveString>();
   auto* reject = MakeGarbageCollected<AnyCallable>();
-  promise.React(scope.GetScriptState(), resolve, reject);
+  promise.Then(scope.GetScriptState(), resolve, reject);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve->react_called);
@@ -155,7 +155,7 @@ TEST(ScriptPromiseTest, ThenOnAlreadyResolvedPromise) {
   auto promise = ToResolvedPromise<IDLString>(scope.GetScriptState(), "hello");
   auto* resolve = MakeGarbageCollected<ResolveString>();
   auto* reject = MakeGarbageCollected<AnyCallable>();
-  promise.React(scope.GetScriptState(), resolve, reject);
+  promise.Then(scope.GetScriptState(), resolve, reject);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve->react_called);
@@ -176,7 +176,7 @@ TEST(ScriptPromiseTest, ThenReject) {
   auto promise = resolver->Promise();
   auto* resolve = MakeGarbageCollected<ResolveString>();
   auto* reject = MakeGarbageCollected<AnyCallable>();
-  promise.React(scope.GetScriptState(), resolve, reject);
+  promise.Then(scope.GetScriptState(), resolve, reject);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve->react_called);
@@ -207,7 +207,7 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
   auto* reject1 = MakeGarbageCollected<AnyChainingCallable>();
   auto* reject2 = MakeGarbageCollected<AnyCallable>();
   auto promise2 = promise.Then(scope.GetScriptState(), throwing, reject1);
-  promise2.React(scope.GetScriptState(), resolve2, reject2);
+  promise2.Then(scope.GetScriptState(), resolve2, reject2);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve2->react_called);
@@ -240,7 +240,7 @@ TEST(ScriptPromiseTest, ThrowingOnRejected) {
   auto* resolve2 = MakeGarbageCollected<AnyCallable>();
   auto* reject2 = MakeGarbageCollected<AnyCallable>();
   auto promise2 = promise.Then(scope.GetScriptState(), resolve1, throwing);
-  promise2.React(scope.GetScriptState(), resolve2, reject2);
+  promise2.Then(scope.GetScriptState(), resolve2, reject2);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve1->react_called);
@@ -268,7 +268,7 @@ TEST(ScriptPromiseTest, ThenOnAlreadyRejectedPromise) {
       scope.GetScriptState(), V8String(scope.GetIsolate(), "hello"));
   auto* resolve = MakeGarbageCollected<ResolveString>();
   auto* reject = MakeGarbageCollected<AnyCallable>();
-  promise.React(scope.GetScriptState(), resolve, reject);
+  promise.Then(scope.GetScriptState(), resolve, reject);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve->react_called);
@@ -308,7 +308,7 @@ TEST(ScriptPromiseTest, CastNonPromise) {
   promise1.Then(scope.GetScriptState(), resolve1, reject1);
   auto* resolve2 = MakeGarbageCollected<AnyCallable>();
   auto* reject2 = MakeGarbageCollected<AnyCallable>();
-  promise2.React(scope.GetScriptState(), resolve2, reject2);
+  promise2.Then(scope.GetScriptState(), resolve2, reject2);
 
   ASSERT_FALSE(promise1.IsEmpty());
   ASSERT_FALSE(promise2.IsEmpty());
@@ -339,7 +339,7 @@ TEST(ScriptPromiseTest, Reject) {
                                                   ScriptValue(value));
   auto* resolve = MakeGarbageCollected<ResolveString>();
   auto* reject = MakeGarbageCollected<AnyCallable>();
-  promise.React(scope.GetScriptState(), resolve, reject);
+  promise.Then(scope.GetScriptState(), resolve, reject);
 
   ASSERT_FALSE(promise.IsEmpty());
 
@@ -362,7 +362,7 @@ TEST(ScriptPromiseTest, RejectWithDOMException) {
                                          "some syntax error"));
   auto* resolve = MakeGarbageCollected<ResolveString>();
   auto* reject = MakeGarbageCollected<AnyCallable>();
-  promise.React(scope.GetScriptState(), resolve, reject);
+  promise.Then(scope.GetScriptState(), resolve, reject);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve->react_called);
@@ -387,7 +387,7 @@ TEST(ScriptPromiseTest, RejectTypeMismatch) {
 
   auto* resolve = MakeGarbageCollected<ResolveDocument>();
   auto* reject = MakeGarbageCollected<AnyCallable>();
-  promise.React(scope.GetScriptState(), resolve, reject);
+  promise.Then(scope.GetScriptState(), resolve, reject);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve->react_called);
@@ -417,7 +417,7 @@ TEST(ScriptPromiseTest, ChainPromisesWithDifferentResolveTypes) {
 
   auto* resolve2 = MakeGarbageCollected<ResolveString>();
   auto* reject2 = MakeGarbageCollected<AnyCallable>();
-  promise2.React(scope.GetScriptState(), resolve2, reject2);
+  promise2.Then(scope.GetScriptState(), resolve2, reject2);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_FALSE(resolve1->react_called);

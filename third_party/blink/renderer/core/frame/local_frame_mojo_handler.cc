@@ -908,9 +908,9 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
       if (resolve_promises && !value.IsEmpty() && value->IsPromise()) {
         auto promise = ScriptPromise<IDLAny>::FromV8Promise(
             script_state->GetIsolate(), value.As<v8::Promise>());
-        promise.React(script_state,
-                      handler->CreateResolveCallback(script_state, frame_),
-                      handler->CreateRejectCallback(script_state, frame_));
+        promise.Then(script_state,
+                     handler->CreateResolveCallback(script_state, frame_),
+                     handler->CreateRejectCallback(script_state, frame_));
       } else {
         handler->SendSuccess(script_state, value);
       }

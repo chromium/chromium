@@ -309,8 +309,8 @@ void NavigateEvent::React(ScriptState* script_state) {
 
   auto promise = PromiseAll<IDLUndefined>::Create(
       script_state, navigation_action_promises_list_);
-  promise.React(script_state, MakeGarbageCollected<FulfillReaction>(this),
-                MakeGarbageCollected<RejectReaction>(this));
+  promise.Then(script_state, MakeGarbageCollected<FulfillReaction>(this),
+               MakeGarbageCollected<RejectReaction>(this));
 
   if (HasNavigationActions() && DomWindow()) {
     if (AXObjectCache* cache =

@@ -139,7 +139,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     }
 
     void Attach(ScriptState* script_state, Rejected* rejected) final {
-      promise_.Unwrap().React(script_state, this, rejected);
+      promise_.Unwrap().Then(script_state, this, rejected);
     }
 
    private:
@@ -336,7 +336,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     }
 
     void Attach(ScriptState* script_state, Rejected* rejected) final {
-      promise_.Unwrap().ReactNoTypeChecks(script_state, this, rejected);
+      promise_.Unwrap().ThenWithNoTypeChecks(script_state, this, rejected);
     }
 
     void React(ScriptState* script_state, ScriptValue);
