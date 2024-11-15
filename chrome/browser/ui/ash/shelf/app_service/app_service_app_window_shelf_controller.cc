@@ -205,28 +205,6 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   observed_windows_.AddObservation(window);
   if (arc_tracker_)
     arc_tracker_->AddCandidateWindow(window);
-
-  // When the visibility of the window changes and if it is not already on a
-  // shelf then it is added to a shelf by `ASAWSC::OnWindowVisibilityChanged()`
-  // but when the window is created as a minimized window there is no change in
-  // visible state and it is not added to the shelf. Hence, when a widget has a
-  // `initial_show_state_` as ui::mojom::WindowShowState::kMinimized, it should
-  // add itself to a shelf during initialization. The below code is applicable
-  // only for Lacros browser app.
-  auto shelf_id = GetShelfId(window);
-  if (!shelf_id.IsNull() &&
-      GetAppType(shelf_id.app_id) == apps::AppType::kStandaloneBrowser &&
-      widget->IsMinimized()) {
-    // Update |state|. The app must be started, and running state. If visible,
-    // set it as |kVisible|, otherwise, clear the visible bit.
-    apps::InstanceState state =
-        app_service_instance_helper_->CalculateVisibilityState(
-            window, /*visible=*/false);
-    app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
-                                              shelf_id.launch_id, state);
-
-    RegisterWindow(window, shelf_id);
-  }
 }
 
 void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
