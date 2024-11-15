@@ -552,6 +552,11 @@ static_files: Optional parameter. List of
                  |css_files| below). These are passed to preprocess_if_expr()
               2) JPG/PNG/SVG files. These are included in the build verbatim
                  without any preprocessing.
+              Note: JS files are not allowed in this list and will result in
+              an assertion error. Instead such files should be passed as
+              |web_component_files| or |non_web_component_files|, assuming the
+              target is allowlisted to use JS instead of TS in
+              tools/typescript/validate_tsconfig.py validateJavaScriptAllowed().
 
 web_component_files:  List of TS files that hold Web Component definitions with
                       equivalent HTML template files. These can be either native

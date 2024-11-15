@@ -151,6 +151,11 @@ template("build_webui") {
         filter_include(invoker.static_files, non_preprocessed_files_filter)
     static_preprocessed_files =
         filter_exclude(invoker.static_files, non_preprocessed_files_filter)
+
+    static_js_files = filter_include(invoker.static_files, [ "*.js" ])
+    assert(static_js_files == [],
+           "JS files not allowed in static_files, found: " +
+               string_join(", ", static_js_files))
   }
 
   preprocessor_defines = []
