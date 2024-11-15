@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -184,9 +185,20 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
       std::make_unique<optimization_guide::proto::ExecuteRequest>(request);
   auto capability_key = ToModelBasedCapabilityKey(request.feature());
 
-  on_device_validation_session_ =
-      opt_guide_service->StartSession(capability_key,
-                                      /*config_params=*/std::nullopt);
+  OnDeviceModelEligibilityReason reason;
+  if (!opt_guide_service->CanCreateOnDeviceSession(
+      capability_key, &reason)) {
+    LOG(FATAL) << "Failed to create on-device session for validation with "
+               << "OnDeviceModelEligibilityReason: "
+               << static_cast<int>(reason);
+  }
+
+  using optimization_guide::SessionConfigParams;
+  on_device_validation_session_ = opt_guide_service->StartSession(
+      capability_key,
+      SessionConfigParams{
+          .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
+      });
   auto metadata = GetProtoFromAny(request.request_metadata());
   on_device_validation_session_->AddContext(*metadata);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
