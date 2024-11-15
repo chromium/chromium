@@ -2056,10 +2056,12 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
                                   : IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX;
       break;
     case OmniboxPopupSelection::FOCUSED_IPH_LINK:
-      return AutocompleteMatchType::ToAccessibilityLabel(
-          match, match.iph_link_text, line, 0,
-          l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_IPH_LINK_SELECTED),
-          label_prefix_length);
+      return base::StrCat(
+          {match_text, u" ",
+           AutocompleteMatchType::ToAccessibilityLabel(
+               match, match.iph_link_text, line, 0,
+               l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_IPH_LINK_SELECTED),
+               label_prefix_length)});
     default:
       break;
   }
