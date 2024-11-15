@@ -101,11 +101,12 @@ DevToolsAndroidBridge::Factory::Factory()
 
 DevToolsAndroidBridge::Factory::~Factory() {}
 
-KeyedService* DevToolsAndroidBridge::Factory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DevToolsAndroidBridge::Factory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new DevToolsAndroidBridge(profile);
+  return std::make_unique<DevToolsAndroidBridge>(profile);
 }
 
 void DevToolsAndroidBridge::Shutdown() {

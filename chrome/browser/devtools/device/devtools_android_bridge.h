@@ -58,7 +58,7 @@ class DevToolsAndroidBridge : public KeyedService {
     ~Factory() override;
 
     // BrowserContextKeyedServiceFactory overrides:
-    KeyedService* BuildServiceInstanceFor(
+    std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const override;
   };
 
@@ -81,7 +81,7 @@ class DevToolsAndroidBridge : public KeyedService {
   };
 
   explicit DevToolsAndroidBridge(Profile* profile);
-
+  ~DevToolsAndroidBridge() override;
   DevToolsAndroidBridge(const DevToolsAndroidBridge&) = delete;
   DevToolsAndroidBridge& operator=(const DevToolsAndroidBridge&) = delete;
 
@@ -150,7 +150,6 @@ class DevToolsAndroidBridge : public KeyedService {
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<DevToolsAndroidBridge>;
 
-  ~DevToolsAndroidBridge() override;
 
   void StartDeviceListPolling();
   void StopDeviceListPolling();
