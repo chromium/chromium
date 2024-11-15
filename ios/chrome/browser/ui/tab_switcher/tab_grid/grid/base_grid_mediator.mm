@@ -204,6 +204,8 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 }
 
 - (void)disconnect {
+  [self.snapshotStorage removeObserver:self];
+
   _browser.reset();
   _profile = nil;
   _URLLoader = nil;
