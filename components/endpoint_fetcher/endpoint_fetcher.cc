@@ -225,6 +225,9 @@ void EndpointFetcher::PerformRequest(
   resource_request->method = http_method_;
   resource_request->url = url_;
   resource_request->credentials_mode = GetCredentialsMode();
+  if (GetSetSiteForCookies()) {
+    resource_request->site_for_cookies = net::SiteForCookies::FromUrl(url_);
+  }
 
   if (base::EqualsCaseInsensitiveASCII(http_method_, "POST")) {
     resource_request->headers.SetHeader(kContentTypeKey, content_type_);
@@ -375,6 +378,16 @@ int EndpointFetcher::GetMaxRetries() {
     return kNumRetries;
   }
   return request_params_.value().max_retries.value();
+}
+
+bool EndpointFetcher::GetSetSiteForCookies() {
+  if (!request_params_.has_value()) {
+    return false;
+  }
+  if (!request_params_.value().set_site_for_cookies.has_value()) {
+    return false;
+  }
+  return request_params_.value().set_site_for_cookies.value();
 }
 
 std::string EndpointFetcher::GetUrlForTesting() {
