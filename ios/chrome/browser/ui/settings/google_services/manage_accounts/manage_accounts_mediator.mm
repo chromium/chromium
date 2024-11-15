@@ -49,6 +49,7 @@
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   raw_ptr<AuthenticationService> _authService;
+  raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   raw_ptr<syncer::SyncService> _syncService;
@@ -71,6 +72,7 @@
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
     _authService = authService;
+    _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
@@ -85,6 +87,7 @@
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
   _authService = nullptr;
+  _identityManager = nullptr;
   _identityManagerObserver.reset();
   _syncObserver.reset();
   _syncService = nullptr;
@@ -93,8 +96,7 @@
 #pragma mark - AccountsModelIdentityDataSource
 
 - (id<SystemIdentity>)identityWithGaiaID:(NSString*)gaiaID {
-  return _accountManagerService->GetIdentityWithGaiaID(
-      base::SysNSStringToUTF8(gaiaID));
+  return _accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
 }
 
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
@@ -121,8 +123,18 @@
 
 - (std::vector<IdentityViewItem*>)identityViewItems {
   std::vector<IdentityViewItem*> identityViewItemsForAccounts;
-  for (id<SystemIdentity> identity in _accountManagerService
-           ->GetAllIdentities()) {
+
+  NSArray<id<SystemIdentity>>* allIdentities;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    std::vector<AccountInfo> accountInfos =
+        _identityManager->GetAccountsOnDevice();
+    allIdentities =
+        _accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
+  } else {
+    allIdentities = _accountManagerService->GetAllIdentities();
+  }
+
+  for (id<SystemIdentity> identity in allIdentities) {
     identityViewItemsForAccounts.push_back(
         [self identityViewItemForIdentity:identity]);
   }
@@ -148,6 +160,10 @@
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
+    return;
+  }
   [self.consumer
       updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
 }
@@ -160,6 +176,17 @@
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  id<SystemIdentity> identity =
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  [self.consumer
+      updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
+}
 
 - (void)onEndBatchOfRefreshTokenStateChanges {
   if (!_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
