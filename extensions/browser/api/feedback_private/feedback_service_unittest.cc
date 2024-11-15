@@ -26,10 +26,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/base64.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
@@ -44,6 +47,26 @@ namespace {
 const std::string kFakeKey = "fake key";
 const std::string kFakeValue = "fake value";
 const std::string kTabTitleValue = "some sensitive info";
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kVariationsFetchHpkeKey[] =
+    "https://www.gstatic.com/chromeos-feedback-variations-encryption-key/"
+    "public_keyset.json";
+const std::string kTestPublicKeyResponseBody =
+    "{\"primaryKeyId\":123,\"key\":[{\"keyData\":{\"typeUrl\":\"type."
+    "googleapis.com/"
+    "google.crypto.tink.HpkePublicKey\",\"value\":"
+    "\"EgYIARABGAIaIKeVK4N3icUhM5YF+Pp5S6PWAg9OlY8zP9oLL9qv4IYS\","
+    "\"keyMaterialType\":\"ASYMMETRIC_PUBLIC\"},\"status\":\"ENABLED\","
+    "\"keyId\":456,\"outputPrefixType\":\"RAW\"}]}";
+const std::string kTestBase64HpkePrivateKey =
+    "IHbZB+CCrEXra2WGQx/jFQ+a0NSpVCauqy2uC9NH8Hs=";
+// Command line variation string returned during testing.
+const std::string kTestCommandLineVariations =
+    " --enable-features=\"*TestBlinkFeatureDefault,"
+    "TestFeatureForBrowserTest1\" "
+    "--disable-features=\"TestFeatureForBrowserTest2\" "
+    "--disable-field-trial-config";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MockFeedbackUploader : public FeedbackUploader {
  public:
@@ -130,6 +153,10 @@ void VerifyAttachment(std::string_view name,
 class FeedbackServiceTest : public ApiUnitTest {
  protected:
   FeedbackServiceTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    test_url_loader_factory_.AddResponse(
+        kVariationsFetchHpkeKey, kTestPublicKeyResponseBody, net::HTTP_OK);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -277,6 +304,7 @@ class FeedbackServiceTest : public ApiUnitTest {
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::ScopedTempDir scoped_temp_dir_;
@@ -381,6 +409,83 @@ TEST_F(FeedbackServiceTest, SendFeedbackWithBluetoothDebugLogs) {
 
 TEST_F(FeedbackServiceTest, SendFeedbackWithoutBluetoothDebugLogs) {
   TestSendFeedbackConcerningBluetoothDebugLogs(/*send_bluetooth_logs=*/false);
+}
+
+// Test that the feedback report contains the variations.binary encrypted
+// properly.
+TEST_F(FeedbackServiceTest, TestSendFeedbackWithVariationsBinary) {
+  const FeedbackParams params{/*is_internal_email=*/false,
+                              /*load_system_info=*/true,
+                              /*send_tab_titles=*/false,
+                              /*send_histograms=*/false,
+                              /*send_bluetooth_logs=*/false,
+                              /*send_wifi_debug_logs=*/false,
+                              /*send_autofill_metadata=*/false};
+
+  EXPECT_CALL(*mock_uploader_, QueueReport).Times(1);
+  base::MockCallback<SendFeedbackCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+
+  auto mock_delegate = std::make_unique<MockFeedbackPrivateDelegate>();
+  EXPECT_CALL(*mock_delegate, FetchSystemInformation(_, _)).Times(1);
+  EXPECT_CALL(*mock_delegate, FetchExtraLogs(_, _)).Times(1);
+
+  auto feedback_service = base::MakeRefCounted<FeedbackService>(
+      browser_context(), mock_delegate.get());
+  feedback_service->SetUrlLoaderFactory(test_shared_loader_factory_);
+
+  RunUntilFeedbackIsSent(feedback_service, params, mock_callback.Get());
+  EXPECT_EQ(1u, feedback_data_->sys_info()->count(kFakeKey));
+
+  // Initialize Hpke private key.
+  bssl::ScopedEVP_HPKE_KEY base_key;
+  std::string decoded_hpke_private_key;
+  base::Base64Decode(kTestBase64HpkePrivateKey, &decoded_hpke_private_key);
+  std::vector<uint8_t> hpke_private_key;
+  hpke_private_key.assign(decoded_hpke_private_key.begin(),
+                          decoded_hpke_private_key.end());
+  ASSERT_TRUE(EVP_HPKE_KEY_init(/*key=*/base_key.get(),
+                                /*kem=*/EVP_hpke_x25519_hkdf_sha256(),
+                                /*priv_key=*/hpke_private_key.data(),
+                                /*priv_key_len=*/hpke_private_key.size()));
+
+  // Get the encrypted file.
+  constexpr char kVariationsBinary[] = "variations.binary";
+  const FeedbackCommon::AttachedFile* variatons_binary =
+      FindAttachment(kVariationsBinary, feedback_data_);
+  ASSERT_TRUE(variatons_binary);
+  std::vector<uint8_t> encrypted_data(variatons_binary->data.begin(),
+                                      variatons_binary->data.end());
+
+  // Setup recipient context.
+  bssl::ScopedEVP_HPKE_CTX recipient_ctx;
+  ASSERT_TRUE(EVP_HPKE_CTX_setup_recipient(/*ctx=*/recipient_ctx.get(),
+                                           /*key=*/base_key.get(),
+                                           /*kdf=*/EVP_hpke_hkdf_sha256(),
+                                           /*aead=*/EVP_hpke_aes_256_gcm(),
+                                           /*enc=*/encrypted_data.data(),
+                                           /*enc_len=*/X25519_PUBLIC_VALUE_LEN,
+                                           /*info=*/nullptr,
+                                           /*info_len=*/0));
+
+  // Decryption.
+  base::span<const uint8_t> ciphertext =
+      base::make_span(encrypted_data).subspan(X25519_PUBLIC_VALUE_LEN);
+  std::vector<uint8_t> plaintext(ciphertext.size());
+  size_t plaintext_len;
+  ASSERT_TRUE(EVP_HPKE_CTX_open(/*ctx=*/recipient_ctx.get(),
+                                /*out=*/plaintext.data(),
+                                /*out_len=*/&plaintext_len,
+                                /*max_out_len=*/plaintext.size(),
+                                /*in=*/ciphertext.data(),
+                                /*in_len=*/ciphertext.size(),
+                                /*ad=*/nullptr,
+                                /*ad_len=*/0));
+  plaintext.resize(plaintext_len);
+  std::string decrypted_string(plaintext.begin(), plaintext.end());
+
+  // Final check.
+  EXPECT_EQ(kTestCommandLineVariations, decrypted_string);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

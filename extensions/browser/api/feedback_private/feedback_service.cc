@@ -35,10 +35,21 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "base/base64.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
+#include "components/variations/net/variations_command_line.h"
+#include "content/public/browser/storage_partition.h"
+#include "extensions/browser/api/feedback_private/proto/hpke.pb.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -64,6 +75,12 @@ constexpr char kBluetoothLogsAttachmentName[] = "bluetooth_logs.bz2";
 constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
 constexpr char kBluetoothQualityReportAttachmentName[] =
     "bluetooth_quality_report";
+
+constexpr char kVariationsAttachmentName[] = "variations.binary";
+constexpr char kVariationsFetchHpkeKey[] =
+    "https://www.gstatic.com/chromeos-feedback-variations-encryption-key/"
+    "public_keyset.json";
+constexpr int kVariationsMaxDownloadBytes = 512;
 
 void AddAttachment(scoped_refptr<feedback::FeedbackData> feedback_data,
                    const base::FilePath& root_path,
@@ -276,9 +293,12 @@ void FeedbackService::OnExtraLogsFetched(
     scoped_refptr<feedback::FeedbackData> feedback_data) {
   auto barrier_closure =
       base::BarrierClosure((params.send_bluetooth_logs ? 2 : 0) +
-                               (params.send_wifi_debug_logs ? 1 : 0),
+                               (params.send_wifi_debug_logs ? 1 : 0) + 1,
                            base::BindOnce(&FeedbackService::OnAllLogsFetched,
                                           this, params, feedback_data));
+
+  EncryptVariations(feedback_data, barrier_closure);
+
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
   const auto account_identifier =
@@ -360,5 +380,256 @@ void FeedbackService::OnAllLogsFetched(
   base::UmaHistogramTimes("Feedback.Duration.FormSubmitToSendQueue",
                           base::TimeTicks::Now() - params.form_submit_time);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void FeedbackService::EncryptVariations(
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    base::RepeatingClosure barrier_closure) {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation(
+          "chromeos_feedback_report_hpke_public_key_fetch_for_variations", R"(
+        semantics {
+          sender: "ChromeOS Feedback Report App"
+          description:
+            "Users can press Alt+Shift+i to report a bug or a feedback in "
+            "general. Here we fetch a Hpke public key to encrypt "
+            "the current running variations. This is ChromeOS-only."
+          trigger:
+            "When user chooses to send feedback to Google."
+          data:
+            "Fetches a HpKe public key. This key is used to encrypt the "
+            "variations that are running at the time the feedback report was "
+            "generated, and used by incident management engineering to triage "
+            "issues potentially caused by experiments. "
+            "If the user unchecks 'Send system information', this will "
+            "not be fetched and variations will not be included in the "
+            "feedback report."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "cros-feedback-app@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2024-11-06"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature cannot be disabled by settings and is only activated "
+            "by direct user request."
+          chrome_policy {
+            UserFeedbackAllowed {
+              UserFeedbackAllowed: false
+            }
+          }
+        })");
+
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL(kVariationsFetchHpkeKey);
+  resource_request->method = "GET";
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+
+  if (!url_loader_factory_) {
+    url_loader_factory_ = browser_context_->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess();
+  }
+
+  // Loader will be owned by the callback, so we need a temporary reference to
+  // avoid use after move.
+  network::SimpleURLLoader* loader_ptr = loader.get();
+  loader_ptr->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&FeedbackService::OnVariationsFetchHpkeURL, this,
+                     std::move(loader), feedback_data, barrier_closure),
+      kVariationsMaxDownloadBytes);
+}
+
+void FeedbackService::OnVariationsFetchHpkeURL(
+    std::unique_ptr<network::SimpleURLLoader> loader,
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    base::RepeatingClosure barrier_closure,
+    std::unique_ptr<std::string> hpke_public_key) {
+  if (!loader) {
+    LOG(ERROR) << "invalid loader";
+    return VariationsFinished(false, barrier_closure);
+  }
+
+  auto net_error = loader->NetError();
+  int http_error = 0;
+  if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
+    http_error = loader->ResponseInfo()->headers->response_code();
+  }
+  if (!hpke_public_key || http_error != net::HTTP_OK) {
+    LOG(ERROR) << "Unable to fetch hpke_public_key. http code: " << http_error
+               << ", net error: " << net_error;
+    return VariationsFinished(false, barrier_closure);
+  }
+  // Send the JSON string to a dedicated service for safe parsing.
+  data_decoder_.ParseJson(
+      *hpke_public_key,
+      base::BindOnce(&FeedbackService::VariationsExtractHpkePublicKey, this,
+                     feedback_data, barrier_closure));
+}
+
+// Sample JSON string:
+// {
+//   "primaryKeyId": 123,
+//   "key": [
+//     {
+//       "keyData": {
+//         "typeUrl": "type.googleapis.com/google.crypto.tink.HpkePublicKey",
+//         "value": "Base64Encoded HPKE Proto",
+//         "keyMaterialType": "ASYMMETRIC_PUBLIC"
+//       },
+//       "status": "ENABLED",
+//       "keyId": 123,
+//       "outputPrefixType": "RAW"
+//     }
+//   ]
+// }
+void FeedbackService::VariationsExtractHpkePublicKey(
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    base::RepeatingClosure barrier_closure,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.has_value() || !result->is_dict()) {
+    LOG(ERROR) << "Failed to parse JSON or it's not a dictionary.";
+    return VariationsFinished(false, barrier_closure);
+  }
+
+  const base::Value::Dict& json_dict = result->GetDict();
+  const base::Value::List* key_list = json_dict.FindList("key");
+
+  if (!key_list || key_list->empty()) {
+    LOG(ERROR) << "Key list not found or empty.";
+    return VariationsFinished(false, barrier_closure);
+  }
+
+  // Get the first item in the "key" list
+  const base::Value& key_item = (*key_list)[0];
+  const base::Value::Dict* key_dict = key_item.GetIfDict();
+
+  if (!key_dict) {
+    LOG(ERROR) << "Unexpected format in 'key' item.";
+    return VariationsFinished(false, barrier_closure);
+  }
+
+  // Extract "keyData" dictionary
+  const base::Value::Dict* key_data_dict = key_dict->FindDict("keyData");
+  if (!key_data_dict) {
+    LOG(ERROR) << "Failed to find 'keyData' dictionary.";
+    return VariationsFinished(false, barrier_closure);
+  }
+
+  // Extract "value" from "keyData"
+  const std::string* base64_serialized_proto_hpke =
+      key_data_dict->FindString("value");
+  if (!base64_serialized_proto_hpke) {
+    LOG(ERROR) << "Failed to extract 'value' from 'keyData'.";
+    return VariationsFinished(false, barrier_closure);
+  }
+
+  // std::string base64_proto_key = *base64_proto_keyp;
+  std::string serialized_proto_hpke;
+
+  if (!base::Base64Decode(*base64_serialized_proto_hpke,
+                          &serialized_proto_hpke)) {
+    LOG(ERROR) << "base64 decode of hpke proto failed";
+    return VariationsFinished(false, barrier_closure);
+  }
+  userfeedback::HpkePublicKey key_proto;
+  if (!key_proto.ParseFromString(serialized_proto_hpke)) {
+    LOG(ERROR) << "Failed to parse HpkePublicKey.";
+    return VariationsFinished(false, barrier_closure);
+  }
+
+  std::string hpke_public_key_string = key_proto.public_key();
+  std::vector<uint8_t> hpke_public_key;
+  hpke_public_key.assign(hpke_public_key_string.begin(),
+                         hpke_public_key_string.end());
+  VLOG(1) << "HPKE public KEY:" << base::HexEncode(hpke_public_key);
+  return VariationsEncryptWithHpkeKey(hpke_public_key, feedback_data,
+                                      barrier_closure);
+  ;
+}
+
+void FeedbackService::VariationsEncryptWithHpkeKey(
+    const std::vector<uint8_t>& hpke_public_key,
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    base::RepeatingClosure barrier_closure) {
+  std::string variations_string =
+      variations::VariationsCommandLine::GetForCurrentProcess().ToString();
+  if (variations_string.empty()) {
+    LOG(ERROR) << "Unable to get valid variations.";
+    return VariationsFinished(false, barrier_closure);
+  }
+  std::vector<uint8_t> variations(variations_string.begin(),
+                                  variations_string.end());
+  bssl::ScopedEVP_HPKE_CTX sender_context;
+
+  // This vector will hold the encapsulated shared secret "enc" followed by the
+  // symmetrically encrypted ciphertext "ct". Start with a size big enough for
+  // the shared secret.
+  std::vector<uint8_t> encrypted_variations(EVP_HPKE_MAX_ENC_LENGTH);
+  size_t encapsulated_shared_secret_len;
+
+  if (!EVP_HPKE_CTX_setup_sender(
+          /*ctx=*/sender_context.get(),
+          /*out_enc=*/encrypted_variations.data(),
+          /*out_enc_len=*/&encapsulated_shared_secret_len,
+          /*max_enc=*/encrypted_variations.size(),
+          /*kem=*/EVP_hpke_x25519_hkdf_sha256(),
+          /*kdf=*/EVP_hpke_hkdf_sha256(),
+          /*aead=*/EVP_hpke_aes_256_gcm(),
+          /*peer_public_key=*/hpke_public_key.data(),
+          /*peer_public_key_len=*/hpke_public_key.size(),
+          /*info=*/nullptr,
+          /*info_len=*/0)) {
+    LOG(ERROR) << "hpke setup failed";
+    return VariationsFinished(false, barrier_closure);
+  }
+  encrypted_variations.resize(encapsulated_shared_secret_len +
+                              variations.size() +
+                              EVP_HPKE_CTX_max_overhead(sender_context.get()));
+  base::span<uint8_t> ciphertext = base::make_span(encrypted_variations)
+                                       .subspan(encapsulated_shared_secret_len);
+  size_t ciphertext_len;
+
+  if (!EVP_HPKE_CTX_seal(
+          /*ctx=*/sender_context.get(),
+          /*out=*/ciphertext.data(),
+          /*out_len=*/&ciphertext_len,
+          /*max_out_len=*/ciphertext.size(),
+          /*in=*/variations.data(),
+          /*in_len*/ variations.size(),
+          /*ad=*/nullptr,
+          /*ad_len=*/0)) {
+    LOG(ERROR) << "hpke seal failed";
+    return VariationsFinished(false, barrier_closure);
+  }
+  encrypted_variations.resize(encapsulated_shared_secret_len + ciphertext_len);
+  feedback_data->AddFile(
+      kVariationsAttachmentName,
+      std::string(encrypted_variations.begin(), encrypted_variations.end()));
+  return VariationsFinished(true, barrier_closure);
+}
+
+void FeedbackService::VariationsFinished(
+    bool variations_attached,
+    base::RepeatingClosure barrier_closure) {
+  if (variations_attached) {
+    VLOG(1) << "variations attached to feedback report";
+  } else {
+    VLOG(1) << "variations not attached to feedback report";
+  }
+  std::move(barrier_closure).Run();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

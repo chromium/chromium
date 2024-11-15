@@ -25,12 +25,14 @@ source_set("feedback_private") {
     "//components/feedback",
     "//components/feedback/content",
     "//components/feedback/redaction_tool",
+    "//components/variations/net",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
     "//google_apis",
     "//net",
+    "//services/data_decoder/public/cpp",
   ]
 
   if (is_chromeos) {
@@ -52,6 +54,8 @@ source_set("feedback_private") {
       "//chromeos/ash/services/assistant/public/mojom",
       "//components/account_id",
       "//components/user_manager",
+      "//extensions/browser/api/feedback_private/proto",
+      "//third_party/boringssl",
     ]
   }
 }

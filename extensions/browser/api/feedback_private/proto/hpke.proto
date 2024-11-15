@@ -1,0 +1,69 @@
+// Copyright 2024 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package userfeedback;
+
+enum HpkeKem {
+  KEM_UNKNOWN = 0;
+  DHKEM_X25519_HKDF_SHA256 = 1;
+  DHKEM_P256_HKDF_SHA256 = 2;
+  DHKEM_P384_HKDF_SHA384 = 3;
+  DHKEM_P521_HKDF_SHA512 = 4;
+}
+
+enum HpkeKdf {
+  KDF_UNKNOWN = 0;
+  HKDF_SHA256 = 1;
+  HKDF_SHA384 = 2;
+  HKDF_SHA512 = 3;
+}
+
+enum HpkeAead {
+  AEAD_UNKNOWN = 0;
+  AES_128_GCM = 1;
+  AES_256_GCM = 2;
+  CHACHA20_POLY1305 = 3;
+}
+
+message HpkeParams {
+  HpkeKem kem = 1;
+  HpkeKdf kdf = 2;
+  HpkeAead aead = 3;
+}
+
+message HpkePublicKey {
+  uint32 version = 1;
+  HpkeParams params = 2;
+  // KEM-encoding of public key (i.e., SerializePublicKey() ) as described in
+  // https://www.rfc-editor.org/rfc/rfc9180.html#name-cryptographic-dependencies.
+  bytes public_key = 3;
+}
+
+message HpkePrivateKey {
+  uint32 version = 1;
+  HpkePublicKey public_key = 2;
+  // KEM-encoding of private key (i.e., SerializePrivateKey() ) as described in
+  // https://www.rfc-editor.org/rfc/rfc9180.html#name-cryptographic-dependencies.
+  bytes private_key = 3;
+}
+
+message HpkeKeyFormat {
+  HpkeParams params = 1;
+}
