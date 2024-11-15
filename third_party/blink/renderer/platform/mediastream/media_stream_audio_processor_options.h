@@ -73,7 +73,7 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
 
   bool goog_audio_mirroring = false;
   bool auto_gain_control = true;
-  bool goog_noise_suppression = true;
+  bool noise_suppression = true;
   bool goog_highpass_filter = true;
   VoiceIsolationType voice_isolation =
       VoiceIsolationType::kVoiceIsolationDefault;

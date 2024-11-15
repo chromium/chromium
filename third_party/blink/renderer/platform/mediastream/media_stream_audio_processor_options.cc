@@ -9,7 +9,7 @@ namespace blink {
 void AudioProcessingProperties::DisableDefaultProperties() {
   echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled;
   auto_gain_control = false;
-  goog_noise_suppression = false;
+  noise_suppression = false;
   goog_highpass_filter = false;
   voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
 }
@@ -33,7 +33,7 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
   return disable_hw_noise_suppression == other.disable_hw_noise_suppression &&
          goog_audio_mirroring == other.goog_audio_mirroring &&
          auto_gain_control == other.auto_gain_control &&
-         goog_noise_suppression == other.goog_noise_suppression &&
+         noise_suppression == other.noise_suppression &&
          goog_highpass_filter == other.goog_highpass_filter &&
          voice_isolation == other.voice_isolation;
 }
@@ -49,7 +49,7 @@ AudioProcessingProperties::ToAudioProcessingSettings(
   out.echo_cancellation =
       echo_cancellation_type == EchoCancellationType::kEchoCancellationAec3;
   out.noise_suppression =
-      goog_noise_suppression && !system_noise_suppression_activated;
+      noise_suppression && !system_noise_suppression_activated;
 
   out.automatic_gain_control =
       auto_gain_control && !system_gain_control_activated;

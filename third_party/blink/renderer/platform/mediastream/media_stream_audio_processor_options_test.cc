@@ -43,7 +43,7 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
           EchoCancellationType::kEchoCancellationAec3,
       .goog_audio_mirroring = true,
       .auto_gain_control = true,
-      .goog_noise_suppression = true,
+      .noise_suppression = true,
       .goog_highpass_filter = true};
   const media::AudioProcessingSettings settings =
       properties.ToAudioProcessingSettings(

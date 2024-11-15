@@ -214,7 +214,7 @@ static void ParseOldStyleNames(
     } else if (constraint.name_ == kGoogAutoGainControl) {
       result.auto_gain_control.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogNoiseSuppression) {
-      result.goog_noise_suppression.SetExact(ToBoolean(constraint.value_));
+      result.noise_suppression.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogHighpassFilter) {
       result.goog_highpass_filter.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogAudioMirroring) {
@@ -549,7 +549,7 @@ bool ValidateAndCopyConstraintSet(
 
   if (constraints_in->hasNoiseSuppression()) {
     CopyBooleanConstraint(constraints_in->noiseSuppression(), naked_treatment,
-                          constraint_buffer.goog_noise_suppression);
+                          constraint_buffer.noise_suppression);
   }
 
   if (constraints_in->hasVoiceIsolation()) {
@@ -864,9 +864,9 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setAutoGainControl(
         ConvertBoolean(input.auto_gain_control, naked_treatment));
   }
-  if (!input.goog_noise_suppression.IsUnconstrained()) {
+  if (!input.noise_suppression.IsUnconstrained()) {
     output->setNoiseSuppression(
-        ConvertBoolean(input.goog_noise_suppression, naked_treatment));
+        ConvertBoolean(input.noise_suppression, naked_treatment));
   }
   if (!input.voice_isolation.IsUnconstrained()) {
     output->setVoiceIsolation(

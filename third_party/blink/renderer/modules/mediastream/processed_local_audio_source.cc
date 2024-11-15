@@ -84,13 +84,13 @@ std::string GetAudioProcesingPropertiesLogString(
       "disable_hw_ns: %s, "
       "goog_audio_mirroring: %s, "
       "auto_gain_control: %s, "
-      "goog_noise_suppression: %s, "
+      "noise_suppression: %s, "
       "goog_highpass_filter: %s, ",
       aec_to_string(properties.echo_cancellation_type),
       bool_to_string(properties.disable_hw_noise_suppression),
       bool_to_string(properties.goog_audio_mirroring),
       bool_to_string(properties.auto_gain_control),
-      bool_to_string(properties.goog_noise_suppression),
+      bool_to_string(properties.noise_suppression),
       bool_to_string(properties.goog_highpass_filter));
   return str;
 }
@@ -259,7 +259,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
       // dictate that.
       disable_system_noise_suppression =
           disable_system_noise_suppression ||
-          !audio_processing_properties_.goog_noise_suppression;
+          !audio_processing_properties_.noise_suppression;
     }
 
     if (disable_system_noise_suppression) {
@@ -380,7 +380,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
       AudioProcessingProperties::EchoCancellationType::
           kEchoCancellationSystem) {
     if (!IsIndependentSystemNsAllowed()) {
-      if (audio_processing_properties_.goog_noise_suppression) {
+      if (audio_processing_properties_.noise_suppression) {
         audio_processing_properties_.system_noise_suppression_activated =
             device().input.effects() &
             media::AudioParameters::NOISE_SUPPRESSION;

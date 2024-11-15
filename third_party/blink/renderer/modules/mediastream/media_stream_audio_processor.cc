@@ -133,7 +133,7 @@ bool MediaStreamAudioProcessor::WouldModifyAudio(
   }
 #endif
 
-  if (properties.goog_noise_suppression) {
+  if (properties.noise_suppression) {
     return true;
   }
 
