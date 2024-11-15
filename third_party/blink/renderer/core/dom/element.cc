@@ -1238,14 +1238,6 @@ Vector<AtomicString> Element::getAttributeNames() const {
   return result;
 }
 
-Vector<QualifiedName> Element::getAttributeQualifiedNames() const {
-  Vector<QualifiedName> result;
-  auto attrs = Attributes();
-  std::transform(attrs.begin(), attrs.end(), std::back_inserter(result),
-                 [](const Attribute& attr) { return attr.GetName(); });
-  return result;
-}
-
 inline ElementRareDataVector* Element::GetElementRareData() const {
   return static_cast<ElementRareDataVector*>(RareData());
 }

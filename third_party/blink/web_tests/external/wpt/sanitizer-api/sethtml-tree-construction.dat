@@ -63,63 +63,70 @@ hello<script>alert('i am a test')</script>
 #data
 test
 #config
-{ "test": 123 }
+{ test: 123 }
 #document
 | "test"
 
 #data
 test
 #config
-{ "removeElements": [] }
+{ removeElements: [] }
 #document
 | "test"
 
 #data
 <div>test</div><p>bla
 #config
-{ "removeElements": ["div"] }
+{ removeElements: ["div"] }
 #document
 | <p>
 |   "bla"
 
 #data
-<custom-element>test1</custom-element>bla
+<custom-element>test</custom-element>bla
 #document
 | "bla"
 
 #data
-<custom-element>test2</custom-element>bla
+<custom-element>test</custom-element>bla
 #config
-{ "customElements": true }
+{ customElements: true }
 #document
-| "test2bla"
+| "testbla"
 
 #data
-<custom-element>test3</custom-element>bla
+<custom-element>test</custom-element>bla
 #config
-{ "elements": ["custom-element"] }
+{ customElements: true, elements: ["custom-element"] }
 #document,
 | <custom-element>
-|   "test3"
+|   "test"
 | "bla"
 
 #data
-<custom-element>test5</custom-element>bla
+<custom-element>test</custom-element>bla
 #config
-{ "removeElements": ["custom-element"] }
+{ customElements: false }
+#document
+| "bla"
+
+#data
+<custom-element>test</custom-element>bla
+#config
+{ removeElements: ["custom-element"], customElements: true }
 #document
 | "bla"
 
 #data
 <script>alert('i am a test')</script>
 #config
-{ "removeElements": ["script"] }
+{ removeElements: ["script"] }
 #document
 
 #data
 <div>balabala<i>test</i></div><test-element>t</test-element>
 #config
-{ "removeElements": ["test-element", "i"] }
+{ removeElements: ["test-element", "i"] }
 #document
 | <div>
 |   "balabala"
@@ -127,7 +134,7 @@ test
 #data
 <div>balabala<i>i</i><p>t</p></div>
 #config
-{ "removeElements": ["dl", "p"] }
+{ removeElements: ["dl", "p"] }
 #document
 | <div>
 |   "balabala"
@@ -137,31 +144,29 @@ test
 #data
 <div>test<div>p</div>tt<p>div</p></div>
 #config
-{ "elements": ["p"], "replaceWithChildrenElements": ["div"] }
+{ elements: ["p"] }
 #document
-| "test"
-| "p"
-| "tt"
+| "testptt"
 | <p>
 |   "div"
 
 #data
 <div>test</div><p>bla
 #config
-{ "removeElements": ["div"], "elements": ["div"] }
+{ removeElements: ["div"], elements: ["div"] }
 #document
 | "bla"
 
 #data
 <p id='test'>Click.</p>
 #config
-{ "removeAttributes": [] },
+{ removeAttributes: [] },
 #document
 
 #data
 <p id='test'>Click.</p>
 #config
-{ "elements": ["p"], "removeAttributes": ["id"] }
+{ removeAttributes: ["id"] }
 #document
 | <p>
 |   "Click."
@@ -169,7 +174,7 @@ test
 #data
 <p id='p' data-attribute-with-dashes='123'>Click.</p><script>document.getElementById('p').dataset.attributeWithDashes=123;</script>
 #config
-{ "elements": ["p"], "removeAttributes": ["data-attribute-with-dashes"] }
+{ removeAttributes: ["data-attribute-with-dashes"] }
 #document
 | <p>
 |   id="p"
@@ -178,9 +183,9 @@ test
 #data
 <p id='p' title='p'>P</p><div id='div' title='div'>DIV</div>
 #config
-{ "elements": [
-  { "name": "p", "attributes": ["title"] },
-  { "name": "div", "attributes": ["id"] },
+{ elements: [
+  { name: "p", attributes: ["title"] },
+  { name: "div", attributes: ["id"] },
 ]}
 #document
 | <p>
@@ -193,10 +198,10 @@ test
 #data
 <p id='p' title='p'>P</p><div id='div' title='div'>DIV</div>
 #config
-{ "elements":
+{ elements:
   [
-    { "name": "p", "removeAttributes": ["title"] },
-    { "name": "div", "removeAttributes": ["id"] },
+    { name: "p", removeAttributes: ["title"] },
+    { name: "div", removeAttributes: ["id"] },
   ],
 }
 #document
@@ -210,7 +215,7 @@ test
 #data
 <div id='div' title='div'>DIV</div>
 #config
-{ "elements": [{ "name": "div", "attributes": ["id"], "removeAttributes": ["id"] }]}
+{ elements: [{ name: "div", attributes: ["id"], removeAttributes: ["id"] }],}
 #document
 | <div>
 |   "DIV"
@@ -218,20 +223,18 @@ test
 #data
 <div id='div' title='div'>DIV</div>
 #config
-{ "elements": [{ "name": "div", "attributes": ["id", "title"] }],
-  "attributes": []}
+{ elements: [{ name: "div", attributes: ["id", "title"] }],
+  attributes: []}
 #document
 | <div>
-|   id="div"
-|   title="div"
 |   "DIV"
 
 #data
 <div id='div' title='div'>DIV</div>
 #config
 {
-  "elements": [{ "name": "div", "attributes": ["id", "title"] }],
-  "removeAttributes": ["id", "title"]
+  elements: [{ name: "div", attributes: ["id", "title"] }],
+  removeAttributes: ["id", "title"]
 }
 #document
 | <div>
@@ -241,8 +244,8 @@ test
 <div id='div' title='div'>DIV</div>
 #config
 {
-  "elements": [{ "name": "div", "removeAttributes": ["id", "title"] }],
-  "attributes": ["id", "title"]
+  elements: [{ name: "div", removeAttributes: ["id", "title"] }],
+  attributes: ["id", "title"]
 }
 #document
 | <div>
@@ -251,7 +254,7 @@ test
 #data
 <p id='test' onclick='a= 123'>Click.</p>
 #config
-{ "attributes": ["id"] }
+{ attributes: ["id"] }
 #document
 | <p>
 |   id="test"
@@ -260,7 +263,7 @@ test
 #data
 <p style='color: black'>Click.</p>
 #config
-{ "removeAttributes": ["style"], "attributes": ["style"] }
+{ removeAttributes: ["style"], attributes: ["style"] }
 #document
 | <p>
 |   "Click."
@@ -268,7 +271,7 @@ test
 #data
 <template><script>test</script><div>hello</div></template>
 #config
-{ "elements": ["template", "div"] }
+{ elements: ["template", "div"] }
 #document
 | <template>
 |   content
@@ -389,7 +392,7 @@ test
 #data
 <p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>
 #config
-{ "comments": true }
+{ comments: true }
 #document
 | <p>
 |   "Some text"
@@ -401,7 +404,7 @@ test
 #data
 <p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>
 #config
-{ "comments": false }
+{ comments: false }
 #document
 | <p>
 |   "Some text"
@@ -417,7 +420,7 @@ test
 #data
 <p>comment<!-- hello -->in<!-- </p> -->text</p>
 #config
-{ "comments": true }
+{ comments: true }
 #document
 | <p>
 |   "comment"
@@ -429,7 +432,7 @@ test
 #data
 <p>comment<!-- hello -->in<!-- </p> -->text</p>
 #config
-{ "comments": false }
+{ comments: false }
 #document
 | <p>
 |   "commentintext"
@@ -437,20 +440,20 @@ test
 #data
 <svg></svg>
 #config
-{ "elements": ["svg"] }
+{ elements: ["svg"] }
 #document
 
 #data
 <div><svg></svg></div>
 #config
-{ "elements": ["div", "svg"] }
+{ elements: ["div", "svg"] }
 #document
 | <div>
 
 #data
 <div>balabala<dl>test</dl></div>
 #config
-{ "removeElements": ["I", "DL"] }
+{ removeElements: ["I", "DL"] }
 #document
 | <div>
 |   "balabala"
@@ -460,7 +463,7 @@ test
 #data
 <div>balabala<dl>test</dl></div>
 #config
-{ "removeElements": ["i", "dl"] }
+{ removeElements: ["i", "dl"] }
 #document
 | <div>
 |   "balabala"
@@ -468,7 +471,7 @@ test
 #data
 <DIV>balabala<DL>test</DL></DIV>
 #config
-{ "removeElements": ["i", "dl"] }
+{ removeElements: ["i", "dl"] }
 #document
 | <div>
 |   "balabala"
@@ -476,7 +479,7 @@ test
 #data
 <p id="test">Click.</p>
 #config
-{ "removeAttributes": ["ID"] }
+{ removeAttributes: ["ID"] }
 #document
 | <p>
 |   id="test"
@@ -485,7 +488,7 @@ test
 #data
 <p ID="test">Click.</p>
 #config
-{ "removeAttributes": ["ID"] }
+{ removeAttributes: ["ID"] }
 #document
 | <p>
 |   id="test"
@@ -494,7 +497,7 @@ test
 #data
 <p ID="test">Click.</p>
 #config
-{ "removeAttributes": ["id"] }
+{ removeAttributes: ["id"] }
 #document
 | <p>
 |   "Click."
@@ -502,7 +505,7 @@ test
 #data
 <div>balabala<i>test</i></div><test>t</test><custom-element>custom-element</custom-element>
 #config
-{ "removeElements": [123, "test", "i", "custom-element"] }
+{ removeElements: [123, "test", "i", "custom-element"] }
 #document
 | <div>
 |   "balabala"
@@ -510,8 +513,7 @@ test
 #data
 <div>balabala<i>test</i></div><test>t</test><custom-element>custom-element</custom-element>
 #config
-{ "replaceWithChildrenElements": [123, "test", "i", "custom-element"],
-  "elements": ["div"]}
+{ replaceWithChildrenElements: [123, "test", "i", "custom-element"] }
 #document
 | <div>
 |   "balabalatest"
@@ -519,22 +521,18 @@ test
 #data
 <div>test<div>p</div>tt<p>div</p></div><test>test</test>
 #config
-{ "elements": ["p", "test"], "replaceWithChildrenElements": ["div"] }
+{ elements: ["p", "test"] }
 #document
-| "test"
-| "p"
-| "tt"
-| <p>
-|   "div"
-| <test>
-|   "test"
+| "testptt"
+|   <p>
+|     "div"
 
 #data
 <div>balabala<i>test</i></div><test>t</test><custom-element>custom-element</custom-element>
 #config
 {
-  "removeElements": [123, "test", "i", "custom-element"],
-  "unknownMarkup": true,
+  removeElements: [123, "test", "i", "custom-element"],
+  unknownMarkup: true,
 }
 #document
 | <div>
@@ -544,23 +542,20 @@ test
 <div>balabala<i>test</i></div><test>t</test><custom-element>custom-element</custom-element>
 #config
 {
-  "replaceWithChildrenElements": [123, "test", "i", "custom-element"],
-  "unknownMarkup": true,
+  replaceWithChildrenElements: [123, "test", "i", "custom-element"],
+  unknownMarkup: true,
 }
 #document
 | <div>
-|   "balabala"
-|   "test"
+|   "balabalatest"
 | "t"
 
 #data
-test<div>p</div>tt<p>div</p><test>test</test>
+<div>test<div>p</div>tt<p>div</p><test>test</test></div>
 #config
-{ "elements": ["p", "test"], "replaceWithChildrenElements": ["div"] }
-#document
-| "test"
-| "p"
-| "tt"
+{ elements: ["p", "test"], unknownMarkup: true }
+#config
+| "testptt"
 | <p>
 |   "div"
 | <test>
@@ -569,7 +564,15 @@ test<div>p</div>tt<p>div</p><test>test</test>
 #data
 <div hello='1' world='2'><b hello='3' world='4'>
 #config
-{ "elements": ["div", "b"], "attributes": ["hello", "world"] }
+{ attributes: ["hello", "world"], }
+#document
+| <div>
+|   <b>
+
+#data
+<div hello='1' world='2'><b hello='3' world='4'>
+#config
+{ attributes: ["hello", "world"], unknownMarkup: true, }
 #document
 | <div>
 |   hello="1"
@@ -581,7 +584,15 @@ test<div>p</div>tt<p>div</p><test>test</test>
 #data
 <div hello='1' world='2'><b hello='3' world='4'>
 #config
-{ "elements": ["div", "b"], "removeAttributes": ["hello", "world"] }
+{ removeAttributes: ["hello", "world"] }
+#document
+| <div>
+|   <b>
+
+#data
+<div hello='1' world='2'><b hello='3' world='4'>
+#config
+{ removeAttributes: ["hello", "world"], unknownMarkup: true, }
 #document
 | <div>
 |   <b>

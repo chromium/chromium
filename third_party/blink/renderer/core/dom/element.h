@@ -668,7 +668,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // if element attributes are modified during iteration, hence the
   // safe (but slower) alternative below.
   Vector<AtomicString> getAttributeNames() const;
-  Vector<QualifiedName> getAttributeQualifiedNames() const;
 
   enum class AttributeModificationReason {
     kDirectly,
