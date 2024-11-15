@@ -2710,6 +2710,55 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
         profile_or_credit_card,
     const AutofillTriggerDetails& trigger_details,
     bool is_refill) {
+  AppendFillLogEvents(action_persistence, form, form_structure,
+                      trigger_autofill_field, safe_field_ids, skip_reasons,
+                      profile_or_credit_card, is_refill, trigger_details);
+
+  client().DidFillOrPreviewForm(action_persistence,
+                                trigger_details.trigger_source, is_refill);
+  NotifyObservers(&Observer::OnFillOrPreviewDataModelForm,
+                  form_structure.global_id(), action_persistence,
+                  safe_filled_fields, profile_or_credit_card);
+
+  if (action_persistence == mojom::ActionPersistence::kPreview) {
+    return;
+  }
+
+  CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+
+  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
+    LogAndRecordCreditCardFill(
+        form_structure, trigger_autofill_field, safe_filled_fields,
+        safe_filled_autofill_fields, filled_field_ids, safe_field_ids,
+        absl::get<const CreditCard*>(profile_or_credit_card), trigger_details,
+        is_refill);
+    return;
+  }
+
+  const AutofillProfile* filled_profile = CHECK_DEREF(
+      absl::get_if<const AutofillProfile*>(&profile_or_credit_card));
+
+  LogAndRecordProfileFill(form_structure, trigger_autofill_field,
+                          safe_filled_fields, safe_filled_autofill_fields,
+                          filled_profile, trigger_details, is_refill);
+
+  MaybeShowPlusAddressEmailOverrideNotification(safe_filled_autofill_fields,
+                                                safe_filled_fields,
+                                                filled_profile, form_structure);
+}
+
+void BrowserAutofillManager::AppendFillLogEvents(
+    mojom::ActionPersistence action_persistence,
+    const FormData& form,
+    FormStructure& form_structure,
+    AutofillField& trigger_autofill_field,
+    const base::flat_set<FieldGlobalId>& safe_field_ids,
+    base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+        skip_reasons,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    bool is_refill,
+    const AutofillTriggerDetails& trigger_details) {
   std::optional<FillEventId> fill_event_id;
   if (action_persistence == mojom::ActionPersistence::kFill) {
     std::string country_code;
@@ -2767,45 +2816,49 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       }
     }
   }
+}
 
-  client().DidFillOrPreviewForm(action_persistence,
-                                trigger_details.trigger_source, is_refill);
-  NotifyObservers(&Observer::OnFillOrPreviewDataModelForm,
-                  form_structure.global_id(), action_persistence,
-                  safe_filled_fields, profile_or_credit_card);
-  if (action_persistence == mojom::ActionPersistence::kPreview) {
-    return;
-  }
-  CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
-  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
-    if (is_refill) {
-      metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
-          metrics_->signin_state_for_metrics);
-      metrics_->credit_card_form_event_logger.OnDidRefill(form_structure);
-    } else {
-      metrics_->credit_card_form_event_logger.RecordFillingOperation(
-          form_structure.global_id(), safe_filled_fields,
-          safe_filled_autofill_fields);
-      // The originally selected masked card is `metrics_->last_selected_card`.
-      // So we must log `metrics_->last_selected_card` as opposed to
-      // `absl::get<const CreditCard*>(profile_or_credit_card)` to correctly
-      // indicate whether the user filled the form using a masked card
-      // suggestion.
-      metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
-          metrics_->last_selected_card, form_structure, trigger_autofill_field,
-          filled_field_ids, safe_field_ids, metrics_->signin_state_for_metrics,
-          trigger_details.trigger_source);
+void BrowserAutofillManager::LogAndRecordCreditCardFill(
+    FormStructure& form_structure,
+    AutofillField& trigger_autofill_field,
+    base::span<const FormFieldData*> safe_filled_fields,
+    base::span<const AutofillField*> safe_filled_autofill_fields,
+    const base::flat_set<FieldGlobalId>& filled_field_ids,
+    const base::flat_set<FieldGlobalId>& safe_field_ids,
+    const CreditCard* card,
+    const AutofillTriggerDetails& trigger_details,
+    bool is_refill) {
+  if (is_refill) {
+    metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+        metrics_->signin_state_for_metrics);
+    metrics_->credit_card_form_event_logger.OnDidRefill(form_structure);
+  } else {
+    metrics_->credit_card_form_event_logger.RecordFillingOperation(
+        form_structure.global_id(), safe_filled_fields,
+        safe_filled_autofill_fields);
+    // The originally selected masked card is `metrics_->last_selected_card`.
+    // So we must log `metrics_->last_selected_card` as opposed to
+    // `absl::get<const CreditCard*>(profile_or_credit_card)` to correctly
+    // indicate whether the user filled the form using a masked card
+    // suggestion.
+    metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
+        metrics_->last_selected_card, form_structure, trigger_autofill_field,
+        filled_field_ids, safe_field_ids, metrics_->signin_state_for_metrics,
+        trigger_details.trigger_source);
 
-      client()
-          .GetPersonalDataManager()
-          ->payments_data_manager()
-          .RecordUseOfCard(
-              absl::get<const CreditCard*>(profile_or_credit_card));
-    }
-    return;
+    client().GetPersonalDataManager()->payments_data_manager().RecordUseOfCard(
+        card);
   }
-  const AutofillProfile* filled_profile = CHECK_DEREF(
-      absl::get_if<const AutofillProfile*>(&profile_or_credit_card));
+}
+
+void BrowserAutofillManager::LogAndRecordProfileFill(
+    FormStructure& form_structure,
+    AutofillField& trigger_autofill_field,
+    base::span<const FormFieldData*> safe_filled_fields,
+    base::span<const AutofillField*> safe_filled_autofill_fields,
+    const AutofillProfile* filled_profile,
+    const AutofillTriggerDetails& trigger_details,
+    bool is_refill) {
   if (!trigger_autofill_field.ShouldSuppressSuggestionsAndFillingByDefault()) {
     if (is_refill) {
       metrics_->address_form_event_logger.OnDidRefill(form_structure);
@@ -2828,7 +2881,13 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     client().GetPersonalDataManager()->address_data_manager().RecordUseOf(
         *filled_profile);
   }
+}
 
+void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
+    base::span<const AutofillField*> safe_filled_autofill_fields,
+    base::span<const FormFieldData*> safe_filled_fields,
+    const AutofillProfile* filled_profile,
+    const FormStructure& form_structure) {
   const AutofillProfile* original_profile =
       client()
           .GetPersonalDataManager()

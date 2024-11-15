@@ -696,6 +696,53 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source);
 
+  // Appends TriggerFillFieldLogEvent and FillFieldLogEvents to the relevant
+  // fields in the form_structure if there was a filling operation.
+  void AppendFillLogEvents(
+      mojom::ActionPersistence action_persistence,
+      const FormData& form,
+      FormStructure& form_structure,
+      AutofillField& trigger_autofill_field,
+      const base::flat_set<FieldGlobalId>& safe_field_ids,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+          skip_reasons,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      bool is_refill,
+      const AutofillTriggerDetails& trigger_details);
+
+  // Handles the credit card specific logic after a form is filled, including
+  // logging the fill operation and recording card usage.
+  void LogAndRecordCreditCardFill(
+      FormStructure& form_structure,
+      AutofillField& trigger_autofill_field,
+      base::span<const FormFieldData*> safe_filled_fields,
+      base::span<const AutofillField*> safe_filled_autofill_fields,
+      const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const base::flat_set<FieldGlobalId>& safe_field_ids,
+      const CreditCard* card,
+      const AutofillTriggerDetails& trigger_details,
+      bool is_refill);
+
+  // Handles the address specific logic after a form is filled, including
+  // logging the fill operation and recording profile usage.
+  void LogAndRecordProfileFill(
+      FormStructure& form_structure,
+      AutofillField& trigger_autofill_field,
+      base::span<const FormFieldData*> safe_filled_fields,
+      base::span<const AutofillField*> safe_filled_autofill_fields,
+      const AutofillProfile* filled_profile,
+      const AutofillTriggerDetails& trigger_details,
+      bool is_refill);
+
+  // Checks if the user filled a form using a plus address email override and,
+  // if so, shows a notification to the user.
+  void MaybeShowPlusAddressEmailOverrideNotification(
+      base::span<const AutofillField*> safe_filled_autofill_fields,
+      base::span<const FormFieldData*> safe_filled_fields,
+      const AutofillProfile* filled_profile,
+      const FormStructure& form_structure);
+
   // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_ =
