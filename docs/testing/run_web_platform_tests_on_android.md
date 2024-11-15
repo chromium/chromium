@@ -23,9 +23,16 @@ autoninja -C out/Default trichrome_webview_wpt_64 # For testing with WebView
 
 ## Running the Tests
 
-Once you have Chrome Android/WebView and `chromedriver` built, you can
-launch `run_wpt_tests.py` to run WPTs. You can either run the tests on an
-Android emulator or a real Android device.
+Once you have Chrome Android/WebView and `chromedriver` built, you can launch
+`run_wpt_tests.py` to run WPTs. You can either run the tests on an Android
+emulator or a real Android device.
+
+Note: You can enable [Incremental Install](/build/android/incremental_install/README.md)
+for Chrome Android by setting `incremental_install = True` in your `args.gn`
+file.
+
+This will cause the test harness to use the build directory's incremental
+installation script instead of the default browser APK.
 
 ### Running WPTs on an Android emulator
 
