@@ -100,10 +100,16 @@ void WebAppProfileSwitcher::QueryProfileWebAppRegistryToOpenWebApp(
       /*on_complete=*/base::DoNothing());
 }
 
+// TODO(crbug.com/379136842): Verify the allowed states called within
+// IsInstallState() here.
 void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
     web_app::AppLock& new_profile_lock,
     base::Value::Dict& debug_value) {
-  if (new_profile_lock.registrar().IsInstalled(app_id_)) {
+  if (new_profile_lock.registrar().IsInstallState(
+          app_id_,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     // The web app is already installed and can be launched, or foregrounded,
     // if it's already launched.
     Browser* launched_app =
@@ -132,7 +138,11 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(
     web_app::IconBitmaps icon_bitmaps) {
   web_app::WebAppProvider* active_profile_provider =
       web_app::WebAppProvider::GetForWebApps(&active_profile_.get());
-  if (!active_profile_provider->registrar_unsafe().IsInstalled(app_id_)) {
+  if (!active_profile_provider->registrar_unsafe().IsInstallState(
+          app_id_,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     RunCompletionCallback();
     return;
   }
