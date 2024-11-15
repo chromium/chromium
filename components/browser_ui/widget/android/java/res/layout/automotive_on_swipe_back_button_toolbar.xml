@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:id="@+id/automotive_on_swipe_back_button_toolbar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_alpha_80"
+    android:background="@android:color/black"
     app:theme="@style/DarkModeActionBarTheme"
     app:navigationIcon="@drawable/ic_arrow_back_24dp"
     app:navigationContentDescription="@string/back"

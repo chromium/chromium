@@ -122,7 +122,6 @@ found in the LICENSE file.
     <color name="black_alpha_11" tools:ignore="UnusedResources">#1D000000</color>
     <color name="black_alpha_38" tools:ignore="UnusedResources">#61000000</color>
     <color name="black_alpha_65" tools:ignore="UnusedResources">#A6000000</color>
-    <color name="black_alpha_80" tools:ignore="UnusedResources">#CC000000</color>
     <color name="white_alpha_5">#0DFFFFFF</color>
     <color name="white_alpha_6">#0FFFFFFF</color>
     <color name="white_alpha_8" tools:ignore="UnusedResources">#14FFFFFF</color>
