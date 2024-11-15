@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 
+#include <string>
 #include <vector>
 
+#include "base/test/task_environment.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -66,6 +69,19 @@ class TabStripBrowsertest : public InProcessBrowserTest {
     for (int i = 0; i < tab_strip()->GetTabCount(); ++i)
       contentses.push_back(tab_strip_model()->GetWebContentsAt(order[i]));
     return contentses;
+  }
+
+  std::u16string GetCollapsedState(tab_groups::TabGroupId group) {
+    std::u16string collapsed_state = std::u16string();
+
+#if !BUILDFLAG(IS_WIN)
+    collapsed_state =
+        tab_strip()->IsGroupCollapsed(group)
+            ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
+            : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
+#endif
+
+    return collapsed_state;
   }
 };
 
@@ -956,6 +972,137 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
                     IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT, title),
                 ui::FormatBytes(100)),
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       TabGroupHeaderAccessibleProperties) {
+  browser()->set_update_ui_immediately_for_testing();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  tab_strip()->tab_at(1)->SetGroup(group);
+  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
+      tab_groups::TabGroupVisualData(u"Test title",
+                                     tab_groups::TabGroupColorId::kBlue));
+
+  auto* group_header = tab_strip()->group_header(group);
+  std::u16string group_title = tab_strip_model()
+                                   ->group_model()
+                                   ->GetTabGroup(group)
+                                   ->visual_data()
+                                   ->title();
+
+  EXPECT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  std::u16string collapsed_state = GetCollapsedState(group);
+  EXPECT_FALSE(group_title.empty());
+  ui::AXNodeData data;
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT,
+                                       u"Test title", u"\"New Tab\"",
+                                       collapsed_state));
+
+  // Validating tab_group name update & collapsed state change should update the
+  // accessible name.
+  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
+      tab_groups::TabGroupVisualData(u"", tab_groups::TabGroupColorId::kBlue));
+  group_title = tab_strip_model()
+                    ->group_model()
+                    ->GetTabGroup(group)
+                    ->visual_data()
+                    ->title();
+  EXPECT_TRUE(group_title.empty());
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group));
+  collapsed_state = GetCollapsedState(group);
+  data = ui::AXNodeData();
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                       u"\"New Tab\"", collapsed_state));
+
+  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
+      tab_groups::TabGroupVisualData(u"New test title",
+                                     tab_groups::TabGroupColorId::kBlue));
+  collapsed_state = GetCollapsedState(group);
+  EXPECT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  group_title = tab_strip_model()
+                    ->group_model()
+                    ->GetTabGroup(group)
+                    ->visual_data()
+                    ->title();
+  EXPECT_FALSE(group_title.empty());
+  data = ui::AXNodeData();
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT,
+                                       u"New test title", u"\"New Tab\"",
+                                       collapsed_state));
+
+  // Validating tab's title update in a tab_group should update accessible name.
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  group = AddTabToNewGroup(3);
+  AddTabToExistingGroup(4, group);
+  AddTabToExistingGroup(5, group);
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  auto* tab_group = tab_strip_model()->group_model()->GetTabGroup(group);
+
+  gfx::Range tabs_in_group = tab_group->ListTabs();
+  auto* web_contents =
+      tab_strip_model()->GetWebContentsAt(tabs_in_group.start());
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetVisibleEntry();
+  std::u16string new_title = u"New Tab Title For Test";
+  web_contents->UpdateTitleForEntry(entry, new_title);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(web_contents->GetTitle(), new_title);
+
+  collapsed_state = GetCollapsedState(group);
+  group_header = tab_strip()->group_header(group);
+  data = ui::AXNodeData();
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                 u"\"New Tab Title For Test\" and 2 other tabs",
+                                 collapsed_state));
+
+  // Other than first tab in a group, if any tab's title is updated, it should
+  // not update the accessible name.
+  web_contents = tab_strip_model()->GetWebContentsAt(tabs_in_group.start() + 1);
+  entry = web_contents->GetController().GetVisibleEntry();
+  new_title = u"New Tab Title For Test 2";
+  web_contents->UpdateTitleForEntry(entry, new_title);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(web_contents->GetTitle(), new_title);
+  data = ui::AXNodeData();
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                 u"\"New Tab Title For Test\" and 2 other tabs",
+                                 collapsed_state));
+
+  // Validate accessible name update with tab move.
+  gfx::Range initial_tabs_in_group(3, 6);
+  EXPECT_EQ(initial_tabs_in_group, tab_group->ListTabs());
+  tab_strip()->MoveTabFirst(tab_strip()->tab_at(3));
+  gfx::Range updated_tabs_in_group(4, 6);
+  EXPECT_EQ(updated_tabs_in_group, tab_group->ListTabs());
+  EXPECT_EQ(new_title, tab_strip_model()->GetWebContentsAt(4)->GetTitle());
+
+  data = ui::AXNodeData();
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringFUTF16(
+          IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+          u"\"New Tab Title For Test 2\" and 1 other tab", collapsed_state));
 }
 
 IN_PROC_BROWSER_TEST_F(

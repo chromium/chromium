@@ -55,7 +55,6 @@ class TabGroupHeader : public TabSlotView,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnFocus() override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
@@ -76,6 +75,7 @@ class TabGroupHeader : public TabSlotView,
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
   void VisualsChanged();
+  void UpdateAccessibleName();
 
   int GetCollapsedHeaderWidth() const;
 
@@ -84,6 +84,8 @@ class TabGroupHeader : public TabSlotView,
 
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
+  FRIEND_TEST_ALL_PREFIXES(TabStripBrowsertest,
+                           TabGroupHeaderAccessibleProperties);
 
   // Calculate the width for this View.
   int GetDesiredWidth() const;
@@ -156,6 +158,7 @@ class TabGroupHeader : public TabSlotView,
   };
 
   EditorBubbleTracker editor_bubble_tracker_;
+  base::WeakPtrFactory<TabGroupHeader> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_

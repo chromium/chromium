@@ -579,6 +579,11 @@ tab_groups::TabGroupColorId BrowserTabStripController::GetGroupColorId(
   return model_->group_model()->GetTabGroup(group)->visual_data()->color();
 }
 
+TabGroup* BrowserTabStripController::GetTabGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  return model_->group_model()->GetTabGroup(group_id);
+}
+
 bool BrowserTabStripController::IsGroupCollapsed(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->ContainsTabGroup(group) &&

@@ -1470,6 +1470,10 @@ bool TabStrip::IsValidModelIndex(int index) const {
   return controller_->IsValidIndex(index);
 }
 
+TabGroup* TabStrip::GetTabGroup(const tab_groups::TabGroupId& id) const {
+  return controller_->GetTabGroup(id);
+}
+
 std::optional<int> TabStrip::GetActiveIndex() const {
   return controller_->GetActiveIndex();
 }

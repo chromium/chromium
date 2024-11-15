@@ -24,6 +24,7 @@
 class Browser;
 class BrowserNonClientFrameView;
 class Tab;
+class TabGroup;
 
 namespace content {
 class WebContents;
@@ -103,6 +104,7 @@ class BrowserTabStripController : public TabStripController,
       const tab_groups::TabGroupId& group_id) const override;
   tab_groups::TabGroupColorId GetGroupColorId(
       const tab_groups::TabGroupId& group_id) const override;
+  TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
 
   void SetVisualDataForGroup(

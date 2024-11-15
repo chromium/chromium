@@ -557,6 +557,7 @@ class TabStripModel : public TabGroupController {
   void MoveTabGroup(const tab_groups::TabGroupId& group) override;
   void CloseTabGroup(const tab_groups::TabGroupId& group) override;
   std::u16string GetTitleAt(int index) const override;
+
   // The same as count(), but overridden for TabGroup to access.
   int GetTabCount() const override;
 
@@ -937,6 +938,10 @@ class TabStripModel : public TabGroupController {
       int to_position,
       content::WebContents* web_contents,
       TabStripSelectionChange& selection_change);
+
+  // Notifies TabGroup of any changes in its status.
+  void MaybeUpdateTabGroupHeaderAccessibleName(
+      std::optional<tab_groups::TabGroupId> group);
 
   TabStripSelectionChange MaybeUpdateSelectionModel(int initial_index,
                                                     int final_index,

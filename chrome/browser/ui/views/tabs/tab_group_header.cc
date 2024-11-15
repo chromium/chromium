@@ -118,7 +118,11 @@ TabGroupHeader::~TabGroupHeader() = default;
 
 void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   SetGroup(group);
-
+  auto* tab_group = tab_slot_controller_->GetTabGroup(group);
+  if (tab_group) {
+    tab_group->SetTabGroupVisualsChangedCallback(base::BindRepeating(
+        &TabGroupHeader::UpdateAccessibleName, weak_ptr_factory_.GetWeakPtr()));
+  }
   set_context_menu_controller(this);
 
   // Disable events processing (like tooltip handling)
@@ -150,6 +154,7 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
   GetViewAccessibility().SetIsEditable(true);
+  UpdateAccessibleName();
 }
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
@@ -269,33 +274,6 @@ void TabGroupHeader::OnFocus() {
   View::OnFocus();
   tab_slot_controller_->UpdateHoverCard(
       nullptr, TabSlotController::HoverCardUpdateType::kFocus);
-}
-
-void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  std::u16string title = tab_slot_controller_->GetGroupTitle(group().value());
-  std::u16string contents =
-      tab_slot_controller_->GetGroupContentString(group().value());
-  std::u16string collapsed_state = std::u16string();
-
-// Windows screen reader properly announces the state set above in |node_data|
-// and will read out the state change when the header's collapsed state is
-// toggled. The state is added into the title for other platforms and the title
-// will be reread with the updated state when the header's collapsed state is
-// toggled.
-#if !BUILDFLAG(IS_WIN)
-  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
-  collapsed_state =
-      is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
-                   : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
-#endif
-  if (title.empty()) {
-    node_data->SetNameChecked(l10n_util::GetStringFUTF16(
-        IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT, contents, collapsed_state));
-  } else {
-    node_data->SetNameChecked(
-        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, title,
-                                   contents, collapsed_state));
-  }
 }
 
 std::u16string TabGroupHeader::GetTooltipText(const gfx::Point& p) const {
@@ -428,6 +406,34 @@ void TabGroupHeader::VisualsChanged() {
                                                                      this);
       UpdateIsCollapsed();
     }
+  }
+  UpdateAccessibleName();
+}
+
+void TabGroupHeader::UpdateAccessibleName() {
+  std::u16string title = tab_slot_controller_->GetGroupTitle(group().value());
+  std::u16string contents =
+      tab_slot_controller_->GetGroupContentString(group().value());
+  std::u16string collapsed_state = std::u16string();
+
+// Windows screen reader properly announces the state set above in |node_data|
+// and will read out the state change when the header's collapsed state is
+// toggled. The state is added into the title for other platforms and the title
+// will be reread with the updated state when the header's collapsed state is
+// toggled.
+#if !BUILDFLAG(IS_WIN)
+  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
+  collapsed_state =
+      is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
+                   : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
+#endif
+  if (title.empty()) {
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+        IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT, contents, collapsed_state));
+  } else {
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, title,
+                                   contents, collapsed_state));
   }
 }
 

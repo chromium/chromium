@@ -40,6 +40,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Tab;
+class TabGroup;
 class TabHoverCardController;
 class TabStripController;
 class TabStripObserver;
@@ -191,10 +192,13 @@ class TabStrip : public views::View,
     return tab_container_->GetGroupViews(id)->header();
   }
 
+  // Returns the TabGroup with ID |id|.
+  TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const override;
+
   // Returns the index of the specified view in the model coordinate system, or
   // std::nullopt if view is closing not a tab, or is not in this tabstrip.
   // TODO(tbergquist): This should return an optional<size_t>.
-  std::optional<int> GetModelIndexOf(const TabSlotView* view) const;
+  std::optional<int> GetModelIndexOf(const TabSlotView* view) const override;
 
   // Gets the number of Tabs in the tab strip.
   int GetTabCount() const;

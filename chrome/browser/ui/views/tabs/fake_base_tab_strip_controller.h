@@ -18,6 +18,8 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
+class TabGroup;
+
 class FakeBaseTabStripController : public TabStripController {
  public:
   FakeBaseTabStripController();
@@ -96,6 +98,7 @@ class FakeBaseTabStripController : public TabStripController {
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
+  TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
   Profile* GetProfile() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   const Browser* GetBrowser() const override;
