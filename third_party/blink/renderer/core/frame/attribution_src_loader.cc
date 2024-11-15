@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "components/attribution_reporting/attribution_src_request_status.h"
 #include "components/attribution_reporting/data_host.mojom-blink.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -86,27 +87,13 @@ namespace blink {
 
 namespace {
 
+using ::attribution_reporting::AttributionSrcRequestStatus;
 using ::attribution_reporting::IssueType;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::SourceType;
 using ::network::mojom::AttributionReportingEligibility;
 
 using mojom::blink::AttributionReportingIssueType;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(AttributionSrcRequestStatus)
-enum class AttributionSrcRequestStatus {
-  kRequested = 0,
-  kReceived = 1,
-  kFailed = 2,
-  kRedirected = 3,
-  kReceivedAfterRedirected = 4,
-  kFailedAfterRedirected = 5,
-  kMaxValue = kFailedAfterRedirected,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionAttributionSrcRequestStatus)
 
 void RecordAttributionSrcRequestStatus(const ResourceRequestHead& request,
                                        AttributionSrcRequestStatus status) {

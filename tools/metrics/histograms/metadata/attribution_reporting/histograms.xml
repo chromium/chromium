@@ -377,6 +377,7 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name="All"/>
     <variant name="Navigation"/>
+    <variant name="Navigation.Browser"/>
   </token>
 </histogram>
 

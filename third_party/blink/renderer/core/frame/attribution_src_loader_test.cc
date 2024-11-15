@@ -18,6 +18,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/attribution_src_request_status.h"
 #include "components/attribution_reporting/data_host.mojom-blink.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
@@ -64,6 +65,8 @@
 namespace blink {
 
 namespace {
+
+using ::attribution_reporting::AttributionSrcRequestStatus;
 
 using ::network::mojom::AttributionReportingEligibility;
 using ::network::mojom::AttributionSupport;
@@ -1185,19 +1188,26 @@ const struct {
 } kAttributionSrcRequestTestCases[] = {
     {
         kSuccessUrl,
-        {base::Bucket(0, 1), base::Bucket(1, 1)},
+        {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+         base::Bucket(AttributionSrcRequestStatus::kReceived, 1)},
     },
     {
         kErrorUrl,
-        {base::Bucket(0, 1), base::Bucket(2, 1)},
+        {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+         base::Bucket(AttributionSrcRequestStatus::kFailed, 1)},
     },
     {
         kRedirectSuccessUrl,
-        {base::Bucket(0, 1), base::Bucket(3, 1), base::Bucket(4, 1)},
+        {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+         base::Bucket(AttributionSrcRequestStatus::kRedirected, 1),
+         base::Bucket(AttributionSrcRequestStatus::kReceivedAfterRedirected,
+                      1)},
     },
     {
         kRedirectErrorUrl,
-        {base::Bucket(0, 1), base::Bucket(3, 1), base::Bucket(5, 1)},
+        {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+         base::Bucket(AttributionSrcRequestStatus::kRedirected, 1),
+         base::Bucket(AttributionSrcRequestStatus::kFailedAfterRedirected, 1)},
     },
 };
 

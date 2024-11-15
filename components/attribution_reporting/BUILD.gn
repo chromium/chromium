@@ -65,6 +65,7 @@ component("attribution_reporting") {
     "attribution_scopes_data.h",
     "attribution_scopes_set.cc",
     "attribution_scopes_set.h",
+    "attribution_src_request_status.h",
     "constants.h",
     "debug_types.cc",
     "debug_types.h",
