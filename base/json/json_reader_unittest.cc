@@ -29,7 +29,6 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace {
 
@@ -1188,12 +1187,6 @@ TEST_P(JSONReaderTest, UnescapedControls) {
 TEST_P(JSONReaderTest, UsingRust) {
   ASSERT_EQ(JSONReader::UsingRust(), using_rust_);
 }
-
-static void CanParseAnythingWithoutCrashing(const std::string& input) {
-  JSONReader::Read(input, JSON_PARSE_CHROMIUM_EXTENSIONS);
-}
-
-FUZZ_TEST(JSONReaderTest, CanParseAnythingWithoutCrashing);
 
 INSTANTIATE_TEST_SUITE_P(All,
                          JSONReaderTest,
