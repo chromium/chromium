@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Probabil că majoritatea site-urilor pe care le accesezi salvează date pe dispozitiv, adesea pentru a-ți îmbunătăți experiența, salvând preferințele sau informațiile la care permiți accesul site-ului. Îți recomandăm să păstrezi activată această setare.</translation>
 <translation id="2289270750774289114">Întreabă-mă când un site dorește să descopere dispozitive Bluetooth din apropiere (recomandat)</translation>
 <translation id="2315043854645842844">Selectarea certificatelor pe partea de client nu este acceptată de sistemul de operare.</translation>
+<translation id="2356926036049612643">Instrumentul de optimizare pentru V8</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2379925928934107488">Aplică tema întunecată pe site-uri când Chrome folosește tema întunecată, dacă este posibil</translation>
 <translation id="2390272837142897736">Mărește nivelul de zoom</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Afișare extinsă – dă clic pentru a restrânge.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2588271083332682494">Organizează-te cu ajutorul grupurilor de file</translation>
+<translation id="2594832159966169099">Gestionează securitatea pentru V8</translation>
 <translation id="2597457036804169544">Nu aplica tema întunecată pe site-uri</translation>
 <translation id="2606760465469169465">Verificare automată</translation>
 <translation id="2621115761605608342">Permite JavaScript pentru un anumit site.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Selectează elementele</translation>
 <translation id="6838525730752203626">Folosește Chrome în mod prestabilit</translation>
 <translation id="6840760312327750441">Pentru a grupa filele, atinge lung o filă. Apoi trage-o peste o altă filă.</translation>
+<translation id="6851981911629679515">Activează protecția suplimentară în motorul JavaScript și WebAssembly din Chrome</translation>
 <translation id="6864395892908308021">Dispozitivul nu poate citi comunicările NFC</translation>
 <translation id="6870169401250095575">Ascunde cardul Verificarea de siguranță</translation>
 <translation id="6900883974539674431">Creează grupuri de file care se salvează și se actualizează automat pe toate dispozitivele</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Orice site pe care îl accesezi îți poate afișa orice anunț</translation>
 <translation id="8087000398470557479">Acest conținut provine de pe <ph name="DOMAIN_NAME" />, oferit de Google.</translation>
 <translation id="8088603949666785339">Mai multe opțiuni în <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Reduce performanța, dar face motorul V8 mai rezistent la atacuri</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome va limita din nou cookie-urile mâine}few{# zile până când Chrome va limita din nou cookie-urile}other{# de zile până când Chrome va limita din nou cookie-urile}}</translation>
 <translation id="8116925261070264013">Cu sunetul dezactivat</translation>
 <translation id="8117244575099414087">Când opțiunea este activată, site-urile pot folosi senzorii dispozitivului. Când opțiunea este dezactivată, site-urile nu pot folosi senzori.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Selectează o imagine</translation>
 <translation id="8800034312320686233">Site-ul nu funcționează?</translation>
 <translation id="8801436777607969138">Blochează JavaScript pentru un anumit site.</translation>
+<translation id="8801657293260363985">V8 este motorul JavaScript și WebAssembly din Chrome, folosit pentru a îmbunătăți performanța site-ului</translation>
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
 <translation id="8805385115381080995">Navigarea este mai rapidă deoarece este mai puțin probabil ca un site să îți solicite să confirmi că ești o persoană reală</translation>
 <translation id="8816026460808729765">Blochează întotdeauna accesul site-urilor la senzori</translation>

@@ -898,6 +898,7 @@ Se il criterio non viene configurato, non verrà eseguita alcuna azione.
 La soglia minima è di 1 minuto.
 
 "L'input utente" è definito dalle API del sistema operativo e include, ad esempio, lo spostamento del mouse o la digitazione tramite tastiera.</translation>
+<translation id="1611144198714227240">Disattiva la scheda Calendario di Outlook per nella pagina Nuova scheda</translation>
 <translation id="1611394564825535541">Consente di controllare se gli utenti possono accedere alle stampanti non aziendali.
 
       Se il criterio viene impostato su Vero o se non viene configurato, gli utenti possono aggiungere, configurare e utilizzare le proprie stampanti.
@@ -1115,6 +1116,7 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
       I pattern URL non possono essere in conflitto con <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
+<translation id="1754668667300090632">Disattiva la scheda File di SharePoint nella pagina Nuova scheda</translation>
 <translation id="1755310913456007816">Utilizza le impostazioni di controllo delle revoche online esistenti</translation>
 <translation id="1760951637494635692">Consenti l'API Serial su questi siti</translation>
 <translation id="1765503534110351026">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
@@ -1340,6 +1342,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda do
 <translation id="1928355425032308464">Attiva l'input video</translation>
 <translation id="1930094135927166199">Disattiva USB PowerShare</translation>
 <translation id="1930127294345368978">Numero massimo consentito di fogli da utilizzare per un singolo processo di stampa</translation>
+<translation id="1931537386635075674">Attiva la scheda Calendario di Outlook nella pagina Nuova scheda</translation>
 <translation id="1933378685401357864">Immagine di sfondo</translation>
 <translation id="1935409768874953955">La raccolta di dati anonimizzati con chiave URL è sempre attiva</translation>
 <translation id="1942015922182679826">Attiva l'eliminazione delle password non decifrabili</translation>
@@ -1433,6 +1436,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Se il criterio viene impostato su false o non viene impostato, le informazioni non vengono segnalate.
       Se viene impostato su true, il fuso orario attualmente impostato sul dispositivo viene segnalato.</translation>
 <translation id="1990784382342293892">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1990823660725793326">Un URL blob di SharedWorker non eredita un controller. (comportamento precedente)</translation>
 <translation id="1995744620192427843">La configurazione del criterio impedisce il caricamento delle pagine web con URL vietati durante l'autenticazione utente (ad es. nella schermata di accesso e nella schermata di blocco). Fornisce un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato durante l'autenticazione. I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 
 Le eccezioni a questi pattern possono essere definite nel criterio correlato <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />.
@@ -7392,6 +7396,13 @@ Se il criterio viene impostato su Disattivato o se non viene configurato, la ric
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="6431446111529802555">Europa.</translation>
+<translation id="6432641193840355112">Questo criterio consente di stabilire la visibilità della scheda File di SharePoint nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se il criterio è abilitato e la tua organizzazione ha autorizzato l'utilizzo dei dati dei file di SharePoint nel browser.
+
+La scheda dei file di SharePoint consigliati mostra un elenco di file consigliati.  Lo scopo è risolvere il problema del cambio di contesto e migliorare la produttività fornendo agli utenti una scorciatoia ai loro documenti più importanti.
+
+La scheda Microsoft SharePoint richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a SharePoint, consulta l'articolo del Centro assistenza.
+
+Se il criterio <ph name="NTPCARDSVISIBLE" /> è disattivato, la scheda di SharePoint non verrà mostrata. Se il criterio <ph name="NTPCARDSVISIBLE" /> è attivato, la scheda di SharePoint verrà mostrata se anche il relativo criterio è attivato e sono disponibili dati da mostrare. Se <ph name="NTPCARDSVISIBLE" /> non viene configurato, la scheda di SharePoint verrà mostrata se anche il relativo criterio è attivato, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="6433697627431665375">Impedisci l'inclusione dei dati di <ph name="PRODUCT_NAME" /> nei backup</translation>
 <translation id="6436052172226685535">Comportamento predefinito di LBS</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> tenta di eseguire l'upgrade di alcune navigazioni da HTTP a HTTPS, se possibile. È possibile utilizzare questo criterio per disabilitare questo comportamento. Se viene impostata su "true" o non viene impostata, questa funzionalità verrà attivata per impostazione predefinita.
@@ -8574,6 +8585,7 @@ Nota importante: le pianificazioni impostate da questo criterio potrebbero non e
 
       Se questa norma non viene impostata o viene lasciata vuota, l'utente potrà impostare qualsiasi Account Google come account principale del browser in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Imposta la lunghezza minima del PIN per la schermata di blocco</translation>
+<translation id="7232835921904883015">Mostra la scheda File di SharePoint nella pagina Nuova scheda</translation>
 <translation id="7234280155140786597">Nomi degli host di messaggi nativi vietati (o * per indicarli tutti)</translation>
 <translation id="723621412149834592">Se il criterio viene impostato su <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (valore 2), per impostazione predefinita viene automaticamente negata ai siti l'autorizzazione per il posizionamento delle finestre. Ciò limiterà la capacità dei siti di vedere le informazioni relative alle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
@@ -9045,6 +9057,7 @@ Se imposti questo criterio su Disabled, l'impostazione relativa alla misurazione
 Se lo imposti su Enabled o se non lo configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
 
 Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostato su Disabled.</translation>
+<translation id="7643824472046534064">Attiva la scheda File di SharePoint nella pagina Nuova scheda</translation>
 <translation id="7643883929273267746">Limita gli account visibili in <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Questo criterio è un'opzione generica per tutte le regole definite nel criterio DataLeakPreventionRulesList.
       Se questo criterio viene impostato su Vero, viene attivata la generazione di rapporti in tempo reale degli eventi di prevenzione di fughe di dati.
@@ -9460,6 +9473,19 @@ Disattiva il criterio solo se utilizzi una soluzione di sicurezza degli endpoint
 <translation id="7962093600142350905">Questo criterio controlla se vengono mostrate agli utenti eventuali stampanti Privet disponibili nella finestra di dialogo dell'anteprima di stampa.
       Se viene impostato su Attivato, le stampanti Privet disponibili vengono mostrate.
       Se viene impostato su Disattivato o se non viene configurato, le stampanti Privet non vengono mostrate nell'anteprima di stampa, poiché questo metodo di stampa è deprecato.</translation>
+<translation id="7962516520649791537">In base a https://w3c.github.io/ServiceWorker/#control-and-use-worker-client,
+i worker dovrebbero ereditare i controller per l'URL blob.  Tuttavia, il codice esistente
+consente solo a DedicatedWorker di ereditare il controller, mentre SharedWorker
+non lo eredita.
+
+Se il criterio viene attivato o se non viene configurato,
+<ph name="PRODUCT_NAME" /> eredita il controller
+se viene utilizzato un URL blob come URL di SharedWorker.
+
+Se il criterio viene disattivato, il comportamento non viene allineato alla
+specifica attuale.
+
+Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futuro.</translation>
 <translation id="7969865441622729072">Attiva tutti i suoni in modalità Niente distrazioni.</translation>
 <translation id="7970660709107174905">Impostazioni di partizionamento dello spazio di archiviazione di terze parti</translation>
 <translation id="7972223739742725350">Non abilitare l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
@@ -9553,6 +9579,7 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
+<translation id="8030228699677851043">Allinea il comportamento dell'URL blob di SharedWorker alle specifiche</translation>
 <translation id="8031651557770840616">Non consentire Sfondo AI generativa</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
 <translation id="8036284429246268475">Se il criterio viene attivato, gli utenti possono impostare <ph name="PRODUCT_NAME" /> in modo che controlli se nomi utente e password inseriti sono stati resi noti nell'ambito di una fuga di dati.
@@ -9780,6 +9807,13 @@ Questo criterio viene applicato alla modalità di navigazione in incognito. Ciò
 <translation id="8239143983379015783">Forza l'attivazione della quota permanente</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
+<translation id="8244828501034607035">Questo criterio consente di stabilire la visibilità della scheda Outlook nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se il criterio è abilitato e la tua organizzazione ha autorizzato l'utilizzo dei dati del calendario di Outlook nel browser.
+
+La scheda di Outlook mostra il prossimo evento nel calendario, nonché un'anteprima delle riunioni previste per il resto della giornata. Lo scopo è risolvere il problema del cambio di contesto e migliorare la produttività fornendo agli utenti una scorciatoia alla prossima riunione.
+
+La scheda Microsoft Outlook richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a Outlook, consulta l'articolo del Centro assistenza.
+
+Se il criterio <ph name="NTPCARDSVISIBLE" /> è disattivato, la scheda di Outlook non verrà mostrata. Se il criterio <ph name="NTPCARDSVISIBLE" /> è attivato, la scheda di Outlook verrà mostrata se anche il relativo criterio è attivato e sono disponibili dati da mostrare. Se <ph name="NTPCARDSVISIBLE" /> non viene configurato, la scheda di Outlook verrà mostrata se anche il relativo criterio è attivato, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="8245574649143980200">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono visualizzare la voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale. Se viene impostato su Disattivato, gli utenti non vedranno la voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> se la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>
 <translation id="8247143534027746614">Blocca l'accesso a un elenco di pattern URL durante l'autenticazione</translation>
 <translation id="824818544897669723">Viene disattivata l'eliminazione della cronologia del browser e dei download</translation>
@@ -10643,6 +10677,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Sui nuovi dispositivi è impostato il fuso orario della costa del Pacifico degli Stati Uniti. Il formato del valore segue quello dei nomi nello IANA Time Zone Database (https://en.wikipedia.org/wiki/Tz_database). Se viene inserito un valore non valido, per il criterio viene usato il fuso orario GMT.
 
       Se il criterio non viene impostato o se inserisci una stringa vuota, sul dispositivo viene usato il fuso orario attualmente attivo, che però potrà essere cambiato dagli utenti.</translation>
+<translation id="8874071621901957187">Mostra la scheda Calendario di Outlook nella pagina Nuova scheda</translation>
 <translation id="8875202330803089599">Se il criterio viene configurato, gli utenti non potranno bypassare le decisioni relative alla sicurezza dei download.
 
       In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):
@@ -10694,6 +10729,7 @@ Se viene disattivato, vengono inviati solo i dati hardware standard.</translatio
 <translation id="8908294717014659003">Consente di stabilire se i siti web possono accedere ai dispositivi di acquisizione dei contenuti multimediali. L'accesso ai dispositivi di acquisizione dei contenuti multimediali può essere consentito per impostazione predefinita oppure l'utente può visualizzare una richiesta ogni volta che un sito web vuole accedere ai dispositivi di acquisizione dei contenuti multimediali.
 
           Se questa norma non viene impostata, verrà utilizzata la norma "PromptOnAccess" e l'utente sarà in grado di modificarla.</translation>
+<translation id="8909400095164640684">Impostazioni dell'aggregatore di ricerca aziendale</translation>
 <translation id="8911348623012274122">Imposta un limite di memoria per le istanze di Chrome</translation>
 <translation id="8911736066340032670">Consente di segnalare informazioni relative al display, come la frequenza di aggiornamento, e alla grafica, ad esempio la versione del driver.
 
@@ -11104,6 +11140,7 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="9221827710437832530">Consenti l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="922540222991413931">Configura fonti di installazione di estensioni, applicazioni e script utente</translation>
 <translation id="924557436754151212">Importa password salvate dal browser predefinito alla prima esecuzione</translation>
+<translation id="925379810778921867">Un URL blob di SharedWorker eredita un controller.</translation>
 <translation id="927384371566552478">Se il criterio viene impostato su Attivato o se non viene configurato, l'interfaccia utente di esportazione/importazione è disponibile agli utenti. Se il criterio viene impostato su Disattivato, l'interfaccia utente di esportazione/importazione non è disponibile agli utenti.</translation>
 <translation id="929549405492388749">Se questo criterio viene impostato su true, viene forzata l'attivazione della funzionalità AppCache, anche se in Chrome non è disponibile per impostazione predefinita.
 

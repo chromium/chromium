@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Most sites that you visit probably save data to your device, often to improve your experience by saving your preferences or information that you share with the site. We recommend keeping this setting on.</translation>
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2315043854645842844">Client side certificate selection is not supported by the operating system.</translation>
+<translation id="2356926036049612643">V8 optimiser</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2379925928934107488">Apply Dark theme to sites when Chrome uses Dark theme, when possible</translation>
 <translation id="2390272837142897736">Increase zoom</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2588271083332682494">Tidy up with tab groups</translation>
+<translation id="2594832159966169099">Manage V8 security</translation>
 <translation id="2597457036804169544">Don’t apply Dark theme to sites</translation>
 <translation id="2606760465469169465">Auto-verify</translation>
 <translation id="2621115761605608342">Allow JavaScript for a specific site.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Select items</translation>
 <translation id="6838525730752203626">Use Chrome by default</translation>
 <translation id="6840760312327750441">To group tabs, touch and hold a tab. Then, drag it onto another tab.</translation>
+<translation id="6851981911629679515">Turn on additional protection in Chrome’s JavaScript and WebAssembly engine</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
 <translation id="6870169401250095575">Hide safety check card</translation>
 <translation id="6900883974539674431">Create tab groups that automatically save and update across all your devices</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Any site that you visit can show any ad to you</translation>
 <translation id="8087000398470557479">This content is from <ph name="DOMAIN_NAME" />, delivered by Google.</translation>
 <translation id="8088603949666785339">More options in the <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Reduces performance but makes V8 more resistant to attacks</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome will limit cookies again tomorrow}other{# days until Chrome limits cookies again}}</translation>
 <translation id="8116925261070264013">Muted</translation>
 <translation id="8117244575099414087">When on, sites can use your device's sensors. When off, sites can't use sensors.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Select an image</translation>
 <translation id="8800034312320686233">Site not working?</translation>
 <translation id="8801436777607969138">Block JavaScript for a specific site.</translation>
+<translation id="8801657293260363985">V8 is Chrome’s JavaScript and WebAssembly engine used to improve site performance</translation>
 <translation id="8803526663383843427">When on</translation>
 <translation id="8805385115381080995">Browsing is faster because a site is less likely to ask you to verify that you're a real person</translation>
 <translation id="8816026460808729765">Block sites from accessing sensors</translation>

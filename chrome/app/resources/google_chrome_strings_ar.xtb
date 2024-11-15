@@ -398,7 +398,6 @@
 <translation id="5941830788786076944">‏جعل Google Chrome المتصفّح التلقائي</translation>
 <translation id="5947104538377036631">‏اختصار Chrome</translation>
 <translation id="5953954252731207958">‏لم تزر هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome إذن <ph name="PERMISSION" /></translation>
-<translation id="5971400953982411053">‏فقاعة البحث باستخدام "عدسة Google"</translation>
 <translation id="6003112304606738118">جارٍ التنزيل… الساعات المتبقّية: <ph name="HOURS" /></translation>
 <translation id="6014316319780893079">‏باستخدام <ph name="BEGIN_LINK" />أدوات من Chrome<ph name="END_LINK" />، يمكنك التصفُّح بأمان والتحكُّم بشكل كامل.</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
@@ -600,7 +599,6 @@
 <translation id="8267953129876836456">‏عثَر Chrome على بعض اقتراحات الأمان المطلوب مراجعتها</translation>
 <translation id="8270775718612349140">‏الشهادات التي يديرها متصفّح Chrome</translation>
 <translation id="8286862437124483331">‏يحاول Google Chrome عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
-<translation id="8290100596633877290">‏للأسف! تعطل Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="829923460755755423">‏أضِف اختصارًا إلى "مدير كلمات المرور في Google".</translation>
 <translation id="8313851650939857356">خطأ في بدء التشغيل: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8321888067342493336">حفظ كصورة</translation>
@@ -626,6 +624,7 @@
 <translation id="852529348814672339">‏عرض Chrome بهذه اللغة</translation>
 <translation id="8550334526674375523">هذا ملف العمل منفصِل تمامًا عن ملفك الشخصي.</translation>
 <translation id="8555465886620020932">حدث خطأ في الخدمة: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="856656450041460113">البحث في قائمة اللغات</translation>
 <translation id="8571790202382503603">‏باستخدام الملفات الشخصية على Chrome، يمكنك الفصل بين جميع بياناتك على Chrome، ما يسهِّل عليك الفصل بين العمل والترفيه.</translation>
 <translation id="8601359445272098721">ميزة جديدة: يمكنك ترجمة النص والصور على الشاشة من خلال النقر على زر "ترجمة محتوى الشاشة"</translation>
 <translation id="8614913330719544658">‏لا يستجيب Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>

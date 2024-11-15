@@ -394,7 +394,6 @@
 <translation id="5941830788786076944">Fazer do Google Chrome o navegador padrão</translation>
 <translation id="5947104538377036631">Atalho do Chrome</translation>
 <translation id="5953954252731207958">Você não visitou o site recentemente. O Chrome removeu <ph name="PERMISSION" /></translation>
-<translation id="5971400953982411053">Balão de pesquisa do Google Lens</translation>
 <translation id="6003112304606738118">Fazendo o download… <ph name="HOURS" /> hora(s) restante(s)</translation>
 <translation id="6014316319780893079">Com as <ph name="BEGIN_LINK" />ferramentas do Chrome<ph name="END_LINK" />, você pode navegar com segurança e ficar no controle</translation>
 <translation id="6022659036123304283">Deixe o Chrome do seu jeito</translation>
@@ -598,7 +597,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8267953129876836456">O Chrome encontrou algumas recomendações de segurança para sua avaliação</translation>
 <translation id="8270775718612349140">Certificados gerenciados pelo Chrome</translation>
 <translation id="8286862437124483331">O Google Chrome está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
-<translation id="8290100596633877290">Nossa! Houve uma falha no Google Chrome. Reiniciar agora?</translation>
 <translation id="829923460755755423">Adicione um atalho para o Gerenciador de senhas do Google</translation>
 <translation id="8313851650939857356">Erro de inicialização: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8321888067342493336">Salvar como imagem</translation>
@@ -624,6 +622,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="852529348814672339">Mostrar o Chrome neste idioma</translation>
 <translation id="8550334526674375523">Este perfil de trabalho é completamente separado do seu perfil pessoal.</translation>
 <translation id="8555465886620020932">Erro de serviço: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8571790202382503603">Você pode usar os perfis do Chrome para separar todos os seus dados nele. Assim, fica mais fácil dividir suas atividades entre trabalho e diversão.</translation>
 <translation id="8601359445272098721">Novidade! Agora você pode traduzir texto e imagens na sua tela selecionando o botão "Traduzir tela".</translation>
 <translation id="8614913330719544658">O Google Chrome não responde. Reiniciar agora?</translation>

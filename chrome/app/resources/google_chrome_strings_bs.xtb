@@ -402,7 +402,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5941830788786076944">Postavite Google Chrome kao zadani preglednik</translation>
 <translation id="5947104538377036631">Prečica Chromea</translation>
 <translation id="5953954252731207958">Niste je posjetili već neko vrijeme. Chrome je uklonio odobrenje "<ph name="PERMISSION" />"</translation>
-<translation id="5971400953982411053">Oblačić za pretraživanje putem Google Objektiva</translation>
 <translation id="6003112304606738118">Preuzimanje… Preostalo je <ph name="HOURS" /> h</translation>
 <translation id="6014316319780893079">Pomoću <ph name="BEGIN_LINK" />Chromeovih alata<ph name="END_LINK" /> možete pregledati sigurno i zadržati kontrolu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
@@ -606,7 +605,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8267953129876836456">Chrome je pronašao neke sigurnosne preporuke koje trebate pregledati</translation>
 <translation id="8270775718612349140">Certifikati kojima upravlja Chrome</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
-<translation id="8290100596633877290">Joj! Došlo je do pada aplikacije Google Chrome. Ponovo pokrenuti sada?</translation>
 <translation id="829923460755755423">Dodajte prečicu za Google upravitelja lozinki</translation>
 <translation id="8313851650939857356">Došlo je do greške prilikom pokretanja: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Sačuvaj kao sliku</translation>
@@ -632,7 +630,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="852529348814672339">Prikazuj Chrome na ovom jeziku</translation>
 <translation id="8550334526674375523">Ovaj radni profil je u potpunosti odvojen od vašeg ličnog profila.</translation>
 <translation id="8555465886620020932">Greška usluge: <ph name="SERVICE_ERROR" />.</translation>
-<translation id="856656450041460113">Pretražite popis jezika</translation>
+<translation id="856656450041460113">Pretraživanje liste jezika</translation>
 <translation id="8571790202382503603">S Chrome profilima možete odvojiti sve svoje Chrome stvari. Tako ćete lakše razdvojiti posao i zabavu.</translation>
 <translation id="8601359445272098721">Novo! Možete prevesti i tekst i slike s ekrana odabirom dugmeta "Prevedi ekran"</translation>
 <translation id="8614913330719544658">Google Chrome ne reagira. Ponovo pokrenuti sada?</translation>

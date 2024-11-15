@@ -393,7 +393,6 @@
 <translation id="5941830788786076944">Google Chrome を既定のブラウザにする</translation>
 <translation id="5947104538377036631">Chrome のショートカット</translation>
 <translation id="5953954252731207958">最近アクセスしていないため、Chrome で <ph name="PERMISSION" /> の権限を削除しました</translation>
-<translation id="5971400953982411053">Google レンズ検索バブル</translation>
 <translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome のツール<ph name="END_LINK" />を使って、自分で管理しながら安全にブラウジングできます</translation>
 <translation id="6022659036123304283">Chrome を独自にカスタマイズ</translation>
@@ -597,7 +596,6 @@
 <translation id="8267953129876836456">安全に関する推奨事項をご確認ください</translation>
 <translation id="8270775718612349140">Chrome で管理されている証明書</translation>
 <translation id="8286862437124483331">Google Chrome でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
-<translation id="8290100596633877290">エラー: Google Chrome で問題が発生しました。今すぐ再起動しますか？</translation>
 <translation id="829923460755755423">Google パスワード マネージャーへのショートカットを追加できます</translation>
 <translation id="8313851650939857356">起動エラー: <ph name="STARTUP_ERROR" />。</translation>
 <translation id="8321888067342493336">画像として保存</translation>
@@ -623,6 +621,7 @@
 <translation id="852529348814672339">Chrome をこの言語で表示する</translation>
 <translation id="8550334526674375523">この仕事用プロファイルは個人用プロファイルとは別に管理されます。</translation>
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
+<translation id="856656450041460113">言語リストを検索</translation>
 <translation id="8571790202382503603">Chrome プロフィールを使うと、Chrome のあらゆる項目や設定を個別に管理できます。これにより、仕事と遊びの使い分けが簡単になります。</translation>
 <translation id="8601359445272098721">New! [画面を翻訳] ボタンを選択して、画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="8614913330719544658">Google Chrome が応答しません。今すぐ再起動しますか？</translation>

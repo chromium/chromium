@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1191518099344003522">APN চালু করা আছে।</translation>
 <translation id="1195447618553298278">অজানা ত্রুটি৷</translation>
+<translation id="1196264380943975940">সারসংক্ষেপ করা যাচ্ছে না। দীর্ঘ ট্রানস্ক্রিপ্ট ব্যবহার করে দেখুন।</translation>
 <translation id="1196959502276349371">ভার্সন <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">প্লে/পজ করুন</translation>
 <translation id="1201402288615127009">পরের</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">ট্রানস্ক্রিপ্ট লুকান</translation>
 <translation id="160633243685262989">ছবির প্রিভিউ দেখুন</translation>
 <translation id="1611649489706141841">ফরওয়ার্ড</translation>
+<translation id="1615144046047995187">ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার Chromebook রিস্টার্ট করুন।</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
 <translation id="1618566998877964907">থিম ব্যবহার করুন</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
@@ -590,6 +592,7 @@
 <translation id="3885327323343477505">স্ক্রিন সেভার পরিবর্তন করুন</translation>
 <translation id="3889914174935857450">তারিখ রিসেট করুন</translation>
 <translation id="3897092660631435901">মেনু</translation>
+<translation id="3902271751020176019">ট্রান্সক্রিপশনের ভাষা</translation>
 <translation id="391412459402535266">ডিভাইসটি পরীক্ষা করা সম্ভব হচ্ছে না। পরীক্ষার জন্য ল্যাপটপ মোড চালু করুন।</translation>
 <translation id="3916998944874125962">স্ক্রিনশট নিন</translation>
 <translation id="3923184630988645767">ডেটা ব্যবহার</translation>
@@ -754,6 +757,7 @@
 <translation id="4665014895760275686">প্রস্তুতকর্তা</translation>
 <translation id="467510802200863975">পাসওয়ার্ড মিলছে না</translation>
 <translation id="467715984478005772">ফায়ারওয়াল রয়েছে বলে মনে হচ্ছে</translation>
+<translation id="4678534708181186163">সারসংক্ষেপ করা যাচ্ছে না। ছোট ট্রানস্ক্রিপ্ট ব্যবহার করে দেখুন।</translation>
 <translation id="4683762547447150570">অ্যাসাইন করার বোতামে ফোকাস করতে, এই বোতামে ট্যাপ করুন</translation>
 <translation id="4691278870498629773">বন্ধ হয়ে গেছে - ট্রে লাগানো নেই</translation>
 <translation id="469379815867856270">সিগন্যালের ক্ষমতা</translation>
@@ -856,6 +860,7 @@
 <translation id="5168185087976003268">ব্যাটারির স্বাস্থ্য</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="517075088756846356">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" />-এর পাওয়ার কেবেল আনপ্লাগ করে প্লাগপয়েন্টে আবার লাগিয়ে দিন</translation>
+<translation id="5178021559562393163">নাম তৈরি করা যাচ্ছে না। ছোট ট্রানস্ক্রিপ্ট ব্যবহার করে দেখুন।</translation>
 <translation id="5180108905184566358">বাওবাব গাছ</translation>
 <translation id="5180712487038406644">এক্সপ্রেসিভ</translation>
 <translation id="5190187232518914472">আপনার প্রিয় স্মৃতিগুলি রোমন্থন করুন। অ্যালবাম যোগ ও এডিট করতে, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ যান।</translation>
@@ -890,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">পরিচয়</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
+<translation id="5318310531701770497">নাম তৈরি করা যাচ্ছে না। দীর্ঘ ট্রানস্ক্রিপ্ট ব্যবহার করে দেখুন।</translation>
 <translation id="5318334351163689047">TCP-এর অনুরোধ করা যায়নি</translation>
 <translation id="53196409393069519">ট্রান্সক্রিপশন চালু করতে চান?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -943,6 +949,7 @@
 <translation id="5606865426897221650">ট্যাব</translation>
 <translation id="5613201299517339763">আপনি সাইন-আউট করেছেন</translation>
 <translation id="5620281292257375798">শুধুমাত্র ইন্টার্নাল</translation>
+<translation id="5628106863521633649">উপলভ্য ভাষা</translation>
 <translation id="5630438231335788050">বাউহাউস</translation>
 <translation id="5631759159893697722">বিমূর্ত</translation>
 <translation id="5655283760733841251">কীবোর্ডের উজ্জ্বলতা বাড়ান</translation>
@@ -1268,6 +1275,7 @@
 <translation id="710028965487274708">পাওয়া যায়নি - অনুমোদন পাওয়া যায়নি</translation>
 <translation id="7101959270679078188">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" /> আনলক করুন</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />টি নামযুক্ত<ph name="NAME" />-এর মধ্যে <ph name="INDEX" /> নম্বর ডিভাইস।</translation>
+<translation id="7103793063702494489">বেছে নেওয়া ভাষা</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> এক্সক্লুসিভ আর্টওয়ার্ক বেছে নিন</translation>
 <translation id="7108668606237948702">লিখুন</translation>
 <translation id="7117228822971127758">পরে আবার চেষ্টা করুন</translation>

@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">ការពន្យារខ្ពស់ចំពោះគេហទំព័រ HTTPS</translation>
 <translation id="361575905210396100">សូមអរគុណ​ចំពោះ​មតិកែលម្អ​របស់អ្នក</translation>
 <translation id="3621072146987826699">ដំរី</translation>
+<translation id="3628462041319107639">កំពុង​ទាញយក​គំរូ​ប្រតិចារឹក…</translation>
 <translation id="3632040286124154621">ការណែនាំ​ល្អ</translation>
 <translation id="3632579075709132555">ប៊ូតុងបិទ/បើក​របាំងឯកជនភាព</translation>
 <translation id="3639873154908477486">ឈ្មោះ (A ដល់ Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ។</translation>
 <translation id="382043424867370667">ផ្ទាំង​រូបភាពពេល​ថ្ងៃលិច</translation>
 <translation id="3824259034819781947">ភ្ជាប់​ឯកសារ</translation>
+<translation id="383586991013681190">ជ្រើសរើស​ភាសា​ប្រតិចារឹក និង​ទាញយក​នៅក្នុង "ការកំណត់"</translation>
 <translation id="3836587210832263413">បើកតែកម្មវិធីបន្ថែម​ដែលអ្នកទុកចិត្តប៉ុណ្ណោះ</translation>
 <translation id="3838338534323494292">ពាក្យសម្ងាត់ថ្មី</translation>
 <translation id="3845880861638660475">ចុច <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ដើម្បី​បិទ​ប្រអប់។</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">គ្មានលទ្ធផលដែលត្រូវគ្នាទេ</translation>
 <translation id="4479639480957787382">ខ្សែអ៊ីនធឺណិត</translation>
 <translation id="4483049906298469269">មិនអាចភីងច្រកបណ្ដាញមិនមែនលំនាំដើមបានទេ</translation>
+<translation id="4483498983731992167">មិនអាច​បង្កើត​ប្រតិចារឹក​បានទេ</translation>
 <translation id="4486524074141928967">អ្នកនឹង​ត្រូវបាន​នាំចេញពី​គណនី​នៅម៉ោង <ph name="TIME" /></translation>
 <translation id="4500722292849917410">មិនអាចប្រើ​ផ្លូវកាត់​បានទេ។ សូមចុច​ផ្លូវកាត់ថ្មី​ដោយប្រើគ្រាប់ចុចកែសម្រួល (ctrl, alt, shift ឬ<ph name="META_KEY" />)។</translation>
 <translation id="4500966230243561393">ពណ៌​ផ្ទៃ</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ឡើងលើ</translation>
 <translation id="5107243100836678918">ផ្លូវកាត់​ដែលគ្មានគ្រាប់ចុច<ph name="META_KEY" />ប្រហែលជា​ជាន់គ្នា​ជាមួយ​ផ្លូវកាត់​របស់កម្មវិធី​មួយចំនួន។ សូមចុច​ផ្លូវកាត់នេះ​ម្ដងទៀត ដើម្បីបន្ត​ប្រើប្រាស់​វា ឬចុច​ផ្លូវកាត់ថ្មី​ដោយប្រើគ្រាប់ចុច<ph name="KEY" />។ <ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ស្រដៀង៖</translation>
+<translation id="5121677070210013200">មិនអាច​ទាញយក​គំរូ​ប្រតិចារឹក​បានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចាប់ផ្ដើម Chromebook របស់អ្នក​ឡើងវិញ។</translation>
 <translation id="5130848777448318809">កូនសេះ</translation>
 <translation id="5137451382116112100">អេក្រង់ពេញ</translation>
 <translation id="5140788690559353412">នៅពេលអ្នកបាត់បង់សិទ្ធិចូលប្រើគណនីសាលារៀនរបស់អ្នក អ្នកនឹងលែងមានសិទ្ធិចូលប្រើឯកសារ Google ថាស និងអ៊ីមែលដែលពាក់ព័ន្ធ ដូចជា Gmail, ឯកសារ, បទបង្ហាញ និងអ្វីៗជាច្រើនទៀត។</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">អនុញ្ញាតការកំណត់ឧបករណ៍បំពងសំឡេង</translation>
 <translation id="7041549558901442110">មិន​បាន​ភ្ជាប់​ឧបករណ៍​ទេ​។</translation>
 <translation id="7046522406494308071">កំណត់​ផ្លូវកាត់​ទាំងអស់​ឡើងវិញ​ទៅលំនាំដើមឬ?</translation>
+<translation id="7049916119678019302">ទាញយក​គំរូ​ប្រតិចារឹក​នៅក្នុង "ការកំណត់"</translation>
 <translation id="7058278511608979688">បញ្ចប់ និងរក្សាទុក</translation>
 <translation id="7059230779847288458">កំពុងសាកថ្ម <ph name="TIME_VALUE" /> ទៀត​ទើបពេញ</translation>
 <translation id="7066538517128343186">គ្រាប់ចុច <ph name="KEY" /></translation>

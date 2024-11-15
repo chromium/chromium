@@ -166,7 +166,6 @@
 <translation id="3161522574479303604">Всички езици</translation>
 <translation id="3179665906251668410">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chromium</translation>
 <translation id="3185330573522821672">Персонализирайте новия си потребителски профил в Chromium</translation>
-<translation id="3190315855212034486">О, не! Chromium претърпя срив. Да се стартира ли отново сега?</translation>
 <translation id="3224847870593914902">За да премахнете профила си в Google от Chromium, излезте от браузъра на страницата „Настройки“</translation>
 <translation id="3258596308407688501">Chromium не може да чете и записва в директорията си за данни: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 е машината на Chromium за JavaScript и WebAssembly, използвана за подобряване на ефективността на сайтовете</translation>
@@ -437,7 +436,6 @@
 <translation id="67706546131546258">Chromium препоръчва този файл да бъде сканиран, защото може да е опасен.</translation>
 <translation id="6779406956731413166">Chromium OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Превод</translation>
-<translation id="6843464627590537736">Балонче за търсене с функцията за търсене на изображения</translation>
 <translation id="6847869444787758381">Chromium ви уведомява, ако паролите ви бъдат компрометирани</translation>
 <translation id="684888714667046800">Не може да се установи връзка с интернет. Ако използвате защитна стена, уверете се, че <ph name="PRODUCT_EXE_NAME" /> е в списъка на разрешените.</translation>
 <translation id="685279860330610299">Chromium може да разпознава повече типове информация и да попълва формулярите по-бързо. Научете повече за <ph name="BEGIN_LINK" />автоматичното попълване в Chrome<ph name="END_LINK" /></translation>
@@ -561,6 +559,7 @@
 <translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
 <translation id="8555465886620020932">Грешка в услугата: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">За лесен достъп можете да фиксирате търсенето на изображения, като кликнете върху бутона „Фиксиране“ в горната част на страничния панел</translation>
+<translation id="856656450041460113">Търсене в списъка с езици</translation>
 <translation id="8568283329061645092">Chromium може да проверява паролите ви, когато влезете с профила си в Google</translation>
 <translation id="8576826849825683917">Chromium се управлява от няколко организации</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> Авторите на Chromium. Всички права запазени.</translation>

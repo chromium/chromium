@@ -167,7 +167,6 @@
 <translation id="3161522574479303604">ସମସ୍ତ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="3179665906251668410">Chromium &amp;ଇନ୍‍କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="3185330573522821672">ଆପଣଙ୍କ ନୂଆ Chromium ପ୍ରୋଫାଇଲକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
-<translation id="3190315855212034486">ବାଃ! Chromium କ୍ରାସ୍ ହୋଇଯାଇଛି। ପୁଣିଥରେ ଲଞ୍ଚ କରିବେ?</translation>
 <translation id="3224847870593914902">Chromiumରୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟକୁ କାଢ଼ି ଦେବା ପାଇଁ ସେଟିଂସ ପୃଷ୍ଠାରେ Chromiumରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="3258596308407688501">Chromium ଏହାର ଡାଟାକୁ ପଢ଼ି ପାରିବ ନାହିଁ ଏବଂ ଏଥିରେ ଲେଖି ପାରିବ ନାହିଁ:
 
@@ -442,7 +441,6 @@
 <translation id="67706546131546258">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇପାରେ ବୋଲି Chromium ଏହାକୁ ସ୍କାନ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="6779406956731413166">ChromiumOS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="6831043979455480757">Translate</translation>
-<translation id="6843464627590537736">ଇମେଜ ସର୍ଚ୍ଚର ସର୍ଚ୍ଚ ବବଲ</translation>
 <translation id="6847869444787758381">ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ କେବେ ବି ଚୋରି ହୋଇଛି କି ନାହିଁ ତାହା Chromium ଆପଣଙ୍କୁ ଜାଣିବାକୁ ଦିଏ</translation>
 <translation id="684888714667046800">ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରିବାରେ ଅସମର୍ଥ। ଯଦି ଆପଣ ଏକ ଫାୟାରୱାଲ ବ୍ୟବହାର କରନ୍ତି, ତେବେ <ph name="PRODUCT_EXE_NAME" /> ଆଲାଉଲିଷ୍ଟରେ ଥିବା ଦୟାକରି ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="685279860330610299">Chromium ଅଧିକ ପ୍ରକାରର ସୂଚନା ବୁଝିପାରିବ ଏବଂ ଆପଣଙ୍କ ଫର୍ମକୁ ଶୀଘ୍ର ଅଟୋଫିଲ କରିପାରିବ। <ph name="BEGIN_LINK" />Chrome ଅଟୋଫିଲ<ph name="END_LINK" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -568,6 +566,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8550334526674375523">ଏହି ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ପ୍ରୋଫାଇଲରୁ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଅଲଗା ଅଟେ।</translation>
 <translation id="8555465886620020932">ସେବା ତ୍ରୁଟି: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556420416730706394">ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣ ଇମେଜ ସର୍ଚ୍ଚକୁ ପିନ କରିପାରିବେ; ସାଇଡ ପେନେଲର ଶୀର୍ଷରେ ଥିବା 'ପିନ କରନ୍ତୁ' ବଟନରେ କ୍ଲିକ କରିପାରିବେ</translation>
+<translation id="856656450041460113">ଭାଷାର ତାଲିକା ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8568283329061645092">ଆପଣ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କଲେ, Chromium ଆପଣଙ୍କର ପାସୱାର୍ଡ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="8576826849825683917">ଏକାଧିକ ସଂସ୍ଥା Chromiumକୁ ପରିଚାଳନା କରେ</translation>
 <translation id="8586442755830160949">କପିରାଇଟ୍ <ph name="YEAR" /> Chromium ଲେଖକ। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>

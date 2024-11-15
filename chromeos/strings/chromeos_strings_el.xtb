@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1191518099344003522">Το APN είναι ενεργοποιημένο.</translation>
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
+<translation id="1196264380943975940">Δεν είναι δυνατή η σύνοψη. Δοκιμάστε εκτενέστεση μεταγραφή.</translation>
 <translation id="1196959502276349371">Έκδοση <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Αναπαραγωγή/Παύση</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">Απόκρυψη μεταγραφής</translation>
 <translation id="160633243685262989">Εικόνα προεπισκόπησης</translation>
 <translation id="1611649489706141841">προώθηση</translation>
+<translation id="1615144046047995187">Δεν είναι δυνατή η λήψη. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Χρήση θέματος</translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">Μενού επεξεργασίας και διαγραφής</translation>
 <translation id="2597774443162333062">Τα αρχεία θα σταλούν στην Google για εντοπισμό και διόρθωση σφαλμάτων</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Η σάρωση ολοκληρώθηκε. Σαρώθηκε μία σελίδα.}other{Η σάρωση ολοκληρώθηκε. Σαρώθηκαν {NUMBER_OF_PAGES} σελίδες.}}</translation>
+<translation id="261322795497077164">Αναγνώριση ομιλητή</translation>
 <translation id="2617397783536231890">βαμβάκι</translation>
 <translation id="2618015542787108131">αμμόλοφο</translation>
 <translation id="2619761439309613843">Ημερήσια ανανέωση</translation>
@@ -441,6 +444,7 @@
 <translation id="3140130301071865159">χιόνι</translation>
 <translation id="3146655726035122603">Αποκλειστικά στο <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
+<translation id="3153094818810437149">Μπορείτε να αλλάξετε αργότερα αυτή την επιλογή στις ρυθμίσεις της Εγγραφής</translation>
 <translation id="3156511682997763015">Μπροστά κατά 10 δευτερόλεπτα</translation>
 <translation id="3156846309055100599">Σάρωση σελίδας <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Εντοπίστηκε πύλη υποδοχής</translation>
@@ -564,6 +568,7 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">ΑΝΕΝΕΡΓΟ – Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον διαχειριστή σας.</translation>
 <translation id="380097101658023925">στοιχεία ελέγχου RGB</translation>
+<translation id="380493988330050229">Δεν είναι δυνατή η δημιουργία σύνοψης για αυτή τη γλώσσα μεταγραφής</translation>
 <translation id="38114475217616659">Εκκαθάριση όλου του ιστορικού</translation>
 <translation id="3820172043799983114">Μη έγκυρο PIN.</translation>
 <translation id="382043424867370667">Ταπετσαρία Δύση ηλίου</translation>
@@ -587,6 +592,7 @@
 <translation id="3885327323343477505">Αλλαγή προφύλαξης οθόνης</translation>
 <translation id="3889914174935857450">Επαναφορά ημερομηνίας</translation>
 <translation id="3897092660631435901">Μενού</translation>
+<translation id="3902271751020176019">Γλώσσα μεταγραφής</translation>
 <translation id="391412459402535266">Δεν είναι δυνατή η δοκιμή της συσκευής. Μεταβείτε στη λειτουργία φορητού υπολογιστή για δοκιμή.</translation>
 <translation id="3916998944874125962">λήψη στιγμιότυπου οθόνης</translation>
 <translation id="3923184630988645767">Χρήση δεδομένων</translation>
@@ -735,6 +741,7 @@
 <translation id="458794348635939462">Αποτυχία επίλυσης όλων των κεντρικών υπολογιστών.</translation>
 <translation id="4593212453765072419">Απαιτείται έλεγχος ταυτότητας του διακομιστή μεσολάβησης</translation>
 <translation id="4594021849294327751">Δημιουργία μεταγραφής</translation>
+<translation id="4594541568452132351">Επιλογή γλώσσας μεταγραφής και λήψη μοντέλου</translation>
 <translation id="4607282946861182308">Δεν είναι δυνατή η δημιουργία εικόνων αυτού του στοιχείου. Δοκιμάστε άλλη οδηγία.</translation>
 <translation id="4609350030397390689">Μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="4623061655523261501">Τα ονόματα εγγραφών δημιουργήθηκαν με επιτυχία</translation>
@@ -750,6 +757,7 @@
 <translation id="4665014895760275686">Κατασκευαστής</translation>
 <translation id="467510802200863975">Δεν ταιριάζουν οι κωδικοί πρόσβασης</translation>
 <translation id="467715984478005772">Πιθανή ύπαρξη τείχους προστασίας</translation>
+<translation id="4678534708181186163">Δεν είναι δυνατή η σύνοψη. Δοκιμάστε συντομότερη μεταγραφή.</translation>
 <translation id="4683762547447150570">Πατήστε το κουμπί για να εστιάσετε στην αντιστοίχιση πλήκτρων</translation>
 <translation id="4691278870498629773">Διακοπή - Λείπει δίσκος</translation>
 <translation id="469379815867856270">Ισχύς σήματος</translation>
@@ -852,6 +860,7 @@
 <translation id="5168185087976003268">Κατάσταση μπαταρίας</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="517075088756846356">Αποσυνδέστε και επανασυνδέστε το καλώδιο τροφοδοσίας <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
+<translation id="5178021559562393163">Δεν είναι δυνατή η δημιουργία ονομάτων. Δοκιμάστε συντομότερη μεταγραφή.</translation>
 <translation id="5180108905184566358">δέντρα μπαομπάμπ</translation>
 <translation id="5180712487038406644">Εκφραστικός</translation>
 <translation id="5190187232518914472">Ξαναζήστε τις αγαπημένες σας αναμνήσεις. Για προσθήκη ή επεξεργασία λευκωμάτων, μεταβείτε στις <ph name="LINK_BEGIN" />Φωτογραφίες Google<ph name="LINK_END" />.</translation>
@@ -886,6 +895,7 @@
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Ταυτότητα</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
+<translation id="5318310531701770497">Δεν είναι δυνατή η δημιουργία ονομάτων. Δοκιμάστε εκτενέστεση μεταγραφή.</translation>
 <translation id="5318334351163689047">Σφάλματα αιτήματος TCP</translation>
 <translation id="53196409393069519">Ενεργοποίηση μεταγραφής;</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -939,6 +949,7 @@
 <translation id="5606865426897221650">Καρτέλα</translation>
 <translation id="5613201299517339763">Αποσυνδεθήκατε</translation>
 <translation id="5620281292257375798">Εσωτερική χρήση μόνο</translation>
+<translation id="5628106863521633649">Διαθέσιμες γλώσσες</translation>
 <translation id="5630438231335788050">μπάουχαους</translation>
 <translation id="5631759159893697722">περίληψη</translation>
 <translation id="5655283760733841251">Αύξηση φωτεινότητας πληκτρολογίου</translation>
@@ -1099,6 +1110,7 @@
 <translation id="6359919876285606596">Αυτή η ενέργεια είναι οριστική και δεν μπορεί να αναιρεθεί</translation>
 <translation id="6368342879959028556">Όταν επιλέξετε Δημιουργία με AI, γράψτε μια προσαρμοσμένη οδηγία. Εναλλακτικά, μπορείτε να επιλέξετε "Ταπετσαρίες AI", για να επιλέξετε ένα θέμα και, έπειτα, τις υπογραμμισμένες λέξεις, για να εξατομικεύσετε την ταπετσαρία AI.</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
+<translation id="6369221585240879141">Δεν είναι δυνατή η δημιουργία ονομάτων εγγραφών για αυτή τη γλώσσα μεταγραφής</translation>
 <translation id="6373461326814131011">λιμνούλα</translation>
 <translation id="6379086450106841622">Οθόνη αφής</translation>
 <translation id="6381741036071372448">Έλεγχος του πληκτρολογίου σας</translation>
@@ -1263,6 +1275,7 @@
 <translation id="710028965487274708">Αποτυχία - Ο έλεγχος ταυτότητας απέτυχε</translation>
 <translation id="7101959270679078188">Ξεκλειδώστε τη συσκευή <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
 <translation id="7103252855940681301">Συσκευή <ph name="INDEX" /> από <ph name="COUNT" /> με όνομα <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Επιλεγμένη γλώσσα</translation>
 <translation id="7107255225945990211">Επιλέξτε αποκλειστικά έργα τέχνης <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Δοκιμάστε ξανά αργότερα</translation>
@@ -1272,6 +1285,7 @@
 <translation id="7130438335435247835">Όνομα σημείου πρόσβασης (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Διακομιστής ονομάτων}other{Διακομιστές ονομάτων}}</translation>
 <translation id="7135814714616751706">Αναζήτηση συντομεύσεων</translation>
+<translation id="7138614237884624401">Απλοποιημένο κείμενο</translation>
 <translation id="7141470099673912333">Μεταφορά περιεχομένου</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144878232160441200">Επανάληψη</translation>
@@ -1693,6 +1707,7 @@
 <translation id="9100765901046053179">Σύνθετες ρυθμίσεις</translation>
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Η Εγγραφή μπορεί να δημιουργήσει μεταγραφές για εγγραφές με ομιλία. Στο επόμενο βήμα, θα πρέπει να επιλέξετε τη γλώσσα μεταγραφής και να κατεβάσετε το μοντέλο (έως 100 MB).</translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
 <translation id="9122492456897874028">Συνοψίστε το περιεχόμενο, λάβετε ορισμούς και πολλά άλλα</translation>
 <translation id="9122602430962285795">Για επανασύνδεση, μεταβείτε στις Ρυθμίσεις.</translation>

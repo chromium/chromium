@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Կոդը ընթերցվեց</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ներդիր}one{{count} ներդիր}other{{count} ներդիր}}</translation>
 <translation id="1084365883616172403">Ֆեյսբուքում փակցնումն ավարտվեց:</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> ֆայլը չհաջողվեց բացել</translation>
 <translation id="1096992026380844478">Համաժամացման ձեր կարգավորումները կվերականգնվեն վերջին պահուստավորված տվյալների հիման վրա։ <ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1108938384783527433">Պատմության համաժամացում</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Ոչ</translation>
 <translation id="2320166752086256636">Թաքցնել ստեղնաշարը</translation>
 <translation id="2321086116217818302">Արտահանման նախապատրաստում…</translation>
+<translation id="2323697864063408084">Ստացեք ծանուցումներ ձեր կողպէկրանին և ազդերիզի տեսքով, որպեսզի երբեք բաց չթողնեք այն, ինչ ձեզ համար կարևոր է</translation>
 <translation id="2326302612031521902">Միավորի ընտրիչ</translation>
 <translation id="2330607597130465898">Պաշտպանություն չկա</translation>
 <translation id="233375395665273385">Ջնջել և դուրս գալ</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">Ուղարկել խումբը</translation>
 <translation id="2673508731173059946">Անցնել պատճենված հղումով</translation>
 <translation id="2687403674020088961">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
+<translation id="2688535388040882469">Ազդերիզներ</translation>
 <translation id="2690858294534178585">Ֆոտոխցիկն օգտագործվում է</translation>
 <translation id="2691653761409724435">Հասանելի չէ անցանց ռեժիմում</translation>
 <translation id="2696180352517415858">Դուք դուրս չեք գա ձեր Google հաշվից։ <ph name="BEGIN_LINK" />Այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">Անցնել ներդիր</translation>
 <translation id="3992684624889376114">Այս էջի մասին</translation>
 <translation id="3994422733891749358">Ընտրեք, թե ինչ ծանուցումներ եք ուզում ստանալ</translation>
+<translation id="3994522032746736727">Մուտք գործել որպես <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Էջի բեռնման ընթացագոտի, կատարված է <ph name="EMAIL" />։</translation>
 <translation id="3997522473364371632">Ադմինիստրատորն արգելել է գաղտնաբառերի փոխանցումը</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
@@ -725,6 +729,7 @@
 <translation id="4405320213589929829">Օգտագործեք վեբ էջերում նշված հասցեները՝ տեղական վայրերի մասին տեղեկություններ և երթուղիներ ստանալու համար։</translation>
 <translation id="441218095371040430">Օգտագործել ստեղնաշարը</translation>
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
+<translation id="4430277756566635951">Ներկայումս ընտրված է <ph name="EMAIL" /> հաշիվը։ Ընտրեք հաշիվ։</translation>
 <translation id="4431224949908513835">Ընտրեք, թե վճարման որ եղանակն օգտագործել։</translation>
 <translation id="4442550905108052454">Բացեք <ph name="BEGIN_BOLD" />Կարգավորումները<ph name="END_BOLD" />։</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />. այլ ընտրանքներ</translation>
@@ -843,6 +848,7 @@
 <translation id="4936354130727646074">Երբեք չտեղափոխել</translation>
 <translation id="4937410517508563815">Պահել գաղտնաբառերը հաշվում</translation>
 <translation id="4938338714234463591">Սա թույլ կտա ձեզ կայքերում օգտվել որոշ գործառույթներից ձայնային հրահանգների միջոցով։</translation>
+<translation id="4938716880833771969">Ձեր ծանուցումները առաքվում են անձայն</translation>
 <translation id="4941089862236492464">Չհաջողվեց կիսվել տարրով։</translation>
 <translation id="4944543191714094452">Գտնել էջում…</translation>
 <translation id="4945756290001680296">Կաղտնաբառերի կարգավորման հասանելիություն</translation>
@@ -1307,6 +1313,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6943681254152031826">{COUNT,plural, =1{Հետևե՞լ այս առաքանուն}one{Հետևե՞լ {COUNT} առաքանու}other{Հետևե՞լ {COUNT} առաքանու}}</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6950522403736391608">Թաքցված</translation>
+<translation id="6964300328304469089">Ներկայումս ընտրված է <ph name="NAME" /> (<ph name="EMAIL" />) հաշիվը։ Ընտրեք հաշիվ։</translation>
 <translation id="6964760285928603117">Հեռացնել խմբից</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6973630695168034713">Պանակներ</translation>
@@ -1507,7 +1514,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7889910613639381518">Հեշտ և ապահով մուտք «Google գաղտնաբառերի կառավարիչ» վիջեթի միջոցով։</translation>
 <translation id="7899199123054742721">Բոլորը նշել որպես չկարդացված</translation>
 <translation id="7911190106180361398">Ձեր կազմակերպությունը թույլ չի տալիս ձեզ համաժամացնել բոլոր տվյալները։</translation>
-<translation id="7920949005883349320">Գաղտնիություն և անվտանգություն</translation>
 <translation id="792357691529995513">Որևէ խնդիր չի գտնվել</translation>
 <translation id="7925108652071887026">Ինքնալրացման տվյալները</translation>
 <translation id="7926975587469166629">Քարտի այլանունը</translation>
@@ -1609,6 +1615,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8319076807703933069">Նոր որոնում</translation>
 <translation id="8343993175958086504">Պահուստավորեք ձեր տվյալները և օգտագործեք դրանք ցանկացած սարքում։</translation>
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>
+<translation id="8364563001733875155">Ձեր PIN կոդը փոխելու համար նախ սարքում կարգավորեք անցակոդ։</translation>
 <translation id="8366466717204352506">Ստուգում երբեք չի կատարվել</translation>
 <translation id="8368001212524806591">Հետևել գներին</translation>
 <translation id="8370406443343902172">Անցնել Կարգավորումներ...</translation>
@@ -1781,6 +1788,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9032405509996909363">Հաստատել այցելությունների պատմության ջնջումը</translation>
 <translation id="9034759925968272072">Դուք դուրս չեք գա ձեր Google հաշվից: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="9039373489628511875">Թողունակություն</translation>
+<translation id="9042893549633094279">Գաղտնիություն և անվտանգություն</translation>
 <translation id="9057030985451135243">Իմանալ ավելին ներդիրների ընդհանուր խմբերի մասին</translation>
 <translation id="9057972802061533987">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>

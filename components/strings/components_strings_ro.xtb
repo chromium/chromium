@@ -188,7 +188,6 @@
 <translation id="1322083935398004629">Politică</translation>
 <translation id="132301787627749051">Caută imaginea din clipboard</translation>
 <translation id="1323433172918577554">Afișează mai multe</translation>
-<translation id="132390688737681464">Salvează și completează adresele</translation>
 <translation id="1329916999021038454">Trimite un raport</translation>
 <translation id="1330449323196174374">Îndoire tip fereastră spre stânga</translation>
 <translation id="1333745675627230582">Joacă Chrome Dino</translation>
@@ -485,7 +484,6 @@
 <translation id="1822995137827688764">Dezvoltare imobiliară</translation>
 <translation id="1824402189105105503">A opta rolă</translation>
 <translation id="1826516787628120939">Se verifică</translation>
-<translation id="1826968372364864056">Golește formularul</translation>
 <translation id="1834452765064623979">Construcție și întreținere</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
 <translation id="1839331950812095887">câteva cuvinte care îți prezintă ideile</translation>
@@ -671,7 +669,6 @@
 <translation id="2172089022819052306">Repararea și întreținerea vehiculelor</translation>
 <translation id="2174875517416416684">Tranzacția nu s-a procesat. Nu s-au retras fonduri din contul tău.</translation>
 <translation id="2175630235841878061">Fișierele de peste 100 MB nu sunt disponibile pentru descărcare</translation>
-<translation id="2176974405772725904">Salvează adresa în cont</translation>
 <translation id="2178665390943006934">Butonul Actualizează Chrome, activează pentru a actualiza Chrome din setările Chrome</translation>
 <translation id="2178904466768126352">Atacatorii de pe site-ul pe care ai încercat să-l accesezi pot să instaleze software dăunător care fură sau șterge informații cum ar fi parolele, fotografiile, mesajele sau numerele de carduri de credit.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" />, <ph name="SITE_DOMAIN_NAME" /></translation>
@@ -1015,6 +1012,7 @@
 <translation id="2824775600643448204">Bara de adrese și de căutare</translation>
 <translation id="2826760142808435982">Conexiunea este criptată și autentificată utilizând <ph name="CIPHER" /> și folosește <ph name="KX" /> ca mecanism de schimb al cheii.</translation>
 <translation id="2833637280516285136">Discuții radiofonice</translation>
+<translation id="2835170189407361413">Golește formularul</translation>
 <translation id="2837891525090413132">Poate solicita blocarea și folosirea tastaturii</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> dorește să folosească informațiile pe care le salvează despre tine</translation>
 <translation id="2839032553903800133">Notificările au fost blocate</translation>
@@ -1319,7 +1317,6 @@
 <translation id="3381668585148405088">Confirmă achiziția</translation>
 <translation id="3383566085871012386">Ordinea de prioritate actuală</translation>
 <translation id="3384522979010096022">Organizația ta nu îți permite să vezi acest site</translation>
-<translation id="3387261909427947069">Metode de plată</translation>
 <translation id="3391030046425686457">Adresă de livrare</translation>
 <translation id="3391482648489541560">Editarea fișierelor</translation>
 <translation id="3392028486601120379">Modelul de adresă URL <ph name="URL_PATTERN" /> are o cale specificată. Căile nu sunt acceptate pentru această cheie. Elimină calea și încearcă din nou. De ex., *://example.com/ =&gt; *://example.com.</translation>
@@ -1419,7 +1416,6 @@
 <translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">În timpul zilei</translation>
 <translation id="3559897352860026926">Solicită-i administratorului să verifice setările de configurare pentru <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="355995771319966853">Anulează completarea automată</translation>
 <translation id="3560408312959371419">Opțiuni pentru protecțiile împotriva urmăririi și datele privind site-urile de pe dispozitiv</translation>
 <translation id="3560824484345057728">Vezi site-urile conexe</translation>
 <translation id="3566021033012934673">Conexiunea nu este privată</translation>
@@ -1549,6 +1545,7 @@
 <translation id="3739842843727261045">Îmi place: trimite feedback conform căruia îți plac aceste rezultate</translation>
 <translation id="3740447166056383374">Este necesară examinarea înainte de a copia</translation>
 <translation id="374325029554577103">Produse pentru tehnologii de fitness</translation>
+<translation id="3743765582345153106">Confirmă întotdeauna când folosești completarea automată</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3744212718085287312">Dorești să-l securizezi folosind un card virtual data viitoare?</translation>
 <translation id="3744899669254331632">Nu poți accesa acum <ph name="SITE" />, deoarece site-ul a trimis date de conectare într-un format necunoscut pe care Chromium nu le poate procesa. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
@@ -1681,7 +1678,6 @@
 <translation id="399754345297554962">Teste standardizate și pentru admitere</translation>
 <translation id="3999173941208168054">Filme horror</translation>
 <translation id="4000598935132966791">Află mai multe despre restricțiile pentru site-uri din browserele gestionate</translation>
-<translation id="4006465311664329701">Metode de plată, oferte și adrese care folosesc Google Pay</translation>
 <translation id="4010758435855888356">Permiți accesul la spațiul de stocare?</translation>
 <translation id="401170183602135785">Plic C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF cu {COUNT} pagină}few{Document PDF cu {COUNT} pagini}other{Document PDF cu {COUNT} de pagini}}</translation>
@@ -1920,7 +1916,6 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Încărcarea fișierelor în Microsoft OneDrive a fost întreruptă</translation>
 <translation id="4390472908992056574">Bordură</translation>
-<translation id="4397059608630092079">Confirmă întotdeauna când folosești completarea automată</translation>
 <translation id="4397978002248035985">Deschide o fereastră pop-up pentru confirmare pe site-ul băncii</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4406896451731180161">rezultate ale căutării</translation>
@@ -1982,7 +1977,6 @@
 <translation id="4530347922939905757">Mesaj text</translation>
 <translation id="4531477351494678589">Numărul cardului virtual:</translation>
 <translation id="4535523368173457420">Aceste motoare de căutare sunt populare în regiunea ta și se afișează în ordine aleatorie</translation>
-<translation id="4540780316273593836">A apărut o eroare</translation>
 <translation id="4541810033354695636">Realitate augmentată</translation>
 <translation id="4542971377163063093">Tava 6</translation>
 <translation id="4543072026714825470">Pentru a plăti mai rapid data viitoare, salvează cardul și adresa de facturare în Contul Google</translation>
@@ -2410,7 +2404,6 @@
 <translation id="5332769172018416402">Solicită într-un mesaj</translation>
 <translation id="533323551986281710">Foaia din partea de jos pentru comerț deschisă la înălțimea completă</translation>
 <translation id="5334013548165032829">Jurnale de sistem detaliate</translation>
-<translation id="5334145288572353250">Salvezi adresa?</translation>
 <translation id="5340250774223869109">Aplicația a fost blocată</translation>
 <translation id="5342693890921195472">acum min.</translation>
 <translation id="534295439873310000">Dispozitive NFC</translation>
@@ -2528,6 +2521,7 @@
 <translation id="5544836308113951378">Croaziere și curse charter</translation>
 <translation id="5547939254150808298">Printare și publicare</translation>
 <translation id="554815783948612276">Furnizori de forum și chat</translation>
+<translation id="5548606607480005320">Verificare de siguranță</translation>
 <translation id="555037537507405574">funcții avansate ale imprimantei</translation>
 <translation id="555128936272638662">Accesorii mobile și wireless</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
@@ -2536,7 +2530,6 @@
 <translation id="5558083606899411167">Aparate de aer condiționat</translation>
 <translation id="5558125320634132440">Acest site este blocat, deoarece poate include conținut destinat adulților</translation>
 <translation id="5559311991468302423">Șterge adresa</translation>
-<translation id="5560088892362098740">Data expirării</translation>
 <translation id="55635442646131152">Schița documentului</translation>
 <translation id="5563589142503817291">Pentru a folosi locația, permite accesul browserului Chrome în <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Deschide o filă incognito</translation>
@@ -2667,7 +2660,6 @@
 <translation id="5813753398265398978">Fizică</translation>
 <translation id="5817918615728894473">Asociază</translation>
 <translation id="5826507051599432481">Nume comun (CN)</translation>
-<translation id="5829215001860862731">Salvează în cont</translation>
 <translation id="5830698870816298009">folosirea și mișcarea camerei</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5838278095973806738">Nu ar trebui să introduci informații sensibile pe acest site (de exemplu, parole sau carduri de credit), deoarece ar putea fi furate de atacatori.</translation>
@@ -2988,6 +2980,7 @@
 <translation id="639068771471208680">Multi-Part Form</translation>
 <translation id="6391700400718590966">Foaia „Datele de conectare pentru plăți securizate nu corespund datelor de conectare” este închisă</translation>
 <translation id="6392799395081100092">Hârtie (Vellum)</translation>
+<translation id="6393156038355142111">Sugerează o parolă puternică</translation>
 <translation id="6393956493820063117">Inserarea de pe <ph name="ORIGIN_NAME" /> în această locație a fost blocată de politica implementată de administrator</translation>
 <translation id="6394852772105848029">Site-ul dorește să deschidă aplicația <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scutere și mopede</translation>
@@ -3080,7 +3073,6 @@
 <translation id="6547208576736763147">Perforare dublă în stânga</translation>
 <translation id="6549443526281184652">Costumații</translation>
 <translation id="6550245281449521513">Blocarea mouse-ului nu este permisă</translation>
-<translation id="6551873053534932690">Salvezi adresa în cont?</translation>
 <translation id="6554732001434021288">Accesat ultima dată acum <ph name="NUM_DAYS" /> zile</translation>
 <translation id="6556866813142980365">Repetă</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
@@ -3168,7 +3160,6 @@
 <translation id="6709133671862442373">Știri</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6710594484020273272">&lt;Introdu termenul de căutare&gt;</translation>
-<translation id="6710648923880003133">Sugerează o parolă puternică</translation>
 <translation id="671076103358959139">Indicativ de înregistrare:</translation>
 <translation id="6711464428925977395">A apărut o problemă la serverul proxy sau adresa nu este corectă.</translation>
 <translation id="6711700233707023861">Șirul de variante s-a copiat în clipboard</translation>
@@ -3195,7 +3186,6 @@
 <translation id="6754547388777247439">Conturi de economii</translation>
 <translation id="6757797048963528358">Dispozitivul este inactiv.</translation>
 <translation id="6766558780547452153">Gătit și rețete</translation>
-<translation id="6767985426384634228">Actualizezi adresa?</translation>
 <translation id="6770747695101757579">Hârtie (bumbac)</translation>
 <translation id="677257480647123231">Siguranța pe internet a copiilor</translation>
 <translation id="6772959465807028761">Pentru a folosi YouTube, continuă cu Contul Google</translation>
@@ -3416,7 +3406,6 @@
 <translation id="7174545416324379297">Îmbinată</translation>
 <translation id="7175097078723125014">A fost selectată opțiunea de editare a adresei</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7179323680825933600">Salvează și completează metodele de plată</translation>
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7181261019481237103">Deschide o fereastră incognito</translation>
 <translation id="7182878459783632708">Nu au fost setate politici</translation>
@@ -3505,7 +3494,6 @@ Detalii suplimentare:
 <translation id="7346081071264046066">„răspunde entuziast cu da la această invitație la nuntă”</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7353601530677266744">Linie de comandă</translation>
-<translation id="7356678400607112844">Accesat ultima dată</translation>
 <translation id="7359588939039777303">Anunțurile au fost blocate.</translation>
 <translation id="7360451453306104998">Când Google găsește reduceri disponibile, le va afișa la finalizarea achiziției</translation>
 <translation id="7363096869660964304">Cu toate acestea, nu ești invizibil(ă). Trecerea în modul incognito nu ascunde activitatea de navigare față de angajator, față de furnizorul de servicii de internet sau față de site-urile pe care le accesezi.</translation>
@@ -3530,12 +3518,10 @@ Detalii suplimentare:
 <translation id="7381551826960739226">Completarea automată a metodelor de plată este dezactivată, deoarece acest formular nu utilizează o conexiune securizată.</translation>
 <translation id="7388380253839603603">Prețuri la combustibil și combustibili pentru vehicule</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dispozitivul va reporni într-un minut}few{Dispozitivul va reporni în # minute}other{Dispozitivul va reporni în # de minute}}</translation>
-<translation id="7392089738299859607">Actualizează adresa</translation>
 <translation id="7393161616326137353">Jocuri de aventură</translation>
 <translation id="7393475648162498734">Arată ce recompense și beneficii sunt disponibile pentru carduri la finalizarea achiziției</translation>
 <translation id="739728382607845710">Pictograma handlerului pentru plăți</translation>
 <translation id="7399616692258236448">Solicitările de localizare sunt blocate automat pentru toate site-urile, cu excepția celor pe care le permiți</translation>
-<translation id="7399802613464275309">Verificare de siguranță</translation>
 <translation id="7400418766976504921">Adresă URL</translation>
 <translation id="7403392780200267761">Distribuie fila trimițând un link, creând un cod QR, proiectând și multe altele.</translation>
 <translation id="7403591733719184120">Dispozitivul <ph name="DEVICE_NAME" /> este gestionat</translation>
@@ -3822,7 +3808,6 @@ Detalii suplimentare:
 <translation id="7871445724586827387">Schimbă parola Contului Google</translation>
 <translation id="7877007680666472091">ID-uri de conținut protejat</translation>
 <translation id="7878562273885520351">Este posibil ca parola să fie compromisă</translation>
-<translation id="7880146494886811634">Salvează adresa</translation>
 <translation id="7882421473871500483">Maro</translation>
 <translation id="7886897188117641322">Alege categoriile ample de subiecte care pot fi folosite pentru personalizarea anunțurilor</translation>
 <translation id="7887683347370398519">Verifică codul CVC și încearcă din nou</translation>
@@ -3852,7 +3837,6 @@ Detalii suplimentare:
 <translation id="7943397946612013052">Descărcare blocată</translation>
 <translation id="7943893128817522649">Poate solicita permisiunea de a descărca automat mai multe fișiere</translation>
 <translation id="794567586469801724">macOS</translation>
-<translation id="7946724693008564269">Limba detectată</translation>
 <translation id="7947285636476623132">Verifică anul în care expiră și încearcă din nou</translation>
 <translation id="7947310711271925113">Muzică pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a afla despre funcțiile Chrome</translation>
@@ -4056,7 +4040,6 @@ Detalii suplimentare:
 <translation id="8288320283441806607">Pentru a folosi această funcție, activează opțiunea Îmbunătățește căutările și navigarea</translation>
 <translation id="8288807391153049143">Afișează certificatul</translation>
 <translation id="8289355894181816810">Dacă nu știți sigur ce înseamnă aceasta, contactați administratorul de rețea.</translation>
-<translation id="8293206222192510085">Adăugați marcaj</translation>
 <translation id="829335040383910391">Sunet</translation>
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8297545700510100061">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="SETTINGS" />.</translation>
@@ -4141,7 +4124,6 @@ Detalii suplimentare:
 <translation id="8438786541497918448">Folosești camera foto și microfonul?</translation>
 <translation id="8438923942245957911">Site-ul este semnalat de organizația ta</translation>
 <translation id="8446275044635689572">Arta spectacolului</translation>
-<translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8449155699563577224">17 x 24 in</translation>
 <translation id="8449836157089738489">Deschideți-le pe toate într-un nou grup de file</translation>
 <translation id="84561192812921051">Administratorul poate să modifice profilul și browserul de la distanță, să analizeze informațiile despre browser cu ajutorul rapoartelor și să finalizeze alte activități necesare. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -4370,7 +4352,6 @@ Detalii suplimentare:
 <translation id="888117890813270681">Valoarea <ph name="DATA_CONTROLS_RESTRICTION" /> nu poate fi setată la <ph name="DATA_CONTROLS_LEVEL" /></translation>
 <translation id="8884537526797090108">Conținutul confidențial nu se poate înregistra</translation>
 <translation id="8888187300091017436">Saltele</translation>
-<translation id="8890048757975398817">Controlează cititorul <ph name="READERNAME" /> și primește acces la cardul inteligent accesibil pentru acesta.</translation>
 <translation id="8891031436559779793">Vei primi o notificare dacă prețul scade pe orice site.</translation>
 <translation id="8891727572606052622">Mod proxy nevalid.</translation>
 <translation id="8894794286471754040">Cu latura lungă înainte</translation>

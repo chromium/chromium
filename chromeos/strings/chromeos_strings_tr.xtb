@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Kaldır</translation>
 <translation id="1191518099344003522">APN etkinleştirildi.</translation>
 <translation id="1195447618553298278">Bilinmeyen hata.</translation>
+<translation id="1196264380943975940">Özetlenemedi. Daha uzun bir transkriptle deneyin.</translation>
 <translation id="1196959502276349371">Sürüm <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Oynat/Duraklat</translation>
 <translation id="1201402288615127009">İleri</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">Transkripti gizle</translation>
 <translation id="160633243685262989">Resmi Önizle</translation>
 <translation id="1611649489706141841">ileri</translation>
+<translation id="1615144046047995187">İndirilemiyor. Tekrar deneyin veya Chromebook'unuzu yeniden başlatın.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
 <translation id="1618566998877964907">Tema kullanın</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">Düzenle ve sil menüsü</translation>
 <translation id="2597774443162333062">Dosyalar hata ayıklama amacıyla Google'a gönderilecektir</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
+<translation id="261322795497077164">Konuşmacı tanımlama</translation>
 <translation id="2617397783536231890">pamuk</translation>
 <translation id="2618015542787108131">kum tepeciği</translation>
 <translation id="2619761439309613843">Günlük Yenileme</translation>
@@ -441,6 +444,7 @@
 <translation id="3140130301071865159">kar</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> cihazlara özel</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
+<translation id="3153094818810437149">Bunu daha sonra Kaydedici ayarlarından değiştirebilirsiniz</translation>
 <translation id="3156511682997763015">10 saniye ileri git</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. sayfa taranıyor...</translation>
 <translation id="315738237743207937">Giriş portalı algılandı</translation>
@@ -564,6 +568,7 @@
 <translation id="3785643128701396311">piksel sanatı</translation>
 <translation id="3799381533888781854">KAPALI - Bu ayar, yöneticiniz tarafından yönetilir</translation>
 <translation id="380097101658023925">rgb denetimleri</translation>
+<translation id="380493988330050229">Bu transkript dili için özet oluşturulamıyor</translation>
 <translation id="38114475217616659">Tüm geçmişi temizle</translation>
 <translation id="3820172043799983114">Geçersiz PIN.</translation>
 <translation id="382043424867370667">Gün batımı duvar kağıdı</translation>
@@ -587,6 +592,7 @@
 <translation id="3885327323343477505">Ekran koruyucuyu değiştir</translation>
 <translation id="3889914174935857450">Tarihi sıfırlayın</translation>
 <translation id="3897092660631435901">Menü</translation>
+<translation id="3902271751020176019">Transkript dili</translation>
 <translation id="391412459402535266">Cihaz test edilemiyor. Test etmek için dizüstü bilgisayar moduna geçin.</translation>
 <translation id="3916998944874125962">ekran görüntüsü al</translation>
 <translation id="3923184630988645767">Veri kullanımı</translation>
@@ -735,6 +741,7 @@
 <translation id="458794348635939462">Tüm ana makineler çözümlenemedi</translation>
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4594021849294327751">Transkript oluştur</translation>
+<translation id="4594541568452132351">Metne dönüştürme dilini seçin ve modeli indirin</translation>
 <translation id="4607282946861182308">Bu istemle ilgili resim üretilemiyor. Başka bir istem deneyin.</translation>
 <translation id="4609350030397390689">Klavye parlaklığını azalt</translation>
 <translation id="4623061655523261501">Kayıt adları başarıyla oluşturuldu</translation>
@@ -750,6 +757,7 @@
 <translation id="4665014895760275686">Üretici</translation>
 <translation id="467510802200863975">Şifreler eşleşmiyor</translation>
 <translation id="467715984478005772">Güvenlik duvarı olabilir</translation>
+<translation id="4678534708181186163">Özetlenemedi. Daha kısa bir transkriptle deneyin.</translation>
 <translation id="4683762547447150570">Tuş atamasına odaklanmak için düğmeye dokunun</translation>
 <translation id="4691278870498629773">Durduruldu - Tepsi yok</translation>
 <translation id="469379815867856270">Sinyal Gücü</translation>
@@ -852,6 +860,7 @@
 <translation id="5168185087976003268">Pil sağlığı</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="517075088756846356">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> güç kablosunu çıkarıp tekrar takın</translation>
+<translation id="5178021559562393163">Ad oluşturulamadı. Daha kısa bir transkriptle deneyin.</translation>
 <translation id="5180108905184566358">baobap ağaçları</translation>
 <translation id="5180712487038406644">Vurgulu</translation>
 <translation id="5190187232518914472">En sevdiğiniz anılarınızı yeniden yaşayın. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'a giderek istediğiniz albümleri ekleyin veya düzenleyin.</translation>
@@ -886,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Kimlik</translation>
 <translation id="5317780077021120954">Kaydet</translation>
+<translation id="5318310531701770497">Ad oluşturulamadı. Daha uzun bir transkriptle deneyin.</translation>
 <translation id="5318334351163689047">TCP istek hataları</translation>
 <translation id="53196409393069519">Transkript açılsın mı?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -939,6 +949,7 @@
 <translation id="5606865426897221650">Sekme</translation>
 <translation id="5613201299517339763">Oturumunuz kapatıldı</translation>
 <translation id="5620281292257375798">Yalnızca dahili</translation>
+<translation id="5628106863521633649">Kullanıma sunulduğu diller</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">özet</translation>
 <translation id="5655283760733841251">Klavye parlaklığını artır</translation>
@@ -1099,6 +1110,7 @@
 <translation id="6359919876285606596">Bu işlem kalıcıdır ve geri alınamaz</translation>
 <translation id="6368342879959028556">"Yapay zeka ile üret"i seçip özel bir istem yazın. Dilerseniz "Yapay zeka duvar kağıtları"nı seçip bir tema belirleyebilir, ardından altı çizili kelimeleri seçerek yapay zeka duvar kağıdınızı kişiselleştirebilirsiniz.</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>
+<translation id="6369221585240879141">Bu transkript dili için kayıt isimleri oluşturulamıyor</translation>
 <translation id="6373461326814131011">gölet</translation>
 <translation id="6379086450106841622">Dokunmatik ekran</translation>
 <translation id="6381741036071372448">Klavyenizi test edin</translation>
@@ -1263,6 +1275,7 @@
 <translation id="710028965487274708">Başarısız - Yetkilendirme Başarısız Oldu</translation>
 <translation id="7101959270679078188">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> cihazının kilidini açın</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> cihazdan <ph name="INDEX" />. sıradakinin adı <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Seçilen dil</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> cihazlara özel poster seçin</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Lütfen daha sonra tekrar deneyin</translation>
@@ -1272,6 +1285,7 @@
 <translation id="7130438335435247835">Erişim noktası adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad sunucusu}other{Ad sunucuları}}</translation>
 <translation id="7135814714616751706">Kısayol araması yapın</translation>
+<translation id="7138614237884624401">Basitleştirilmiş metin</translation>
 <translation id="7141470099673912333">İçerik Aktarımı</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
@@ -1693,6 +1707,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="9100765901046053179">Gelişmiş ayarlar</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>
+<translation id="9108856746036501072">Kaydedici, konuşma içeren kayıtlar için transkript oluşturabilir. Sonraki adımda, metne dönüştürme dilini seçip modeli (100 MB'a kadar) indirmeniz gerekir.</translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
 <translation id="9122492456897874028">İçerikleri özetleyebilir, tanımları öğrenebilir ve daha pek çok şey yapabilirsiniz</translation>
 <translation id="9122602430962285795">Tekrar bağlanmak için Ayarlar'a gidin</translation>

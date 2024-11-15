@@ -78,6 +78,7 @@
 <translation id="228293613124499805">De meeste sites die je bezoekt, slaan waarschijnlijk gegevens op je apparaat op. Dit gebeurt vaak om de functionaliteit te verbeteren door je voorkeuren of met de site gedeelde informatie op te slaan. We raden je aan deze instelling aan te laten.</translation>
 <translation id="2289270750774289114">Vragen wanneer een site Bluetooth-apparaten in de buurt wilt detecteren (aanbevolen)</translation>
 <translation id="2315043854645842844">Certificaatselectie aan clientzijde wordt niet ondersteund door het besturingssysteem.</translation>
+<translation id="2356926036049612643">V8-optimalisatie</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2379925928934107488">Donker thema zo mogelijk toepassen op sites als Chrome het donkere thema gebruikt</translation>
 <translation id="2390272837142897736">Zoomniveau vergroten</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
 <translation id="2586657967955657006">Klembord</translation>
 <translation id="2588271083332682494">Opruimen met tabbladgroepen</translation>
+<translation id="2594832159966169099">V8-beveiliging beheren</translation>
 <translation id="2597457036804169544">Donker thema niet toepassen op sites</translation>
 <translation id="2606760465469169465">Automatisch verifiëren</translation>
 <translation id="2621115761605608342">JavaScript toestaan voor een specfieke site.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Items selecteren</translation>
 <translation id="6838525730752203626">Chrome standaard gebruiken</translation>
 <translation id="6840760312327750441">Groepeer tabbladen door ze vast te houden en naar andere tabbladen te slepen.</translation>
+<translation id="6851981911629679515">Zet aanvullende beveiliging aan in de JavaScript- en WebAssembly-engine van Chrome</translation>
 <translation id="6864395892908308021">Dit apparaat kan NFC niet lezen</translation>
 <translation id="6870169401250095575">Kaart Veiligheidscheck verbergen</translation>
 <translation id="6900883974539674431">Maak tabbladgroepen die automatisch worden opgeslagen en geüpdatet op al je apparaten</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Elke site die je bezoekt, kan elke advertentie aan je tonen</translation>
 <translation id="8087000398470557479">Deze content is afkomstig van <ph name="DOMAIN_NAME" />, geleverd door Google.</translation>
 <translation id="8088603949666785339">Meer opties in de <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Vermindert de prestaties maar maakt V8 beter bestand tegen aanvallen</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome beperkt morgen weer cookies}other{# dagen tot Chrome weer cookies beperkt}}</translation>
 <translation id="8116925261070264013">Geluid uit</translation>
 <translation id="8117244575099414087">Als deze optie aanstaat, kunnen sites de sensoren van je apparaat gebruiken. Staat de optie uit, dan kunnen sites geen sensoren gebruiken.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Een afbeelding selecteren</translation>
 <translation id="8800034312320686233">Werkt de site niet?</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript voor een specifieke site.</translation>
+<translation id="8801657293260363985">V8 is de JavaScript- en WebAssembly-engine van Chrome die wordt gebruikt om de sitesprestaties te verbeteren</translation>
 <translation id="8803526663383843427">Als dit aanstaat</translation>
 <translation id="8805385115381080995">Je kunt sneller browsen omdat een site je minder vaak vraagt te verifiëren dat je een echte persoon bent</translation>
 <translation id="8816026460808729765">Sites geen toegang tot sensoren geven</translation>

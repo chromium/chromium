@@ -729,6 +729,7 @@
 <translation id="4405320213589929829">Використовуйте адреси на веб-сторінках, щоб отримувати місцеву інформацію і прокладати маршрути.</translation>
 <translation id="441218095371040430">Скористатися клавіатурою</translation>
 <translation id="4415276339145661267">Керувати обліковим записом Google</translation>
+<translation id="4430277756566635951">Зараз вибрано: <ph name="EMAIL" />. Виберіть обліковий запис.</translation>
 <translation id="4431224949908513835">Виберіть спосіб оплати.</translation>
 <translation id="4442550905108052454">Відкрийте <ph name="BEGIN_BOLD" />Налаштування<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Інші опції для цього запису: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -1312,6 +1313,7 @@
 <translation id="6943681254152031826">{COUNT,plural, =1{Відстежувати це відправлення?}one{Відстежувати {COUNT} відправлення?}few{Відстежувати {COUNT} відправлення?}many{Відстежувати {COUNT} відправлень?}other{Відстежувати {COUNT} відправлення?}}</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6950522403736391608">Приховано</translation>
+<translation id="6964300328304469089">Зараз вибрано: <ph name="NAME" /> (<ph name="EMAIL" />). Виберіть обліковий запис.</translation>
 <translation id="6964760285928603117">Вилучити з групи</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Папки</translation>
@@ -1512,7 +1514,6 @@
 <translation id="7889910613639381518">Простий і безпечний доступ із віджетом Google Менеджера паролів.</translation>
 <translation id="7899199123054742721">Позначити всі як непрочитані</translation>
 <translation id="7911190106180361398">Адміністратор вашої організації не дозволяє синхронізувати всі дані.</translation>
-<translation id="7920949005883349320">Конфіденційність і безпека</translation>
 <translation id="792357691529995513">Проблем не виявлено</translation>
 <translation id="7925108652071887026">Дані автозаповнення</translation>
 <translation id="7926975587469166629">Псевдонім картки</translation>
@@ -1787,6 +1788,7 @@
 <translation id="9032405509996909363">Підтвердити видалення даних вебперегляду</translation>
 <translation id="9034759925968272072">Ви не вийдете з облікового запису Google. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці  <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Трафік</translation>
+<translation id="9042893549633094279">Конфіденційність і безпека</translation>
 <translation id="9057030985451135243">Докладніше про спільні групи вкладок</translation>
 <translation id="9057972802061533987">Не вдалося підписатися.</translation>
 <translation id="9065203028668620118">Редагувати</translation>

@@ -590,7 +590,6 @@
 <translation id="379035798868314833">‏«مدیر گذرواژه Google» در این دستگاه ازکار خواهد افتاد</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{یک برگه}one{# برگه}other{# برگه}}</translation>
 <translation id="3795154175078851242">کپی کردن تصویر با پیوند</translation>
-<translation id="3810838688059735925">فیلم</translation>
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="381861209280417772">حذف گذرواژه‌ها</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> بارگیری حذف شد</translation>
@@ -802,6 +801,7 @@
 <translation id="4769632191812288342">محافظت استاندارد را دریافت می‌کنید</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> حذف شد</translation>
 <translation id="4778653490315793244">هنوز موردی برای نشان‌دادن وجود ندارد</translation>
+<translation id="4782929588435725897">موتور جستجوی پیش‌فرض شما <ph name="SEARCH_ENGINE" /> است</translation>
 <translation id="4787736314074622408">می‌خواهید <ph name="ITEM_TITLE" /> را حذف کنید؟</translation>
 <translation id="4793679854893018356">‏ببینید Chrome چگونه ایمنی شما را حفظ می‌کند</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@
 <translation id="5763514718066511291">برای کپی کردن نشانی وب این برنامه تک‌ضرب بزنید</translation>
 <translation id="5765517223145864268">درباره تجربه‌تان به ما بگویید. یا <ph name="BEGIN_LINK" />تنظیماتتان را تغییر دهید<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">توضیح:</translation>
-<translation id="5767013862801005129"><ph name="TAB_TITLE" /> بازیابی شد، برگه</translation>
 <translation id="5776970333778123608">داده‌های غیرمهم</translation>
 <translation id="5780792035410621042">برای کپی کردن گذرواژه‌ها، ابتدا در دستگاهتان قفل صفحه تنظیم کنید</translation>
 <translation id="5793665092639000975">درحال استفاده از <ph name="SPACE_USED" /> از <ph name="SPACE_AVAILABLE" /></translation>
@@ -1092,6 +1091,7 @@
 <translation id="6140912465461743537">کشور/منطقه</translation>
 <translation id="6142183503755612900">هرزمان بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات تغییر دهید</translation>
 <translation id="6143892791267458416">‏\u0020و پس‌از <ph name="DAYS_ARCHIVED" /> روز بسته شد</translation>
+<translation id="6146563240635539929">ویدیو</translation>
 <translation id="614890671148262506">اعلان‌های این سایت همواره مجاز باشد</translation>
 <translation id="6150320133806434356">نشانک ذخیره شد</translation>
 <translation id="6150706324143004339">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، Chrome را به‌روزرسانی کنید</translation>
@@ -1478,7 +1478,6 @@
 <translation id="777637629667389858">‏وقتی به سیستم وارد شده باشید، در سراسر سرویس‌های Google از شما محافظت می‌کند.</translation>
 <translation id="7778840695157240389">برای خواندن داستان‌های جدید، بعداً دوباره سربزنید</translation>
 <translation id="7791543448312431591">افزودن</translation>
-<translation id="7798392620021911922"><ph name="TAB_COUNT" /> برگه بازیابی شد</translation>
 <translation id="780287761701992588">نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7808889146555843082">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نمی‌شود. برای ایمن نگه‌داشتن گذرواژه‌تان، آن را تغییر دهید یا حساب‌تان را در <ph name="SITE" /> حذف کنید.</translation>

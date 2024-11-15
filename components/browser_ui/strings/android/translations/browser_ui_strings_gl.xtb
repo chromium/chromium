@@ -78,6 +78,7 @@
 <translation id="228293613124499805">A maioría dos sitios que visitas poden gardar datos no teu dispositivo. A miúdo, gardan as túas preferencias ou a información que compartes co sitio para mellorar a túa experiencia. É recomendable manter activada esta opción de configuración.</translation>
 <translation id="2289270750774289114">Preguntar cando un sitio web queira detectar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">A selección do certificado do cliente non é compatible co sistema operativo.</translation>
+<translation id="2356926036049612643">Optimizador de V8</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2379925928934107488">Aplícaselles o tema escuro aos sitios sempre que é posible cando Chrome está configurado con ese tema</translation>
 <translation id="2390272837142897736">Aumentar zoom</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Vista ampliada (fai clic para contraela).</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
 <translation id="2588271083332682494">Ten todo ordenado cos grupos de pestanas</translation>
+<translation id="2594832159966169099">Xestionar seguranza de V8</translation>
 <translation id="2597457036804169544">Non se lles aplica o tema escuro aos sitios</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2621115761605608342">Permite a execución de JavaScript para un sitio específico.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Selecciona elementos</translation>
 <translation id="6838525730752203626">Usa Chrome de forma predeterminada</translation>
 <translation id="6840760312327750441">Para agrupar varias pestanas, mantén premida unha delas e despois arrástraa ata outra.</translation>
+<translation id="6851981911629679515">Activa a protección adicional no motor de Chrome para JavaScript e WebAssembly</translation>
 <translation id="6864395892908308021">Este dispositivo non pode ler NFC</translation>
 <translation id="6870169401250095575">Ocultar tarxeta Comprobación de seguranza</translation>
 <translation id="6900883974539674431">Crea grupos de pestanas que se gardarán e actualizarán automaticamente en todos os teus dispositivos</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Calquera sitio que visites pode mostrarche anuncios</translation>
 <translation id="8087000398470557479">Este contido procede de <ph name="DOMAIN_NAME" />, ofrecido por Google.</translation>
 <translation id="8088603949666785339">Máis opcións en <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Reduce o rendemento, pero fai que o motor V8 sexa máis resistente aos ataques</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome volverá limitar as cookies mañá}other{Faltan # días para que Chrome volva limitar as cookies}}</translation>
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="8117244575099414087">Cando esta opción está activada, os sitios poden utilizar os sensores do dispositivo. Cando esta opción está desactivada, os sitios non poden utilizar os sensores do dispositivo.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Selecciona unha imaxe</translation>
 <translation id="8800034312320686233">O sitio non funciona?</translation>
 <translation id="8801436777607969138">Bloquea JavaScript para un sitio específico.</translation>
+<translation id="8801657293260363985">V8 é o motor de Chrome para JavaScript e WebAssembly que se usa para mellorar o rendemento dos sitios</translation>
 <translation id="8803526663383843427">Se a función está activada</translation>
 <translation id="8805385115381080995">Navegarás máis rápido porque é menos problable que os sitios che pidan que verifiques que es unha persoa real</translation>
 <translation id="8816026460808729765">Impide que os sitios accedan aos sensores</translation>

@@ -166,7 +166,6 @@
 <translation id="3161522574479303604">همه زبان‌ها</translation>
 <translation id="3179665906251668410">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
 <translation id="3185330573522821672">‏سفارشی کردن نمایه جدید Chromium</translation>
-<translation id="3190315855212034486">‏اوه! Chromium خراب شده است. دوباره راه‌اندازی شود؟</translation>
 <translation id="3224847870593914902">‏برای برداشتن «حساب Google» خود از Chromium، در صفحه «تنظیمات» از سیستم Chromium خارج شوید</translation>
 <translation id="3258596308407688501">‏Chromium نمی‌تواند مسیر داده‌های خود را بخواند یا در آن بنویسد:
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -440,7 +439,6 @@
 <translation id="67706546131546258">‏Chromium توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد.</translation>
 <translation id="6779406956731413166">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="6831043979455480757">ترجمه</translation>
-<translation id="6843464627590537736">حبابک جستجوی «جستجوی تصویر»</translation>
 <translation id="6847869444787758381">‏Chromium می‌تواند، اگر گذرواژه‌هایتان در معرض خطر باشد، مطلعتان کند</translation>
 <translation id="684888714667046800">نمی‌توان به اینترنت متصل شد. اگر از دیوار آتش استفاده می‌کنید، لطفاً مطمئن شوید <ph name="PRODUCT_EXE_NAME" /> در فهرست مجازها باشد.</translation>
 <translation id="685279860330610299">‏‫Chromium می‌تواند انواع بیشتری از اطلاعات را درک کند و فرم‌ها را سریع‌تر تکمیل کند. درباره <ph name="BEGIN_LINK" />تکمیل خودکار Chrome<ph name="END_LINK" /> بیشتر بدانید</translation>

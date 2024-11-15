@@ -590,7 +590,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="379035798868314833">O xestor de contrasinais de Google deixará de funcionar neste dispositivo</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestana}other{# pestanas}}</translation>
 <translation id="3795154175078851242">Copiar imaxe con ligazón</translation>
-<translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Xestionar</translation>
 <translation id="381861209280417772">Eliminar contrasinais</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descargas eliminadas</translation>
@@ -802,6 +801,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4769632191812288342">Estás usando a protección estándar</translation>
 <translation id="4775646243557794597">Eliminouse o seguinte período: <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Aínda non hai contido</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> é o teu buscador predeterminado</translation>
 <translation id="4787736314074622408">Queres eliminar <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Descubre como te protexe Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5763514718066511291">Tocar para copiar o URL para esta aplicación</translation>
 <translation id="5765517223145864268">Coméntanos a túa experiencia. Tamén podes <ph name="BEGIN_LINK" />cambiar a configuración<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Descrición:</translation>
-<translation id="5767013862801005129">Pestana <ph name="TAB_TITLE" />, restaurada</translation>
 <translation id="5776970333778123608">Datos non importantes</translation>
 <translation id="5780792035410621042">Para poder copiar os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="5793665092639000975">Espazo utilizado: <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" /></translation>
@@ -1040,6 +1039,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5885378508678660271">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque este sitio é perigoso</translation>
 <translation id="5895834791314695851">Os contrasinais poden deixar de funcionar en breve neste dispositivo. Para poder seguir usándoos, actualiza os servizos de Google Play. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Non se pechou ningunha folla de claves de acceso</translation>
+<translation id="5907542076239273525">O marcador gardouse en <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5919204609460789179">Actualiza <ph name="PRODUCT_NAME" /> para iniciar a sincronización</translation>
 <translation id="5938820472109305350">Engadir <ph name="INTEREST" /></translation>
@@ -1091,6 +1091,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6140912465461743537">País/rexión</translation>
 <translation id="6142183503755612900">Podes cambiar o buscador predeterminado en calquera momento na configuración</translation>
 <translation id="6143892791267458416">\u0020e pecharanse pasados <ph name="DAYS_ARCHIVED" /> días</translation>
+<translation id="6146563240635539929">Vídeos</translation>
 <translation id="614890671148262506">Permitir sempre as notificacións deste sitio</translation>
 <translation id="6150320133806434356">Gardouse o marcador</translation>
 <translation id="6150706324143004339">Para usar e gardar os datos de Chrome na túa Conta de Google, actualiza Chrome</translation>
@@ -1477,7 +1478,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="777637629667389858">Cando teñas a sesión iniciada, ofrecerache protección nos servizos de Google.</translation>
 <translation id="7778840695157240389">Volve máis tarde para comprobar se hai historias novas</translation>
 <translation id="7791543448312431591">Engadir</translation>
-<translation id="7798392620021911922"><ph name="TAB_COUNT" /> pestanas restauradas</translation>
 <translation id="780287761701992588">Accede aos teus marcadores, contrasinais e moito máis en todos os dispositivos</translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7808889146555843082">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" />. Cambia o contrasinal ou elimina a túa conta en <ph name="SITE" /> para protexela doutras persoas.</translation>

@@ -168,7 +168,6 @@
 <translation id="3161522574479303604">सबै भाषाहरू</translation>
 <translation id="3179665906251668410">लिंकलाई Chromium को इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="3185330573522821672">आफ्नो नयाँ Chromium प्रोफाइल आफूले चाहे जस्तो बनाउनुहोस्</translation>
-<translation id="3190315855212034486">ओहो! Chromium क्र्यास भएको छ। अहिले पुन: लन्च गर्ने?</translation>
 <translation id="3224847870593914902">Chromium बाट आफ्नो Google खाता हटाउन "सेटिङ" पेजमा गई Chromium बाट साइन आउट गर्नुहोस्</translation>
 <translation id="3258596308407688501">क्रोमियमले यसको डाटा निर्देशिकामा पढ्न र लेख्न सक्दैन: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 भनेको साइटको पर्फर्मेन्समा सुधार ल्याउन प्रयोग गरिने Chromium को JavaScript र WebAssembly इन्जिन हो</translation>
@@ -441,7 +440,6 @@
 <translation id="67706546131546258">यो फाइल जोखिमपूर्ण हुन सक्ने भएकाले Chromium ले यो फाइल स्क्यान गर्न सिफारिस गर्छ।</translation>
 <translation id="6779406956731413166">ChromiumOS अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />खुला स्रोत सफ्टवेयर<ph name="END_LINK_CROS_OSS" /> प्रयोग गरी निर्माण गरिएको हो।</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
-<translation id="6843464627590537736">फोटो प्रयोग गरी खोज्ने सुविधाको सर्च बबल</translation>
 <translation id="6847869444787758381">तपाईंको पासवर्ड ह्याक भएको खण्डमा Chromium ले तपाईंलाई त्यसको जानकारी दिन्छ</translation>
 <translation id="684888714667046800">इन्टरनेटमा कनेक्ट गर्न सकिएन। तपाईंले कुनै फायरवाल प्रयोग गरेका खण्डमा कृपया श्वेतसूचीमा <ph name="PRODUCT_EXE_NAME" /> समावेश गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="685279860330610299">Chromium ले अझ धेरै प्रकारका जानकारी बुझ्न सक्छ र तपाईंका फाराम अझ छिटो अटोफिल गर्न सक्छ। <ph name="BEGIN_LINK" />Chrome अटोफिल<ph name="END_LINK" />का बारेमा थप जान्नुहोस्</translation>

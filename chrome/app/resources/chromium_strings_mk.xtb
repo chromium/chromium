@@ -168,7 +168,6 @@
 <translation id="3161522574479303604">Сите јазици</translation>
 <translation id="3179665906251668410">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
 <translation id="3185330573522821672">Приспособете го вашиот нов профил на Chromium</translation>
-<translation id="3190315855212034486">Уф! Chromium падна. Да се стартува повторно веднаш?</translation>
 <translation id="3224847870593914902">Одјавете се од Chromium на страницата „Поставки“ за да се отстрани вашата сметка на Google од Chromium</translation>
 <translation id="3258596308407688501">Chromium не може да чита и да пишува во директориумот за податоци:
 
@@ -443,7 +442,6 @@
 <translation id="67706546131546258">Chromium препорачува скенирање на датотекава бидејќи можеби е опасна.</translation>
 <translation id="6779406956731413166">Chromium OS е овозможен со дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Преведи</translation>
-<translation id="6843464627590537736">Балонче за пребарување на „Пребарување со слики“</translation>
 <translation id="6847869444787758381">Chromium ве известува дали вашите лозинки се компромитирани</translation>
 <translation id="684888714667046800">Не може да се поврзе на интернет. Ако користите заштитен ѕид, погрижете се <ph name="PRODUCT_EXE_NAME" /> да биде во списокот со дозволени.</translation>
 <translation id="685279860330610299">Chromium може да разбира повеќе типови податоци и побрзо да ги пополнува вашите формулари автоматски. Дознајте повеќе за <ph name="BEGIN_LINK" />Автоматското пополнување на Chrome<ph name="END_LINK" /></translation>
@@ -569,6 +567,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
 <translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556420416730706394">Може да ја закачите „Пребарување со слики“ за лесен пристап. Само кликнете го копчето „Закачи“ најгоре на страничната табла</translation>
+<translation id="856656450041460113">Пребарајте го списокот со јазици</translation>
 <translation id="8568283329061645092">Chromium може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google</translation>
 <translation id="8576826849825683917">Повеќе организации управуваат со Chromium</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>

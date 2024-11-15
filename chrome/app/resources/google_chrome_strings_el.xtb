@@ -398,7 +398,6 @@
 <translation id="5941830788786076944">Ορισμός Google Chrome ως προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="5947104538377036631">Συντόμευση Chrome</translation>
 <translation id="5953954252731207958">Δεν έχετε επισκεφτεί πρόσφατα τον ιστότοπο. Το Chrome κατάργησε την άδεια <ph name="PERMISSION" /></translation>
-<translation id="5971400953982411053">Συννεφάκι αναζήτησης Google Lens</translation>
 <translation id="6003112304606738118">Λήψη… Απομένουν <ph name="HOURS" /> ώρες</translation>
 <translation id="6014316319780893079">Με τα <ph name="BEGIN_LINK" />εργαλεία του Chrome<ph name="END_LINK" />, μπορείτε να περιηγείστε με ασφάλεια και να διατηρείτε τον έλεγχο</translation>
 <translation id="6022659036123304283">Προσαρμόστε το Chrome για εσάς</translation>
@@ -602,7 +601,6 @@
 <translation id="8267953129876836456">Το Chrome εντόπισε ορισμένες προτάσεις ασφάλειας για να ελέγξετε</translation>
 <translation id="8270775718612349140">Πιστοποιητικά που διαχειρίζεται το Chrome</translation>
 <translation id="8286862437124483331">Το Google Chrome προσπαθεί να εμφανίσει τους κωδικούς πρόσβασης. Πληκτρολογήστε τον κωδικό πρόσβασής σας Windows για να το επιτρέψετε αυτό.</translation>
-<translation id="8290100596633877290">Πω πω! Το Google Chrome παρουσίασε σφάλμα. Επανεκκίνηση τώρα;</translation>
 <translation id="829923460755755423">Προσθέστε μια συντόμευση στον Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="8313851650939857356">Σφάλμα εκκίνησης: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Αποθήκευση ως εικόνα</translation>
@@ -628,6 +626,7 @@
 <translation id="852529348814672339">Προβολή του Chrome σε αυτή τη γλώσσα</translation>
 <translation id="8550334526674375523">Αυτό το προφίλ εργασίας είναι εντελώς ξεχωριστό από το προσωπικό προφίλ σας.</translation>
 <translation id="8555465886620020932">Σφάλμα υπηρεσίας: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="856656450041460113">Αναζήτηση λίστας γλωσσών</translation>
 <translation id="8571790202382503603">Με τα προφίλ του Chrome μπορείτε να διαχωρίσετε όλο το περιεχόμενό σας στο Chromium. Αυτό σας βοηθά να διαχωρίζετε την εργασία από την ψυχαγωγία.</translation>
 <translation id="8601359445272098721">Νέο! Μπορείτε να μεταφράσετε κείμενο και εικόνες που εμφανίζονται στην οθόνη σας, επιλέγοντας το κουμπί Μετάφραση οθόνης</translation>
 <translation id="8614913330719544658">Το Google Chrome δεν αποκρίνεται. Επανεκκίνηση τώρα;</translation>

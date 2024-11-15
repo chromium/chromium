@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Mae'n debyg bod y rhan fwyaf o wefannau y byddwch yn ymweld â nhw yn cadw data i'ch dyfais, yn aml i wella'ch profiad trwy gadw eich dewisiadau neu'r wybodaeth rydych yn ei rhannu â'r wefan. Rydym yn argymell cadw'r gosodiad hwn ymlaen.</translation>
 <translation id="2289270750774289114">Gofyn pan fydd gwefan eisiau darganfod dyfeisiau Bluetooth gerllaw (argymhellir)</translation>
 <translation id="2315043854645842844">Nid yw'r system weithredu yn cefnogi dewis tystysgrif ochr y cleient.</translation>
+<translation id="2356926036049612643">Optimeiddiwr V8</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2379925928934107488">Os yw'n bosib, defnyddio'r thema dywyll ar wefannau pan fydd Chrome yn defnyddio'r thema dywyll</translation>
 <translation id="2390272837142897736">Chwyddo</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Wedi'i ehangu - cliciwch i grebachu.</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
 <translation id="2588271083332682494">Tacluso gyda grwpiau tab</translation>
+<translation id="2594832159966169099">Rheoli diogelwch V8</translation>
 <translation id="2597457036804169544">Peidio â defnyddio'r thema dywyll ar gyfer gwefannau</translation>
 <translation id="2606760465469169465">Awtoddilysu</translation>
 <translation id="2621115761605608342">Caniatáu JavaScript ar wefan benodol.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Dewis eitemau</translation>
 <translation id="6838525730752203626">Defnyddiwch Chrome yn ddiofyn</translation>
 <translation id="6840760312327750441">I grwpio tabiau, cyffyrddwch a daliwch dab. Llusgwch ef i dab arall.</translation>
+<translation id="6851981911629679515">Trowch amddiffyniad ychwanegol ymlaen yn injan JavaScript a WebAssembly Chrome</translation>
 <translation id="6864395892908308021">Ni all y ddyfais hon ddarllen NFC</translation>
 <translation id="6870169401250095575">Cuddio cerdyn Gwiriad Diogelwch</translation>
 <translation id="6900883974539674431">Creu grwpiau tabiau sy'n cadw ac yn diweddaru'n awtomatig ar draws eich holl ddyfeisiau</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Gall unrhyw wefan yr ymwelwch â hi ddangos unrhyw hysbyseb i chi</translation>
 <translation id="8087000398470557479">Mae'r cynnwys hwn yn dod o <ph name="DOMAIN_NAME" />, sy'n cael ei ddarparu gan Google.</translation>
 <translation id="8088603949666785339">Rhagor o opsiynau yn y <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Yn lleihau perfformiad ond yn gwneud V8 yn fwy ymwrthol i ymosodiadau</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Bydd Chrome yn cyfyngu ar gwcis eto yfory}zero{# diwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}two{# ddiwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}few{# diwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}many{# diwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}other{# diwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}}</translation>
 <translation id="8116925261070264013">Wedi'i ddistewi</translation>
 <translation id="8117244575099414087">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio synwyryddion eich dyfais. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio synwyryddion.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Dewiswch lun</translation>
 <translation id="8800034312320686233">Gwefan ddim yn gweithio?</translation>
 <translation id="8801436777607969138">Rhwystro JavaScript ar gyfer gwefan benodol.</translation>
+<translation id="8801657293260363985">V8 yw injan JavaScript a WebAssembly Chrome a ddefnyddir i wella perfformiad gwefan</translation>
 <translation id="8803526663383843427">Pan fydd ymlaen</translation>
 <translation id="8805385115381080995">Mae pori yn gyflymach oherwydd bod gwefan yn llai tebygol o ofyn i chi gadarnhau eich bod yn berson go iawn</translation>
 <translation id="8816026460808729765">Rhwystro gwefannau rhag cael mynediad at synwyryddion</translation>

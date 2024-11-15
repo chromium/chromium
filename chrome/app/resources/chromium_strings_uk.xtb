@@ -166,7 +166,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3161522574479303604">Усі мови</translation>
 <translation id="3179665906251668410">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>
 <translation id="3185330573522821672">Налаштуйте свій новий профіль Chromium</translation>
-<translation id="3190315855212034486">Помилка. Chromium аварійно завершив роботу. Перезапустити зараз?</translation>
 <translation id="3224847870593914902">Щоб вилучити обліковий запис Google, вийдіть із Chromium на сторінці налаштувань</translation>
 <translation id="3258596308407688501">Chromium не може читати та писати дані у свій каталог даних:
 
@@ -441,7 +440,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="67706546131546258">Chromium радить просканувати цей файл, оскільки він може бути небезпечним.</translation>
 <translation id="6779406956731413166">Chromium OS працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Перекласти</translation>
-<translation id="6843464627590537736">Спливаюча підказка для пошуку за зображенням</translation>
 <translation id="6847869444787758381">Якщо ваші паролі колись викрадуть, Chromium повідомить вас про це</translation>
 <translation id="684888714667046800">Не вдалося підключитися до Інтернету. Якщо ви використовуєте брандмауер, переконайтеся, що <ph name="PRODUCT_EXE_NAME" /> є в білому списку.</translation>
 <translation id="685279860330610299">Chromium зможе розпізнавати більше типів інформації і швидше заповнювати форми. Докладніше про <ph name="BEGIN_LINK" />автозаповнення в Chrome<ph name="END_LINK" />.</translation>

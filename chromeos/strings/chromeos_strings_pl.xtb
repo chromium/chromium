@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
 <translation id="361575905210396100">Dziękujemy za opinię</translation>
 <translation id="3621072146987826699">słonie</translation>
+<translation id="3628462041319107639">Pobieram model transkrypcji…</translation>
 <translation id="3632040286124154621">Trafna sugestia</translation>
 <translation id="3632579075709132555">Przełącznik filtra prywatności</translation>
 <translation id="3639873154908477486">Nazwa (od A do Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
 <translation id="382043424867370667">Tapeta Zachód słońca</translation>
 <translation id="3824259034819781947">Dołącz pliki</translation>
+<translation id="383586991013681190">Wybierz język transkrypcji i pobierz go w Ustawieniach</translation>
 <translation id="3836587210832263413">Włączaj tylko te rozszerzenia, którym ufasz</translation>
 <translation id="3838338534323494292">Nowe hasło</translation>
 <translation id="3845880861638660475">Aby zamknąć okno, naciśnij <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Brak pasujących wyników</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
+<translation id="4483498983731992167">Nie udało się utworzyć transkrypcji</translation>
 <translation id="4486524074141928967">O <ph name="TIME" /> nastąpi wylogowanie</translation>
 <translation id="4500722292849917410">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza modyfikującego (Ctrl, Alt, Shift lub <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Kolor interfejsu</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">w górę</translation>
 <translation id="5107243100836678918">Skrót bez klawisza <ph name="META_KEY" /> może być w konflikcie z jakimś skrótem aplikacji. Naciśnij ten skrót ponownie, aby nadal go używać, albo naciśnij nowy skrót z użyciem klawisza <ph name="KEY" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Synonimy:</translation>
+<translation id="5121677070210013200">Nie udało się pobrać modelu transkrypcji. Spróbuj jeszcze raz lub uruchom ponownie Chromebooka.</translation>
 <translation id="5130848777448318809">kucyki</translation>
 <translation id="5137451382116112100">Pełne</translation>
 <translation id="5140788690559353412">Gdy utracisz dostęp do konta szkolnego, stracisz również dostęp do powiązanych z nim usług, takich jak poczta e-mail czy pliki na Dysku Google (np. Dokumentów, Arkuszy czy Prezentacji).</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Zezwalaj na identyfikację mówiącej osoby</translation>
 <translation id="7041549558901442110">Urządzenie nie ma połączenia.</translation>
 <translation id="7046522406494308071">Zresetować wszystkie skróty do wartości domyślnych?</translation>
+<translation id="7049916119678019302">Pobierz model transkrypcji w Ustawieniach</translation>
 <translation id="7058278511608979688">Zakończ i zapisz</translation>
 <translation id="7059230779847288458">Ładuję (pełne naładowanie za <ph name="TIME_VALUE" />)</translation>
 <translation id="7066538517128343186">klucz <ph name="KEY" /></translation>

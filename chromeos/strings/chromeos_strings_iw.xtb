@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1191518099344003522">‏ה-APN מופעל.</translation>
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
+<translation id="1196264380943975940">לא ניתן לסכם. צריך לנסות תמליל ארוך יותר.</translation>
 <translation id="1196959502276349371">גרסה <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">הפעלה/השהיה</translation>
 <translation id="1201402288615127009">הבא</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">הסתרת התמליל</translation>
 <translation id="160633243685262989">התצוגה המקדימה של התמונה</translation>
 <translation id="1611649489706141841">קדימה</translation>
+<translation id="1615144046047995187">‏לא ניתן להוריד. צריך לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">שימוש בעיצוב</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">תפריט עריכה ומחיקה</translation>
 <translation id="2597774443162333062">‏הקבצים יישלחו אל Google לניפוי באגים</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{הסריקה הושלמה. נסרק עמוד אחד}one{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}two{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}other{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}}</translation>
+<translation id="261322795497077164">זיהוי הדובר</translation>
 <translation id="2617397783536231890">כותנה</translation>
 <translation id="2618015542787108131">דיונה</translation>
 <translation id="2619761439309613843">רענון יומי</translation>
@@ -441,6 +444,7 @@
 <translation id="3140130301071865159">שלג</translation>
 <translation id="3146655726035122603">רק ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">נתוני נייד</translation>
+<translation id="3153094818810437149">אפשר לשנות זאת מאוחר יותר בהגדרות של מכשיר ההקלטה</translation>
 <translation id="3156511682997763015">הרצה 10 שניות קדימה</translation>
 <translation id="3156846309055100599">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">זוהה פורטל שבוי</translation>
@@ -564,6 +568,7 @@
 <translation id="3785643128701396311">פיקסל ארט</translation>
 <translation id="3799381533888781854">מושבתת – ההגדרה הזו מנוהלת על ידי האדמין.</translation>
 <translation id="380097101658023925">‏פקדים לכוונון RGB</translation>
+<translation id="380493988330050229">לא ניתן ליצור סיכום בשפה של התמליל הזה</translation>
 <translation id="38114475217616659">ניקוי כל ההיסטוריה</translation>
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="382043424867370667">טפט השקיעה</translation>
@@ -587,6 +592,7 @@
 <translation id="3885327323343477505">החלפת שומר המסך</translation>
 <translation id="3889914174935857450">תאריך האיפוס</translation>
 <translation id="3897092660631435901">תפריט</translation>
+<translation id="3902271751020176019">שפת התמליל</translation>
 <translation id="391412459402535266">לא ניתן לבדוק את המכשיר. צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה.</translation>
 <translation id="3916998944874125962">צילום מסך</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
@@ -735,6 +741,7 @@
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4594021849294327751">יצירת תמליל</translation>
+<translation id="4594541568452132351">בחירת שפת התמלול והורדת המודל</translation>
 <translation id="4607282946861182308">לא ניתן ליצור תמונות של מה שביקשת. אפשר לנסות הנחיה אחרת.</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
 <translation id="4623061655523261501">שמות ההקלטות נוצרו בהצלחה</translation>
@@ -750,6 +757,7 @@
 <translation id="4665014895760275686">יצרן</translation>
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
 <translation id="467715984478005772">חומת אש חשודה</translation>
+<translation id="4678534708181186163">לא ניתן לסכם. צריך לנסות תמליל קצר יותר.</translation>
 <translation id="4683762547447150570">כדי להתמקד בהקצאת המקש, צריך להקיש על הלחצן</translation>
 <translation id="4691278870498629773">הפסיקה – המגש חסר</translation>
 <translation id="469379815867856270">עוצמת אות</translation>
@@ -852,6 +860,7 @@
 <translation id="5168185087976003268">תקינות הסוללה</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="517075088756846356">כדי להמשיך בתהליך העדכון, צריך לנתק את כבל החשמל של <ph name="DEVICE_NAME" /> ולחבר אותו מחדש</translation>
+<translation id="5178021559562393163">לא ניתן ליצור שמות. צריך לנסות תמליל קצר יותר.</translation>
 <translation id="5180108905184566358">עצי באובב</translation>
 <translation id="5180712487038406644">אקספרסיבי</translation>
 <translation id="5190187232518914472">‏זיכרונות אהובים מתעוררים לחיים. כדי להוסיף או לערוך אלבומים, יש לעבור ל-<ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -886,6 +895,7 @@
 <translation id="5304899856529773394">‏נתוני EvDo</translation>
 <translation id="5315873049536339193">זהות</translation>
 <translation id="5317780077021120954">שמירה</translation>
+<translation id="5318310531701770497">לא ניתן ליצור שמות. צריך לנסות תמליל ארוך יותר.</translation>
 <translation id="5318334351163689047">‏בקשות TCP נכשלו</translation>
 <translation id="53196409393069519">להפעיל את התמלול?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -939,6 +949,7 @@
 <translation id="5606865426897221650">‏מקש Tab</translation>
 <translation id="5613201299517339763">התנתקת מהחשבון</translation>
 <translation id="5620281292257375798">פנימי בלבד</translation>
+<translation id="5628106863521633649">השפות הזמינות</translation>
 <translation id="5630438231335788050">באוהאוס</translation>
 <translation id="5631759159893697722">תקציר</translation>
 <translation id="5655283760733841251">הגברת הבהירות של המקלדת</translation>
@@ -1099,6 +1110,7 @@
 <translation id="6359919876285606596">המחיקה היא סופית ואי אפשר לבטל אותה.</translation>
 <translation id="6368342879959028556">‏כשבוחרים באפשרות 'יצירה באמצעות AI', צריך לכתוב הנחיה מותאמת אישית. אפשר גם לבחור באפשרות 'טפטים מבוססי-AI', לבחור עיצוב ואז לבחור את המילים שמסומנות בקו תחתון כדי להתאים אישית את הטפט מבוסס ה-AI.</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
+<translation id="6369221585240879141">אי אפשר ליצור שמות להקלטות בשפה של התמליל הזה</translation>
 <translation id="6373461326814131011">אגם קטן</translation>
 <translation id="6379086450106841622">מסך מגע</translation>
 <translation id="6381741036071372448">בדיקת המקלדת</translation>
@@ -1263,6 +1275,7 @@
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
 <translation id="7101959270679078188">כדי להמשיך בתהליך העדכון, צריך לבטל את הנעילה של <ph name="DEVICE_NAME" /></translation>
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">השפה שבחרת</translation>
 <translation id="7107255225945990211">בחירת יצירות אומנות בלעדיות ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">הזנת מפתח</translation>
 <translation id="7117228822971127758">אפשר לנסות שוב מאוחר יותר</translation>
@@ -1272,6 +1285,7 @@
 <translation id="7130438335435247835">‏שם נקודת הגישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7135814714616751706">חיפוש מקשי קיצור</translation>
+<translation id="7138614237884624401">טקסט פשוט</translation>
 <translation id="7141470099673912333">העברת תוכן</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
@@ -1693,6 +1707,7 @@
 <translation id="9100765901046053179">הגדרות מתקדמות</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">‏מכשיר ההקלטה יכול ליצור תמלילים של הקלטות שכוללות דיבור. בשלב הבא, צריך לבחור את שפת התמלול ולהוריד את המודל (עד 100MB).</translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
 <translation id="9122492456897874028">סיכום של תוכן, קבלת הגדרות ועוד</translation>
 <translation id="9122602430962285795">כדי להתחבר מחדש, צריך לעבור להגדרות</translation>

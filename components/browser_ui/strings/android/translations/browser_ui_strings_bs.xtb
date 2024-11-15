@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Većina web lokacija koje posjetite vjerovatno pohranjuje podatke na vaš uređaj, često radi poboljšavanja vašeg iskustva pohranjivanjem vaših postavki ili informacija koje dijelite s web lokacijom. Preporučujemo vam da ovu postavku ostavite uključenom.</translation>
 <translation id="2289270750774289114">Pitaj kada web lokacija želi otkriti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sistem ne podržava odabir potvrde na strani klijenta.</translation>
+<translation id="2356926036049612643">V8 optimizator</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2379925928934107488">Tamna tema će se primjenjivati na web lokacije kada Chrome koristi tamnu temu, kada je to moguće</translation>
 <translation id="2390272837142897736">Povećavanje zumiranja</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Prošireno – kliknite da suzite.</translation>
 <translation id="2586657967955657006">Međumemorija</translation>
 <translation id="2588271083332682494">Organizirajte se pomoću grupa kartica</translation>
+<translation id="2594832159966169099">Upravljajte sigurnošću V8 pokretača</translation>
 <translation id="2597457036804169544">Tamna tema se neće primjenjivati na web lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2621115761605608342">Dozvolite JavaScript za posebnu web lokaciju.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Odaberite stavke</translation>
 <translation id="6838525730752203626">Koristite Chrome kao zadani preglednik</translation>
 <translation id="6840760312327750441">Da grupirate kartice, dodirnite i zadržite jednu karticu. Nakon toga je prevucite na drugu karticu.</translation>
+<translation id="6851981911629679515">Uključite dodatnu zaštitu za Chromeove programske jezike JavaScript i WebAssembly</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može očitavati NFC</translation>
 <translation id="6870169401250095575">Sakrij karticu Sigurnosna provjera</translation>
 <translation id="6900883974539674431">Kreirajte grupe kartica koje se automatski pohranjuju i ažuriraju na svim vašim uređajima</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Bilo koja web lokacija koju posjetite vam može prikazivati bilo koje oglase</translation>
 <translation id="8087000398470557479">Ovaj sadržaj je iz domene <ph name="DOMAIN_NAME" />, a isporučio ga je Google.</translation>
 <translation id="8088603949666785339">Više opcija u baneru <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Smanjuje performanse, ali postiže da V8 bude otporniji na napade</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome će ponovo ograničiti kolačiće sutra}one{Chrome će ponovo ograničiti kolačiće za # dan}few{Chrome će ponovo ograničiti kolačiće za # dana}other{Chrome će ponovo ograničiti kolačiće za # dana}}</translation>
 <translation id="8116925261070264013">Isključen zvuk</translation>
 <translation id="8117244575099414087">Kada je postavka uključena, web lokacije mogu koristiti senzore uređaja. Kada je postavka isključena, web lokacije ne mogu koristiti senzore.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Odaberite sliku</translation>
 <translation id="8800034312320686233">Web lokacija ne funkcionira?</translation>
 <translation id="8801436777607969138">Blokiranje JavaScripta za određenu web lokaciju.</translation>
+<translation id="8801657293260363985">V8 je Chromeov pokretač programskih jezika JavaScript i WebAssembly koji se koristi za poboljšanje performansi web lokacija</translation>
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8805385115381080995">Pregledanje je brže jer je malo vjerovatno da će web lokacija tražiti da potvrdite da ste stvarna osoba</translation>
 <translation id="8816026460808729765">Blokiranje web lokacijama pristup senzorima</translation>

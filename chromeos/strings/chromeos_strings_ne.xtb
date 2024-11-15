@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1191518099344003522">APN अन गरिएको छ।</translation>
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
+<translation id="1196264380943975940">सारांश तयार पार्न सकिएन। अझ लामो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="1196959502276349371">संस्करण <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">प्ले/पज</translation>
 <translation id="1201402288615127009">अर्को</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS वेबसाइटहरू लोड हुन धेरै समय लागिरहेको छ</translation>
 <translation id="361575905210396100">प्रतिक्रिया दिनुभएकोमा धन्यवाद</translation>
 <translation id="3621072146987826699">हात्तीहरू</translation>
+<translation id="3628462041319107639">ट्रान्स्क्रिप्सनको मोडेल डाउनलोड गरिँदै छ…</translation>
 <translation id="3632040286124154621">राम्रो सुझाव</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
 <translation id="3639873154908477486">नाम (A देखि Z)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">अमान्य PIN।</translation>
 <translation id="382043424867370667">सनसेट वालपेपर</translation>
 <translation id="3824259034819781947">फाइलहरू एट्याच गर्नुहोस्</translation>
+<translation id="383586991013681190">सेटिङमा गई ट्रान्स्क्रिप्सनको भाषा चयन गर्नुहोस् र डाउनलोड गर्नुहोस्</translation>
 <translation id="3836587210832263413">आफूलाई विश्वास लाग्ने एक्स्टेन्सनहरू मात्र अन गर्नुहोस्</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
 <translation id="3845880861638660475">डायलग बन्द गर्न <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> थिच्नुहोस्।</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">कुनै पनि मिल्दोजुल्दो परिणाम भेटिएन</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">नेटवर्कको डिफल्ट गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
+<translation id="4483498983731992167">ट्रान्स्क्रिप्ट बनाउन सकिएन</translation>
 <translation id="4486524074141928967">तपाईंलाई <ph name="TIME" /> मा साइन आउट गरिने छ</translation>
 <translation id="4500722292849917410">यो सर्टकट उपलब्ध छैन। मोडिफायर की (ctrl, alt, सिफ्ट, सर्च वा <ph name="META_KEY" />) प्रयोग गरी नयाँ सर्टकट थिच्नुहोस्।</translation>
 <translation id="4500966230243561393">इन्टरफेसको रङ</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्डहरू मिलेनन्</translation>
 <translation id="467715984478005772">फायरवालका कारणले हुन सक्छ</translation>
+<translation id="4678534708181186163">सारांश तयार पार्न सकिएन। अझ छोटो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="4683762547447150570">की असाइन गर्ने कार्यमा ध्यान कन्द्रित गर्न बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="4691278870498629773">रोकियो - प्रिन्टरमा ट्रे छैन</translation>
 <translation id="469379815867856270">सिग्नलको क्षमता</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">माथि</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> की समावेश नगरिएको सर्टकट केही एपको सर्टकटसँग जुध्न सक्छ। यो सर्टकट प्रयोग गरिराख्न उक्त सर्टकट फेरि थिच्नुहोस् वा <ph name="KEY" /> की प्रयोग गरेर नयाँ सर्टकट थिच्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">समानार्थक:</translation>
+<translation id="5121677070210013200">ट्रान्स्क्रिप्सन मोडेल डाउनलोड गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook रिस्टार्ट गर्नुहोस्।</translation>
 <translation id="5130848777448318809">पोनीहरू</translation>
 <translation id="5137451382116112100">फुल स्क्रिन</translation>
 <translation id="5140788690559353412">तपाईंले आफ्नो विद्यालयको खाताको एक्सेस गुमाएपछि तपाईं उक्त खातासँग सम्बद्ध इमेल ठेगाना र Gmail, Docs र Slides फाइललगायतका Google Drive मा भएका फाइलहरूको एक्सेस पनि गुमाउनु हुने छ।</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">ब्याट्रीको अवस्था</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="517075088756846356">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> को पावर केबल निकालेर फेरि जोड्नुहोस्</translation>
+<translation id="5178021559562393163">नामहरू राख्न सकिएन। अझ छोटो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="5180108905184566358">बाओबाब ट्री</translation>
 <translation id="5180712487038406644">एक्स्प्रेसिभ</translation>
 <translation id="5190187232518914472">आफूलाई स्मरणीय पलहरूको आनन्द लिनुहोस्। एल्बमहरू हाल्न वा परिवर्तन गर्न <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा जानुहोस्।</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">पहिचान</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
+<translation id="5318310531701770497">नामहरू राख्न सकिएन। अझ लामो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="5318334351163689047">TCP सम्बन्धी अनुरोध गर्न सकिएन</translation>
 <translation id="53196409393069519">ट्रान्सक्रिप्सन अन गर्ने हो?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@
 <translation id="7040729769968826896">वक्ताको आवाज पहिचान गर्ने अनुमति दिनुहोस्</translation>
 <translation id="7041549558901442110">डिभाइस कनेक्ट गरिएको छैन।</translation>
 <translation id="7046522406494308071">सबै सर्टकटहरू रिसेट गरी डिफल्ट बनाउने हो?</translation>
+<translation id="7049916119678019302">सेटिङमा गई ट्रान्स्क्रिप्सनको मोडेल डाउनलोड गर्नुहोस्</translation>
 <translation id="7058278511608979688">अन्त्य गर्नुहोस् र सेभ गर्नुहोस्</translation>
 <translation id="7059230779847288458">चार्ज भइरहेको छ, पूर्ण रूपमा चार्ज हुन अझै <ph name="TIME_VALUE" /> लाग्छ</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> की</translation>

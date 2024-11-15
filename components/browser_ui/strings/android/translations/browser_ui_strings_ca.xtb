@@ -78,6 +78,7 @@
 <translation id="228293613124499805">És probable que la majoria de llocs web que visites desin dades al teu dispositiu, sovint per millorar la teva experiència, desant les teves preferències o la informació que comparteixes amb el lloc web. Et recomanem que mantinguis aquesta opció de configuració activada.</translation>
 <translation id="2289270750774289114">Pregunta'm quan un lloc web vulgui descobrir dispositius Bluetooth propers (opció recomanada)</translation>
 <translation id="2315043854645842844">El sistema operatiu no permet seleccionar el certificat del client.</translation>
+<translation id="2356926036049612643">Optimitzador de V8</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2379925928934107488">Aplica el tema fosc als llocs web quan Chrome l'utilitzi i sigui possible</translation>
 <translation id="2390272837142897736">Amplia el zoom</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Vista desplegada (feu clic per replegar-la)</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
 <translation id="2588271083332682494">Organitza't amb els grups de pestanyes</translation>
+<translation id="2594832159966169099">Gestiona la seguretat de V8</translation>
 <translation id="2597457036804169544">No apliquis el tema fosc als llocs web</translation>
 <translation id="2606760465469169465">Verificació automàtica</translation>
 <translation id="2621115761605608342">Permet JavaScript en un lloc web concret.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Selecciona elements</translation>
 <translation id="6838525730752203626">Utilitza Chrome de manera predeterminada</translation>
 <translation id="6840760312327750441">Per agrupar les pestanyes, mantén-ne una premuda. A continuació, arrossega-la fins a una altra.</translation>
+<translation id="6851981911629679515">Activa la protecció addicional al motor JavaScript i WebAssembly de Chrome</translation>
 <translation id="6864395892908308021">Aquest dispositiu no pot llegir NFC</translation>
 <translation id="6870169401250095575">Amaga la targeta Comprovació de seguretat</translation>
 <translation id="6900883974539674431">Crea grups de pestanyes que es desin i s'actualitzin automàticament en tots els teus dispositius</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Qualsevol lloc web que visitis pot mostrar-te qualsevol anunci</translation>
 <translation id="8087000398470557479">Aquest contingut és del domini <ph name="DOMAIN_NAME" />, oferit per Google.</translation>
 <translation id="8088603949666785339">Més opcions a <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Redueix el rendiment, però fa que V8 sigui més resistent als atacs</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome tornarà a limitar les galetes demà}other{# dies perquè Chrome torni a limitar les galetes}}</translation>
 <translation id="8116925261070264013">Silenciats</translation>
 <translation id="8117244575099414087">Quan aquesta opció està activada, els llocs web poden utilitzar els sensors del dispositiu. Quan aquesta opció està desactivada, els llocs web no poden utilitzar els sensors.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Selecciona una imatge</translation>
 <translation id="8800034312320686233">El lloc web no funciona?</translation>
 <translation id="8801436777607969138">Bloqueja JavaScript en un lloc web concret.</translation>
+<translation id="8801657293260363985">V8 és el motor JavaScript i WebAssembly de Chrome que s'utilitza per millorar el rendiment dels llocs web</translation>
 <translation id="8803526663383843427">Quan està activada</translation>
 <translation id="8805385115381080995">La navegació és més ràpida perquè és menys probable que un lloc web et demani que verifiquis que ets una persona real</translation>
 <translation id="8816026460808729765">Impedeix que els llocs web accedeixin als sensors</translation>

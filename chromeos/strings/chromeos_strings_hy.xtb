@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1191518099344003522">APN-ը միացված է։</translation>
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
+<translation id="1196264380943975940">Հնարավոր չէ ամփոփել։ Փորձեք ավելի երկար գրադարձում։</translation>
 <translation id="1196959502276349371">Տարբերակ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Նվագարկում/դադար</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">Թաքցնել տեքստը</translation>
 <translation id="160633243685262989">Պատկերի նախադիտում</translation>
 <translation id="1611649489706141841">փոխանցել</translation>
+<translation id="1615144046047995187">Չհաջողվեց ներբեռնել։ Նորից փորձեք կամ վերագործարկեք Chromebook-ը։</translation>
 <translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1618566998877964907">Օգտագործեք թեմա</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">Փոփոխել և ջնջել ընտրացանկը</translation>
 <translation id="2597774443162333062">Վրիպազերծման համար ֆայլերը կուղարկվեն Google-ին</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Սկանավորումն ավարտվել է։ Սկանավորվել է 1 էջ։}one{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}other{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}}</translation>
+<translation id="261322795497077164">Խոսողի ճանաչում</translation>
 <translation id="2617397783536231890">բամբակ</translation>
 <translation id="2618015542787108131">ավազաթումբ</translation>
 <translation id="2619761439309613843">Ամենօրյա թարմացում</translation>
@@ -441,6 +444,7 @@
 <translation id="3140130301071865159">ձյուն</translation>
 <translation id="3146655726035122603">Հատուկ <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
+<translation id="3153094818810437149">Ավելի ուշ կարող եք փոխել սա Ձայնագրիչի կարգավորումներում</translation>
 <translation id="3156511682997763015">10 վայրկյան առաջ տալ</translation>
 <translation id="3156846309055100599">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը...</translation>
 <translation id="315738237743207937">Հայտնաբերվել է մուտքի էջ</translation>
@@ -564,6 +568,7 @@
 <translation id="3785643128701396311">պիքսելային գրաֆիկա</translation>
 <translation id="3799381533888781854">ԱՆՋԱՏՎԱԾ Է։ Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="380097101658023925">RGB-ի կարգավորումներ</translation>
+<translation id="380493988330050229">Հնարավոր չէ ամփոփագիր ստեղծել գրադարձման այս լեզվի համար</translation>
 <translation id="38114475217616659">Մաքրել ամբողջ պատմությունը</translation>
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="382043424867370667">«Մայրամուտ» պաստառ</translation>
@@ -587,6 +592,7 @@
 <translation id="3885327323343477505">Փոխել էկրանապահը</translation>
 <translation id="3889914174935857450">Զրոյացնել ամսաթիվը</translation>
 <translation id="3897092660631435901">Ընտրացանկ</translation>
+<translation id="3902271751020176019">Գրադարձման լեզուն</translation>
 <translation id="391412459402535266">Հնարավոր չէ փորձարկել սարքը։ Փորձարկելու համար անցեք նոթբուքի ռեժիմին։</translation>
 <translation id="3916998944874125962">սքրինշոթ անել</translation>
 <translation id="3923184630988645767">Թրաֆիկի օգտագործում</translation>
@@ -735,6 +741,7 @@
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
 <translation id="4593212453765072419">Պահանջվում է պրոքսի սերվերի նույնականացում</translation>
 <translation id="4594021849294327751">Ստեղծել գրադարձում</translation>
+<translation id="4594541568452132351">Ընտրեք գրադարձման լեզուն և ներբեռնեք մոդելը</translation>
 <translation id="4607282946861182308">Այս հարցումով հնարավոր չէ պատկեր ստեղծել։ Փորձեք այլ հարցում կատարել։</translation>
 <translation id="4609350030397390689">Ստեղնաշարի պայծառության նվազեցում</translation>
 <translation id="4623061655523261501">Ձայնագրությունների անվանումները ստեղծվեցին</translation>
@@ -750,6 +757,7 @@
 <translation id="4665014895760275686">Արտադրող</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="467715984478005772">Հնարավոր է, որ հրապատ կա</translation>
+<translation id="4678534708181186163">Հնարավոր չէ ամփոփել։ Փորձեք ավելի կարճ գրադարձում։</translation>
 <translation id="4683762547447150570">Հպեք կոճակին՝ ստեղների նշանակմանն անցնելու համար</translation>
 <translation id="4691278870498629773">Դադարեցվել է – Դարակը բացակայում է</translation>
 <translation id="469379815867856270">Ազդանշանի հզորությունը</translation>
@@ -852,6 +860,7 @@
 <translation id="5168185087976003268">Մարտկոցի կարգավիճակը</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="517075088756846356">Թարմացումը շարունակելու համար անջատեք հոսանքի լարը ձեր <ph name="DEVICE_NAME" /> սարքից և նորից միացրեք</translation>
+<translation id="5178021559562393163">Հնարավոր չէ ստեղծել անվանումներ։ Փորձեք ավելի կարճ գրադարձում։</translation>
 <translation id="5180108905184566358">բաոբաբի ծառեր</translation>
 <translation id="5180712487038406644">Արտահայտիչ</translation>
 <translation id="5190187232518914472">Վերապրեք լավագույն պահերը։ Ալբոմ ավելացնելու կամ առկա ալբոմներում փոփոխություններ անելու համար անցեք <ph name="LINK_BEGIN" />Google Լուսանկարներ<ph name="LINK_END" />։</translation>
@@ -886,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Ինքնություն</translation>
 <translation id="5317780077021120954">Պահել</translation>
+<translation id="5318310531701770497">Հնարավոր չէ ստեղծել անվանումներ։ Փորձեք ավելի երկար գրադարձում։</translation>
 <translation id="5318334351163689047">Ձախողված TCP հարցումներ</translation>
 <translation id="53196409393069519">Միացնե՞լ գրադարձումը</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -939,6 +949,7 @@
 <translation id="5606865426897221650">Ներդիր</translation>
 <translation id="5613201299517339763">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
+<translation id="5628106863521633649">Հասանելի լեզուներ</translation>
 <translation id="5630438231335788050">բաուհաուս</translation>
 <translation id="5631759159893697722">համառոտ շարադրանք</translation>
 <translation id="5655283760733841251">Ստեղնաշարի պայծառության ավելացում</translation>
@@ -1099,6 +1110,7 @@
 <translation id="6359919876285606596">Այս գործողությունը հնարավոր չէ հետարկվել</translation>
 <translation id="6368342879959028556">Երբ ընտրում եք «Ստեղծել ԱԲ-ի միջոցով», գրեք հատուկ հարցում։ Կամ կարող եք ընտրել «AI պաստառներ», որպեսզի նշեք թեմա և ընտրեք ընդգծված բառեր՝ ձեր AI պաստառն անհատականացնելու համար։</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
+<translation id="6369221585240879141">Հնարավոր չէ ձայնագրված անուններ ստեղծել գրադարձման այս լեզվի համար</translation>
 <translation id="6373461326814131011">ջրավազան</translation>
 <translation id="6379086450106841622">հպէկրան</translation>
 <translation id="6381741036071372448">Փորձարկեք ձեր ստեղնաշարը</translation>
@@ -1263,6 +1275,7 @@
 <translation id="710028965487274708">Սխալ – չհաջողվեց թույլատրել</translation>
 <translation id="7101959270679078188">Թարմացումը շարունակելու համար ապակողպեք <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="7103252855940681301">Սարք <ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
+<translation id="7103793063702494489">Ընտրված լեզուն</translation>
 <translation id="7107255225945990211">Ընտրեք <ph name="PRODUCT_NAME" />-ի բացառիկ պաստառներ</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Փորձեք ավելի ուշ</translation>
@@ -1272,6 +1285,7 @@
 <translation id="7130438335435247835">Մուտքի կետի անվանում (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Անվանումների սերվեր}one{Անվանումների սերվեր}other{Անվանումների սերվերներ}}</translation>
 <translation id="7135814714616751706">Որոնեք դյուրանցումներ</translation>
+<translation id="7138614237884624401">Պարզեցված տեքստ</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
@@ -1693,6 +1707,7 @@
 <translation id="9100765901046053179">Լրացուցիչ կարգավորումներ</translation>
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>
+<translation id="9108856746036501072">Ձայնագրիչը կարող է գրադարձումներ ստեղծել խոսք պարունակող ձայնագրությունների համար։ Հաջորդիվ դուք պետք է ընտրեք գրադարձման լեզուն և ներբեռնեք մոդելը (մինչև 100 ՄԲ)։</translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
 <translation id="9122492456897874028">Ամփոփեք բովանդակությունը, ստացեք սահմանումներ և ավելին</translation>
 <translation id="9122602430962285795">Նորից միանալու համար անցեք Կարգավորումներ</translation>

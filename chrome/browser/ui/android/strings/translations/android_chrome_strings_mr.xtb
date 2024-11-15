@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">पासवर्ड हटवा</translation>
 <translation id="1521774566618522728">आज ॲक्टिव्ह होते</translation>
 <translation id="153446405401665083">Chrome ची नवीन आवृत्ती उपलब्ध आहे</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{१ बुकमार्क फक्त या डिव्हाइसवर सेव्ह केला आहे. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="ACCOUNT_EMAIL" /> या Google खाते मध्ये सेव्ह करा.}other{# बुकमार्क फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="ACCOUNT_EMAIL" /> या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="1544084554881119930">पेमेंट पद्धती आणि पत्ते एन्क्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.
 फक्त तुमचा पासफ्रेझ असलेली कोणतीही व्यक्ती तुमचा एन्क्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेझ Google कडे पाठवला किंवा त्याद्वारे स्टोअर केलेला नाही. तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="1544826120773021464">तुमचे Google खाते व्यवस्थापित करण्यासाठी, "खाते व्यवस्थापित करा" बटणावर टॅप करा</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वापरा</translation>
 <translation id="160275202205869636">सुरू असेल, तेव्हा Google खाते मधील डेटा वापरा आणि सेव्ह करा. बंद असेल, तेव्हा डेटा फक्त या डिव्हाइसमध्ये सेव्ह केला जातो.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 निवडलेला आयटम काढून टाका}other{# निवडलेले आयटम काढून टाका}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{१ बुकमार्क आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="ACCOUNT_EMAIL" /> या Google खाते मध्ये सेव्ह करा.}other{# बुकमार्क आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="ACCOUNT_EMAIL" /> या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
 <translation id="164269334534774161">तुम्ही <ph name="CREATION_TIME" /> पासून या पेजची ऑफलाइन प्रत पाहत आहात</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -590,7 +592,6 @@
 <translation id="379035798868314833">Google Password Manager या डिव्हाइसवर काम करणे थांबवेल</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{एक टॅब}other{# टॅब}}</translation>
 <translation id="3795154175078851242">लिंकसह इमेज कॉपी करा</translation>
-<translation id="3810838688059735925">व्हिडिओ</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
 <translation id="381861209280417772">पासवर्ड हटवा</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटविले</translation>
@@ -802,6 +803,7 @@
 <translation id="4769632191812288342">तुम्हाला साधारण संरक्षण मिळत आहे</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> हटवला</translation>
 <translation id="4778653490315793244">अद्याप दाखवण्यासाठी काहीही नाही</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> हे तुमचे डीफॉल्ट शोध इंजीन आहे</translation>
 <translation id="4787736314074622408">तुम्हाला <ph name="ITEM_TITLE" /> का हटवायची आहे?</translation>
 <translation id="4793679854893018356">Chrome तुम्हाला सुरक्षित कसे ठेवते याबद्दल जाणून घ्या</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1010,6 @@
 <translation id="5763514718066511291">या ॲपची URL कॉपी करण्यासाठी टॅप करा</translation>
 <translation id="5765517223145864268">तुमच्या अनुभवाबद्दल आम्हाला सांगा. किंवा <ph name="BEGIN_LINK" />तुमची सेटिंग्ज बदलणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="5765780083710877561">वर्णन:</translation>
-<translation id="5767013862801005129"><ph name="TAB_TITLE" /> टॅब रिस्टोअर केला</translation>
 <translation id="5776970333778123608">महत्त्वाचा नसलेला डेटा</translation>
 <translation id="5780792035410621042">पासवर्ड कॉपी करण्यासाठी, सर्वप्रथम तुमच्या डिव्हाइसवर स्क्रीन लॉक सेट करा</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> पैकी <ph name="SPACE_USED" /> वापरत आहे</translation>
@@ -1092,6 +1093,7 @@
 <translation id="6140912465461743537">देश/प्रदेश</translation>
 <translation id="6142183503755612900">तुम्ही तुमचे डीफॉल्ट शोध इंजीन सेटिंग्जमध्ये कधीही बदलू शकता</translation>
 <translation id="6143892791267458416">\u0020आणि <ph name="DAYS_ARCHIVED" /> दिवसांनंतर बंद केले जातात</translation>
+<translation id="6146563240635539929">व्हिडिओ</translation>
 <translation id="614890671148262506">या साइटवरील सूचनांना नेहमी अनुमती द्या</translation>
 <translation id="6150320133806434356">बुकमार्क सेव्ह केला</translation>
 <translation id="6150706324143004339">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी Chrome अपडेट करा</translation>
@@ -1478,7 +1480,6 @@
 <translation id="777637629667389858">तुम्ही साइन इन केलेले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करते.</translation>
 <translation id="7778840695157240389">नवीन बातम्यांसाठी नंतर पुन्हा भेट द्या</translation>
 <translation id="7791543448312431591">जोडा</translation>
-<translation id="7798392620021911922"><ph name="TAB_COUNT" /> टॅब रिस्टोअर केले</translation>
 <translation id="780287761701992588">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि बरेच काही मिळवा</translation>
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7808889146555843082">हा पासवर्ड हटवल्यामुळे तुमचे <ph name="SITE" /> वरील खाते हटवले जाणार नाही. तुमचे खाते इतरांपासून सुरक्षित ठेवण्यासाठी, त्‍याचा <ph name="SITE" /> वरील पासवर्ड बदला किंवा तुमचे त्‍यावरील खाते हटवा.</translation>

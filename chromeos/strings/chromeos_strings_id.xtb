@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1191518099344003522">APN diaktifkan.</translation>
 <translation id="1195447618553298278">Kesalahan tak dikenal.</translation>
+<translation id="1196264380943975940">Tidak dapat meringkas. Coba transkrip yang lebih panjang.</translation>
 <translation id="1196959502276349371">Versi <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Putar/Jeda</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">Menu edit dan hapus</translation>
 <translation id="2597774443162333062">File akan dikirim ke Google untuk proses debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
+<translation id="261322795497077164">Identifikasi pembicara</translation>
 <translation id="2617397783536231890">kapas</translation>
 <translation id="2618015542787108131">bukit pasir</translation>
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
@@ -442,6 +444,7 @@
 <translation id="3140130301071865159">salju</translation>
 <translation id="3146655726035122603">Eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data seluler</translation>
+<translation id="3153094818810437149">Anda dapat mengubahnya nanti di setelan Perekam Suara</translation>
 <translation id="3156511682997763015">Maju 10 detik</translation>
 <translation id="3156846309055100599">Memindai halaman <ph name="PAGE_NUMBER" /> ...</translation>
 <translation id="315738237743207937">Captive portal terdeteksi</translation>
@@ -565,6 +568,7 @@
 <translation id="3785643128701396311">seni piksel</translation>
 <translation id="3799381533888781854">NONAKTIF - Setelan ini dikelola oleh administrator Anda.</translation>
 <translation id="380097101658023925">kontrol RGB</translation>
+<translation id="380493988330050229">Tidak dapat membuat ringkasan untuk bahasa transkrip ini</translation>
 <translation id="38114475217616659">Hapus semua histori</translation>
 <translation id="3820172043799983114">PIN tidak valid.</translation>
 <translation id="382043424867370667">Wallpaper Matahari terbenam</translation>
@@ -737,6 +741,7 @@
 <translation id="458794348635939462">Gagal me-resolve semua host</translation>
 <translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
+<translation id="4594541568452132351">Pilih bahasa transkripsi dan download model</translation>
 <translation id="4607282946861182308">Tidak dapat membuat gambar ini. Coba perintah lain.</translation>
 <translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
 <translation id="4623061655523261501">Nama rekaman berhasil dibuat</translation>
@@ -752,6 +757,7 @@
 <translation id="4665014895760275686">Produsen</translation>
 <translation id="467510802200863975">Sandi tidak cocok</translation>
 <translation id="467715984478005772">Firewall dicurigai</translation>
+<translation id="4678534708181186163">Tidak dapat meringkas. Coba transkrip yang lebih singkat.</translation>
 <translation id="4683762547447150570">Ketuk tombol untuk memfokuskan pada penetapan tombol</translation>
 <translation id="4691278870498629773">Dihentikan - Tidak ada baki</translation>
 <translation id="469379815867856270">Kekuatan Sinyal</translation>
@@ -854,6 +860,7 @@
 <translation id="5168185087976003268">Kesehatan baterai</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="517075088756846356">Cabut dan colokkan kembali kabel daya <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
+<translation id="5178021559562393163">Tidak dapat membuat nama. Coba transkrip yang lebih singkat.</translation>
 <translation id="5180108905184566358">pohon baobab</translation>
 <translation id="5180712487038406644">Ekspresif</translation>
 <translation id="5190187232518914472">Hidupkan kembali memori favorit Anda. Untuk menambahkan atau mengedit album, buka <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
@@ -888,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">identitas</translation>
 <translation id="5317780077021120954">Simpan</translation>
+<translation id="5318310531701770497">Tidak dapat membuat nama. Coba transkrip yang lebih panjang.</translation>
 <translation id="5318334351163689047">Kegagalan permintaan TCP</translation>
 <translation id="53196409393069519">Aktifkan transkripsi?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1102,6 +1110,7 @@
 <translation id="6359919876285606596">Tindakan ini bersifat permanen dan tidak dapat diurungkan</translation>
 <translation id="6368342879959028556">Saat Anda memilih "Buat dengan AI", tulis perintah kustom. Atau, Anda dapat memilih "Wallpaper AI", untuk memilih tema, lalu memilih kata yang digarisbawahi untuk mempersonalisasi wallpaper AI Anda.</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
+<translation id="6369221585240879141">Tidak dapat membuat nama rekaman untuk bahasa transkrip ini</translation>
 <translation id="6373461326814131011">kolam</translation>
 <translation id="6379086450106841622">Layar sentuh</translation>
 <translation id="6381741036071372448">Uji keyboard Anda</translation>
@@ -1276,6 +1285,7 @@
 <translation id="7130438335435247835">Nama poin akses (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server nama}other{Server nama}}</translation>
 <translation id="7135814714616751706">Telusuri pintasan</translation>
+<translation id="7138614237884624401">Teks yang disederhanakan</translation>
 <translation id="7141470099673912333">Transfer Konten</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
@@ -1697,6 +1707,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="9100765901046053179">Setelan lanjutan</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Perekam Suara dapat membuat transkripsi untuk rekaman yang berisi ucapan. Pada langkah berikutnya, Anda harus memilih bahasa transkripsi dan mendownload model (hingga 100 MB).</translation>
 <translation id="9111102763498581341">Buka kunci</translation>
 <translation id="9122492456897874028">Meringkas konten, menemukan definisi, dan lainnya</translation>
 <translation id="9122602430962285795">Untuk menghubungkan kembali, buka Setelan</translation>

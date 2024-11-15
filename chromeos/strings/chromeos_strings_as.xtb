@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS ৱেবছাইটলৈ অধিক বিলম্বতা</translation>
 <translation id="361575905210396100">আপোনাৰ মতামতৰ বাবে ধন্যবাদ</translation>
 <translation id="3621072146987826699">হাতী</translation>
+<translation id="3628462041319107639">ট্ৰেন্সক্ৰিপশ্বন মডেল ডাউনল’ড কৰি থকা হৈছে…</translation>
 <translation id="3632040286124154621">ভাল পৰামৰ্শ</translation>
 <translation id="3632579075709132555">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰা</translation>
 <translation id="3639873154908477486">নাম (Aৰ পৰা Zলৈ)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">অমান্য পিন।</translation>
 <translation id="382043424867370667">সূৰ্যাস্তৰ ৱালপেপাৰ</translation>
 <translation id="3824259034819781947">ফাইল সংলগ্ন কৰক</translation>
+<translation id="383586991013681190">ছেটিঙত ট্ৰেন্সক্ৰিপশ্বনৰ ভাষা বাছনি কৰক আৰু ডাউনল’ড কৰক</translation>
 <translation id="3836587210832263413">কেৱল আপুনি বিশ্বাস কৰা এক্সটেনশ্বনসমূহ অন কৰক</translation>
 <translation id="3838338534323494292">নতুন পাছৱৰ্ড</translation>
 <translation id="3845880861638660475">ডায়লগটো বন্ধ কৰিবলৈ <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> টিপক।</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">মিল থকা কোনো ফলাফল নাই</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
+<translation id="4483498983731992167">ট্ৰেন্সক্ৰিপ্ট সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="4486524074141928967">আপোনাক <ph name="TIME" />ত ছাইন আউট কৰোৱা হ’ব</translation>
 <translation id="4500722292849917410">শ্বৰ্টকাট উপলব্ধ নহয়। এটা সংশোধক চাবি (ctrl, alt, shift অথবা <ph name="META_KEY" />) ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4500966230243561393">ইণ্টাৰফে’চৰ ৰং</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ওপৰ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> কী নথকা শ্বৰ্টকাটে কিছুমান এপৰ শ্বৰ্টকাটৰ সৈতে সংঘাত সৃষ্টি কৰিব পাৰে। এই শ্বৰ্টকাটটো ব্যৱহাৰ কৰি থাকিবলৈ এইটোত পুনৰ টিপক অথবা <ph name="KEY" /> কীটো ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">একেধৰণৰ:</translation>
+<translation id="5121677070210013200">ট্ৰেন্সক্ৰিপশ্বন মডেল ডাইনল’ড কৰিব নোৱাৰি। পুনৰ চেষ্টা কৰক বা আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক।</translation>
 <translation id="5130848777448318809">সৰু ঘোঁৰা</translation>
 <translation id="5137451382116112100">সম্পূৰ্ণ</translation>
 <translation id="5140788690559353412">আপুনি নিজৰ বিদ্যালয়ৰ একাউণ্টলৈ এক্সেছ হেৰুওৱালে, আপোনাৰ ওচৰত Gmail, Docs, Slides আৰু অধিকৰ দৰে সহযোগী ইমেইল আৰু Google Driveৰ ফাইলসমূহৰ এক্সেছ আৰু নাথাকিব।</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">বক্তাৰ চিনাক্তকৰণৰ অনুমতি দিয়ক</translation>
 <translation id="7041549558901442110">ডিভাইচটো সংযোগ কৰা হোৱা নাই।</translation>
 <translation id="7046522406494308071">আটাইবোৰ শ্বৰ্টকাট ডিফ'ল্টলৈ ৰিছেট কৰিবনে?</translation>
+<translation id="7049916119678019302">ছেটিঙত ট্ৰেন্সক্ৰিপশ্বনৰ মডেল ডাউনল’ড কৰক</translation>
 <translation id="7058278511608979688">সমাপ্ত কৰি ছেভ কৰক</translation>
 <translation id="7059230779847288458">চাৰ্জ কৰি থকা হৈছে, সম্পূৰ্ণ হ’বলৈ <ph name="TIME_VALUE" /> বাকী</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> কী</translation>

@@ -394,7 +394,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
 <translation id="5947104538377036631">Ярлик Chrome</translation>
 <translation id="5953954252731207958">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував дозвіл "<ph name="PERMISSION" />".</translation>
-<translation id="5971400953982411053">Спливаюча підказка для пошуку в Google Об’єктиві</translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
 <translation id="6014316319780893079">Безпечно переглядайте веб-сторінки й керуйте налаштуваннями завдяки <ph name="BEGIN_LINK" />інструментам від Chrome<ph name="END_LINK" /></translation>
 <translation id="6022659036123304283">Ваш персональний Chrome</translation>
@@ -598,7 +597,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8267953129876836456">Веб-переглядач Chrome знайшов для вас кілька рекомендацій щодо безпеки</translation>
 <translation id="8270775718612349140">Сертифікати, якими керує Chrome</translation>
 <translation id="8286862437124483331">Google Chrome намагається показати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
-<translation id="8290100596633877290">Відбулося аварійне завершення роботи Google Chrome. Перезапустити зараз?</translation>
 <translation id="829923460755755423">Додайте ярлик Google Менеджера паролів</translation>
 <translation id="8313851650939857356">Помилка запуску: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Зберегти як зображення</translation>

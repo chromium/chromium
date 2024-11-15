@@ -78,6 +78,7 @@
 <translation id="228293613124499805">De fleste af de websites, du besøger, gemmer sandsynligvis data på din enhed, ofte for at forbedre din brugeroplevelse ved at gemme de præferencer eller oplysninger, du deler med websitet. Vi anbefaler, at denne indstilling forbliver aktiveret.</translation>
 <translation id="2289270750774289114">Spørg, når et website vil søge efter Bluetooth-enheder i nærheden (anbefalet)</translation>
 <translation id="2315043854645842844">Klientens certifikatvalg understøttes ikke af operativsystemet.</translation>
+<translation id="2356926036049612643">V8-optimering</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2379925928934107488">Anvend Mørkt tema på websites, når Chrome anvender Mørkt tema (når det er muligt)</translation>
 <translation id="2390272837142897736">Zoom in</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Udvidet – klik for at skjule.</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
 <translation id="2588271083332682494">Hold orden med fanegrupper</translation>
+<translation id="2594832159966169099">Administrer V8-sikkerhed</translation>
 <translation id="2597457036804169544">Anvend ikke Mørkt tema på websites</translation>
 <translation id="2606760465469169465">Automatisk verificering</translation>
 <translation id="2621115761605608342">Tillad JavaScript for et bestemt website.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Vælg elementer</translation>
 <translation id="6838525730752203626">Brug Chrome som standard</translation>
 <translation id="6840760312327750441">Du kan gruppere faner ved at holde en fane nede. Træk den derefter oven på en anden fane.</translation>
+<translation id="6851981911629679515">Aktivér yderligere beskyttelse i JavaScript- og WebAssembly-maskinen i Chrome</translation>
 <translation id="6864395892908308021">Denne enhed kan ikke læse NFC</translation>
 <translation id="6870169401250095575">Skjul kortet Sikkerhedstjek</translation>
 <translation id="6900883974539674431">Opret fanegrupper, der automatisk gemmes og opdateres på alle dine enheder</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Ethvert website, du besøger, kan vise dig en hvilken som helst annonce</translation>
 <translation id="8087000398470557479">Dette indhold er fra <ph name="DOMAIN_NAME" />, som leveres af Google.</translation>
 <translation id="8088603949666785339">Flere valgmuligheder i <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Reducerer ydeevnen, men gør V8 mere modstandsdygtig over for angreb</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome begrænser cookies igen fra i morgen}one{Chrome begrænser cookies igen om # dag}other{Chrome begrænser cookies igen om # dage}}</translation>
 <translation id="8116925261070264013">Websites, hvor lyden er slået fra</translation>
 <translation id="8117244575099414087">Når dette er slået til, kan websites anvende din enheds sensorer. Når dette er slået fra, kan websites ikke anvende sensorer.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Vælg et billede</translation>
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>
 <translation id="8801436777607969138">Bloker JavaScript for et bestemt website.</translation>
+<translation id="8801657293260363985">V8 er Chromes JavaScript- og WebAssembly-maskine, der bruges til at forbedre websitets effektivitet</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8805385115381080995">Dette skaber færre afbrydelser, når du bruger nettet, da det er mindre sandsynligt, at et website beder dig om at verificere, at du er en rigtig person</translation>
 <translation id="8816026460808729765">Bloker adgang til sensorer på websites</translation>

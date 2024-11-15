@@ -590,7 +590,6 @@
 <translation id="379035798868314833">Ο Διαχειριστής κωδικών πρόσβασης Google θα σταματήσει να λειτουργεί σε αυτή τη συσκευή</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 καρτέλα}other{# καρτέλες}}</translation>
 <translation id="3795154175078851242">Αντιγραφή εικόνας με σύνδεσμο</translation>
-<translation id="3810838688059735925">Βίντεο</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
 <translation id="381861209280417772">Διαγραφή κωδικών πρόσβασης</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> λήψεις διαγράφηκαν</translation>
@@ -802,6 +801,7 @@
 <translation id="4769632191812288342">Λαμβάνετε βασική προστασία</translation>
 <translation id="4775646243557794597">Διαγράφηκαν δεδομένα για: <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Δεν υπάρχει τίποτα ακόμα για εμφάνιση</translation>
+<translation id="4782929588435725897">Η μηχανή αναζήτησης <ph name="SEARCH_ENGINE" /> είναι η προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="4787736314074622408">Μήπως θέλετε να διαγράψετε το <ph name="ITEM_TITLE" />;</translation>
 <translation id="4793679854893018356">Μάθετε πώς σας προστατεύει το Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@
 <translation id="5763514718066511291">Πατήστε για αντιγραφή του URL για αυτή την εφαρμογή</translation>
 <translation id="5765517223145864268">Μιλήστε μας σχετικά με την εμπειρία σας. Εναλλακτικά, <ph name="BEGIN_LINK" />αλλάξτε τις ρυθμίσεις σας<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Περιγραφή:</translation>
-<translation id="5767013862801005129">Έγινε επαναφορά της καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Μη σημαντικά δεδομένα</translation>
 <translation id="5780792035410621042">Για να αντιγράψετε κωδικούς πρόσβασης, ορίστε πρώτα ένα κλείδωμα οθόνης στη συσκευή σας.</translation>
 <translation id="5793665092639000975">Χρήση <ph name="SPACE_USED" /> από <ph name="SPACE_AVAILABLE" /></translation>
@@ -1040,6 +1039,7 @@
 <translation id="5885378508678660271">Ειδοποιήσεις <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες, επειδή αυτός ο ιστότοπος είναι επικίνδυνος</translation>
 <translation id="5895834791314695851">Οι κωδικοί πρόσβασης ενδέχεται να σταματήσουν να λειτουργούν σύντομα σε αυτή τη συσκευή. Για να συνεχίσετε να χρησιμοποιείτε τους κωδικούς πρόσβασής σας, ενημερώστε τις υπηρεσίες Google Play. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Το φύλλο κλειδιών πρόσβασης έκλεισε</translation>
+<translation id="5907542076239273525">Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5919204609460789179">Ενημερώστε το <ph name="PRODUCT_NAME" /> για να ξεκινήσει ο συγχρονισμός</translation>
 <translation id="5938820472109305350">Προσθήκη ενδιαφέροντος <ph name="INTEREST" /></translation>
@@ -1091,6 +1091,7 @@
 <translation id="6140912465461743537">Χώρα/Περιοχή</translation>
 <translation id="6142183503755612900">Μπορείτε να αλλάξετε την προεπιλογή ανά πάσα στιγμή στις ρυθμίσεις</translation>
 <translation id="6143892791267458416">\u0020και κλείνουν μετά από <ph name="DAYS_ARCHIVED" /> ημέρες</translation>
+<translation id="6146563240635539929">Βίντεο</translation>
 <translation id="614890671148262506">Να επιτρέπονται πάντα οι ειδοποιήσεις από αυτόν τον ιστότοπο</translation>
 <translation id="6150320133806434356">Ο σελιδοδείκτης αποθηκεύτηκε</translation>
 <translation id="6150706324143004339">Για να χρησιμοποιήσετε και να αποθηκεύσετε δεδομένα Chrome στον Λογαριασμό σας Google, ενημερώστε το Chrome</translation>
@@ -1477,7 +1478,6 @@
 <translation id="777637629667389858">Όταν είστε συνδεδεμένοι, σας προστατεύει σε όλες τις υπηρεσίες Google.</translation>
 <translation id="7778840695157240389">Ελέγξτε πάλι αργότερα για νέες ιστορίες</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
-<translation id="7798392620021911922">Έγινε επαναφορά <ph name="TAB_COUNT" /> καρτελών</translation>
 <translation id="780287761701992588">Μεταφορά σελιδοδεικτών, κωδικών πρόσβασης και άλλων δεδομένων σε όλες τις συσκευές σας</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7808889146555843082">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="SITE" />. Αλλάξτε τον κωδικό πρόσβασης ή διαγράψτε τον λογαριασμό σας στον ιστότοπο <ph name="SITE" /> για να τον διατηρήσετε ασφαλή.</translation>

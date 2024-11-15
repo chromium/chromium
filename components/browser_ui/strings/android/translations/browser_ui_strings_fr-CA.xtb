@@ -78,6 +78,7 @@
 <translation id="228293613124499805">La plupart des sites que vous visitez peuvent enregistrer des données sur votre appareil, souvent pour améliorer votre expérience en enregistrant vos préférences ou en fonction de vos interactions avec le site. Nous vous recommandons de conserver ce paramètre activé.</translation>
 <translation id="2289270750774289114">Demander quand un site souhaite rechercher les appareils Bluetooth à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection du certificat client SSL n'est pas prise en charge par le système d'exploitation.</translation>
+<translation id="2356926036049612643">Optimiseur V8</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2379925928934107488">Si possible, appliquer le thème sombre aux sites lorsque Chrome l'utilise</translation>
 <translation id="2390272837142897736">Augmenter le zoom</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Développé : cliquer pour réduire</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
 <translation id="2588271083332682494">Rester organisé avec des groupes d'onglets</translation>
+<translation id="2594832159966169099">Gérer la sécurité V8</translation>
 <translation id="2597457036804169544">Ne pas appliquer le thème sombre aux sites</translation>
 <translation id="2606760465469169465">Vérification automatique</translation>
 <translation id="2621115761605608342">Autoriser JavaScript pour un site en particulier.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
 <translation id="6838525730752203626">Utiliser Chrome par défaut</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, maintenez le doigt sur un onglet, puis faites-le glisser vers un autre.</translation>
+<translation id="6851981911629679515">Activez une protection supplémentaire dans le moteur JavaScript et WebAssembly de Chrome</translation>
 <translation id="6864395892908308021">Cet appareil ne prend pas en charge la technologie CCP</translation>
 <translation id="6870169401250095575">Masquer la carte Vérification de sécurité</translation>
 <translation id="6900883974539674431">Créez des groupes d'onglets qui s'enregistrent et se mettent à jour automatiquement sur tous vos appareils</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Tous les sites que vous visitez peuvent vous suggérer n’importe quelle annonce</translation>
 <translation id="8087000398470557479">Ce contenu provient de <ph name="DOMAIN_NAME" />, fourni par Google.</translation>
 <translation id="8088603949666785339">Plus d'options dans le <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Réduit les performances, mais rend le V8 plus résistant aux attaques</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome limitera à nouveau les témoins demain}one{# jour jusqu'à ce que Chrome limite à nouveau les témoins}other{# jours jusqu'à ce que Chrome limite à nouveau les témoins}}</translation>
 <translation id="8116925261070264013">Désactivés</translation>
 <translation id="8117244575099414087">Lorsque cette option est activée, les sites peuvent utiliser les capteurs de votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser de capteurs.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Sélectionner une image</translation>
 <translation id="8800034312320686233">Le site ne fonctionne pas?</translation>
 <translation id="8801436777607969138">Bloquez JavaScript sur un site en particulier.</translation>
+<translation id="8801657293260363985">V8 est le moteur JavaScript et WebAssembly de Chrome utilisé pour améliorer les performances du site</translation>
 <translation id="8803526663383843427">Lorsque activée</translation>
 <translation id="8805385115381080995">La navigation est plus rapide, car il est moins probable qu'un site vérifie que vous êtes bien une personne réelle</translation>
 <translation id="8816026460808729765">Empêcher les sites d'accéder aux capteurs</translation>

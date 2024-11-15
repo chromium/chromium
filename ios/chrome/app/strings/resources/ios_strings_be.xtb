@@ -729,6 +729,7 @@
 <translation id="4405320213589929829">Праглядайце інфармацыю пра месцы на карце і маршруты, націскаючы на адрасы на вэб-старонках.</translation>
 <translation id="441218095371040430">Выкарыстаць клавіятуру</translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
+<translation id="4430277756566635951">Зараз выбрана: <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
 <translation id="4431224949908513835">Выберыце спосаб аплаты для аўтазапаўнення.</translation>
 <translation id="4442550905108052454">Адкрыйце <ph name="BEGIN_BOLD" />Налады<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">Іншыя варыянты для аб’екта "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
@@ -781,6 +782,7 @@
 <translation id="4645575059429386691">Пад кіраваннем бацькоў</translation>
 <translation id="4647758699119474035">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Памылка Уліковага запісу Google. Адкрыйце меню ўліковага запісу.</translation>
 <translation id="4650125387981512669">Працягнуць як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Хаваць праз 1 хвіліну}one{Хаваць праз {count} хвіліну}few{Хаваць праз {count} хвіліны}many{Хаваць праз {count} хвілін}other{Хаваць праз {count} хвіліны}}</translation>
 <translation id="4652817563047461855">Захоўвайце свае паролі ў бяспецы, будзьце ў курсе ў выпадку іх раскрыцця і атрымлівайце парады, якія дапамогуць вам абараніць сябе ў інтэрнэце. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Захаваць</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1312,6 +1314,7 @@
 <translation id="6943681254152031826">{COUNT,plural, =1{Адсочваць гэту пасылку?}one{Адсочваць {COUNT} пасылку?}few{Адсочваць {COUNT} пасылкі?}many{Адсочваць {COUNT} пасылак?}other{Адсочваць {COUNT} пасылкі?}}</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6950522403736391608">Схаваныя</translation>
+<translation id="6964300328304469089">Зараз выбрана: <ph name="NAME" />, <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
 <translation id="6964760285928603117">Выдаліць з групы</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6973630695168034713">Папкі</translation>
@@ -1512,7 +1515,6 @@
 <translation id="7889910613639381518">Просты і бяспечны доступ праз віджэт "Менеджар пароляў Google".</translation>
 <translation id="7899199123054742721">Пазначыць усе як непрачытаныя</translation>
 <translation id="7911190106180361398">Ваша арганізацыя не дазваляе сінхранізаваць усё.</translation>
-<translation id="7920949005883349320">Прыватнасць і бяспека</translation>
 <translation id="792357691529995513">Праблем не знойдзена</translation>
 <translation id="7925108652071887026">Даныя аўтазапаўнення</translation>
 <translation id="7926975587469166629">Псеўданім карткі</translation>
@@ -1787,6 +1789,7 @@
 <translation id="9032405509996909363">Пацвердзіць выдаленне даных пра работу ў браўзеры</translation>
 <translation id="9034759925968272072">З Уліковага запісу Google вы не выйдзеце. На сайце <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="9039373489628511875">Паласа прапускання</translation>
+<translation id="9042893549633094279">Прыватнасць і бяспека</translation>
 <translation id="9057030985451135243">Даведацца больш пра абагуленыя групы ўкладак</translation>
 <translation id="9057972802061533987">Не ўдалося падпісацца. Нешта пайшло не так.</translation>
 <translation id="9065203028668620118">Змяніць</translation>

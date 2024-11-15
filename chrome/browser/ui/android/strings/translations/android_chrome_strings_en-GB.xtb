@@ -590,7 +590,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="379035798868314833">Google Password Manager will stop working on this device</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="3795154175078851242">Copy image with link</translation>
-<translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Manage</translation>
 <translation id="381861209280417772">Delete passwords</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads deleted</translation>
@@ -802,6 +801,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4769632191812288342">You’re getting standard protection</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> deleted</translation>
 <translation id="4778653490315793244">Nothing to show yet</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> is your default search engine</translation>
 <translation id="4787736314074622408">Do you want to delete <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Learn how Chrome keeps you safe</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5763514718066511291">Tap to copy the URL for this app</translation>
 <translation id="5765517223145864268">Tell us about your experience. Or, <ph name="BEGIN_LINK" />change your settings<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Description:</translation>
-<translation id="5767013862801005129">Restored <ph name="TAB_TITLE" />, tab</translation>
 <translation id="5776970333778123608">Unimportant data</translation>
 <translation id="5780792035410621042">To copy passwords, first set a screen lock on your device</translation>
 <translation id="5793665092639000975">Using <ph name="SPACE_USED" /> of <ph name="SPACE_AVAILABLE" /></translation>
@@ -1040,6 +1039,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome removed these permissions because this site is dangerous</translation>
 <translation id="5895834791314695851">Passwords may stop working soon on this device. To keep using your passwords, update Google Play services. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">No passkeys sheet was closed</translation>
+<translation id="5907542076239273525">Bookmark saved to <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5919204609460789179">Update <ph name="PRODUCT_NAME" /> to start sync</translation>
 <translation id="5938820472109305350">Add <ph name="INTEREST" /></translation>
@@ -1091,6 +1091,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6140912465461743537">Country/Region</translation>
 <translation id="6142183503755612900">You can change your default at any time in settings.</translation>
 <translation id="6143892791267458416">\u0020and closed after <ph name="DAYS_ARCHIVED" /> days</translation>
+<translation id="6146563240635539929">Videos</translation>
 <translation id="614890671148262506">Always allow notifications from this site</translation>
 <translation id="6150320133806434356">Bookmark saved</translation>
 <translation id="6150706324143004339">To use and save Chrome data in your Google Account, update Chrome</translation>
@@ -1477,7 +1478,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="777637629667389858">When you're signed in, protects you across Google services.</translation>
 <translation id="7778840695157240389">Check back later for new stories</translation>
 <translation id="7791543448312431591">Add</translation>
-<translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780287761701992588">Get your bookmarks, passwords and more on all your devices</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7808889146555843082">Deleting this password will not delete your account on <ph name="SITE" />. Change your password or delete your account on <ph name="SITE" /> to keep it safe from others.</translation>

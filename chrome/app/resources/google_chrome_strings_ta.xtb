@@ -394,7 +394,6 @@
 <translation id="5941830788786076944">Google Chrome ஐ இயல்புநிலை உலாவியாக அமை</translation>
 <translation id="5947104538377036631">Chrome ஷார்ட்கட்</translation>
 <translation id="5953954252731207958">இந்தத் தளத்தை நீங்கள் சமீபத்தில் பார்க்கவில்லை. <ph name="PERMISSION" /> அனுமதியை Chrome அகற்றிவிட்டது</translation>
-<translation id="5971400953982411053">Google Lens தேடல் குமிழ்</translation>
 <translation id="6003112304606738118">பதிவிறக்குகிறது... <ph name="HOURS" /> மணிநேரம் மீதமுள்ளது</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromeமின் கருவிகள்<ph name="END_LINK" /> மூலம் பாதுகாப்பாக உலாவலாம், உங்கள் வசமே கட்டுப்பாட்டை வைத்திருக்கலாம்</translation>
 <translation id="6022659036123304283">Chromeமை உங்களுடையதாக்குங்கள்</translation>
@@ -598,7 +597,6 @@
 <translation id="8267953129876836456">நீங்கள் நடவடிக்கை எடுக்க சில பாதுகாப்பு தொடர்பான பரிந்துரைகளை Chrome கண்டறிந்துள்ளது</translation>
 <translation id="8270775718612349140">Chrome நிர்வகிக்கும் சான்றிதழ்கள்</translation>
 <translation id="8286862437124483331">Google Chrome கடவுச்சொற்களைக் காண்பிக்க முயற்சிக்கிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லைத் தட்டச்சு செய்யவும்.</translation>
-<translation id="8290100596633877290">அச்சச்சோ! Google Chrome செயலிழந்தது. இப்போது மீண்டும் தொடங்கவா?</translation>
 <translation id="829923460755755423">Google Password Managerருக்கு ஷார்ட்கட்டைச் சேர்க்கலாம்</translation>
 <translation id="8313851650939857356">துவக்கப் பிழை: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">படமாகச் சேமி</translation>
@@ -624,6 +622,7 @@
 <translation id="852529348814672339">Chromeமை இந்த மொழியில் காட்டு</translation>
 <translation id="8550334526674375523">இந்தப் பணிக் கணக்கிற்கும் உங்கள் தனிப்பட்ட கணக்கிற்கும் எந்தவிதத் தொடர்பும் இல்லை.</translation>
 <translation id="8555465886620020932">சேவைப் பிழை: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="856656450041460113">மொழிப் பட்டியலைத் தேடும்</translation>
 <translation id="8571790202382503603">Chrome சுயவிவரங்களைப் பயன்படுத்தி உங்கள் Chrome தொடர்பான அனைத்தையும் தனித்தனியாக வைத்துக்கொள்ளலாம். இதன்மூலம் வேலை, பொழுதுபோக்கு ஆகியவை தொடர்பான செயல்பாடுகளைத் தனித்தனியாக எளிதில் பிரிக்கலாம்.</translation>
 <translation id="8601359445272098721">புதிது! “திரையை மொழிபெயர்” என்ற பட்டனைத் தேர்ந்தெடுப்பதன் மூலம் திரையில் உள்ள வார்த்தைகளையும் படங்களையும் மொழிபெயர்க்கலாம்</translation>
 <translation id="8614913330719544658">Google Chrome பதிலளிக்கவில்லை. இப்போது மீண்டும் தொடங்கவா?</translation>

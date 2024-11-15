@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Sebagian besar situs yang Anda buka mungkin menyimpan data ke perangkat, sering kali untuk meningkatkan pengalaman Anda dengan menyimpan preferensi atau informasi yang Anda bagikan ke situs. Sebaiknya tetap aktifkan setelan ini.</translation>
 <translation id="2289270750774289114">Tanyakan saat situs ingin menemukan perangkat Bluetooth di sekitar (direkomendasikan)</translation>
 <translation id="2315043854645842844">Pilihan sertifikat sisi klien tidak didukung oleh sistem operasi.</translation>
+<translation id="2356926036049612643">Pengoptimal V8</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2379925928934107488">Terapkan tema gelap ke situs saat Chrome menggunakan tema gelap, jika mungkin</translation>
 <translation id="2390272837142897736">Tambah zoom</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Diperluas - klik untuk menciutkan</translation>
 <translation id="2586657967955657006">Papan klip</translation>
 <translation id="2588271083332682494">Rapikan tab dengan grup tab</translation>
+<translation id="2594832159966169099">Kelola keamanan V8</translation>
 <translation id="2597457036804169544">Jangan terapkan tema gelap ke situs</translation>
 <translation id="2606760465469169465">Verifikasi otomatis</translation>
 <translation id="2621115761605608342">Izinkan JavaScript untuk situs tertentu.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Pilih item</translation>
 <translation id="6838525730752203626">Gunakan Chrome secara Default</translation>
 <translation id="6840760312327750441">Untuk mengelompokkan tab, sentuh lama sebuah tab. Lalu, tarik ke tab lainnya.</translation>
+<translation id="6851981911629679515">Aktifkan perlindungan tambahan di mesin WebAssembly dan JavaScript Chrome</translation>
 <translation id="6864395892908308021">Perangkat ini tidak dapat membaca NFC</translation>
 <translation id="6870169401250095575">Sembunyikan kartu Pemeriksaan Keselamatan</translation>
 <translation id="6900883974539674431">Buat grup tab yang otomatis disimpan dan diperbarui di semua perangkat Anda</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Setiap situs yang Anda buka dapat menampilkan iklan apa pun kepada Anda</translation>
 <translation id="8087000398470557479">Konten ini dari <ph name="DOMAIN_NAME" />, dikirimkan oleh Google.</translation>
 <translation id="8088603949666785339">Opsi lainnya di <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Mengurangi performa tetapi membuat V8 lebih tahan terhadap serangan</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome akan membatasi cookie lagi besok}other{# hari sebelum Chrome membatasi cookie lagi}}</translation>
 <translation id="8116925261070264013">Dinonaktifkan</translation>
 <translation id="8117244575099414087">Jika diaktifkan, situs dapat menggunakan sensor perangkat. Jika dinonaktifkan, situs tidak dapat menggunakan sensor.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Pilih gambar</translation>
 <translation id="8800034312320686233">Situs tidak berfungsi?</translation>
 <translation id="8801436777607969138">Blokir JavaScript untuk situs tertentu.</translation>
+<translation id="8801657293260363985">V8 adalah mesin WebAssembly dan JavaScript Chrome yang digunakan untuk meningkatkan performa situs</translation>
 <translation id="8803526663383843427">Saat aktif</translation>
 <translation id="8805385115381080995">Penjelajahan lebih cepat karena situs cenderung tidak meminta Anda untuk memverifikasi bahwa Anda adalah orang sungguhan</translation>
 <translation id="8816026460808729765">Memblokir situs agar tidak mengakses sensor</translation>

@@ -167,7 +167,6 @@
 <translation id="3161522574479303604">Барлық тіл</translation>
 <translation id="3179665906251668410">Сілтемені Chromium инкогнито терезесінде ашу</translation>
 <translation id="3185330573522821672">Жаңа Chromium профилін реттеңіз.</translation>
-<translation id="3190315855212034486">Chromium жаңылысты. Қазір қайта іске қосу керек пе?</translation>
 <translation id="3224847870593914902">Chromium-нен Google аккаунтын өшіру үшін Chromium-нен "Параметрлер" бетінде шығыңыз.</translation>
 <translation id="3258596308407688501">Chromium өзінің деректер каталогін оқи және оған жаза алмайды:
 
@@ -442,7 +441,6 @@
 <translation id="67706546131546258">Chromium бұл файлды сканерлеуді ұсынады, себебі ол қауіпті болуы мүмкін.</translation>
 <translation id="6779406956731413166">ChromiumOS қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="6831043979455480757">Аудару</translation>
-<translation id="6843464627590537736">"Сурет іздеу" функциясының іздеуге арналған қалқымалы терезесі</translation>
 <translation id="6847869444787758381">Құпия сөздеріңіз ұрланған жағдайда, Chromium бұл туралы хабарлайды.</translation>
 <translation id="684888714667046800">Интернетке қосылу мүмкін емес. Брандмауэр пайдалансаңыз, <ph name="PRODUCT_EXE_NAME" /> өнімінің рұқсат тізімінде екеніне көз жеткізіңіз.</translation>
 <translation id="685279860330610299">Chromium ақпарат түрлерінің көпшілігін түсінеді және үлгілерді автоматты түрде жылдам толтыра алады. <ph name="BEGIN_LINK" />Chrome-ның автотолтыру функциясы<ph name="END_LINK" /> туралы толық ақпарат</translation>

@@ -127,6 +127,7 @@
 <translation id="1513858653616922153">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
 <translation id="1521774566618522728">ഇന്ന് സജീവമായിരുന്നു</translation>
 <translation id="153446405401665083">Chrome-ന്റെ പുതിയ പതിപ്പ് ലഭ്യമാണ്</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 ബുക്ക്‌മാർക്ക് ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ നിങ്ങളുടെ Google Account ആയ <ph name="ACCOUNT_EMAIL" /> എന്നതിൽ ഇത് സംരക്ഷിക്കുക.}other{# ബുക്ക്‌മാർക്കുകൾ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ നിങ്ങളുടെ Google Account ആയ <ph name="ACCOUNT_EMAIL" /> എന്നതിൽ ഇവ സംരക്ഷിക്കുക.}}</translation>
 <translation id="1544084554881119930">പേയ്‌മെന്റ് രീതികളും വിലാസങ്ങളും എൻക്രിപ്റ്റ് ചെയ്യില്ല. Chrome-ൽ നിന്നുള്ള ബ്രൗസിംഗ് ചരിത്രം സമന്വയിപ്പിക്കില്ല.
 നിങ്ങളുടെ പാസ്ഫ്രെയ്‌സ് ഉള്ള ആളുകൾക്ക് മാത്രമേ, എൻക്രിപ്റ്റ് ചെയ്‌ത ഡാറ്റ വായിക്കാൻ കഴിയൂ. Google-ലേക്ക് പാസ്ഫ്രെയ്‌സ് അയയ്ക്കുകയോ സംഭരിക്കുകയോ ചെയ്യുന്നില്ല. നിങ്ങൾ പാസ്ഫ്രെയ്‌സ് മറന്നുപോയെങ്കിലോ ഈ ക്രമീകരണം മാറ്റണമെന്നുണ്ടെങ്കിലോ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ മായ്ക്കുക<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">നിങ്ങളുടെ Google Account മാനേജ് ചെയ്യാൻ, "അക്കൗണ്ട് മാനേജ് ചെയ്യുക" ബട്ടണിൽ ടാപ്പ് ചെയ്യുക</translation>
@@ -142,6 +143,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുക</translation>
 <translation id="160275202205869636">ഓണായിരിക്കുമ്പോൾ, നിങ്ങളുടെ Google Account-ലെ ഡാറ്റ ഉപയോഗിക്കുകയും സംരക്ഷിക്കുകയും ചെയ്യുക. ഓഫായിരിക്കുമ്പോൾ, ഡാറ്റ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{തിരഞ്ഞെടുത്ത ഒരു ഇനം നീക്കംചെയ്യുക}other{തിരഞ്ഞെടുത്ത # ഇനങ്ങൾ നീക്കംചെയ്യുക}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{ഒരു ബുക്ക്‌മാർക്കും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ നിങ്ങളുടെ Google Account ആയ <ph name="ACCOUNT_EMAIL" /> എന്നതിൽ ഇവ സംരക്ഷിക്കുക.}other{# ബുക്ക്‌മാർക്കുകളും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ നിങ്ങളുടെ Google Account ആയ <ph name="ACCOUNT_EMAIL" /> എന്നതിൽ ഇവ സംരക്ഷിക്കുക.}}</translation>
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="164269334534774161">നിങ്ങൾ ഈ പേജിന്റെ <ph name="CREATION_TIME" /> മുതലുള്ള ഓഫ്‌ലൈൻ പകർപ്പാണ് കാണുന്നത്</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
@@ -590,7 +592,6 @@
 <translation id="379035798868314833">ഈ ഉപകരണത്തിൽ Google Password Manager പ്രവർത്തനം നിർത്തും</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ടാബ്}other{# ടാബുകൾ}}</translation>
 <translation id="3795154175078851242">ലിങ്കിനൊപ്പം ചിത്രം പകർത്തുക</translation>
-<translation id="3810838688059735925">വീഡിയോ</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
 <translation id="381861209280417772">പാസ്‌വേഡുകൾ ഇല്ലാതാക്കുക</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ഡൗൺലോഡുകൾ ഇല്ലാതാക്കി</translation>
@@ -802,6 +803,7 @@
 <translation id="4769632191812288342">നിങ്ങൾക്ക് സ്റ്റാൻഡേർഡ് പരിരക്ഷയാണ് ലഭിക്കുന്നത്</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> ഇല്ലാതാക്കി</translation>
 <translation id="4778653490315793244">കാണിക്കാൻ ഇതുവരെയൊന്നുമില്ല</translation>
+<translation id="4782929588435725897">നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിനാണ് <ph name="SEARCH_ENGINE" /></translation>
 <translation id="4787736314074622408">നിങ്ങൾക്ക് <ph name="ITEM_TITLE" /> ഇല്ലാതാക്കണോ?</translation>
 <translation id="4793679854893018356">Chrome നിങ്ങളെ എങ്ങനെ സുരക്ഷിതരായി സൂക്ഷിക്കുന്നുവെന്ന് അറിയുക</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1010,6 @@
 <translation id="5763514718066511291">ഈ ആപ്പിനായുള്ള URL പകർത്താൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5765517223145864268">നിങ്ങളുടെ അനുഭവം ഞങ്ങളോട് പറയൂ. അല്ലെങ്കിൽ <ph name="BEGIN_LINK" />നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">വിവരണം:</translation>
-<translation id="5767013862801005129"><ph name="TAB_TITLE" /> ടാബ് പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="5776970333778123608">പ്രധാനമല്ലാത്ത ഡാറ്റ</translation>
 <translation id="5780792035410621042">പാസ്‌വേഡുകൾ പകർത്താൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ സ്‌ക്രീൻ ലോക്ക് സജ്ജീകരിക്കുക</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> / <ph name="SPACE_AVAILABLE" /> ഉപയോഗിക്കുന്നു</translation>
@@ -1092,6 +1093,7 @@
 <translation id="6140912465461743537">രാജ്യം/പ്രദേശം</translation>
 <translation id="6142183503755612900">നിങ്ങൾക്ക് ഏതുസമയത്തും ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഡിഫോൾട്ട് മാറ്റാം</translation>
 <translation id="6143892791267458416">\u0020<ph name="DAYS_ARCHIVED" /> ദിവസത്തിന് ശേഷം അടയ്ക്കുകയും ചെയ്യും</translation>
+<translation id="6146563240635539929">വീഡിയോകൾ</translation>
 <translation id="614890671148262506">ഈ സൈറ്റിൽ നിന്നുള്ള അറിയിപ്പുകൾ എപ്പോഴും അനുവദിക്കുക</translation>
 <translation id="6150320133806434356">ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു</translation>
 <translation id="6150706324143004339">നിങ്ങളുടെ Google Account-ലെ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും, Chrome അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -1478,7 +1480,6 @@
 <translation id="777637629667389858">സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ, Google സേവനങ്ങളിലുടനീളം നിങ്ങളെ പരിരക്ഷിക്കുന്നു.</translation>
 <translation id="7778840695157240389">പുതിയ സ്‌റ്റോറികൾക്ക് പിന്നീട് വീണ്ടും പരിശോധിക്കൂ</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
-<translation id="7798392620021911922"><ph name="TAB_COUNT" /> ടാബുകൾ പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="780287761701992588">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും നേടുക</translation>
 <translation id="780301667611848630">വേണ്ട</translation>
 <translation id="7808889146555843082">ഈ പാസ്‌വേഡ് ഇല്ലാതാക്കുന്നത് <ph name="SITE" /> -ലെ നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കില്ല. നിങ്ങളുടെ <ph name="SITE" /> -ലെ അക്കൗണ്ട് മറ്റുള്ളവരിൽ നിന്ന് സുരക്ഷിതമായി സൂക്ഷിക്കാൻ അതിന്റെ പാസ്‌വേഡ് മാറ്റുകയോ അത് ഇല്ലാതാക്കുകയോ ചെയ്യുക.</translation>

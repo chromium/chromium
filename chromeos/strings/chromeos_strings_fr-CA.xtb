@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1191518099344003522">Le nom de point d'accès est activé.</translation>
 <translation id="1195447618553298278">Erreur inconnue.</translation>
+<translation id="1196264380943975940">Impossible de résumer. Essayez une transcription plus longue.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Lecture/Mise en pause</translation>
 <translation id="1201402288615127009">Suivant</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
 <translation id="361575905210396100">Merci de vos commentaires</translation>
 <translation id="3621072146987826699">éléphants</translation>
+<translation id="3628462041319107639">Téléchargement du modèle de transcription en cours…</translation>
 <translation id="3632040286124154621">Bonne suggestion</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
 <translation id="3639873154908477486">Nom (de A à Z)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">NIP erroné.</translation>
 <translation id="382043424867370667">Fond d'écran Coucher de soleil</translation>
 <translation id="3824259034819781947">Joindre des fichiers</translation>
+<translation id="383586991013681190">Sélectionnez la langue de transcription et téléchargez-la dans les paramètres</translation>
 <translation id="3836587210832263413">Activez uniquement les extensions auxquelles vous faites confiance</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3845880861638660475">Appuyez sur <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> plus <ph name="ESC_SHORTCUT_START" />Échapp.<ph name="ESC_SHORTCUT_END" /> pour fermer la boîte de dialogue.</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">Aucun résultat correspondant</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
+<translation id="4483498983731992167">Impossible de créer une transcription</translation>
 <translation id="4486524074141928967">Vous serez déconnecté à <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Majuscule ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les mots de passe ne correspondent pas</translation>
 <translation id="467715984478005772">Un pare-feu semble être présent</translation>
+<translation id="4678534708181186163">Impossible de résumer. Essayez une transcription plus courte.</translation>
 <translation id="4683762547447150570">Appuyer sur le bouton pour mettre en évidence l'attribution des touches</translation>
 <translation id="4691278870498629773">Tâche arrêtée : bac manquant</translation>
 <translation id="469379815867856270">Puissance du signal</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">haut</translation>
 <translation id="5107243100836678918">Un raccourci ne comprenant pas la touche de <ph name="META_KEY" /> peut entrer en conflit avec le raccourci de certaines applications. Appuyez à nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci à l'aide de la touche de <ph name="KEY" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Mots de sens similaire :</translation>
+<translation id="5121677070210013200">Impossible de télécharger le modèle de transcription. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="5130848777448318809">poneys</translation>
 <translation id="5137451382116112100">Plein écran</translation>
 <translation id="5140788690559353412">Lorsque vous perdez l'accès à votre compte scolaire, vous n'avez plus accès aux courriels associés ni aux fichiers Google Disque comme Gmail, Documents, Présentations et plus.</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">État de la pile</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="517075088756846356">Débranchez et rebranchez le câble d'alimentation de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
+<translation id="5178021559562393163">Impossible de créer des noms. Essayez une transcription plus courte.</translation>
 <translation id="5180108905184566358">baobabs</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter des albums ou modifier vos albums existants, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
+<translation id="5318310531701770497">Impossible de créer des noms. Essayez une transcription plus longue.</translation>
 <translation id="5318334351163689047">Échecs des demandes TCP</translation>
 <translation id="53196409393069519">Activer la transcription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7040729769968826896">Autoriser l'identification du locuteur</translation>
 <translation id="7041549558901442110">L'appareil n'est pas connecté.</translation>
 <translation id="7046522406494308071">Réinitialiser tous les raccourcis par défaut?</translation>
+<translation id="7049916119678019302">Téléchargez le modèle de transcription dans les paramètres</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">En recharge : <ph name="TIME_VALUE" /> avant que la pile soit rechargée</translation>
 <translation id="7066538517128343186">la touche <ph name="KEY" /></translation>

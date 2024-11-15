@@ -379,6 +379,7 @@ que se instale.</translation>
 <translation id="1262993197422487260">No mostrar el botón para ver la contraseña en la pantalla de acceso o de bloqueo</translation>
 <translation id="1265053460044691532">Permite limitar el tiempo durante el cual un usuario autenticado mediante SAML puede acceder sin conexión.</translation>
 <translation id="1265076559723566171">Configuración de los controles para usuarios de EDU</translation>
+<translation id="1268561791350382977">Permitir Lens Overlay y mejorar los modelos de IA.</translation>
 <translation id="1271811620059192171">Habilitar grupos atómicos de políticas</translation>
 <translation id="127264587838521316">Habilita las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Habilitar la migración de los dispositivos Chromad a la administración de la nube</translation>
@@ -507,6 +508,7 @@ los nombres de host o patrones de nombre de host específicos.</translation>
 
       Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1354280967938151061">Inhabilitar ARC</translation>
+<translation id="1354349503792572661">Forzar el permiso de ejecución de Native Client (NaCl) en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1354424209129232709">Máximo:</translation>
 <translation id="1355050231181289439"> Esta política controla si se habilita la asignación mejorada de combinaciones de teclas internacionales.
       Esta función garantiza que las combinaciones de teclas funcionen de forma consistente con los diseños de teclados internacionales y da de baja las combinaciones de teclas heredadas.
@@ -910,6 +912,7 @@ Si no estableces esta política, no se ejecutará ninguna acción.
 El umbral mínimo es 1 minuto.
 
 La "Entrada del usuario" se define con las APIs del sistema operativo y comprende acciones como mover el mouse o usar el teclado.</translation>
+<translation id="1611144198714227240">Inhabilitar la tarjeta de calendario de Outlook de NTP</translation>
 <translation id="1611394564825535541">Te permite controlar si los usuarios pueden acceder a impresoras no empresariales.
 
       Si estableces la política como verdadera o no la estableces, los usuarios podrán agregar sus propias impresoras, configurarlas y usarlas para imprimir documentos.
@@ -1137,6 +1140,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Los patrones de URL no pueden entrar en conflicto con <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
+<translation id="1754668667300090632">Inhabilitar la tarjeta de archivos de Sharepoint de NTP</translation>
 <translation id="1755310913456007816">Usa la configuración para comprobar la actual revocación en línea</translation>
 <translation id="1760951637494635692">Permite la API de Serial en estos sitios</translation>
 <translation id="1765503534110351026">Esta política dejó de estar disponible; usa <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
@@ -1364,6 +1368,7 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 <translation id="1928355425032308464">Habilitar la entrada de video</translation>
 <translation id="1930094135927166199">Inhabilitar el uso compartido de energía por USB</translation>
 <translation id="1930127294345368978">Cantidad máxima de hojas permitidas para un solo trabajo de impresión</translation>
+<translation id="1931537386635075674">Habilitar la tarjeta de calendario de Outlook de NTP</translation>
 <translation id="1933378685401357864">Imagen de fondo de pantalla</translation>
 <translation id="1935409768874953955">Mantener la recopilación de datos anónimos con URL siempre activada</translation>
 <translation id="1942015922182679826">Habilitar la opción para borrar las contraseñas que no se pueden desencriptar</translation>
@@ -1457,6 +1462,7 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
       Si se establece la política como falsa o no se establece, no se enviará la información.
       Si se establece como verdadera, se informará la zona horaria configurada del dispositivo.</translation>
 <translation id="1990784382342293892">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />".</translation>
+<translation id="1990823660725793326">No permitir que un SharedWorker de URL de BLOB herede un controlador. (comportamiento heredado)</translation>
 <translation id="1995744620192427843">Si estableces la política, no se podrán cargar las páginas web con URLs prohibidas durante la autenticación del usuario (p. ej., en la pantalla de acceso y de bloqueo). Proporciona una lista de patrones de URL donde se especifican las URLs prohibidas. Si no estableces la política, no se prohibirá ninguna URL durante la autenticación. Los patrones de las URLs deben presentar un formato conforme a lo especificado en (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Las excepciones a estos patrones se pueden definir en la política relacionada <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />.
@@ -3690,6 +3696,7 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 
 Si estableces la política, se controlarán los informes de telemetría de sitios web para determinados tipos de datos de telemetría.
 Si no la estableces, no se informarán los datos de telemetría de sitios web.</translation>
+<translation id="3651483357891254380">Permitir Lens Overlay sin mejorar los modelos de IA.</translation>
 <translation id="3652670852519271837">Permite que los sitios soliciten al usuario acceso de lectura a archivos y directorios a través de la API de File System</translation>
 <translation id="3653237928288822292">Ícono del proveedor de búsqueda predeterminado</translation>
 <translation id="3654906736796256792">Permite que se ejecute la zona de pruebas de audio</translation>
@@ -4920,6 +4927,7 @@ Si se configuran esta política y la política PostQuantumKeyAgreementEnabled, e
       Si la inhabilitas o no la estableces, no se podrá navegar en los sitios ni abrir ventanas o pestañas nuevas al mismo tiempo.</translation>
 <translation id="4572577129745420844">No permitir que los usuarios agreguen cuentas de Kerberos</translation>
 <translation id="457430673056611745">Política de configuración para <ph name="PRODUCT_NAME" /> Enterprise Connector OnPrint</translation>
+<translation id="4575789820705765299">Permitir el uso de la API de Translator</translation>
 <translation id="4576760454200781316">Si se habilita, la función de <ph name="PRODUCT_NAME" /> limitará y fusionará de forma drástica los cronómetros de JavaScript de las pestañas en segundo plano; estos no funcionarán más de una vez por minuto después de que una página haya estado en segundo plano durante 5 minutos o más.
 
           Esta función cumple con los estándares web, pero es posible que genere
@@ -5318,6 +5326,14 @@ Si la estableces como falsa, se usará el comportamiento predeterminado.</transl
       Si no estableces esta política, se podrá utilizar el valor predeterminado tanto para usuarios administrados por una empresa como para aquellos no administrados.</translation>
 <translation id="487460824085252184">Migra automáticamente y no solicita el consentimiento del usuario.</translation>
 <translation id="4874982543810021567">Bloquea WebUSB en estos sitios</translation>
+<translation id="4875557601092081492">Esta política ya no está disponible en M132 y se reemplazó por <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />, que proporciona un control más detallado sobre la función. Usa <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> en su lugar.
+
+La función Lens Overlay permite a los usuarios realizar búsquedas en Google interactuando con una captura de pantalla de la página actual que se muestra sobre el contenido web real.
+
+No hay un parámetro de configuración del usuario para controlar esta función. Por lo general, está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
+
+Si estableces la política con el valor "0" (habilitada) o no la estableces, los usuarios podrán acceder a la función.
+Si la estableces con el valor "1" (inhabilitada), la función no estará disponible.</translation>
 <translation id="4876805738539874299">Versión de SSL máxima habilitada</translation>
 <translation id="4877305769899044884">Color predeterminado para la retroiluminación del teclado</translation>
 <translation id="4886138258823889910">Habilitar el proveedor del framework de accesibilidad de <ph name="UIA_NAME" /> del navegador en Windows</translation>
@@ -7611,6 +7627,13 @@ Si inhabilitas la política o no la estableces, la búsqueda de CNAME determinar
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="6431446111529802555">Europa.</translation>
+<translation id="6432641193840355112">Esta política controla la visibilidad de la tarjeta de archivos de SharePoint en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización autorizó el uso de los datos de archivos de SharePoint en el navegador.
+
+En la tarjeta de recomendaciones de archivos de SharePoint, se muestra una lista de archivos recomendados.  Su objetivo es abordar el problema relacionado con el cambio de contexto y mejorar la productividad brindándoles a los usuarios un acceso directo a sus documentos más importantes.
+
+La tarjeta de Microsoft Sharepoint requerirá una configuración adicional del administrador. Si quieres obtener información detallada para conectar la tarjeta de la página Nueva pestaña de Chrome a Sharepoint, consulta el artículo de ayuda.
+
+Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de SharePoint. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de SharePoint si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de SharePoint si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="6433697627431665375">Impedir que se incluyan los datos de <ph name="PRODUCT_NAME" /> en las copias de seguridad</translation>
 <translation id="6436052172226685535">Comportamiento predeterminado de LBS</translation>
 <translation id="6438472072089952201">Cuando es posible, <ph name="PRODUCT_NAME" /> intenta actualizar algunas
@@ -8131,6 +8154,9 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 
       Si estableces el valor "False" para la política, o no la configuras, no se habilitará <ph name="PLUGIN_VM_NAME" /> para este usuario.
       Si estableces el valor "True", se habilitará <ph name="PLUGIN_VM_NAME" /> para el usuario, siempre y cuando lo permitan otras opciones de configuración. Para ejecutar <ph name="PLUGIN_VM_NAME" />, se debe establecer el valor "True" para <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />, y se deben configurar las políticas <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />.</translation>
+<translation id="6741318452269220158">Si estableces la política como verdadera, Native Client podrá seguir ejecutándose aunque esté inhabilitado según el comportamiento predeterminado.
+Si la estableces como falsa o no la estableces, se usará el comportamiento predeterminado.</translation>
+<translation id="6743006196954236593">No permitir Lens Overlay.</translation>
 <translation id="6749641778238480311">Permitir que se llame a las APIs de subApps sin gestos previos del usuario y sin su confirmación.</translation>
 <translation id="6750902920405577210">Lista de los datos de telemetría que se informarán en los eventos de cambio de intensidad de la señal.
 
@@ -8807,6 +8833,7 @@ Nota importante: Es posible que los programas establecidos por esta política no
 
       Si no se establece esta política o se deja en blanco, el usuario podrá establecer cualquier Cuenta de Google como la principal del navegador en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Establecer la longitud mínima del PIN de la pantalla bloqueada</translation>
+<translation id="7232835921904883015">Mostrar la tarjeta de archivo de Sharepoint en la página Nueva pestaña</translation>
 <translation id="7234280155140786597">Nombres de los hosts de mensajería nativa prohibidos (o * para todos)</translation>
 <translation id="723621412149834592">Si estableces la política como <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (valor 2), se rechazará automáticamente el permiso de ubicación de ventanas para todos los sitios de forma predeterminada. Esto limitará la capacidad de los sitios para ver la información sobre las pantallas del dispositivo y utilizarla para abrir y ubicar ventanas o solicitar el modo pantalla completa en pantallas específicas.
 
@@ -9285,6 +9312,7 @@ Si la inhabilitas, se desactivará la configuración de medición de anuncios pa
 Si habilitas esta política o no la estableces, los usuarios podrán activar o desactivar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de medición de anuncios en sus dispositivos.
 
 Para establecer esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
+<translation id="7643824472046534064">Habilitar la tarjeta de archivos de Sharepoint de NTP</translation>
 <translation id="7643883929273267746">Restringir las cuentas visibles en <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Esta política es una activación general de todas las reglas definidas en la política DataLeakPreventionRulesList.
       Si estableces esta política como verdadera, se activará la generación de informes en tiempo real para los eventos de prevención de filtraciones de datos.
@@ -9701,6 +9729,19 @@ Solo desactiva la política si usas una solución de seguridad de endpoint que b
 <translation id="7962093600142350905">Esta política controla si el usuario visualiza las impresoras Privet disponibles en el diálogo de la vista previa de impresión.
       Si habilitas esta política, se mostrarán las impresoras Privet disponibles.
       Si la inhabilitas o no la estableces, no se mostrarán impresoras Privet en la vista previa, ya que ese método de impresión está obsoleto.</translation>
+<translation id="7962516520649791537">En https://w3c.github.io/ServiceWorker/#control-and-use-worker-client,
+los trabajadores deben heredar controladores para la URL de BLOB.  Sin embargo, el código existente
+permite que solo los DedicatedWorkers hereden el controlador. Los SharedWorkers no
+lo heredan.
+
+Si habilitas la política o no la estableces,
+<ph name="PRODUCT_NAME" /> heredará el controlador
+si se usa una URL de BLOB como una URL de SharedWorker.
+
+Si inhabilitas la política, el comportamiento no se alineará con la
+especificación actual.
+
+Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="7969865441622729072">Habilitar todos los sonidos en el Modo sin distracciones.</translation>
 <translation id="7970660709107174905">Configuración de la partición de almacenamiento de terceros</translation>
 <translation id="7972223739742725350">No habilitar la API de Save and Share para el control de terceros de <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -9812,6 +9853,7 @@ también es seguro.</translation>
 <translation id="802776363472387903">El hash SHA-256 de la imagen del <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
+<translation id="8030228699677851043">Alinear el comportamiento de la URL de BLOB de SharedWorker con la especificación</translation>
 <translation id="8031651557770840616">No permitir Generative AI Wallpaper</translation>
 <translation id="8035570672225663428">Habilitar el modelo de carga adaptable para detener el proceso de carga y así extender la duración de la batería</translation>
 <translation id="8036284429246268475">Si habilitas la política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> revise si los nombres de usuario y contraseñas ingresados estuvieron en una filtración.
@@ -10038,6 +10080,13 @@ Esta política se aplica al modo Incógnito. Esto significa que debes habilitar 
 <translation id="8239143983379015783">Forzar la habilitación de la cuota persistente</translation>
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>
 <translation id="8244525275280476362">Demora de recuperación máxima después de invalidar una política</translation>
+<translation id="8244828501034607035">Esta política controla la visibilidad de la tarjeta de Outlook en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización autorizó el uso de los datos del calendario de Outlook en el navegador.
+
+La tarjeta de Outlook muestra el próximo evento de calendario, junto con una vista rápida del resto de las reuniones del día. Su objetivo es abordar el problema relacionado con el cambio de contexto y mejorar la productividad brindándoles a los usuarios un acceso directo a su próxima reunión.
+
+La tarjeta de Microsoft Outlook requerirá una configuración adicional del administrador. Si quieres obtener información detallada para conectar la tarjeta de la página Nueva pestaña de Chrome a Outlook, consulta el artículo de ayuda.
+
+Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Outlook. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="8245574649143980200">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).</translation>
 <translation id="8247143534027746614">Bloquear el acceso a una lista de patrones de URL durante la autenticación</translation>
 <translation id="824818544897669723">Inhabilitar la eliminación del historial de descargas y del navegador</translation>
@@ -10218,6 +10267,17 @@ Para obtener más información sobre las tecnologías heredadas, visita https://
           Si no se configura, no se verá afectado el comportamiento de las políticas más específicas.</translation>
 <translation id="8350643689940867542">Inhabilitar la generación de informes con los datos sobre la política</translation>
 <translation id="835283681355955417">Informar datos sobre los periféricos</translation>
+<translation id="8354001669131263433">A partir de M132, se quitará esta política, junto con las APIs de pantalla completa de video prefijadas.
+
+Si estableces la política como <ph name="ENABLED_VALUE_NAME" />, se podrán usar las APIs de pantalla completa de video prefijadas (p. ej., Video.webkitEnterFullscreen()) desde JavaScript.
+
+Si estableces la política como <ph name="DISABLED_VALUE_NAME" />, no se usarán en JavaScript las APIs de pantalla completa de video prefijadas y solo se quedarán las APIs de pantalla completa estándar (p. ej., Element.requestFullscreen()).
+
+Si estableces la política en <ph name="RUNTIME_ENABLED_VALUE_NAME" />, se permitirá que la marca de función PrefixedFullscreenVideo habilitada para el tiempo de ejecución determine si las APIs de pantalla completa de video prefijadas están disponibles para los sitios web.
+
+Si no estableces la política, el comportamiento predeterminado será <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
+
+Nota: Esta política es una solución temporal para ayudar a dejar de usar las APIs de pantalla completa de webkit prefijadas. M131 es la última versión que tendrá esta política.</translation>
 <translation id="8356953698979920095">Si estableces la política con un valor, se usará ese color de forma predeterminada para la retroiluminación del teclado
 
 del dispositivo durante el acceso del usuario.</translation>
@@ -10669,6 +10729,17 @@ Si no estableces esta política, se habilitarán las optimizaciones de JavaScrip
       Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="8672321184841719703">Versión de destino para las actualizaciones automáticas</translation>
 <translation id="867410340948518937">U2F (segundo factor universal)</translation>
+<translation id="8674130752570077671">La función Lens Overlay permite a los usuarios realizar búsquedas en Google interactuando con una captura de pantalla de la página actual que se muestra sobre el contenido web real. Además, permite a los usuarios realizar búsquedas en Google que tengan en cuenta el contexto de la página actual. Para proporcionar respuestas contextuales, Lens Overlay envía el contenido de la página a Google para responder la consulta del usuario según el contexto de la página en la que se encuentra.
+
+No hay un parámetro de configuración del usuario para controlar esta función. Por lo general, está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
+
+Esto reemplaza la política <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" />, que dejó de estar disponible.
+
+0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que los revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función.</translation>
 <translation id="8676959842615154675">Si habilitas la política, el host de acceso remoto comparará el nombre del usuario local con el que está asociado el host y el nombre de la Cuenta de Google registrado como el propietario del host ("juanperez" si el host le pertenece a "juanperez@ejemplo.com"). No se iniciará el host si el nombre del propietario del host es diferente del nombre del usuario local con el que está asociado el host. Para asociar de forma forzosa la Cuenta de Google del propietario con un dominio específico, utiliza la política con <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Si inhabilitas la política o no la estableces, el host de acceso remoto podrá asociarse a cualquier usuario local.</translation>
@@ -10925,6 +10996,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Los dispositivos nuevos tienen configurada la zona horaria "EE.UU./Pacífico". El formato del valor sigue los nombres de las zonas horarias de la "Base de datos de zona horaria de IANA" (https://en.wikipedia.org/wiki/Tz_database). Si ingresas un valor no válido, se establecerá la política con el formato GMT.
 
       Si no la estableces o ingresas una string vacía, el dispositivo utilizará la zona horaria que esté activa actualmente, pero los usuarios podrán cambiarla.</translation>
+<translation id="8874071621901957187">Mostrar la tarjeta del calendario de Outlook en la página Nueva pestaña</translation>
 <translation id="8875202330803089599">Si estableces la política, los usuarios no podrán omitir las decisiones de seguridad relacionadas con las descargas.
 
       Chrome tiene varios tipos de advertencias de descarga, que pueden desglosarse en las siguientes categorías (puedes obtener más información sobre los veredictos de Navegación segura en https://support.google.com/chrome/?p=ib_download_blocked):
@@ -10979,6 +11051,7 @@ Si la inhabilitas, solo se enviarán datos de hardware estándar.</translation>
 <translation id="8908294717014659003">Te permite establecer si se autoriza que los sitios web tengan acceso a dispositivos de captura de contenido multimedia. El acceso a estos dispositivos puede permitirse de manera predeterminada, o se puede preguntar al usuario cada vez que un sitio web quiera acceder a dispositivos de captura de contenido multimedia.
 
           Si no se establece esta política, se utilizará "PromptOnAccess" y el usuario podrá cambiarla.</translation>
+<translation id="8909400095164640684">Configuración del agregador de búsqueda empresarial</translation>
 <translation id="8911348623012274122">Establecer el límite de memoria para las instancias de Chrome</translation>
 <translation id="8911736066340032670">Informa datos relacionados con la pantalla, como la frecuencia de actualización, y
       con la tarjeta gráfica, como la versión del controlador.
@@ -11392,6 +11465,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="9221827710437832530">Permitir el acceso a la ubicación geográfica en la pantalla de acceso</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>
 <translation id="924557436754151212">Importar las contraseñas guardadas del navegador predeterminado en la primera ejecución</translation>
+<translation id="925379810778921867">Permitir que un SharedWorker de URL de BLOB herede un controlador.</translation>
 <translation id="927384371566552478">Si habilitas la política o no la estableces, los usuarios podrán usar la IU de importación y exportación. Si inhabilitas la política, los usuarios no podrán usar la IU de importación y exportación.</translation>
 <translation id="929549405492388749">Si se establece esta política como verdadera, se forzará la habilitación de la función AppCache, incluso cuando no esté disponible en Chrome de forma predeterminada.
 

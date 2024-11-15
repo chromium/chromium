@@ -166,7 +166,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="3161522574479303604">Semua bahasa</translation>
 <translation id="3179665906251668410">Buka Link di Jendela Sa&amp;maran Chromium</translation>
 <translation id="3185330573522821672">Sesuaikan profil Chromium baru Anda</translation>
-<translation id="3190315855212034486">Aduh! Chromium ngadat. Luncurkan ulang sekarang?</translation>
 <translation id="3224847870593914902">Untuk menghapus Akun Google Anda dari Chromium, logout dari Chromium di halaman Setelan</translation>
 <translation id="3258596308407688501">Chromium tidak dapat membaca dan menulis ke direktori datanya:
 
@@ -441,7 +440,6 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="67706546131546258">Chromium merekomendasikan pemindaian file ini karena file mungkin berbahaya.</translation>
 <translation id="6779406956731413166">ChromiumOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
-<translation id="6843464627590537736">Balon Penelusuran Gambar</translation>
 <translation id="6847869444787758381">Chromium akan memberi tahu jika sandi Anda disusupi</translation>
 <translation id="684888714667046800">Tidak dapat terhubung ke internet. Jika Anda menggunakan firewall, pastikan <ph name="PRODUCT_EXE_NAME" /> tercantum dalam daftar yang diizinkan.</translation>
 <translation id="685279860330610299">Chromium dapat memahami lebih banyak jenis informasi dan mengisi otomatis formulir Anda dengan lebih cepat. Pelajari lebih lanjut <ph name="BEGIN_LINK" />Isi Otomatis Chrome<ph name="END_LINK" /></translation>
@@ -567,6 +565,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8550334526674375523">Profil kerja ini sama sekali terpisah dari profil pribadi Anda.</translation>
 <translation id="8555465886620020932">Error layanan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Anda dapat menyematkan Penelusuran Gambar agar mudah diakses; klik tombol Sematkan di bagian atas panel samping</translation>
+<translation id="856656450041460113">Telusuri daftar bahasa</translation>
 <translation id="8568283329061645092">Chromium dapat memeriksa sandi saat Anda login dengan Akun Google</translation>
 <translation id="8576826849825683917">Beberapa organisasi mengelola Chromium</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>

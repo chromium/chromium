@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1191518099344003522">APN staat aan.</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
+<translation id="1196264380943975940">Kan niet samenvatten. Probeer een langer transcript.</translation>
 <translation id="1196959502276349371">Versie <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Afspelen/Onderbreken</translation>
 <translation id="1201402288615127009">Volgende</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
 <translation id="361575905210396100">Bedankt voor je feedback</translation>
 <translation id="3621072146987826699">olifanten</translation>
+<translation id="3628462041319107639">Transcriptiemodel downloaden…</translation>
 <translation id="3632040286124154621">Goede suggestie</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
 <translation id="3639873154908477486">Naam (van A tot Z)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="382043424867370667">Achtergrond Zonsondergang</translation>
 <translation id="3824259034819781947">Bestanden bijvoegen</translation>
+<translation id="383586991013681190">Selecteer de transcriptietaal en download in Instellingen</translation>
 <translation id="3836587210832263413">Zet alleen extensies aan die je vertrouwt</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
 <translation id="3845880861638660475">Druk op <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> om het dialoogvenster te sluiten.</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">Geen overeenkomende resultaten</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
+<translation id="4483498983731992167">Kan transcript niet maken</translation>
 <translation id="4486524074141928967">Je wordt uitgelogd om <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met een functietoets (Ctrl, Alt, Shift of <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interfacekleur</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">Fabrikant</translation>
 <translation id="467510802200863975">De wachtwoorden komen niet overeen</translation>
 <translation id="467715984478005772">Vermoedelijke firewall</translation>
+<translation id="4678534708181186163">Kan niet samenvatten. Probeer een korter transcript.</translation>
 <translation id="4683762547447150570">Tik op de knop om de focus op de toetstoewijzing te plaatsen</translation>
 <translation id="4691278870498629773">Gestopt: lade ontbreekt</translation>
 <translation id="469379815867856270">Signaalsterkte</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">omhoog</translation>
 <translation id="5107243100836678918">Sneltoets zonder <ph name="META_KEY" />-toets kan conflicteren met de sneltoets van bepaalde apps. Druk opnieuw op deze sneltoets om die te blijven gebruiken of druk op een nieuwe sneltoets met de <ph name="KEY" />-toets. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Vergelijkbaar:</translation>
+<translation id="5121677070210013200">Kan transcriptiemodel niet downloaden. Probeer het nogmaals of start je Chromebook opnieuw op.</translation>
 <translation id="5130848777448318809">pony's</translation>
 <translation id="5137451382116112100">Volledig</translation>
 <translation id="5140788690559353412">Als je de toegang tot je schoolaccount kwijtraakt, heb je ook geen toegang meer tot de bijbehorende e-mail en Google Drive-bestanden, zoals Gmail, Documenten en Presentaties.</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">Batterijconditie</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="517075088756846356">Koppel de stroomkabel van je <ph name="DEVICE_NAME" /> los en sluit deze weer aan om door te gaan met het updateproces</translation>
+<translation id="5178021559562393163">Kan geen namen maken. Probeer een korter transcript.</translation>
 <translation id="5180108905184566358">baobabbomen</translation>
 <translation id="5180712487038406644">Expressief</translation>
 <translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteit</translation>
 <translation id="5317780077021120954">Opslaan</translation>
+<translation id="5318310531701770497">Kan geen namen maken. Probeer een langer transcript.</translation>
 <translation id="5318334351163689047">Mislukte TCP-verzoeken</translation>
 <translation id="53196409393069519">Transcriptie aanzetten?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7040729769968826896">Identificatie van sprekers toestaan</translation>
 <translation id="7041549558901442110">Apparaat is niet verbonden.</translation>
 <translation id="7046522406494308071">Alle sneltoetsen resetten naar standaardinstellingen?</translation>
+<translation id="7049916119678019302">Transcriptiemodel downloaden in Instellingen</translation>
 <translation id="7058278511608979688">Stoppen en opslaan</translation>
 <translation id="7059230779847288458">Opladen, vol over <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186">de <ph name="KEY" />-toets</translation>

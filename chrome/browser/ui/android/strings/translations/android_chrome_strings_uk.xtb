@@ -590,7 +590,6 @@
 <translation id="379035798868314833">Google Менеджер паролів більше не працюватиме на цьому пристрої</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="3795154175078851242">Копіювати зображення з посиланням</translation>
-<translation id="3810838688059735925">Відео</translation>
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="381861209280417772">Видалити паролі</translation>
 <translation id="3819178904835489326">Видалено завантажених файлів: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -802,6 +801,7 @@
 <translation id="4769632191812288342">Ви отримуєте стандартний захист</translation>
 <translation id="4775646243557794597">Дані за <ph name="TIME_PERIOD" /> видалено</translation>
 <translation id="4778653490315793244">Немає контенту</translation>
+<translation id="4782929588435725897">Ваша пошукова система за умовчанням – <ph name="SEARCH_ENGINE" /></translation>
 <translation id="4787736314074622408">Видалити файл "<ph name="ITEM_TITLE" />"?</translation>
 <translation id="4793679854893018356">Дізнайтесь, як Chrome дбає про вашу безпеку</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@
 <translation id="5763514718066511291">Торкніться, щоб скопіювати URL-адресу цього додатка</translation>
 <translation id="5765517223145864268">Поділіться своїми враженнями або <ph name="BEGIN_LINK" />змініть налаштування<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Опис:</translation>
-<translation id="5767013862801005129">Відновлено вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Неважливі дані</translation>
 <translation id="5780792035410621042">Щоб скопіювати паролі, спершу налаштуйте блокування екрана на пристрої</translation>
 <translation id="5793665092639000975">Використано <ph name="SPACE_USED" /> з <ph name="SPACE_AVAILABLE" /></translation>
@@ -1092,6 +1091,7 @@
 <translation id="6140912465461743537">Країна або регіон</translation>
 <translation id="6142183503755612900">Ви можете будь-коли змінити пошукову систему за умовчанням у налаштуваннях</translation>
 <translation id="6143892791267458416">\u0020й закрито через <ph name="DAYS_ARCHIVED" /> дн.</translation>
+<translation id="6146563240635539929">Відео</translation>
 <translation id="614890671148262506">Завжди дозволяти сповіщення з цього сайту</translation>
 <translation id="6150320133806434356">Закладку збережено</translation>
 <translation id="6150706324143004339">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, оновіть Chrome</translation>
@@ -1478,7 +1478,6 @@
 <translation id="777637629667389858">Якщо ви ввійшли в обліковий запис, ця функція захищає вас у всіх сервісах Google.</translation>
 <translation id="7778840695157240389">Повертайтеся пізніше, щоб переглянути останні новини</translation>
 <translation id="7791543448312431591">Додати</translation>
-<translation id="7798392620021911922">Відновлено стільки вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780287761701992588">Отримуйте доступ до своїх закладок, паролів і інших даних на всіх пристроях</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7808889146555843082">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="SITE" /> залишиться. Змініть пароль або видаліть обліковий запис на сайті <ph name="SITE" />, щоб захистити його.</translation>

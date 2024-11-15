@@ -592,7 +592,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="379035798868314833">이 기기에서 Google 비밀번호 관리자 작동이 중지됩니다</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="3795154175078851242">링크가 있는 이미지 복사</translation>
-<translation id="3810838688059735925">동영상</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="381861209280417772">비밀번호 삭제</translation>
 <translation id="3819178904835489326">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 삭제됨</translation>
@@ -706,7 +705,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4355272626458588338">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">안전 정보 한눈에 보기</translation>
-<translation id="4378154925671717803">전화기</translation>
+<translation id="4378154925671717803">전화</translation>
 <translation id="4380055775103003110">이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
 <translation id="4384468725000734951">검색할 때 Sogou 사용</translation>
 <translation id="4387647248986092471">자동차 프로필 잠금 만들기</translation>
@@ -804,6 +803,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4769632191812288342">표준 보호 모드를 사용 중입니다</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> 동안의 데이터 삭제됨</translation>
 <translation id="4778653490315793244">표시할 콘텐츠 없음</translation>
+<translation id="4782929588435725897">기본 검색엔진은 <ph name="SEARCH_ENGINE" />입니다.</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" /> 파일을 삭제하시겠습니까?</translation>
 <translation id="4793679854893018356">Chrome이 사용자를 안전하게 보호하는 방법 알아보기</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1010,7 +1010,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5763514718066511291">탭하여 이 앱의 URL 복사하기</translation>
 <translation id="5765517223145864268">사용 경험에 관해 알려주세요. 아니면 <ph name="BEGIN_LINK" />설정을 변경하세요<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">설명:</translation>
-<translation id="5767013862801005129"><ph name="TAB_TITLE" /> 탭 복원됨</translation>
 <translation id="5776970333778123608">중요하지 않은 데이터</translation>
 <translation id="5780792035410621042">비밀번호를 복사하려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> 중 <ph name="SPACE_USED" /> 사용 중</translation>
@@ -1094,6 +1093,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6140912465461743537">국가/지역</translation>
 <translation id="6142183503755612900">언제든지 설정에서 기본 검색엔진을 변경할 수 있습니다</translation>
 <translation id="6143892791267458416">\u0020<ph name="DAYS_ARCHIVED" />일 후에 닫힙니다</translation>
+<translation id="6146563240635539929">동영상</translation>
 <translation id="614890671148262506">이 사이트의 알림 항상 허용</translation>
 <translation id="6150320133806434356">북마크 저장됨</translation>
 <translation id="6150706324143004339">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 Chrome을 업데이트하세요</translation>
@@ -1480,7 +1480,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="777637629667389858">로그인하면 Google 서비스 전반에서 사용자를 보호합니다.</translation>
 <translation id="7778840695157240389">나중에 다시 새 스토리를 확인하세요.</translation>
 <translation id="7791543448312431591">추가</translation>
-<translation id="7798392620021911922">탭 <ph name="TAB_COUNT" />개를 복원했습니다.</translation>
 <translation id="780287761701992588">모든 기기에 북마크, 비밀번호 등 가져오기</translation>
 <translation id="780301667611848630">사용 안함</translation>
 <translation id="7808889146555843082">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다. 비밀번호를 변경하거나 <ph name="SITE" /> 계정을 삭제하여 보안을 유지하세요.</translation>

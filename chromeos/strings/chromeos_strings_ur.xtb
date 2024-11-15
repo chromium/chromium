@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1191518099344003522">‏APN فعال ہے۔</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
+<translation id="1196264380943975940">خلاصہ نہیں کیا جا سکتا۔ طویل ٹرانسکرپٹ آزمائیں۔</translation>
 <translation id="1196959502276349371">ورژن <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">چلائیں/روکیں</translation>
 <translation id="1201402288615127009">اگلا</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">‏HTTPS ویب سائٹس پر زیادہ تاخیر</translation>
 <translation id="361575905210396100">آپ کے تاثرات کا شکریہ</translation>
 <translation id="3621072146987826699">ہاتھی</translation>
+<translation id="3628462041319107639">ٹرانسکرپشن ماڈل ڈاؤن لوڈ ہو رہا ہے…</translation>
 <translation id="3632040286124154621">اچھی تجویز</translation>
 <translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
 <translation id="3639873154908477486">‏نام (A سے Z)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="382043424867370667">سن سیٹ وال پیپر</translation>
 <translation id="3824259034819781947">فائلز منسلک کریں</translation>
+<translation id="383586991013681190">ٹرانسکرپشن کی زبان منتخب کریں اور ترتیبات میں ڈاؤن لوڈ کریں</translation>
 <translation id="3836587210832263413">صرف ان ایکسٹینشنز کو آن کریں جن پر آپ بھروسہ کرتے ہیں</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
 <translation id="3845880861638660475">‏ڈائیلاگ کو بند کرنے کے لیے <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + ‏<ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> دبائیں۔</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">کوئی مماثل نتیجہ نہیں ہے</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
+<translation id="4483498983731992167">ٹرانسکرپٹ تخلیق نہیں ہو سکتا</translation>
 <translation id="4486524074141928967">آپ <ph name="TIME" /> پر سائن آؤٹ ہو جائیں گے</translation>
 <translation id="4500722292849917410">‏شارٹ کٹ دستیاب نہیں ہے۔ موڈیفائر کلید (ctrl, alt, shift, یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4500966230243561393">انٹرفیس کا رنگ</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">مینوفیکچرر</translation>
 <translation id="467510802200863975">پاس ورڈز مماثل نہیں ہیں</translation>
 <translation id="467715984478005772">فائروال مشکوک ہے</translation>
+<translation id="4678534708181186163">خلاصہ نہیں کیا جا سکتا۔ مختصر ٹرانسکرپٹ آزمائیں۔</translation>
 <translation id="4683762547447150570">کلید تفویض پر توجہ مرکوز کرنے کے لیے بٹن پر تھپتھپائیں</translation>
 <translation id="4691278870498629773">رک گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="469379815867856270">سگنل کی مضبوطی</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">اوپر</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> کی کلید کے بغیر شارٹ کٹ کچھ ایپ کے شارٹ کٹ سے متصادم ہو سکتا ہے۔ اس شارٹ کٹ کا استعمال جاری رکھنے کے لیے اسے دوبارہ دبائیں یا <ph name="KEY" /> کی کلید کا استعمال کرتے ہوئے نیا شارٹ کٹ دبائیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ملتا جلتا:</translation>
+<translation id="5121677070210013200">‏ٹرانسکرپشن ماڈل ڈاؤن لوڈ نہیں ہو سکتا۔ دوبارہ کوشش کریں یا اپنی Chromebook کو ری سٹارٹ کریں۔</translation>
 <translation id="5130848777448318809">پونیز</translation>
 <translation id="5137451382116112100">فُل</translation>
 <translation id="5140788690559353412">‏جب آپ اپنے اسکول اکاؤنٹ تک رسائی کھو دیتے ہیں تو آپ کو متعلقہ ای میل اور Google Drive فائلز جیسے Gmail، Docs، Slides وغیرہ تک مزید رسائی حاصل نہیں ہوگی۔</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">بیٹری کی صحت</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="517075088756846356">اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کے پاور کیبل کو ان پلگ کریں پھر اسے دوبارہ پلک ان کریں</translation>
+<translation id="5178021559562393163">نام تخلیق نہیں کیے جا سکتے۔ مختصر ٹرانسکرپٹ آزمائیں۔</translation>
 <translation id="5180108905184566358">بوباب کے درخت</translation>
 <translation id="5180712487038406644">ایکسپریسو</translation>
 <translation id="5190187232518914472">‏اپنی پسندیدہ میموریز کو دوبارہ زندہ کریں۔ البمز کو شامل یا ان میں ترمیم کرنے کے لیے، <ph name="LINK_BEGIN" />Google تصاویر<ph name="LINK_END" /> پر جائیں۔</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">شناخت</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
+<translation id="5318310531701770497">نام تخلیق نہیں کیے جا سکتے۔ طویل ٹرانسکرپٹ آزمائیں۔</translation>
 <translation id="5318334351163689047">‏TCP درخواست کی ناکامیاں</translation>
 <translation id="53196409393069519">ٹرانسکرپشن آن کریں؟</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@
 <translation id="7040729769968826896">اسپیکر کی شناخت کی اجازت دیں</translation>
 <translation id="7041549558901442110">آلہ منسلک نہیں ہے۔</translation>
 <translation id="7046522406494308071">تمام شارٹ کٹس کو ڈیفالٹس پر ری سیٹ کریں؟</translation>
+<translation id="7049916119678019302">ترتیبات میں ٹرانسکرپشن ماڈل ڈاؤن لوڈ کریں</translation>
 <translation id="7058278511608979688">ختم کریں اور محفوظ کریں</translation>
 <translation id="7059230779847288458">چارج ہو رہا ہے، مکمل ہونے میں <ph name="TIME_VALUE" /> باقی</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> کلید</translation>

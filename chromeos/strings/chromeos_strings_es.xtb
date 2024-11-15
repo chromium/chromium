@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1191518099344003522">El APN está habilitado.</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
+<translation id="1196264380943975940">No se puede resumir. Prueba con una transcripción más larga.</translation>
 <translation id="1196959502276349371">Versión <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reproducir/Pausar</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -759,6 +760,7 @@
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">Las contraseñas no coinciden</translation>
 <translation id="467715984478005772">posible cortafuegos</translation>
+<translation id="4678534708181186163">No se puede resumir. Prueba con una transcripción más corta.</translation>
 <translation id="4683762547447150570">Toca el botón para enfocar la asignación de teclas</translation>
 <translation id="4691278870498629773">Detenido: falta la bandeja</translation>
 <translation id="469379815867856270">Intensidad de la señal</translation>
@@ -862,6 +864,7 @@
 <translation id="5168185087976003268">Salud de la batería</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="517075088756846356">Desconecta y vuelve a conectar el cable de alimentación de tu <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
+<translation id="5178021559562393163">No se pueden crear nombres. Prueba con una transcripción más corta.</translation>
 <translation id="5180108905184566358">baobabs</translation>
 <translation id="5180712487038406644">Colores expresivos</translation>
 <translation id="5190187232518914472">Revive tus recuerdos favoritos. Para añadir o editar álbumes, ve a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
@@ -896,6 +899,7 @@
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Identidad</translation>
 <translation id="5317780077021120954">Guardar</translation>
+<translation id="5318310531701770497">No se pueden crear nombres. Prueba con una transcripción más larga.</translation>
 <translation id="5318334351163689047">Errores de solicitud TCP</translation>
 <translation id="53196409393069519">¿Activar transcripción?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

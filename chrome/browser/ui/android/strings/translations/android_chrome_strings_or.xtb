@@ -590,7 +590,6 @@
 <translation id="379035798868314833">Google Password Manager ଏହି ଡିଭାଇସରେ କାମ କରିବା ବନ୍ଦ କରିଦେବ</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1ଟି ଟାବ୍}other{#ଟି ଟାବ୍}}</translation>
 <translation id="3795154175078851242">ଲିଙ୍କ ସହ ଥିବା ଇମେଜ କପି କରନ୍ତୁ</translation>
-<translation id="3810838688059735925">ଭିଡିଓ</translation>
 <translation id="3810973564298564668">ପରିଚାଳନା</translation>
 <translation id="381861209280417772">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />ଟି ଡାଉନ୍‍‍ଲୋଡ୍ ଡିଲିଟ୍ କରାଯାଇଛି</translation>
@@ -802,6 +801,7 @@
 <translation id="4769632191812288342">ଆପଣ ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା ପାଉଛନ୍ତି</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" />କୁ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="4778653490315793244">ଦେଖାଇବା ପାଇଁ ଏପର୍ଯ୍ୟନ୍ତ କିଛି ନାହିଁ</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> ହେଉଛି ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="4787736314074622408">ଆପଣ <ph name="ITEM_TITLE" />କୁ ଡିଲିଟ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="4793679854893018356">Chrome ଆପଣଙ୍କୁ କିପରି ସୁରକ୍ଷିତ ରଖେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@
 <translation id="5763514718066511291">ଏହି ଆପ୍ ପାଇଁ URL କପି କରିବାକୁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="5765517223145864268">ଆପଣଙ୍କ ଅନୁଭୂତି ବିଷୟରେ ଆମକୁ କୁହନ୍ତୁ। କିମ୍ବା <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ସେଟିଂସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="5765780083710877561">ବିବରଣୀ:</translation>
-<translation id="5767013862801005129"><ph name="TAB_TITLE" /> ଟାବ୍ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="5776970333778123608">ଗୁରୁତ୍ୱହୀନ ଡାଟା</translation>
 <translation id="5780792035410621042">ପାସୱାର୍ଡଗୁଡ଼ିକୁ କପି କରିବା ପାଇଁ, ପ୍ରଥମେ ଆପଣଙ୍କ ଡିଭାଇସରେ ଏକ ସ୍କ୍ରିନ୍ ଲକ୍ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />ର <ph name="SPACE_USED" /> ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
@@ -1040,6 +1039,7 @@
 <translation id="5885378508678660271">ବିଜ୍ଞପ୍ତି <ph name="SEPARATOR" /> ଏହି ସାଇଟ ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
 <translation id="5895834791314695851">ଏହି ଡିଭାଇସରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ଶୀଘ୍ର କାମ କରିବା ବନ୍ଦ କରିପାରେ। ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିବା ପାଇଁ Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">କୌଣସି ପାସକୀ ସିଟ ବନ୍ଦ କରାଯାଇନାହିଁ</translation>
+<translation id="5907542076239273525"><ph name="FOLDER_NAME" />ରେ ବୁକମାର୍କ ସେଭ କରାଯାଇଛି</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5919204609460789179">ସିଙ୍କ ଆରମ୍ଭ କରିବା ପାଇଁ <ph name="PRODUCT_NAME" /> ଅପ୍‍‍ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ଯୋଗ କରନ୍ତୁ</translation>
@@ -1091,6 +1091,7 @@
 <translation id="6140912465461743537">ଦେଶ/ଅଞ୍ଚଳ</translation>
 <translation id="6142183503755612900">ସେଟିଂସରେ ଆପଣ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="6143892791267458416">\u0020ଏବଂ <ph name="DAYS_ARCHIVED" /> ଦିନ ପରେ ବନ୍ଦ ହୋଇଯାଏ</translation>
+<translation id="6146563240635539929">ଭିଡିଓଗୁଡ଼ିକ</translation>
 <translation id="614890671148262506">ଏହି ସାଇଟର ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ସର୍ବଦା ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="6150320133806434356">ବୁକମାର୍କ ସେଭ କରାଯାଇଛି</translation>
 <translation id="6150706324143004339">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ Chromeକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
@@ -1477,7 +1478,6 @@
 <translation id="777637629667389858">ଆପଣ ସାଇନ ଇନ ଥିବା ବେଳେ Google ସେବାଗୁଡ଼ିକରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷା ଦେଇଥାଏ।</translation>
 <translation id="7778840695157240389">ନୂଆ ଷ୍ଟୋରୀଗୁଡ଼ିକ ପାଇଁ ପରେ ପୁଣି ଦେଖନ୍ତୁ</translation>
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
-<translation id="7798392620021911922"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="780287761701992588">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଆନ୍ତୁ</translation>
 <translation id="780301667611848630">ନା, ଧନ୍ୟବାଦ</translation>
 <translation id="7808889146555843082">ଏହି ପାସୱାର୍ଡ ଡିଲିଟ୍ କରିବା ଦ୍ଵାରା <ph name="SITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଡିଲିଟ୍ ହେବ ନାହିଁ। ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ କିମ୍ବା <ph name="SITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ଅନ୍ୟମାନଙ୍କ ଠାରୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଏହାକୁ ଡିଲିଟ୍ କରନ୍ତୁ।</translation>

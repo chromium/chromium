@@ -164,7 +164,6 @@
 <translation id="3161522574479303604">كل اللغات</translation>
 <translation id="3179665906251668410">‏فتح الرابط في نافذة تصفح متخفٍ في Chromium</translation>
 <translation id="3185330573522821672">‏يمكنك الآن تخصيص ملفك الشخصي الجديد على Chromium.</translation>
-<translation id="3190315855212034486">‏للأسف! تعطل Chromium. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="3224847870593914902">‏لإزالة حسابك على Google من Chromium، يجب تسجيل الخروج من Chromium في صفحة "الإعدادات"</translation>
 <translation id="3258596308407688501">‏يتعذر على Chromium القراءة والكتابة في دليل البيانات الخاص به:
 
@@ -439,7 +438,6 @@
 <translation id="67706546131546258">‏ينصح متصفِّح Chromium بفحص هذا الملف لأنّه قد يكون خطيرًا.</translation>
 <translation id="6779406956731413166">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">ترجمة</translation>
-<translation id="6843464627590537736">فقاعة البحث باستخدام ميزة "البحث بالصور"</translation>
 <translation id="6847869444787758381">‏يتم إعلامك من خلال Chromium في حال تم اختراق كلمات المرور في أي وقت.</translation>
 <translation id="684888714667046800">يتعذّر الاتصال بالإنترنت. في حال استخدام جدار حماية، يُرجى التأكّد من إدراج <ph name="PRODUCT_EXE_NAME" /> في القائمة المسموح بها.</translation>
 <translation id="685279860330610299">‏يمكن لمتصفِّح Chromium فهم المزيد من أنواع المعلومات وملء النماذج تلقائيًا بشكل أسرع. مزيد من المعلومات عن <ph name="BEGIN_LINK" />ميزة "الملء التلقائي" في Chrome<ph name="END_LINK" /></translation>
@@ -565,6 +563,7 @@
 <translation id="8550334526674375523">هذا ملف العمل منفصِل تمامًا عن ملفك الشخصي.</translation>
 <translation id="8555465886620020932">حدث خطأ في الخدمة: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">يمكنك تثبيت ميزة "البحث بالصور" للوصول إليها بسهولة من خلال النقر على الزر "تثبيت" في أعلى اللوحة الجانبية</translation>
+<translation id="856656450041460113">البحث في قائمة اللغات</translation>
 <translation id="8568283329061645092">‏لا يستطيع Chromium التحقّق من كلمات المرور إلا عند تسجيل الدخول باستخدام حسابك على Google.</translation>
 <translation id="8576826849825683917">‏تدير مؤسسات متعدّدة متصفِّح Chromium</translation>
 <translation id="8586442755830160949">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح The Chromium Authors. جميع الحقوق محفوظة.</translation>

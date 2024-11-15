@@ -590,7 +590,6 @@
 <translation id="379035798868314833">Google Password Manager ќе престане да функционира на уредов</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>
 <translation id="3795154175078851242">Копирај ја сликата со линк</translation>
-<translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="381861209280417772">Избриши ги лозинките</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> преземања се избришани</translation>
@@ -802,6 +801,7 @@
 <translation id="4769632191812288342">Ќе добиете стандардна заштита</translation>
 <translation id="4775646243557794597">Избришано: <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Сѐ уште нема што да се прикаже</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> е вашиот стандарден пребарувач</translation>
 <translation id="4787736314074622408">Сакате да се избрише <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Дознајте како Chrome ве штити</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@
 <translation id="5763514718066511291">Допрете за да ја копирате URL-адресата за апликацијава</translation>
 <translation id="5765517223145864268">Кажете ни за вашето доживување. Може и да ги <ph name="BEGIN_LINK" />промените поставките<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Опис:</translation>
-<translation id="5767013862801005129">Вратена е картичката „<ph name="TAB_TITLE" />“</translation>
 <translation id="5776970333778123608">Неважни податоци</translation>
 <translation id="5780792035410621042">За да ги копирате лозинките, прво поставете заклучување екран на уредот</translation>
 <translation id="5793665092639000975">Искористен простор: <ph name="SPACE_USED" /> од <ph name="SPACE_AVAILABLE" /></translation>
@@ -1040,6 +1039,7 @@
 <translation id="5885378508678660271">Известувања <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве бидејќи сајтов е опасен</translation>
 <translation id="5895834791314695851">Лозинките можеби ќе престанат да функционираат на уредов наскоро. За да продолжите да ги користите лозинките, ажурирајте ја „Услуги на Google Play“. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Нема лист со криптографски клучеви што е затворен</translation>
+<translation id="5907542076239273525">Обележувачот е зачуван во „<ph name="FOLDER_NAME" />“</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5919204609460789179">Ажурирајте го <ph name="PRODUCT_NAME" /> за да започнете со синхронизирање</translation>
 <translation id="5938820472109305350">Додајте <ph name="INTEREST" /></translation>
@@ -1091,6 +1091,7 @@
 <translation id="6140912465461743537">Држава/регион</translation>
 <translation id="6142183503755612900">Вашиот стандарден пребарувач може да го промените во поставките кога сакате</translation>
 <translation id="6143892791267458416">а ќе се затворат по <ph name="DAYS_ARCHIVED" /> дена</translation>
+<translation id="6146563240635539929">Видеа</translation>
 <translation id="614890671148262506">Секогаш дозволувај известувања од сајтов</translation>
 <translation id="6150320133806434356">Обележувачот е зачуван</translation>
 <translation id="6150706324143004339">За да користите и зачувувате податоци од Chrome во вашата сметка на Google, ажурирајте го Chrome</translation>
@@ -1477,7 +1478,6 @@
 <translation id="777637629667389858">Кога сте најавени, ве штити на услугите на Google.</translation>
 <translation id="7778840695157240389">Проверете подоцна дали има нови статии</translation>
 <translation id="7791543448312431591">Додај</translation>
-<translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780287761701992588">Добијте ги обележувачите, лозинките и друго на сите ваши уреди</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7808889146555843082">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" />. Променете ја лозинката или избришете ја сметката на <ph name="SITE" /> за да ја заштитите од другите.</translation>

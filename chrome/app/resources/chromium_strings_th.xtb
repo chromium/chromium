@@ -165,7 +165,6 @@
 <translation id="3161522574479303604">ทุกภาษา</translation>
 <translation id="3179665906251668410">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
 <translation id="3185330573522821672">ปรับแต่งโปรไฟล์ Chromium ใหม่</translation>
-<translation id="3190315855212034486">อ้าว! Chromium ขัดข้อง เปิดใหม่ตอนนี้หรือไม่</translation>
 <translation id="3224847870593914902">หากต้องการนำบัญชี Google ออกจาก Chromium ให้ออกจากระบบ Chromium ในหน้าการตั้งค่า</translation>
 <translation id="3258596308407688501">Google Chrome ไม่สามารถอ่านและเขียนข้อมูลในไดเรกทอรีข้อมูล:
 
@@ -440,7 +439,6 @@
 <translation id="67706546131546258">Chromium แนะนำให้สแกนไฟล์นี้เนื่องจากอาจเป็นอันตราย</translation>
 <translation id="6779406956731413166">Chromium OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
-<translation id="6843464627590537736">ลูกโป่งการค้นหาด้วยฟีเจอร์ค้นหารูปภาพ</translation>
 <translation id="6847869444787758381">Chromium จะแจ้งให้ทราบหากมีคนล่วงรู้รหัสผ่านของคุณ</translation>
 <translation id="684888714667046800">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ หากคุณใช้ไฟร์วอลล์ โปรดตรวจสอบว่า <ph name="PRODUCT_EXE_NAME" /> อยู่ในรายการที่อนุญาต</translation>
 <translation id="685279860330610299">Chromium สามารถเข้าใจข้อมูลได้หลากหลายประเภทและป้อนข้อความอัตโนมัติในแบบฟอร์มได้เร็วขึ้น ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />การป้อนข้อความอัตโนมัติของ Chrome<ph name="END_LINK" /></translation>

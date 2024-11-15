@@ -165,7 +165,6 @@
 <translation id="3161522574479303604">सभी भाषाएं</translation>
 <translation id="3179665906251668410">क्रोमियम गु&amp;प्त विंडो में लिंक खोलें</translation>
 <translation id="3185330573522821672">अपनी नई Chromium प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
-<translation id="3190315855212034486">ओह! क्रोमियम क्रैश हुआ. अभी फिर से लॉन्‍च करें?</translation>
 <translation id="3224847870593914902">Chromium से अपना Google खाता हटाने के लिए, सेटिंग पेज पर जाकर Chromium से साइन आउट करें</translation>
 <translation id="3258596308407688501">क्रोमियम इसकी डेटा निर्देशिका में पढ़ या लिख नहीं सकता:
 
@@ -440,7 +439,6 @@
 <translation id="67706546131546258">Chromium इस फ़ाइल को स्कैन करने का सुझाव देता है, क्योंकि यह खतरनाक हो सकती है.</translation>
 <translation id="6779406956731413166">ChromiumOS को अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_CROS_OSS" /> की मदद से बनाया गया है.</translation>
 <translation id="6831043979455480757">Translate</translation>
-<translation id="6843464627590537736">इमेज सर्च वाला सर्च बबल</translation>
 <translation id="6847869444787758381">'क्रोमियम' यह बताता है कि कहीं आपके पासवर्ड का गलत इस्तेमाल तो नहीं किया गया है</translation>
 <translation id="684888714667046800">इंटरनेट से कनेक्ट नहीं किया जा सका. अगर आपने फ़ायरवॉल का इस्तेमाल किया है, तो कृपया पक्का करें कि <ph name="PRODUCT_EXE_NAME" /> को अनुमति वाली सूची में शामिल किया गया हो.</translation>
 <translation id="685279860330610299">Chromium, कई तरह की जानकारी को समझ सकता है और आपके फ़ॉर्म को तेज़ी से ऑटोमैटिक भर सकता है. <ph name="BEGIN_LINK" />जानकारी को ऑटोमैटिक भरने की Chrome की सुविधा<ph name="END_LINK" /> के बारे में ज़्यादा जानें</translation>
@@ -566,6 +564,7 @@
 <translation id="8550334526674375523">यह वर्क प्रोफ़ाइल आपकी निजी प्रोफ़ाइल से पूरी तरह अलग है.</translation>
 <translation id="8555465886620020932">सेवा में गड़बड़ी: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">आसानी से ऐक्सेस करने के लिए, 'इमेज सर्च' सुविधा को पिन किया जा सकता है. ऐसा करने के लिए, साइड पैनल के सबसे ऊपर मौजूद 'पिन करें' बटन पर क्लिक करें</translation>
+<translation id="856656450041460113">भाषाओं की सूची में खोजें</translation>
 <translation id="8568283329061645092">आप जब अपने Google खाते से साइन इन करते हैं, तब क्रोमियम आपके पासवर्ड की जांच कर सकता है</translation>
 <translation id="8576826849825683917">Chromium को कई संगठन मैनेज करते हैं</translation>
 <translation id="8586442755830160949">कॉपीराइट <ph name="YEAR" /> The Chromium Authors. सर्वाधिकार सुरक्षित.</translation>

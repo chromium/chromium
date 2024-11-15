@@ -78,6 +78,7 @@
 <translation id="228293613124499805">La maggior parte dei siti che visiti probabilmente salva dati sul dispositivo, spesso per migliorare la tua esperienza salvando le tue preferenze o le informazioni che condividi con i siti stessi. Ti consigliamo di mantenere questa impostazione attiva.</translation>
 <translation id="2289270750774289114">Chiedi conferma quando un sito vuole rilevare i dispositivi Bluetooth nelle vicinanze (opzione consigliata)</translation>
 <translation id="2315043854645842844">La selezione del certificato lato client non è supportata dal sistema operativo.</translation>
+<translation id="2356926036049612643">Strumento di ottimizzazione V8</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2379925928934107488">Applica il tema scuro ai siti quando viene usato in Chrome, se possibile</translation>
 <translation id="2390272837142897736">Aumenta lo zoom</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Espanso. Fai clic per comprimere.</translation>
 <translation id="2586657967955657006">Appunti</translation>
 <translation id="2588271083332682494">Organizza con i gruppi di schede</translation>
+<translation id="2594832159966169099">Gestisci la sicurezza di V8</translation>
 <translation id="2597457036804169544">Non applicare il tema scuro ai siti</translation>
 <translation id="2606760465469169465">Verifica automatica</translation>
 <translation id="2621115761605608342">Consenti JavaScript per un sito specifico.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Seleziona elementi</translation>
 <translation id="6838525730752203626">Usa Chrome per impostazione predefinita</translation>
 <translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
+<translation id="6851981911629679515">Attiva la protezione aggiuntiva nel motore JavaScript e WebAssembly di Chrome</translation>
 <translation id="6864395892908308021">Questo dispositivo non può leggere la tecnologia NFC</translation>
 <translation id="6870169401250095575">Nascondi scheda Controllo di sicurezza</translation>
 <translation id="6900883974539674431">Crea gruppi di schede che vengono salvati e aggiornati automaticamente su tutti i tuoi dispositivi</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Qualsiasi sito visitato può mostrarti qualsiasi annuncio</translation>
 <translation id="8087000398470557479">Questi contenuti derivano da <ph name="DOMAIN_NAME" /> e sono offerti da Google.</translation>
 <translation id="8088603949666785339">Altre opzioni in <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Riduce le prestazioni, ma rende V8 più resistente agli attacchi</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome limiterà nuovamente i cookie domani}other{# giorni al nuovo limite dei cookie in Chrome}}</translation>
 <translation id="8116925261070264013">Con audio disattivato</translation>
 <translation id="8117244575099414087">Quando l'opzione è attiva, i siti possono usare i sensori del dispositivo. Quando l'opzione è disattivata, i siti non possono utilizzare i sensori.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Seleziona un'immagine</translation>
 <translation id="8800034312320686233">Il sito non funziona?</translation>
 <translation id="8801436777607969138">Blocca JavaScript per un sito specifico.</translation>
+<translation id="8801657293260363985">V8 è il motore JavaScript e WebAssembly di Chrome utilizzato per migliorare le prestazioni del sito</translation>
 <translation id="8803526663383843427">Quando attiva</translation>
 <translation id="8805385115381080995">La navigazione è più veloce perché è meno probabile che un sito ti chieda di verificare di essere una persona reale</translation>
 <translation id="8816026460808729765">Impedisci ai siti di accedere ai sensori</translation>

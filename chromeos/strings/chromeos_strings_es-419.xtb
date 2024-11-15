@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1191518099344003522">El APN está habilitado.</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
+<translation id="1196264380943975940">No se puede resumir. Prueba con una transcripción más larga.</translation>
 <translation id="1196959502276349371">Versión <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reproducir/pausar</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">Ocultar transcripción</translation>
 <translation id="160633243685262989">Obtener vista previa de la imagen</translation>
 <translation id="1611649489706141841">adelante</translation>
+<translation id="1615144046047995187">No se pudo completar la descarga. Vuelve a intentarlo o reinicia la Chromebook.</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Usa un tema</translation>
 <translation id="1621067168122174824">Ejecutar prueba de carga</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">Menú para editar y borrar</translation>
 <translation id="2597774443162333062">Los archivos se enviarán a Google para depurarlos</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
+<translation id="261322795497077164">Identificar interlocutor</translation>
 <translation id="2617397783536231890">algodón</translation>
 <translation id="2618015542787108131">una duna de arena</translation>
 <translation id="2619761439309613843">Cambiar diario</translation>
@@ -441,6 +444,7 @@
 <translation id="3140130301071865159">nieve</translation>
 <translation id="3146655726035122603">Exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Datos móviles</translation>
+<translation id="3153094818810437149">Puedes cambiar esta opción más tarde en la configuración de la Grabadora</translation>
 <translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3156846309055100599">Escaneando la página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Se detectó un portal cautivo.</translation>
@@ -564,6 +568,7 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">DESACTIVADO: El administrador controla este parámetro de configuración.</translation>
 <translation id="380097101658023925">controles de rgb</translation>
+<translation id="380493988330050229">No se puede crear un resumen para este idioma de transcripción</translation>
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido</translation>
 <translation id="382043424867370667">Fondo de pantalla Puesta del sol</translation>
@@ -587,6 +592,7 @@
 <translation id="3885327323343477505">Cambiar el protector de pantalla</translation>
 <translation id="3889914174935857450">Restablecer la fecha</translation>
 <translation id="3897092660631435901">Menú</translation>
+<translation id="3902271751020176019">Idioma de la transcripción</translation>
 <translation id="391412459402535266">No se puede probar el dispositivo. Cambia al modo de laptop para realizar pruebas.</translation>
 <translation id="3916998944874125962">tomar captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
@@ -735,6 +741,7 @@
 <translation id="458794348635939462">no se pudieron resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación proxy.</translation>
 <translation id="4594021849294327751">Crear transcripción</translation>
+<translation id="4594541568452132351">Selecciona el idioma de transcripción y descarga el modelo</translation>
 <translation id="4607282946861182308">No se pueden crear imágenes con esta instrucción. Prueba otra.</translation>
 <translation id="4609350030397390689">Disminuir el brillo del teclado</translation>
 <translation id="4623061655523261501">Se generaron correctamente los nombres de las grabaciones</translation>
@@ -750,6 +757,7 @@
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">Las contraseñas no coinciden</translation>
 <translation id="467715984478005772">Posible firewall</translation>
+<translation id="4678534708181186163">No se puede resumir. Prueba con una transcripción más corta.</translation>
 <translation id="4683762547447150570">Presionar el botón para enfocarte en la asignación de la tecla</translation>
 <translation id="4691278870498629773">Se detuvo: falta la bandeja</translation>
 <translation id="469379815867856270">Intensidad de la señal</translation>
@@ -852,6 +860,7 @@
 <translation id="5168185087976003268">Estado de la batería</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="517075088756846356">Desconecta y vuelve a conectar el cable de alimentación del dispositivo <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
+<translation id="5178021559562393163">No se pueden crear nombres. Prueba con una transcripción más corta.</translation>
 <translation id="5180108905184566358">árboles baobab</translation>
 <translation id="5180712487038406644">Expresivo</translation>
 <translation id="5190187232518914472">Revive tus recuerdos favoritos. Para agregar o editar álbumes, ve a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
@@ -886,6 +895,7 @@
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Identidad</translation>
 <translation id="5317780077021120954">Guardar</translation>
+<translation id="5318310531701770497">No se pueden crear nombres. Prueba con una transcripción más larga.</translation>
 <translation id="5318334351163689047">Fallos de solicitudes de TCP</translation>
 <translation id="53196409393069519">¿Quieres activar la transcripción?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -939,6 +949,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Saliste de la cuenta</translation>
 <translation id="5620281292257375798">Solo para uso interno</translation>
+<translation id="5628106863521633649">Idiomas disponibles</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">resumen</translation>
 <translation id="5655283760733841251">Aumentar el brillo del teclado</translation>
@@ -1099,6 +1110,7 @@
 <translation id="6359919876285606596">Esta acción es permanente y no se puede deshacer</translation>
 <translation id="6368342879959028556">Cuando selecciones "Crear con IA", escribe una instrucción personalizada. También puedes seleccionar "Fondos de pantalla creados con IA" para elegir un tema y, luego, seleccionar las palabras subrayadas para personalizar tu fondo de pantalla creado con IA.</translation>
 <translation id="636850387210749493">Inscripción empresarial</translation>
+<translation id="6369221585240879141">No se pueden crear nombres de grabaciones para este idioma de transcripción</translation>
 <translation id="6373461326814131011">estanque</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6381741036071372448">Prueba el teclado</translation>
@@ -1263,6 +1275,7 @@
 <translation id="710028965487274708">Se produjo un error de autorización</translation>
 <translation id="7101959270679078188">Desbloquea el dispositivo <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
 <translation id="7103252855940681301">El nombre del dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> es <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Idioma seleccionado</translation>
 <translation id="7107255225945990211">Elegir material gráfico exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">ingresar</translation>
 <translation id="7117228822971127758">Vuelve a intentarlo más tarde</translation>
@@ -1272,6 +1285,7 @@
 <translation id="7130438335435247835">Nombre de punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
 <translation id="7135814714616751706">Buscar accesos directos</translation>
+<translation id="7138614237884624401">Texto simplificado</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
@@ -1693,6 +1707,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualizar ticket para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">La Grabadora puede crear transcripciones de las grabaciones con voz. En el siguiente paso, debes seleccionar el idioma de transcripción y descargar el modelo (hasta 100 MB).</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9122492456897874028">Resume contenido, obtén definiciones y mucho más</translation>
 <translation id="9122602430962285795">Para restablecer la conexión, ve a Configuración</translation>

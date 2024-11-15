@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1191518099344003522">APN įgalintas.</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
+<translation id="1196264380943975940">Nepavyko apibendrinti. Išbandykite ilgesnį transkribuotą tekstą.</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> versija</translation>
 <translation id="1199355487114804640">Leisti / pristabdyti</translation>
 <translation id="1201402288615127009">Kitas</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
 <translation id="361575905210396100">Dėkojame už atsiliepimą</translation>
 <translation id="3621072146987826699">drambliai</translation>
+<translation id="3628462041319107639">Atsisiunčiamas transkribavimo modelis…</translation>
 <translation id="3632040286124154621">Geras pasiūlymas</translation>
 <translation id="3632579075709132555">Privatumo ekrano perjungimas</translation>
 <translation id="3639873154908477486">Pavadinimas (A–Ž)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">Netinkamas PIN kodas.</translation>
 <translation id="382043424867370667">Saulėlydžio ekrano fonas</translation>
 <translation id="3824259034819781947">Pridėti failų</translation>
+<translation id="383586991013681190">Pasirinkite transkribavimo kalbą ir atsisiųskite skiltyje „Nustatymai“</translation>
 <translation id="3836587210832263413">Įjunkite tik tuos plėtinius, kuriais pasitikite</translation>
 <translation id="3838338534323494292">Naujas slaptažodis</translation>
 <translation id="3845880861638660475">Paspauskite <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />, kad uždarytumėte dialogo langą.</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">Nėra jokių atitinkančių rezultatų</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
+<translation id="4483498983731992167">Nepavyko sukurti transkribuoto teksto</translation>
 <translation id="4486524074141928967">Būsite atjungti <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami modifikavimo klavišą („Ctrl“, „Alt“, „Shift“ arba „<ph name="META_KEY" />“).</translation>
 <translation id="4500966230243561393">Sąsajos spalva</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">Gamintojas</translation>
 <translation id="467510802200863975">Slaptažodžiai neatitinka</translation>
 <translation id="467715984478005772">Įtariama užkarda</translation>
+<translation id="4678534708181186163">Nepavyko apibendrinti. Išbandykite trumpesnį transkribuotą tekstą.</translation>
 <translation id="4683762547447150570">Palieskite mygtuką, kad suaktyvintumėte klavišo priskyrimą</translation>
 <translation id="4691278870498629773">Sustabdyta – nėra dėklo</translation>
 <translation id="469379815867856270">Signalo stiprumas</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">aukštyn</translation>
 <translation id="5107243100836678918">Spartusis klavišas be klavišo „<ph name="META_KEY" />“ gali būti nesuderinamas su kai kurių programų sparčiaisiais klavišais. Dar kartą paspauskite šį spartųjį klavišą, jei norite toliau jį naudoti, arba paspauskite naują spartųjį klavišą naudodami klavišą „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Panašūs:</translation>
+<translation id="5121677070210013200">Nepavyko atsisiųsti transkribavimo modelio. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo.</translation>
 <translation id="5130848777448318809">poniai</translation>
 <translation id="5137451382116112100">Viso ekrano režimas</translation>
 <translation id="5140788690559353412">Praradę prieigą prie mokyklos paskyros nebegalėsite pasiekti susietų el. pašto ir „Google“ disko failų, pvz., „Gmail“, Dokumentų, Skaidrių ir kt.</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">Akumuliatoriaus būsena</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="517075088756846356">Jei norite tęsti atnaujinimo procesą, atjunkite ir vėl prijunkite „<ph name="DEVICE_NAME" />“ maitinimo laidą</translation>
+<translation id="5178021559562393163">Nepavyko sukurti pavadinimų. Išbandykite trumpesnį transkribuotą tekstą.</translation>
 <translation id="5180108905184566358">baobabai</translation>
 <translation id="5180712487038406644">Išraiškinga</translation>
 <translation id="5190187232518914472">Atgaivinkite mėgstamiausius prisiminimus. Norėdami pridėti ar redaguoti albumus, eikite į <ph name="LINK_BEGIN" />„Google“ nuotraukas<ph name="LINK_END" />.</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Tapatybė</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
+<translation id="5318310531701770497">Nepavyko sukurti pavadinimų. Išbandykite ilgesnį transkribuotą tekstą.</translation>
 <translation id="5318334351163689047">Nepavyko pateikti TCP užklausų</translation>
 <translation id="53196409393069519">Įjungti transkribavimą?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@
 <translation id="7040729769968826896">Leisti atpažinti kalbantį asmenį</translation>
 <translation id="7041549558901442110">Įrenginys neprijungtas.</translation>
 <translation id="7046522406494308071">Nustatyti visus sparčiuosius klavišus į numatytuosius?</translation>
+<translation id="7049916119678019302">Atsisiųskite transkribavimo modelį skiltyje „Nustatymai“</translation>
 <translation id="7058278511608979688">Baigti ir išsaugoti</translation>
 <translation id="7059230779847288458">Kraunama, <ph name="TIME_VALUE" />, kol bus įkrauta</translation>
 <translation id="7066538517128343186">klavišas „<ph name="KEY" />“</translation>

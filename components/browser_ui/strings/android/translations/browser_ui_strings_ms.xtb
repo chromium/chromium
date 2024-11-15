@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Kebanyakan laman yang anda lawati mungkin menyimpan data pada peranti anda, selalunya untuk meningkatkan pengalaman anda dengan menyimpan pilihan anda atau maklumat yang anda kongsi dengan laman tersebut. Kami mengesyorkan agar anda membiarkan tetapan ini dihidupkan.</translation>
 <translation id="2289270750774289114">Tanya apabila tapak mahu mencari peranti Bluetooth berdekatan (disyorkan)</translation>
 <translation id="2315043854645842844">Pemilihan sijil pihak pelanggan tidak disokong oleh sistem pengendalian ini.</translation>
+<translation id="2356926036049612643">Pengoptimum V8</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2379925928934107488">Gunakan tema gelap pada laman apabila Chrome menggunakan tema gelap, jika boleh</translation>
 <translation id="2390272837142897736">Zum masuk</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Dikembangkan - klik untuk meruntuhkan.</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
 <translation id="2588271083332682494">Berkemas dengan kumpulan tab</translation>
+<translation id="2594832159966169099">Urus keselamatan V8</translation>
 <translation id="2597457036804169544">Jangan gunakan tema gelap pada laman</translation>
 <translation id="2606760465469169465">Sahkan secara automatik</translation>
 <translation id="2621115761605608342">Benarkan JavaScript untuk tapak tertentu.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Pilih item</translation>
 <translation id="6838525730752203626">Gunakan Chrome secara lalai</translation>
 <translation id="6840760312327750441">Untuk menghimpunkan tab, sentuh &amp; tahan tab. Kemudian, seret tab itu ke tab lain.</translation>
+<translation id="6851981911629679515">Hidupkan perlindungan tambahan dalam JavaScript Chrome dan enjin WebAssembly</translation>
 <translation id="6864395892908308021">Peranti ini tidak dapat membaca NFC</translation>
 <translation id="6870169401250095575">Sembunyikan kad Pemeriksaan Keselamatan</translation>
 <translation id="6900883974539674431">Buat kumpulan tab yang disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Mana-mana laman yang anda lawati boleh memaparkan sebarang iklan kepada anda</translation>
 <translation id="8087000398470557479">Kandungan ini adalah daripada <ph name="DOMAIN_NAME" />, disampaikan oleh Google.</translation>
 <translation id="8088603949666785339">Lagi pilihan dalam <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Mengurangkan prestasi tetapi menjadikan V8 lebih tahan kepada serangan</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome akan mengehadkan kuki lagi esok}other{# hari sehingga Chrome mengehadkan kuki lagi}}</translation>
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="8117244575099414087">Apabila dihidupkan, laman dapat menggunakan penderia peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Pilih imej</translation>
 <translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
 <translation id="8801436777607969138">Sekat JavaScript untuk tapak tertentu.</translation>
+<translation id="8801657293260363985">V8 ialah JavaScript Chrome dan enjin WebAssembly yang digunakan untuk meningkatkan prestasi laman</translation>
 <translation id="8803526663383843427">Apabila dihidupkan</translation>
 <translation id="8805385115381080995">Penyemakan imbas akan menjadi lebih pantas kerana laman kurang berkemungkinan untuk meminta anda mengesahkan anda orang sebenar</translation>
 <translation id="8816026460808729765">Sekat tapak daripada mengakses penderia</translation>

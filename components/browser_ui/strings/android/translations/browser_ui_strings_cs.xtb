@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Většina navštěvovaných webů pravděpodobně ukládá data do vašeho zařízení, často za účelem zlepšení uživatelského prostředí (uloží se vaše předvolby a informace sdílené s weby). Doporučujeme toto nastavení ponechat zapnuté.</translation>
 <translation id="2289270750774289114">Zeptat se, když chce web objevit zařízení Bluetooth v okolí (doporučeno)</translation>
 <translation id="2315043854645842844">Volbu certifikátu na straně klienta operační systém nepodporuje.</translation>
+<translation id="2356926036049612643">Optimalizátor V8</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2379925928934107488">Když Chrome používá tmavý motiv, použít ho i pro Chrome (pokud je to možné)</translation>
 <translation id="2390272837142897736">Zvýšit přiblížení</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Rozbaleno – kliknutím sbalíte</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2588271083332682494">Udělejte si pořádek se skupinami karet</translation>
+<translation id="2594832159966169099">Spravovat zabezpečení modulu V8</translation>
 <translation id="2597457036804169544">Nepoužívat pro weby tmavý motiv</translation>
 <translation id="2606760465469169465">Automatické ověření</translation>
 <translation id="2621115761605608342">Povolit JavaScript pro konkrétní web.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Výběr položek</translation>
 <translation id="6838525730752203626">Používejte Chrome ve výchozím nastavení</translation>
 <translation id="6840760312327750441">Chcete-li karty seskupit, podržte některou kartu. Potom ji přetáhněte na jinou kartu.</translation>
+<translation id="6851981911629679515">Zapnout dodatečnou ochranu modulu prohlížeče Chrome pro JavaScript a WebAssembly</translation>
 <translation id="6864395892908308021">Toto zařízení neumí číst NFC</translation>
 <translation id="6870169401250095575">Skrýt kartu Bezpečnostní kontrola</translation>
 <translation id="6900883974539674431">Vytvářejte skupiny karet, které se automaticky ukládají a aktualizují na všech vašich zařízeních</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Kterýkoliv web, který navštívíte, vám může zobrazit jakoukoliv reklamu</translation>
 <translation id="8087000398470557479">Tento obsah pochází z domény <ph name="DOMAIN_NAME" />. Poskytováno společností Google.</translation>
 <translation id="8088603949666785339">Další možnosti v <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Snižuje výkon, ale zvyšuje odolnost modulu V8 proti útokům</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Zítra Chrome soubory cookie opět omezí}few{Za # dny Chrome soubory cookie opět omezí}many{Za # dne Chrome soubory cookie opět omezí}other{Za # dní Chrome soubory cookie opět omezí}}</translation>
 <translation id="8116925261070264013">Ztlumeno</translation>
 <translation id="8117244575099414087">Když je tato možnost zapnutá, weby mohou používat senzory zařízení. Když je vypnutá, weby senzory používat nemohou.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Vybrat obrázek</translation>
 <translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8801436777607969138">Blokovat JavaScript na konkrétním webu.</translation>
+<translation id="8801657293260363985">V8 je modul prohlížeče Chrome pro JavaScript a WebAssembly používaný ke zlepšení výkonu webů</translation>
 <translation id="8803526663383843427">Když je tato funkce zapnutá</translation>
 <translation id="8805385115381080995">Procházení je rychlejší, protože je méně pravděpodobné, že vás web požádá o ověření, že jste skutečná osoba</translation>
 <translation id="8816026460808729765">Blokovat webům přístup k senzorům</translation>

@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Ziyaret ettiğiniz çoğu site, genellikle tercihlerinizi veya siteyle paylaştığınız bilgileri kaydederek deneyiminizi iyileştirmek için cihazınıza veri kaydeder. Bu ayarı açık tutmanızı öneririz.</translation>
 <translation id="2289270750774289114">Bir site yakındaki Bluetooth cihazları bulmak istediğinde sor (önerilir)</translation>
 <translation id="2315043854645842844">İstemci tarafı sertifika seçimi, işletim sistemi tarafından desteklenmiyor.</translation>
+<translation id="2356926036049612643">V8 optimize edici</translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2379925928934107488">Mümkünse Chrome koyu tema kullandığında sitelere de koyu tema uygulayın</translation>
 <translation id="2390272837142897736">Yakınlaştırmayı artır</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Genişletildi - Daraltmak için tıklayın.</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2588271083332682494">Sekme gruplarıyla düzenleyin</translation>
+<translation id="2594832159966169099">V8 güvenliğini yönetin</translation>
 <translation id="2597457036804169544">Sitelere koyu tema uygulama</translation>
 <translation id="2606760465469169465">Otomatik doğrulama</translation>
 <translation id="2621115761605608342">Belirli bir site için JavaScript'e izin verin.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Öğe seçin</translation>
 <translation id="6838525730752203626">Varsayılan olarak Chrome'u kullanın</translation>
 <translation id="6840760312327750441">Sekmeleri gruplamak için bir sekmeye dokunup basılı tutun. Ardından başka bir sekmenin üzerine sürükleyin.</translation>
+<translation id="6851981911629679515">Chrome'un JavaScript ve WebAssembly motorunda ek korumayı etkinleştirin</translation>
 <translation id="6864395892908308021">Bu cihaz NFC'yi okuyamıyor</translation>
 <translation id="6870169401250095575">Güvenlik Kontrolü kartını gizle</translation>
 <translation id="6900883974539674431">Tüm cihazlarınızda otomatik olarak kaydedilen ve güncellenen sekme grupları oluşturun</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Ziyaret ettiğiniz herhangi bir site size reklam gösterebilir</translation>
 <translation id="8087000398470557479">Bu içerik Google tarafından <ph name="DOMAIN_NAME" /> adresinden sağlanmaktadır.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> bölümünde daha fazla seçenek</translation>
+<translation id="8090579562279016251">Performansı düşürür ancak V8'i saldırılara karşı daha dirençli hale getirir</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome yarın çerezleri tekrar sınırlandıracak}other{Chrome'un çerezleri tekrar sınırlandırmasına # gün kaldı}}</translation>
 <translation id="8116925261070264013">Ses kapatıldı</translation>
 <translation id="8117244575099414087">Bu düğme açıkken siteler cihazınızın sensörlerini kullanabilir. Düğme kapalıyken siteler sensörleri kullanamaz.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Resim seçin</translation>
 <translation id="8800034312320686233">Site çalışmıyor mu?</translation>
 <translation id="8801436777607969138">JavaScript'i belirli bir site için engelleyin.</translation>
+<translation id="8801657293260363985">Chrome'un JavaScript ve WebAssembly motoru olan V8, site performansını iyileştirmek için kullanılır</translation>
 <translation id="8803526663383843427">Açık olduğunda</translation>
 <translation id="8805385115381080995">Sitelerin gerçek bir kişi olduğunuzu doğrulamanızı isteme olasılığı daha düşük olduğundan daha hızlı bir göz atma deneyimi yaşarsınız</translation>
 <translation id="8816026460808729765">Sitelerin sensörlere erişimini engelle</translation>

@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Shumica e sajteve që viziton ka mundësi që të ruajnë të dhëna në pajisjen tënde, shpesh për të përmirësuar përvojën tënde duke ruajtur preferencat e tua ose informacionet që ti ndan me sajtin. Ne rekomandojmë që ta mbash të aktivizuar këtë cilësim.</translation>
 <translation id="2289270750774289114">Pyet kur një sajt dëshiron të zbulojë pajisjet Bluetooth në afërsi (rekomandohet)</translation>
 <translation id="2315043854645842844">Përzgjedhja e certifikatës nga ana e klientit nuk mbështetet nga sistemi operativ.</translation>
+<translation id="2356926036049612643">Optimizuesi i V8</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2379925928934107488">Kur është e mundur, zbato temën e errët për sajtet kur Chrome përdor temën e errët</translation>
 <translation id="2390272837142897736">Rrit zmadhimin</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">I zgjeruar - kliko për ta palosur.</translation>
 <translation id="2586657967955657006">Kujtesa e fragmenteve</translation>
 <translation id="2588271083332682494">Organizohu me grupet e skedave</translation>
+<translation id="2594832159966169099">Menaxho sigurinë e V8</translation>
 <translation id="2597457036804169544">Mos zbato temën e errët për sajtet</translation>
 <translation id="2606760465469169465">Verifiko automatikisht</translation>
 <translation id="2621115761605608342">Lejo JavaScript për një sajt specifik</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Zgjidh artikujt</translation>
 <translation id="6838525730752203626">Përdor Chrome si parazgjedhje</translation>
 <translation id="6840760312327750441">Për t'i grupuar skedat, prek dhe mbaje të shtypur një skedë. Më pas zvarrite atë te një skedë tjetër.</translation>
+<translation id="6851981911629679515">Aktivizo mbrojtjen shtesë në motorin e JavaScript dhe WebAssembly të Chrome</translation>
 <translation id="6864395892908308021">Kjo pajisje nuk mund të lexojë NFC-në</translation>
 <translation id="6870169401250095575">Fshih kartën "Kontrolli i sigurisë"</translation>
 <translation id="6900883974539674431">Krijo grupe skedash që ruhen dhe përditësohen automatikisht në të gjitha pajisjet e tua</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Çdo sajt që viziton ti mund të të shfaqë çdo reklamë</translation>
 <translation id="8087000398470557479">Kjo përmbajtje është nga <ph name="DOMAIN_NAME" />, dërguar nga Google.</translation>
 <translation id="8088603949666785339">Më shumë opsione te "<ph name="BANNER_TITLE" />"</translation>
+<translation id="8090579562279016251">Zvogëlon performancën, por e bën V8 më rezistente ndaj sulmeve</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome do t'i kufizojë kukit përsëri nesër}other{# ditë derisa Chrome t'i kufizojë përsëri kukit}}</translation>
 <translation id="8116925261070264013">Zëri i çaktivizuar</translation>
 <translation id="8117244575099414087">Kur cilësimi është aktiv, sajtet mund të përdorin sensorët e pajisjes. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin sensorët.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Zgjidh një imazh</translation>
 <translation id="8800034312320686233">Sajti nuk funksionon?</translation>
 <translation id="8801436777607969138">Blloko JavaScript për një sajt specifik.</translation>
+<translation id="8801657293260363985">V8 është motori i JavaScript dhe WebAssembly i Chrome që përdoret për të përmirësuar performancën e sajteve</translation>
 <translation id="8803526663383843427">Kur është e aktive</translation>
 <translation id="8805385115381080995">Shfletimi është më i shpejtë pasi një sajt ka më pak gjasa që të të kërkojë të verifikosh që je një person real</translation>
 <translation id="8816026460808729765">Bllokojua faqeve hapjen e sensorëve</translation>

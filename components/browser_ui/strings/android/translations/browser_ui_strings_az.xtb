@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Ziyarət etdiyiniz əksər saytlar adətən təcrübənizi təkmilləşdirmək üçün tərcihlərinizi və ya saytla paylaşdığınız məlumatı yadda saxlayır. Bu ayarı aktiv saxlamağı tövsiyə edirik.</translation>
 <translation id="2289270750774289114">Sayt yaxınlıqdakı Bluetooth cihazlarını kəşf etmək istədikdə soruşun (tövsiyə edilir)</translation>
 <translation id="2315043854645842844">Müştəri sayt sertifikatı seçimi əməliyyat sistemi tərəfindən dəstəklənmir.</translation>
+<translation id="2356926036049612643">V8 optimallaşdırıcısı</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2379925928934107488">Mümkün olduqda, Chrome tünd temadan istifadə edərkən saytlara tünd tema tətbiq edin</translation>
 <translation id="2390272837142897736">Zoom'u artırın</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Geniş - Qısaltmaq üçün klikləyin</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
 <translation id="2588271083332682494">Nişan qrupları ilə nizamlayın</translation>
+<translation id="2594832159966169099">V8 güvənliyini idarə edin</translation>
 <translation id="2597457036804169544">Saytlara tünd tema tətbiq etməyin</translation>
 <translation id="2606760465469169465">Avtomatik təsdiqləyin</translation>
 <translation id="2621115761605608342">Xüsusi sayt üçün JavaScript'ə icazə verin.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Element seçin</translation>
 <translation id="6838525730752203626">Defolt olaraq Chrome istifadə edin</translation>
 <translation id="6840760312327750441">Panelləri qruplaşdırmaq üçün panelə toxunub saxlayın. Daha sonra digər panelin üzərinə çəkin.</translation>
+<translation id="6851981911629679515">Chrome-un JavaScript və WebAssembly mexanizmində əlavə qorumanı aktiv edin</translation>
 <translation id="6864395892908308021">Bu cihazda NFC dəstəklənmir</translation>
 <translation id="6870169401250095575">Təhlükəsizlik yoxlanışı kartını gizlədin</translation>
 <translation id="6900883974539674431">Bütün cihazlarınızda avtomatik yadda saxlanılan və güncəllənən tab qrupları yaradın</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Ziyarət etdiyiniz istənilən sayt sizə istənilən reklamı göstərə bilər</translation>
 <translation id="8087000398470557479">Bu məzmun <ph name="DOMAIN_NAME" /> domenindəndir, Google tərəfindən çatdırılıb.</translation>
 <translation id="8088603949666785339">Digər seçimlər: <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Performansı azaldır, lakin V8-i hücumlara qarşı davamlı edir</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome sabah kukiləri yenidən məhdudlaşdıracaq}other{Chrome-un kukiləri yenidən məhdudlaşdırmasına # gün qaldı}}</translation>
 <translation id="8116925261070264013">Səssiz</translation>
 <translation id="8117244575099414087">Aktiv ediləndə saytlar cihaz sensorlarından istifadə edə bilər. Deaktiv ediləndə saytlar sensorlardan istifadə edə bilməz.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Şəkil seçin</translation>
 <translation id="8800034312320686233">Sayt işləmir?</translation>
 <translation id="8801436777607969138">JavaScript'i bəzi saytlarda blok edin.</translation>
+<translation id="8801657293260363985">V8 Chrome-un sayt performansını yaxşılaşdırmaq üçün istifadə edilən JavaScript və WebAssembly mexanizmidir</translation>
 <translation id="8803526663383843427">Aktiv olduqda</translation>
 <translation id="8805385115381080995">Saytın real insan olduğunuzu təsdiqləmək ehtimalı az olduğuna görə daha sürətlə baxmaq olur</translation>
 <translation id="8816026460808729765">Saytların sensorlara girişini blok edin</translation>

@@ -590,7 +590,6 @@
 <translation id="379035798868314833">Google Password Manager သည် ဤစက်တွင် အလုပ်လုပ်တော့မည် မဟုတ်ပါ</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် # ခု}}</translation>
 <translation id="3795154175078851242">ပုံကို လင့်ခ်နှင့်အတူ မိတ္တူကူးရန်</translation>
-<translation id="3810838688059735925">ဗီဒီယို</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
 <translation id="381861209280417772">စကားဝှက်များ ဖျက်ရန်</translation>
 <translation id="3819178904835489326">ဒေါင်းလုဒ် <ph name="NUMBER_OF_DOWNLOADS" /> ခုကို ဖျက်လိုက်သည်</translation>
@@ -802,6 +801,7 @@
 <translation id="4769632191812288342">ပုံမှန်ကာကွယ်မှုကို ရရှိပါမည်</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> ကို ဖျက်ပြီး</translation>
 <translation id="4778653490315793244">ပြစရာ မရှိသေးပါ</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> သည် သင့်မူရင်း ရှာဖွေရေး အင်ဂျင်ဖြစ်သွားပြီ</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" /> ကို ဖျက်လိုပါသလား။</translation>
 <translation id="4793679854893018356">Chrome က သင်ဘေးကင်းစေရန် လုပ်ဆောင်ပုံကို လေ့လာခြင်း</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@
 <translation id="5763514718066511291">ဤအက်ပ်အတွက် URL ကို မိတ္တူကူးရန် တို့ပါ</translation>
 <translation id="5765517223145864268">သင့်အတွေ့အကြုံကို ကျွန်ုပ်တို့အား ပြောပြပါ။ သို့မဟုတ် <ph name="BEGIN_LINK" />သင့်ဆက်တင်များကို ပြောင်းရန်<ph name="END_LINK" />။</translation>
 <translation id="5765780083710877561">ဖေါ်ပြချက်:</translation>
-<translation id="5767013862801005129"><ph name="TAB_TITLE" /> တဘ်ကို ပြန်ယူပြီးပြီ</translation>
 <translation id="5776970333778123608">အရေးမပါသောဒေတာ</translation>
 <translation id="5780792035410621042">စကားဝှက်များမိတ္တူကူးရန် သင့်စက်တွင် ဖန်သားပြင်လော့ခ်တစ်ခု ဦးစွာသတ်မှတ်ပါ</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> အနက် <ph name="SPACE_USED" /> ကို သုံးနေသည်</translation>
@@ -1092,6 +1091,7 @@
 <translation id="6140912465461743537">နိုင်ငံ/ဒေသ</translation>
 <translation id="6142183503755612900">ဆက်တင်များတွင် သင်၏မူရင်းကို အချိန်မရွေး ပြောင်းနိုင်သည်</translation>
 <translation id="6143892791267458416">\u0020<ph name="DAYS_ARCHIVED" /> ရက်အကြာတွင် ပိတ်သည်</translation>
+<translation id="6146563240635539929">ဗီယီယိုများ</translation>
 <translation id="614890671148262506">ဤဝဘ်ဆိုက်မှ အကြောင်းကြားချက်များကို အမြဲခွင့်ပြုရန်</translation>
 <translation id="6150320133806434356">လိပ်စာ သိမ်းထားသည်</translation>
 <translation id="6150706324143004339">သင်၏ Google Account ရှိ Chrome ဒေတာ သုံးရန်၊ သိမ်းရန် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
@@ -1477,7 +1477,6 @@
 <translation id="777637629667389858">လက်မှတ်ထိုးဝင်ထားသောအခါ သင့်အား Google ဝန်ဆောင်မှုများတွင် ကာကွယ်ပေးသည်။</translation>
 <translation id="7778840695157240389">သတင်းဆောင်းပါးသစ်များအတွက် နောက်မှ ပြန်လာကြည့်ပါ</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
-<translation id="7798392620021911922">တဘ် <ph name="TAB_COUNT" /> ခု ပြန်ယူထားသည်</translation>
 <translation id="780287761701992588">သင့်စက်အားလုံးပေါ်ရှိ လိပ်စာ၊ စကားဝှက် စသည်တို့ကို ရယူနိုင်သည်</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
 <translation id="7808889146555843082">ဤစကားဝှက်ကို ဖျက်ခြင်းဖြင့် <ph name="SITE" /> ရှိ သင့်အကောင့်ကို ဖျက်မည်မဟုတ်ပါ။ အခြားသူများ၏ ရန်မှကာကွယ်ရန် သင့်စကားဝှက်ကို ပြောင်းပါ သို့မဟုတ် <ph name="SITE" /> ရှိ သင့်အကောင့်ကို ဖျက်ပါ။</translation>

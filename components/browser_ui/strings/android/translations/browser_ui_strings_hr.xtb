@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Većina web-lokacija koje posjećujete vjerojatno sprema podatke na vaš uređaj, često radi poboljšanja vašeg doživljaja spremanjem vaših preferencija ili podataka koje dijelite s tim web-lokacijama. Preporučujemo da ta postavka ostane uključena.</translation>
 <translation id="2289270750774289114">Prikaži upit kad web-lokacija želi tražiti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sustav ne podržava odabir klijentskog certifikata.</translation>
+<translation id="2356926036049612643">Alat za optimizaciju V8</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2379925928934107488">Primijeni tamnu temu na web-lokacije kad Chrome koristi tamnu temu, kad je moguće</translation>
 <translation id="2390272837142897736">Povećajte zumiranje</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
 <translation id="2588271083332682494">Organizirajte se pomoću grupa kartica</translation>
+<translation id="2594832159966169099">Upravljanje sigurnošću alata V8</translation>
 <translation id="2597457036804169544">Ne primjenjuj tamnu temu na web-lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2621115761605608342">Dopuštanje JavaScripta za određenu web-lokaciju.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Odaberite stavke</translation>
 <translation id="6838525730752203626">Koristite Chrome prema zadanim postavkama</translation>
 <translation id="6840760312327750441">Da biste grupirali kartice, dodirnite i držite karticu. Zatim je povucite na drugu karticu.</translation>
+<translation id="6851981911629679515">Uključite dodatnu zaštitu u Chromeovom alatu za JavaScript i WebAssembly</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može čitati NFC</translation>
 <translation id="6870169401250095575">Sakrij karticu Sigurnosna provjera</translation>
 <translation id="6900883974539674431">Izradite grupe kartica koje se automatski spremaju i ažuriraju na svim vašim uređajima</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Svaka web-lokacija koju posjetite može vam prikazati bilo koji oglas</translation>
 <translation id="8087000398470557479">Sadržaj potječe s domene <ph name="DOMAIN_NAME" />, a omogućuje ga Google.</translation>
 <translation id="8088603949666785339">Više opcija u <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Slabi izvedbu, ali V8 čini otpornijim na napade</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome će sutra ponovno ograničiti kolačiće}one{Chrome će ponovo ograničiti kolačiće za # dan}few{Chrome će ponovo ograničiti kolačiće za # dana}other{Chrome će ponovo ograničiti kolačiće za # dana}}</translation>
 <translation id="8116925261070264013">Bez zvuka</translation>
 <translation id="8117244575099414087">Kad je ta postavka uključena, web-lokacije mogu upotrebljavati senzore uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati senzore.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Odaberite sliku</translation>
 <translation id="8800034312320686233">Web-lokacija ne funkcionira?</translation>
 <translation id="8801436777607969138">Blokiranje JavaScripta za određenu web-lokaciju.</translation>
+<translation id="8801657293260363985">V8 je Chromeov alat za JavaScript i WebAssembly koji se upotrebljava za poboljšanje izvedbe web-lokacija</translation>
 <translation id="8803526663383843427">Kad je značajka uključena</translation>
 <translation id="8805385115381080995">Pregledavanje je brže jer je manja vjerojatnost da će web-lokacija tražiti da potvrdite da ste stvarna osoba</translation>
 <translation id="8816026460808729765">Blokiranje pristupa senzorima za web-lokacije</translation>

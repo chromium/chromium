@@ -168,7 +168,6 @@
 <translation id="3161522574479303604">ທຸກ​ພາ​ສາ</translation>
 <translation id="3179665906251668410">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
 <translation id="3185330573522821672">ປັບແຕ່ງໂປຣໄຟລ໌ Chromium ໃໝ່ຂອງທ່ານ</translation>
-<translation id="3190315855212034486">ໂຮ້! Chromium ​ເກີດ​ຂັດຂ້ອງ. ເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="3224847870593914902">ເພື່ອລຶບບັນຊີ Google ຂອງທ່ານອອກຈາກ Chromium, ໃຫ້ອອກຈາກລະບົບ Chromium ໃນໜ້າການຕັ້ງຄ່າ</translation>
 <translation id="3258596308407688501">Chromium ບໍ່ສາມາດອ່ານ ແລະຂຽນໄປໃສ່ໄດເຣັກຕໍຣີຂໍ້ມູນຂອງມັນໄດ້:
 
@@ -443,7 +442,6 @@
 <translation id="67706546131546258">Chromium ແນະນຳໃຫ້ສະແກນໄຟລ໌ນີ້ເນື່ອງຈາກມັນອາດເປັນອັນຕະລາຍໄດ້.</translation>
 <translation id="6779406956731413166">ChromiumOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
 <translation id="6831043979455480757">ແປພາສາ</translation>
-<translation id="6843464627590537736">ຟອງການຊອກຫາດ້ວຍຄຸນສົມບັດຊອກຫາຮູບ</translation>
 <translation id="6847869444787758381">Chromium ແຈ້ງໃຫ້ທ່ານຮູ້ຖ້າມີຄົນຮູ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="684888714667046800">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. ຫາກທ່ານໃຊ້ firewall, ກະລຸນາກວດສອບໃຫ້ໝັ້ນໃຈວ່າ <ph name="PRODUCT_EXE_NAME" /> ຢູ່ໃນລາຍຊື່ອະນຸຍາດ.</translation>
 <translation id="685279860330610299">Chromium ສາມາດເຂົ້າໃຈຂໍ້ມູນໄດ້ຫຼາກຫຼາຍປະເພດ ແລະ ຕື່ມຂໍ້ມູນອັດຕະໂນມັດໃນແບບຟອມຂອງທ່ານໄດ້ໄວຂຶ້ນ. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome<ph name="END_LINK" /></translation>

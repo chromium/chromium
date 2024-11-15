@@ -168,7 +168,6 @@
 <translation id="3161522574479303604">Сви језици</translation>
 <translation id="3179665906251668410">Отвори линк у Chromium прозору без архи&amp;вирања</translation>
 <translation id="3185330573522821672">Прилагодите нови Chromium профил</translation>
-<translation id="3190315855212034486">Опа! Chromium је отказао. Желите ли да га одмах поново покренете?</translation>
 <translation id="3224847870593914902">Да бисте уклонили Google налог из Chromium-а, одјавите се из Chromium-а на страници Подешавања</translation>
 <translation id="3258596308407688501">Chromium не може да чита податке из директоријума са подацима нити да их уписује у њега:
 
@@ -443,7 +442,6 @@
 <translation id="67706546131546258">Chromium препоручује скенирање овог фајла јер може да буде опасан.</translation>
 <translation id="6779406956731413166">Chromium ОС омогућава додатни <ph name="BEGIN_LINK_CROS_OSS" />софтвер отвореног кода<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Преведи</translation>
-<translation id="6843464627590537736">Облачић претраге слика</translation>
 <translation id="6847869444787758381">Chromium вас обавештава ако су лозинке угрожене</translation>
 <translation id="684888714667046800">Повезивање са интернетом није успело. Ако користите заштитни зид, проверите да ли се <ph name="PRODUCT_EXE_NAME" /> налази на листи дозвољених.</translation>
 <translation id="685279860330610299">Chromium може да разуме више типова информација и да брже попуњава обрасце. Сазнајте више о <ph name="BEGIN_LINK" />Chrome аутоматском попуњавању<ph name="END_LINK" /></translation>

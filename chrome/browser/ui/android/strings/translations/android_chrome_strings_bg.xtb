@@ -590,7 +590,6 @@
 <translation id="379035798868314833">Google Мениджър на пароли ще спре да работи на това устройство</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="3795154175078851242">Копиране на изображението с връзка</translation>
-<translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="381861209280417772">Изтриване на паролите</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>
@@ -802,6 +801,7 @@
 <translation id="4769632191812288342">Получавате стандартната защита</translation>
 <translation id="4775646243557794597">Изтрихте данните от <ph name="TIME_PERIOD" /></translation>
 <translation id="4778653490315793244">Още няма нищо за показване</translation>
+<translation id="4782929588435725897">Основната ви търсеща машина е <ph name="SEARCH_ENGINE" /></translation>
 <translation id="4787736314074622408">Искате ли да изтриете <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Научете как Chrome се грижи за безопасността ви</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1008,7 +1008,6 @@
 <translation id="5763514718066511291">Докоснете, за да копирате URL адреса за това приложение</translation>
 <translation id="5765517223145864268">Разкажете ни за впечатленията си. Или <ph name="BEGIN_LINK" />променете настройките си<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Описание:</translation>
-<translation id="5767013862801005129">Бе възстановен раздел със заглавие <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Маловажни данни</translation>
 <translation id="5780792035410621042">За да копирате пароли, първо настройте заключване на екрана на устройството си</translation>
 <translation id="5793665092639000975">Използвано място: <ph name="SPACE_USED" /> от <ph name="SPACE_AVAILABLE" /></translation>
@@ -1040,6 +1039,7 @@
 <translation id="5885378508678660271">Известия <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото сайтът е опасен</translation>
 <translation id="5895834791314695851">Паролите скоро може да спрат да работят на това устройство. За да продължите да ги използвате, актуализирайте услугите за Google Play. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Долният лист без налични ключове за достъп бе затворен</translation>
+<translation id="5907542076239273525">Отметката е запазена в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5919204609460789179">Актуализирайте <ph name="PRODUCT_NAME" />, за да стартира синхронизирането</translation>
 <translation id="5938820472109305350">Добавяне на <ph name="INTEREST" /></translation>
@@ -1091,6 +1091,7 @@
 <translation id="6140912465461743537">Държава/регион</translation>
 <translation id="6142183503755612900">Можете да промените основната си по всяко време от настройките</translation>
 <translation id="6143892791267458416">\u0020и се затварят след <ph name="DAYS_ARCHIVED" /> дни</translation>
+<translation id="6146563240635539929">Видеоклипове</translation>
 <translation id="614890671148262506">Известията от този сайт да са разрешени винаги</translation>
 <translation id="6150320133806434356">Отметката е запазена</translation>
 <translation id="6150706324143004339">Актуализирайте браузъра Chrome, за да използвате и запазвате данните от него в профила си в Google</translation>
@@ -1477,7 +1478,6 @@
 <translation id="777637629667389858">Защитава ви в услугите на Google, когато сте влезли в профила си.</translation>
 <translation id="7778840695157240389">Проверете отново по-късно за нови истории</translation>
 <translation id="7791543448312431591">Добавяне</translation>
-<translation id="7798392620021911922">Бяха възстановени <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="780287761701992588">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7808889146555843082">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" />. За да го защитите от други хора, променете паролата си или изтрийте профила си за <ph name="SITE" />.</translation>

@@ -206,7 +206,7 @@
 <translation id="3451115285585441894">Chromeకు జోడిస్తోంది...</translation>
 <translation id="345171907106878721">Chromeకు మిమ్మల్ని జోడించుకోండి</translation>
 <translation id="3453763134178591239">ChromeOS నియమాలు</translation>
-<translation id="3503306920980160878">ఈ సైట్‌తో మీ స్థానాన్ని షేర్ చేయడానికి Chromeకు మీ స్థాన యాక్సెస్ అవసరం</translation>
+<translation id="3503306920980160878">ఈ సైట్‌తో మీ లొకేషన్‌ను షేర్ చేయడానికి Chromeకు మీ లొకేషన్ యాక్సెస్ అవసరం</translation>
 <translation id="3533694711092285624">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేవు. మీరు మీ పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chrome వాటిని చెక్ చేయగలదు.</translation>
 <translation id="3541482654983822893">మీ పాస్‌వర్డ్‌లను Chrome చెక్ చేయలేకపోయింది. 24 గంటల తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3556766595644676153">Chromium పేజీలను ప్రీ - లోడ్ చేస్తుంది, దీని వల్ల బ్రౌజింగ్, సెర్చింగ్ త్వరగా అవుతుంది.</translation>
@@ -394,7 +394,6 @@
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
 <translation id="5947104538377036631">Chrome షార్ట్‌కట్</translation>
 <translation id="5953954252731207958">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION" />‌ను తీసివేసింది</translation>
-<translation id="5971400953982411053">Google Lens సెర్చ్ బబుల్</translation>
 <translation id="6003112304606738118">డౌన్‌లోడ్ అవుతోంది... <ph name="HOURS" /> గంట(లు) సమయం మిగిలి ఉంది</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome నుండి టూల్స్‌<ph name="END_LINK" />‌తో, మీరు సురక్షితంగా బ్రౌజ్ చేయవచ్చు, కంట్రోల్‌లో ఉండవచ్చు</translation>
 <translation id="6022659036123304283">Chromeని మీకు నచ్చినట్లు తయారు చేసుకోండి</translation>
@@ -598,7 +597,6 @@
 <translation id="8267953129876836456">Chrome మీ రివ్యూ కోసం కొన్ని భద్రతా సిఫార్సులను కనుగొంది</translation>
 <translation id="8270775718612349140">Chrome ద్వారా మేనేజ్ చేయబడే సర్టిఫికెట్‌లు</translation>
 <translation id="8286862437124483331">Google Chrome పాస్‌వర్డ్‌లను చూపడానికి ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
-<translation id="8290100596633877290">ఆపండి! Google Chrome క్రాష్ అయ్యింది. ఇప్పుడు మళ్ళీ ప్రారంభించాల?</translation>
 <translation id="829923460755755423">Google Password Managerకు షార్ట్‌కట్‌ను జోడించండి</translation>
 <translation id="8313851650939857356">స్టార్టప్ ఎర్రర్: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">ఇమేజ్‌గా సేవ్ చేయండి</translation>

@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1191518099344003522">APN is enabled.</translation>
 <translation id="1195447618553298278">Unknown error.</translation>
+<translation id="1196264380943975940">Can't summarise. Try a longer transcript.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Play/Pause</translation>
 <translation id="1201402288615127009">Next</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">Edit and delete menu</translation>
 <translation id="2597774443162333062">Files will be sent to Google for debugging</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scanning completed. 1 page scanned}other{Scanning completed. {NUMBER_OF_PAGES} pages scanned}}</translation>
+<translation id="261322795497077164">Speaker identification</translation>
 <translation id="2617397783536231890">cotton</translation>
 <translation id="2618015542787108131">sand dune</translation>
 <translation id="2619761439309613843">Daily Refresh</translation>
@@ -442,6 +444,7 @@
 <translation id="3140130301071865159">snow</translation>
 <translation id="3146655726035122603">Exclusive to <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile data</translation>
+<translation id="3153094818810437149">You can change this later in Recorder settings</translation>
 <translation id="3156511682997763015">Forward 10 seconds</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Captive portal detected</translation>
@@ -565,6 +568,7 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">OFF – This setting is managed by your administrator.</translation>
 <translation id="380097101658023925">rgb controls</translation>
+<translation id="380493988330050229">Can't create summary for this transcript language</translation>
 <translation id="38114475217616659">Clear all history</translation>
 <translation id="3820172043799983114">Invalid PIN.</translation>
 <translation id="382043424867370667">Sunset wallpaper</translation>
@@ -737,6 +741,7 @@
 <translation id="458794348635939462">Failed to resolve all hosts</translation>
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4594021849294327751">Create transcript</translation>
+<translation id="4594541568452132351">Select transcription language and download model</translation>
 <translation id="4607282946861182308">Can't create images of this. Try another prompt.</translation>
 <translation id="4609350030397390689">Keyboard brightness down</translation>
 <translation id="4623061655523261501">Recording names generated successfully</translation>
@@ -752,6 +757,7 @@
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Passwords do not match</translation>
 <translation id="467715984478005772">Firewall suspected</translation>
+<translation id="4678534708181186163">Can't summarise. Try a shorter transcript.</translation>
 <translation id="4683762547447150570">Tap on the button to focus on the key assignment</translation>
 <translation id="4691278870498629773">Stopped – tray missing</translation>
 <translation id="469379815867856270">Signal strength</translation>
@@ -854,6 +860,7 @@
 <translation id="5168185087976003268">Battery health</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="517075088756846356">Unplug and replug the <ph name="DEVICE_NAME" /> power cable to continue the update process</translation>
+<translation id="5178021559562393163">Can't create names. Try a shorter transcript.</translation>
 <translation id="5180108905184566358">baobab trees</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Relive your favourite memories. To add or edit albums, go to <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -888,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identity</translation>
 <translation id="5317780077021120954">Save</translation>
+<translation id="5318310531701770497">Can't create names. Try a longer transcript.</translation>
 <translation id="5318334351163689047">TCP request failures</translation>
 <translation id="53196409393069519">Turn on transcription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1102,6 +1110,7 @@
 <translation id="6359919876285606596">This action is permanent and can't be undone</translation>
 <translation id="6368342879959028556">When you select 'Create with AI', write a custom prompt. Or, you can select 'AI wallpapers' to choose a theme and then select the underlined words to personalise your AI wallpaper.</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
+<translation id="6369221585240879141">Can't create recording names for this transcript language</translation>
 <translation id="6373461326814131011">pond</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Test your keyboard</translation>
@@ -1276,6 +1285,7 @@
 <translation id="7130438335435247835">Access Point Name (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7135814714616751706">Search shortcuts</translation>
+<translation id="7138614237884624401">Simplified text</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
@@ -1697,6 +1707,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9100765901046053179">Advanced settings</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Recorder can create transcriptions for recordings with speech. In the next step, you need to select the transcription language and download the model (up to 100 MB).</translation>
 <translation id="9111102763498581341">Unlock</translation>
 <translation id="9122492456897874028">Summarise content, get definitions and more</translation>
 <translation id="9122602430962285795">To reconnect, go to Settings</translation>

@@ -729,6 +729,7 @@
 <translation id="4405320213589929829">स्थानीय जानकारी र जाने बाटो प्राप्त गर्न वेबपेजमा ठेगानाहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="441218095371040430">किबोर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="4430277756566635951">अहिले <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="4431224949908513835">आफूले हाल्न चाहेको भुक्तानी विधि चयन गर्नुहोस्।</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />सेटिङ<ph name="END_BOLD" /> खोल्नुहोस्</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> का थप विकल्पहरू</translation>
@@ -781,6 +782,7 @@
 <translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। Google खातासम्बन्धी त्रुटि भयो। खाताको मेनु खोल्नुहोस्।</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
+<translation id="4651927776207937667">{count,plural, =1{१ मिनेटपछि लुकाउनुहोस्}other{{count} मिनेटपछि लुकाउनुहोस्}}</translation>
 <translation id="4652817563047461855">तपाईंका पासवर्डहरू सुरक्षित छन् भन्ने कुरा सुनिश्चित गर्नुहोस्, ती पासवर्ड ह्याक वा चोरी भएका छन् कि छैनन् भन्ने कुरा थाहा पाउनुहोस् र इन्टरनेटमा आफूलाई सुरक्षित राख्न सघाउने सुझाव प्राप्त गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">सेभ गर्नुहोस्</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1312,6 +1314,7 @@
 <translation id="6943681254152031826">{COUNT,plural, =1{यो प्याकेज ट्र्याक गर्ने हो?}other{{COUNT} वटा प्याकेज ट्र्याक गर्ने हो?}}</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6950522403736391608">लुकाइएका</translation>
+<translation id="6964300328304469089">अहिले <ph name="NAME" />, <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="6964760285928603117">समूहबाट हटाउनुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6973630695168034713">फोल्डरहरू</translation>
@@ -1512,7 +1515,6 @@
 <translation id="7889910613639381518">"Google पासवर्ड म्यानेजर" विजेटका सहायताले सहज र सुरक्षित तरिकाले एक्सेस गर्नुहोस्।</translation>
 <translation id="7899199123054742721">सबै सामग्नीलाई नपढिएका सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="7911190106180361398">तपाईंको सङ्गठनले तपाईंलाई सबै सामग्री सिंक गर्ने अनुमति दिएको छैन।</translation>
-<translation id="7920949005883349320">गोपनीयता र सुरक्षा</translation>
 <translation id="792357691529995513">कुनै पनि समस्या भेटिएन</translation>
 <translation id="7925108652071887026">स्वतः भरण डेटा</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>
@@ -1787,6 +1789,7 @@
 <translation id="9032405509996909363">ब्राउजिङ डेटा मेटाउने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="9034759925968272072">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन। <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> मा रहेको तपाईंको Google खातामा अझै पनि ब्राउजिङको इतिहासका अन्य ढाँचाहरू उपलब्ध हुन सक्छन्।</translation>
 <translation id="9039373489628511875">व्याण्डविथ</translation>
+<translation id="9042893549633094279">गोपनीयता र सुरक्षा</translation>
 <translation id="9057030985451135243">साझा ट्याब समूहका बारेमा जान्नुहोस्</translation>
 <translation id="9057972802061533987">फलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>

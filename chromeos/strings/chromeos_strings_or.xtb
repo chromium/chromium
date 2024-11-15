@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1191518099344003522">APNକୁ ସକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="1195447618553298278">ଅଜ୍ଞାତ ତୃଟି ।</translation>
+<translation id="1196264380943975940">ସାରାଂଶ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଲମ୍ବା ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="1196959502276349371">ସଂସ୍କରଣ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ଚଲାନ୍ତୁ/ବିରତ କରନ୍ତୁ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଲୁଚାନ୍ତୁ</translation>
 <translation id="160633243685262989">ଇମେଜର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="1611649489706141841">ଆଗକୁ ବଢ଼ିବା କୀ</translation>
+<translation id="1615144046047995187">ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ Chromebookକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ଠାରୁ ଡାଟା ବ୍ୟବହାର</translation>
 <translation id="1618566998877964907">ଏକ ଥିମ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">ଏଡିଟ କରନ୍ତୁ ଏବଂ ଡିଲିଟ କରନ୍ତୁ ମେନୁ</translation>
 <translation id="2597774443162333062">ଡିବଗିଂ ପାଇଁ ଫାଇଲଗୁଡ଼ିକ Googleକୁ ପଠାଯିବ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ କରାଯାଇଛି}other{ସ୍କାନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ କରାଯାଇଛି}}</translation>
+<translation id="261322795497077164">ସ୍ପିକର ଚିହ୍ନଟକରଣ</translation>
 <translation id="2617397783536231890">କଟନ</translation>
 <translation id="2618015542787108131">ସେଣ୍ଡ ଡ୍ୟୁନ</translation>
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
@@ -441,6 +444,7 @@
 <translation id="3140130301071865159">ବରଫ</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> ପାଇଁ ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="315116470104423982">ମୋବାଇଲ୍ ଡାଟା</translation>
+<translation id="3153094818810437149">ଆପଣ ଏହାକୁ ପରେ ରେକର୍ଡର ସେଟିଂସରେ ବଦଳାଇପାରିବେ</translation>
 <translation id="3156511682997763015">10 ସେକେଣ୍ଡ ଆଗକୁ ନିଅନ୍ତୁ</translation>
 <translation id="3156846309055100599">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି...</translation>
 <translation id="315738237743207937">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
@@ -564,6 +568,7 @@
 <translation id="3785643128701396311">ପିକ୍ସେଲ ଆର୍ଟ</translation>
 <translation id="3799381533888781854">ବନ୍ଦ ଅଛି - ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
 <translation id="380097101658023925">RGB ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
+<translation id="380493988330050229">ଏହି ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଭାଷା ପାଇଁ ସାରାଂଶ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="38114475217616659">ସମସ୍ତ ଇତିହାସ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
 <translation id="382043424867370667">ସୂର୍ଯ୍ୟାସ୍ତ ୱାଲପେପର</translation>
@@ -587,6 +592,7 @@
 <translation id="3885327323343477505">ସ୍କ୍ରିନ ସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3889914174935857450">ତାରିଖ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="3897092660631435901">ମେନୁ</translation>
+<translation id="3902271751020176019">ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା</translation>
 <translation id="391412459402535266">ଡିଭାଇସକୁ ଟେଷ୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଟେଷ୍ଟ କରିବା ପାଇଁ ଲାପଟପ ମୋଡକୁ ସ୍ୱିଚ କରନ୍ତୁ।</translation>
 <translation id="3916998944874125962">ସ୍କ୍ରିନସଟ ନିଅନ୍ତୁ</translation>
 <translation id="3923184630988645767">ଡାଟାର ବ୍ୟବହାର</translation>
@@ -735,6 +741,7 @@
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
 <translation id="4594021849294327751">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="4594541568452132351">ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା ଚୟନ କରି ମଡେଲ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="4607282946861182308">ଏହାର ଇମେଜ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="4623061655523261501">ରେକର୍ଡିଂ ନାମଗୁଡ଼ିକ ସଫଳତାର ସହ ଜେନେରେଟ ହୋଇଛି</translation>
@@ -750,6 +757,7 @@
 <translation id="4665014895760275686">ଉତ୍ପାଦକ</translation>
 <translation id="467510802200863975">ପାସ୍‌ୱାର୍ଡ ମେଳ ହେଉ ନାହିଁ</translation>
 <translation id="467715984478005772">ଫାୟାରୱାଲ୍ ଥିବାର ସନ୍ଦେହ କରାଯାଇଛି</translation>
+<translation id="4678534708181186163">ସାରାଂଶ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଛୋଟ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="4683762547447150570">ମୁଖ୍ୟ ଆସାଇନମେଣ୍ଟ ଉପରେ ଫୋକସ କରିବାକୁ ବଟନରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="4691278870498629773">ବନ୍ଦ ହୋଇଯାଇଛି - ଟ୍ରେ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="469379815867856270">ସିଗନାଲର କ୍ଷମତା</translation>
@@ -852,6 +860,7 @@
 <translation id="5168185087976003268">ବ୍ୟାଟେରୀ ହେଲ୍ଥ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="517075088756846356">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />ର ପାୱାର କେବୁଲକୁ ଅନପ୍ଲଗ କରି ପୁଣି ପ୍ଲଗ କରନ୍ତୁ</translation>
+<translation id="5178021559562393163">ନାମ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଛୋଟ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="5180108905184566358">ବାଓବାବ ଗଛ</translation>
 <translation id="5180712487038406644">ଏକ୍ସପ୍ରେସିଭ</translation>
 <translation id="5190187232518914472">ଆପଣଙ୍କର ପ୍ରିୟ ସ୍ମୃତିଗୁଡ଼ିକୁ ପୁନର୍ଜୀବିତ କରନ୍ତୁ। ଆଲବମଗୁଡ଼ିକ ଯୋଗ କରିବା କିମ୍ବା ସେଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବା ପାଇଁ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
@@ -886,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ପରିଚୟ</translation>
 <translation id="5317780077021120954">ସେଭ କରନ୍ତୁ</translation>
+<translation id="5318310531701770497">ନାମ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଲମ୍ବା ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="5318334351163689047">TCP ଅନୁରୋଧ ବିଫଳ</translation>
 <translation id="53196409393069519">ଟ୍ରାନ୍ସକ୍ରିପସନକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -939,6 +949,7 @@
 <translation id="5606865426897221650">ଟାବ</translation>
 <translation id="5613201299517339763">ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରାଯାଇଛି</translation>
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
+<translation id="5628106863521633649">ଉପଲବ୍ଧ ଭାଷା</translation>
 <translation id="5630438231335788050">ବଉହସ</translation>
 <translation id="5631759159893697722">ସାରାଂଶ</translation>
 <translation id="5655283760733841251">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
@@ -1099,6 +1110,7 @@
 <translation id="6359919876285606596">ଏହି କାର୍ଯ୍ୟ ସ୍ଥାୟୀ ଅଟେ ଏବଂ ଏହାକୁ ଅନଡୁ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6368342879959028556">ଆପଣ “AI ମାଧ୍ୟମରେ ତିଆରି କରନ୍ତୁ”କୁ ଚୟନ କରିବା ସମୟରେ ଏକ କଷ୍ଟମ ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ। କିମ୍ବା ଏକ ଥିମ ଚୟନ କରିବାକୁ ଆପଣ "AI ୱାଲପେପରଗୁଡ଼ିକୁ" ଚୟନ କରିପାରିବେ ଏବଂ ତା'ପରେ ଆପଣଙ୍କ AI ୱାଲପେପରକୁ ପର୍ସନାଲାଇଜ କରିବାକୁ ଅଣ୍ଡରଲାଇନ କରାଯାଇଥିବା ଶବ୍ଦଗୁଡଡ଼ିକୁ ଚୟନ କରିପାରିବେ।</translation>
 <translation id="636850387210749493">ଏଣ୍ଟର୍‌ପ୍ରାଇଜ୍ ନାମାଙ୍କନ</translation>
+<translation id="6369221585240879141">ଏହି ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଭାଷା ପାଇଁ ରେକର୍ଡିଂ ନାମଗୁଡ଼ିକୁ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6373461326814131011">ପୋଖରୀ</translation>
 <translation id="6379086450106841622">ଟଚସ୍କ୍ରିନ୍</translation>
 <translation id="6381741036071372448">ଆପଣଙ୍କ କୀବୋର୍ଡକୁ ପରୀକ୍ଷା କରନ୍ତୁ</translation>
@@ -1263,6 +1275,7 @@
 <translation id="710028965487274708">ବିଫଳ ହୋଇଛି - ଅଥୋରାଇଜେସନ ବିଫଳ ହୋଇଛି</translation>
 <translation id="7101959270679078188">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />କୁ ଅନଲକ କରନ୍ତୁ</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />ଟିରୁ <ph name="NAME" /> ନାମ ଥିବା <ph name="INDEX" /> ନମ୍ବର ଡିଭାଇସ।</translation>
+<translation id="7103793063702494489">ଚୟନ କରାଯାଇଥିବା ଭାଷା</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ଏକ୍ସକ୍ଲୁସିଭ କଳାକୃତି ବାଛନ୍ତୁ</translation>
 <translation id="7108668606237948702">ଏଣ୍ଟର</translation>
 <translation id="7117228822971127758">ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -1272,6 +1285,7 @@
 <translation id="7130438335435247835">ଆକ୍ସେସ ପଏଣ୍ଟ ନାମ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ନାମ ସର୍ଭର୍}other{ନାମ ସର୍ଭର୍}}</translation>
 <translation id="7135814714616751706">ସର୍ଟକଟ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="7138614237884624401">ସରଳୀକୃତ ଟେକ୍ସଟ</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -1693,6 +1707,7 @@
 <translation id="9100765901046053179">ଉନ୍ନତ ସେଟିଂସ୍</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>
+<translation id="9108856746036501072">Recorder ସ୍ପିଚ ସହିତ ରେକର୍ଡିଂ ପାଇଁ ଟ୍ରାନ୍ସକ୍ରିପସନ ତିଆରି କରିପାରିବ। ପରବର୍ତ୍ତୀ ଷ୍ଟେପରେ, ଆପଣଙ୍କୁ ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା ଚୟନ କରି ମଡେଲ (100MB ପର୍ଯ୍ୟନ୍ତ) ଡାଉନଲୋଡ କରିବାକୁ ହେବ।</translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="9122492456897874028">ବିଷୟବସ୍ତୁର ସାରାଂଶ ତିଆରି କରନ୍ତୁ, ସଂଜ୍ଞା ପାଆନ୍ତୁ ଏବଂ ଆହୁରି ଅନେକ କିଛି କରନ୍ତୁ</translation>
 <translation id="9122602430962285795">ପୁଣି ସଂଯୋଗ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>

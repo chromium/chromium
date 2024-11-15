@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1191518099344003522">啟用咗 APN。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
+<translation id="1196264380943975940">無法提供摘要，請改用較長的轉錄文字。</translation>
 <translation id="1196959502276349371">版本：<ph name="VERSION" /></translation>
 <translation id="1199355487114804640">播放/暫停</translation>
 <translation id="1201402288615127009">下一個</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">連線至 HTTPS 網站延遲時間過長</translation>
 <translation id="361575905210396100">多謝您的意見</translation>
 <translation id="3621072146987826699">大象</translation>
+<translation id="3628462041319107639">正在下載轉錄模型…</translation>
 <translation id="3632040286124154621">不錯的建議</translation>
 <translation id="3632579075709132555">私隱保護畫面切換</translation>
 <translation id="3639873154908477486">名字 (A 至 Z)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="382043424867370667">日落桌布</translation>
 <translation id="3824259034819781947">附加檔案</translation>
+<translation id="383586991013681190">在「設定」中選取轉錄語言並下載模型</translation>
 <translation id="3836587210832263413">只開啟你信任的擴充程式</translation>
 <translation id="3838338534323494292">新密碼</translation>
 <translation id="3845880861638660475">按下 <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> 鍵，即可關閉對話框。</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">找不到相符的結果</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
+<translation id="4483498983731992167">無法建立轉錄文字</translation>
 <translation id="4486524074141928967">系統會在<ph name="TIME" />將你登出</translation>
 <translation id="4500722292849917410">無法使用快速鍵。請透過輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />) 按下新的快速鍵。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">製造商</translation>
 <translation id="467510802200863975">密碼不相符</translation>
 <translation id="467715984478005772">可能有防火牆</translation>
+<translation id="4678534708181186163">無法提供摘要，請改用較短的轉錄文字。</translation>
 <translation id="4683762547447150570">㩒一下個掣就可以將焦點移去按鍵指派區</translation>
 <translation id="4691278870498629773">已停止 - 沒有紙匣</translation>
 <translation id="469379815867856270">訊號強度</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">使用快速鍵時如未按下<ph name="META_KEY" />鍵，可能會與部分應用程式的快速鍵發生衝突。再按下此快速鍵即可繼續使用，或按下<ph name="KEY" />鍵重新輸入快速鍵。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">近義詞：</translation>
+<translation id="5121677070210013200">無法下載轉錄模型，請再試一次或重新啟動 Chromebook。</translation>
 <translation id="5130848777448318809">小馬</translation>
 <translation id="5137451382116112100">全螢幕</translation>
 <translation id="5140788690559353412">失去學校帳戶存取權後，你將無法再存取相關聯的電郵和「Google 雲端硬碟」檔案，例如 Gmail、「文件」和「簡」報等。</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">電池狀態</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="517075088756846356">請拔除然後重新插上「<ph name="DEVICE_NAME" />」電源線，以繼續更新程序</translation>
+<translation id="5178021559562393163">無法建立名稱，請改用較短的轉錄文字。</translation>
 <translation id="5180108905184566358">猴麵包樹</translation>
 <translation id="5180712487038406644">熱情奔放</translation>
 <translation id="5190187232518914472">重溫美好回憶。如要新增或編輯相簿，請前往「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」。</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
+<translation id="5318310531701770497">無法建立名稱，請改用較長的轉錄文字。</translation>
 <translation id="5318334351163689047">TCP 要求失敗</translation>
 <translation id="53196409393069519">要開啟轉錄功能嗎？</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@
 <translation id="7040729769968826896">允許識別說話者</translation>
 <translation id="7041549558901442110">未連接裝置。</translation>
 <translation id="7046522406494308071">要將所有快速鍵重設為預設值嗎？</translation>
+<translation id="7049916119678019302">在「設定」中下載轉錄模型</translation>
 <translation id="7058278511608979688">結束並儲存</translation>
 <translation id="7059230779847288458">充電中，<ph name="TIME_VALUE" />後完成充電</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> 鍵</translation>

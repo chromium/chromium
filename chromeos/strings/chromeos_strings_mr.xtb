@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1191518099344003522">APN सुरू केले आहे.</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
+<translation id="1196264380943975940">सारांश देऊ शकत नाही. आणखी मोठे ट्रान्स्क्रिप्ट वापरून पहा.</translation>
 <translation id="1196959502276349371">आवृत्ती <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">प्ले करा/थांबवा</translation>
 <translation id="1201402288615127009">पुढील</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
 <translation id="361575905210396100">तुमच्या फीडबॅकबद्दल धन्यवाद</translation>
 <translation id="3621072146987826699">हत्ती</translation>
+<translation id="3628462041319107639">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करत आहे…</translation>
 <translation id="3632040286124154621">चांगली सूचना</translation>
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3639873154908477486">नावानुसार (A ते Z)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="382043424867370667">सनसेट वॉलपेपर</translation>
 <translation id="3824259034819781947">फाइल अटॅच करा</translation>
+<translation id="383586991013681190">ट्रान्स्क्रिप्शनची भाषा निवडा आणि सेटिंग्ज मध्ये डाउनलोड करा</translation>
 <translation id="3836587210832263413">फक्त तुमचा विश्वास असलेली एक्स्टेंशन सुरू करा</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
 <translation id="3845880861638660475">डायलॉग बंद करण्यासाठी,<ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> प्रेस करा.</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">जुळणारे परिणाम नाहीत</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
+<translation id="4483498983731992167">ट्रान्स्क्रिप्ट तयार करू शकत नाही</translation>
 <translation id="4486524074141928967">तुम्हाला <ph name="TIME" /> वाजता साइन आउट केले जाईल</translation>
 <translation id="4500722292849917410">शॉर्टकट उपलब्ध नाही. नवीन मॉडिफायर की (कंट्रोल, ऑल्ट, शिफ्ट किंवा <ph name="META_KEY" />) वापरून नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="4500966230243561393">इंटरफेसचा रंग</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्ड जुळत नाहीत</translation>
 <translation id="467715984478005772">फायरवॉल असू शकते</translation>
+<translation id="4678534708181186163">सारांश देऊ शकत नाही. आणखी लहान ट्रान्स्क्रिप्ट वापरून पहा.</translation>
 <translation id="4683762547447150570">की असाइनमेंटवर फोकस करण्यासाठी बटणावर टॅप करा</translation>
 <translation id="4691278870498629773">थांबले - ट्रे गहाळ आहे</translation>
 <translation id="469379815867856270">सिग्नल क्षमता</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">वर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> कीशिवाय शॉर्टकटचा वापर केल्याने, काही अ‍ॅप्सच्या शॉर्टकटमध्ये समस्या निर्माण होऊ शकतात. हा शॉर्टकट वापरणे पुढे सुरू ठेवण्यासाठी, तो पुन्हा प्रेस करा किंवा <ph name="KEY" /> की वापरून नवीन शॉर्टकट प्रेस करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">समानार्थी:</translation>
+<translation id="5121677070210013200">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="5130848777448318809">पोनी</translation>
 <translation id="5137451382116112100">फुलस्क्रीन करा</translation>
 <translation id="5140788690559353412">तुम्ही तुमच्या शाळेच्या खात्याचा ॲक्सेस गमवल्यावर, तुम्हाला यापुढे संबंधित ईमेल आणि Google Drive फाइल, जसे की Gmail, Docs, Slides व आणखी बऱ्याच गोष्टींचा ॲक्सेस नसेल.</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">बॅटरीची स्थिती</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="517075088756846356">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची पॉवर केबल अनप्लग करून पुन्हा प्लग करा</translation>
+<translation id="5178021559562393163">नावे तयार करू शकत नाही. आणखी लहान ट्रान्स्क्रिप्ट वापरून पहा.</translation>
 <translation id="5180108905184566358">बाओबॅबची झाडे</translation>
 <translation id="5180712487038406644">भावदर्शी</translation>
 <translation id="5190187232518914472">तुमच्या आवडत्या आठवणी पुन्हा अनुभवा. अल्बम जोडण्यासाठी किंवा संपादित करण्यासाठी, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> वर जा.</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ओळख</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
+<translation id="5318310531701770497">नावे तयार करू शकत नाही. आणखी मोठे ट्रान्स्क्रिप्ट वापरून पहा.</translation>
 <translation id="5318334351163689047">TCP विनंती पूर्ण करता आली नाही</translation>
 <translation id="53196409393069519">ट्रान्सक्रिप्शन सुरू करायचे आहे का?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@
 <translation id="7040729769968826896">स्पीकर ओळखण्यास अनुमती द्या</translation>
 <translation id="7041549558901442110">डिव्हाइस हे कनेक्ट केलेले नाही.</translation>
 <translation id="7046522406494308071">सर्व शॉर्टकट डीफॉल्टवर रीसेट करायचे आहेत का?</translation>
+<translation id="7049916119678019302">ट्रान्स्क्रिप्शन मॉडेल सेटिंग्ज मध्ये डाउनलोड करा</translation>
 <translation id="7058278511608979688">संपवा आणि सेव्ह करा</translation>
 <translation id="7059230779847288458">चार्ज होत आहे, <ph name="TIME_VALUE" /> मध्ये पूर्ण होईल</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> की</translation>

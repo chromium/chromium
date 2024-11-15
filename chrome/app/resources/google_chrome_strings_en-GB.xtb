@@ -402,7 +402,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
 <translation id="5947104538377036631">Chrome shortcut</translation>
 <translation id="5953954252731207958">You haven't visited recently. Chrome removed <ph name="PERMISSION" /></translation>
-<translation id="5971400953982411053">Google Lens search bubble</translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
 <translation id="6014316319780893079">With <ph name="BEGIN_LINK" />tools from Chrome<ph name="END_LINK" />, you can browse safely and stay in control</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
@@ -606,7 +605,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8267953129876836456">Chrome found some safety recommendations for your review</translation>
 <translation id="8270775718612349140">Certificates managed by Chrome</translation>
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>
-<translation id="8290100596633877290">Whoa! Google Chrome has crashed. Relaunch now?</translation>
 <translation id="829923460755755423">Add a shortcut to Google Password Manager</translation>
 <translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Save as image</translation>
@@ -632,6 +630,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="852529348814672339">Display Chrome in this language</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="856656450041460113">Search language list</translation>
 <translation id="8571790202382503603">With Chrome profiles you can separate all of your Chrome things. This makes it easier to split between work and fun.</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>

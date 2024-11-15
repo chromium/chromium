@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1191518099344003522">已启用 APN。</translation>
 <translation id="1195447618553298278">未知错误。</translation>
+<translation id="1196264380943975940">无法生成摘要，请尝试输入较长的转写内容。</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> 版</translation>
 <translation id="1199355487114804640">播放/暂停</translation>
 <translation id="1201402288615127009">下一步</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">隐藏转写内容</translation>
 <translation id="160633243685262989">预览图片</translation>
 <translation id="1611649489706141841">前进</translation>
+<translation id="1615144046047995187">无法下载，请重试，或重新启动 Chromebook。</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
 <translation id="1618566998877964907">使用主题</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
@@ -360,6 +362,7 @@
 <translation id="2589921777872778654">“修改和删除”菜单</translation>
 <translation id="2597774443162333062">文件将被发送到 Google 进行调试</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
+<translation id="261322795497077164">说话人识别</translation>
 <translation id="2617397783536231890">棉</translation>
 <translation id="2618015542787108131">沙丘</translation>
 <translation id="2619761439309613843">每日刷新</translation>
@@ -441,6 +444,7 @@
 <translation id="3140130301071865159">雪</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 专有</translation>
 <translation id="315116470104423982">移动数据</translation>
+<translation id="3153094818810437149">您以后可以在录音机设置中进行更改</translation>
 <translation id="3156511682997763015">快进 10 秒</translation>
 <translation id="3156846309055100599">正在扫描第 <ph name="PAGE_NUMBER" /> 页…</translation>
 <translation id="315738237743207937">检测到强制门户</translation>
@@ -537,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
 <translation id="361575905210396100">感谢您的反馈</translation>
 <translation id="3621072146987826699">大象</translation>
+<translation id="3628462041319107639">正在下载转写模型…</translation>
 <translation id="3632040286124154621">建议不错</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3639873154908477486">名称（从 A 到 Z）</translation>
@@ -564,10 +569,12 @@
 <translation id="3785643128701396311">像素风</translation>
 <translation id="3799381533888781854">已关闭 - 此设置由您的管理员管理。</translation>
 <translation id="380097101658023925">RGB 控件</translation>
+<translation id="380493988330050229">无法为此转写语言创建摘要</translation>
 <translation id="38114475217616659">清除所有打印记录</translation>
 <translation id="3820172043799983114">PIN 码无效。</translation>
 <translation id="382043424867370667">“日落”壁纸</translation>
 <translation id="3824259034819781947">附加文件</translation>
+<translation id="383586991013681190">请在“设置”中选择转写语言并下载</translation>
 <translation id="3836587210832263413">请仅开启您信任的扩展程序</translation>
 <translation id="3838338534323494292">新密码</translation>
 <translation id="3845880861638660475">按 <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> 即可关闭对话框。</translation>
@@ -587,6 +594,7 @@
 <translation id="3885327323343477505">更换屏保</translation>
 <translation id="3889914174935857450">重置日期</translation>
 <translation id="3897092660631435901">菜单</translation>
+<translation id="3902271751020176019">转写语言</translation>
 <translation id="391412459402535266">无法测试设备。切换到笔记本电脑模式即可进行测试。</translation>
 <translation id="3916998944874125962">截取屏幕截图</translation>
 <translation id="3923184630988645767">流量使用</translation>
@@ -710,6 +718,7 @@
 <translation id="4474142134969976028">没有符合条件的结果</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4483498983731992167">无法创建转写内容</translation>
 <translation id="4486524074141928967">您将于<ph name="TIME" /> 退出账号</translation>
 <translation id="4500722292849917410">此快捷键不可用。按新的快捷键时，请使用辅助键（ctrl、alt、shift 或<ph name="META_KEY" />键）。</translation>
 <translation id="4500966230243561393">界面颜色</translation>
@@ -735,6 +744,7 @@
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4594021849294327751">创建转写文本</translation>
+<translation id="4594541568452132351">选择转写语言并下载模型</translation>
 <translation id="4607282946861182308">无法创建这样的图片。请试试其他提示。</translation>
 <translation id="4609350030397390689">调低键盘亮度</translation>
 <translation id="4623061655523261501">已成功生成录音名称</translation>
@@ -750,6 +760,7 @@
 <translation id="4665014895760275686">制造商</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
 <translation id="467715984478005772">疑似存在防火墙</translation>
+<translation id="4678534708181186163">无法生成摘要，请尝试输入较短的转写内容。</translation>
 <translation id="4683762547447150570">点按按钮即可聚焦于按键分配</translation>
 <translation id="4691278870498629773">已停止 - 缺少送纸盘</translation>
 <translation id="469379815867856270">信号强度</translation>
@@ -839,6 +850,7 @@
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">不含<ph name="META_KEY" />键的快捷键可能会与某个应用的快捷方式冲突。再次按此快捷键可继续使用它，也可按含有<ph name="KEY" />键的新快捷键。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">近义词：</translation>
+<translation id="5121677070210013200">无法下载转写模型。请重试，或重新启动 Chromebook。</translation>
 <translation id="5130848777448318809">小马</translation>
 <translation id="5137451382116112100">全屏</translation>
 <translation id="5140788690559353412">失去对学校账号的访问权限后，您将无法再访问相关的电子邮件和 Google 云端硬盘文件，例如 Gmail、文档、幻灯片等。</translation>
@@ -852,6 +864,7 @@
 <translation id="5168185087976003268">电池寿命</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="517075088756846356">请拔下并重新插入<ph name="DEVICE_NAME" />电源线，以继续更新流程</translation>
+<translation id="5178021559562393163">无法创建名称，请尝试输入较短的转写内容。</translation>
 <translation id="5180108905184566358">猴面包树</translation>
 <translation id="5180712487038406644">富有表现力</translation>
 <translation id="5190187232518914472">重现您的美好回忆。如需添加或编辑相册，请转至 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />。</translation>
@@ -886,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">身份</translation>
 <translation id="5317780077021120954">保存</translation>
+<translation id="5318310531701770497">无法创建名称，请尝试输入较长的转写内容。</translation>
 <translation id="5318334351163689047">TCP 请求失败</translation>
 <translation id="53196409393069519">要开启转写功能吗？</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="COMPLETION_STATUS" /></translation>
@@ -939,6 +953,7 @@
 <translation id="5606865426897221650">Tab 键</translation>
 <translation id="5613201299517339763">您已退出账号</translation>
 <translation id="5620281292257375798">仅供内部使用</translation>
+<translation id="5628106863521633649">支持的语言</translation>
 <translation id="5630438231335788050">包豪斯</translation>
 <translation id="5631759159893697722">摘要</translation>
 <translation id="5655283760733841251">调高键盘亮度</translation>
@@ -1099,6 +1114,7 @@
 <translation id="6359919876285606596">此操作一旦执行便无法撤消</translation>
 <translation id="6368342879959028556">如果选择“利用 AI 创建”，请撰写自定义提示。或者，您也可以选择“AI 壁纸”，选择一个主题，然后选择带下划线的字词，打造个性化的 AI 壁纸。</translation>
 <translation id="636850387210749493">企业注册</translation>
+<translation id="6369221585240879141">无法为此转写语言创建录制名称</translation>
 <translation id="6373461326814131011">池塘</translation>
 <translation id="6379086450106841622">触摸屏</translation>
 <translation id="6381741036071372448">测试您的键盘</translation>
@@ -1250,6 +1266,7 @@
 <translation id="7040729769968826896">允许识别说话者</translation>
 <translation id="7041549558901442110">设备未连接。</translation>
 <translation id="7046522406494308071">将所有快捷键重置为默认设置？</translation>
+<translation id="7049916119678019302">请在“设置”中下载转写模型</translation>
 <translation id="7058278511608979688">结束并保存</translation>
 <translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> 键</translation>
@@ -1263,6 +1280,7 @@
 <translation id="710028965487274708">失败 - 授权失败</translation>
 <translation id="7101959270679078188">解锁<ph name="DEVICE_NAME" />以继续更新流程</translation>
 <translation id="7103252855940681301">第 <ph name="INDEX" /> 部设备（共 <ph name="COUNT" /> 部），名称为“<ph name="NAME" />”。</translation>
+<translation id="7103793063702494489">选定的语言</translation>
 <translation id="7107255225945990211">选择 <ph name="PRODUCT_NAME" /> 专有艺术作品</translation>
 <translation id="7108668606237948702">输入</translation>
 <translation id="7117228822971127758">请稍后重试</translation>
@@ -1272,6 +1290,7 @@
 <translation id="7130438335435247835">接入点名称 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
 <translation id="7135814714616751706">搜索快捷键</translation>
+<translation id="7138614237884624401">简化文本</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
@@ -1693,6 +1712,7 @@
 <translation id="9100765901046053179">高级设置</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>
+<translation id="9108856746036501072">录音机可以为包含语音的录制内容创建转写文本。接下来，您需要选择转写语言并下载模型（最多 100 MB）。</translation>
 <translation id="9111102763498581341">解锁</translation>
 <translation id="9122492456897874028">帮助您总结内容、获得释义以及完成更多工作</translation>
 <translation id="9122602430962285795">若要重新连接，请转到“设置”</translation>

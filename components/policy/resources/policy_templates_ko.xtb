@@ -366,6 +366,7 @@
 <translation id="1262993197422487260">로그인 및 잠금 화면에 비밀번호 표시 버튼 사용 안함</translation>
 <translation id="1265053460044691532">SAML을 통해 인증한 사용자가 오프라인에서 로그인할 수 있는 기간을 제한</translation>
 <translation id="1265076559723566171">EDU 사용자의 제어 설정</translation>
+<translation id="1268561791350382977">렌즈 오버레이를 허용하고 AI 모델을 개선합니다.</translation>
 <translation id="1271811620059192171">정책 전체 그룹 사용 설정</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> 확장 프로그램 설치 요청 사용</translation>
 <translation id="1272798957154751008">Chromad 기기를 클라우드 관리로 이전할 수 있도록 합니다.</translation>
@@ -3593,6 +3594,7 @@ false로 설정되면 버전 정보가 수집되지 않습니다.
 
 정책을 설정하면 지정된 텔레메트리 데이터 유형의 웹사이트 텔레메트리 보고를 제어할 수 있습니다.
 설정하지 않으면 웹사이트 텔레메트리 데이터가 보고되지 않습니다.</translation>
+<translation id="3651483357891254380">AI 모델을 개선하지 않으면서 렌즈 오버레이를 허용합니다.</translation>
 <translation id="3652670852519271837">사이트에서 사용자에게 File System API를 통해 파일 및 디렉터리 읽기 액세스 권한을 요청하도록 허용</translation>
 <translation id="3653237928288822292">기본 검색 공급자 아이콘</translation>
 <translation id="3654906736796256792">오디오 샌드박스 실행 허용</translation>
@@ -5192,6 +5194,14 @@ None으로 설정하거나 설정하지 않으면 ARC 앱에서 <ph name="PRODUC
       정책을 설정하지 않으면 기본적으로 기업 관리 사용자 및 관리되지 않는 사용자 모두에게 허용됩니다.</translation>
 <translation id="487460824085252184">사용자의 동의를 구하지 않고 자동으로 이전합니다.</translation>
 <translation id="4874982543810021567">이 사이트에서 WebUSB 차단</translation>
+<translation id="4875557601092081492">이 정책은 M132에서 지원 중단되었으며, 기능을 더 세부적으로 제어할 수 있는 <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> 정책으로 대체되었습니다. 대신 <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> 정책을 사용합니다.
+
+렌즈 오버레이를 사용하면 실제 웹 콘텐츠 위에 표시된 현재 페이지의 스크린샷과 상호작용하여 Google 검색을 실행할 수 있습니다.
+
+이 기능을 제어하는 사용자 설정은 없으며, 이 정책에서 사용 중지하지 않는 한 일반적으로 Google을 기본 검색엔진으로 사용하는 모든 사용자에게 이 기능이 제공됩니다.
+
+정책을 0(사용 설정)으로 설정하거나 설정하지 않으면 사용자가 이 기능을 사용할 수 있습니다.
+정책을 1(사용 안함)로 설정하면 이 기능을 사용할 수 없습니다.</translation>
 <translation id="4876805738539874299">최대 SSL 버전 사용 설정됨</translation>
 <translation id="4877305769899044884">키보드 백라이트 색상: 기본</translation>
 <translation id="4886138258823889910">Windows에서 브라우저의 <ph name="UIA_NAME" /> 접근성 프레임워크 제공자 사용 설정</translation>
@@ -7903,6 +7913,7 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
       정책을 True로 설정하면 다른 설정에서도 허용하는 한 사용자가 <ph name="PLUGIN_VM_NAME" />을(를) 사용하도록 설정됩니다. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 및 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />이(가) True로 설정되고 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 또는 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />이(가) 설정되어야 <ph name="PLUGIN_VM_NAME" />이(가) 실행될 수 있습니다.</translation>
 <translation id="6741318452269220158">정책을 True로 설정하면 기본 동작으로 Native Client가 사용 중지되어 있더라도 Native Client가 계속 실행됩니다.
 정책을 False로 설정하거나 설정하지 않으면 기본 동작이 사용됩니다.</translation>
+<translation id="6743006196954236593">렌즈 오버레이를 허용하지 않습니다.</translation>
 <translation id="6749641778238480311">이전 사용자 동작이나 사용자 확인 없이도 하위 앱 API를 호출할 수 있도록 허용합니다.</translation>
 <translation id="6750902920405577210">신호 강도 변경 이벤트에 관해 보고할 텔레메트리 데이터 목록입니다.
 
@@ -10404,6 +10415,17 @@ JavaScript 최적화를 사용 중지하면(이 정책의 값을 2로 설정) <p
       참고: 프로세스 완화 정책(https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies)에 관해 자세히 알아보세요.</translation>
 <translation id="8672321184841719703">자동 업데이트 버전 타겟팅</translation>
 <translation id="867410340948518937">U2F(범용 2차 요소)</translation>
+<translation id="8674130752570077671">렌즈 오버레이를 사용하면 실제 웹 콘텐츠 위에 표시된 현재 페이지의 스크린샷과 상호작용하여 Google 검색을 실행할 수 있습니다. 또한 현재 페이지의 문맥을 인지하는 Google 검색도 실행할 수 있습니다. 렌즈 오버레이는 문맥에 맞는 답변을 제공하기 위해 Google에 페이지 콘텐츠를 전송하여 사용자가 현재 있는 페이지의 맥락에 따라 사용자의 질문에 답변합니다.
+
+이 기능을 제어하는 사용자 설정은 없으며, 이 정책에서 사용 중지하지 않는 한 일반적으로 Google을 기본 검색엔진으로 사용하는 모든 사용자에게 이 기능이 제공됩니다.
+
+이는 지원 중단된 <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" /> 정책을 대체합니다.
+
+0 = 사용자를 위해 이 기능을 사용 설정하고 AI 모델을 학습시키거나 개선하는 데 도움이 되도록 관련 데이터를 Google에 전송합니다. 관련 데이터에는 기능에 따라 프롬프트, 입력, 출력, 소스 자료가 포함될 수 있습니다. AI 모델 개선 목적으로만 사람이 데이터를 검토할 수 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
+
+1 = 사용자를 위해 기능을 사용 설정하지만 AI 모델을 학습시키거나 개선하기 위한 데이터를 Google로 전송하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
+
+2 = 기능을 사용 중지합니다.</translation>
 <translation id="8676959842615154675">정책을 사용 설정하면 원격 액세스 호스트가 호스트와 연결된 로컬 사용자의 이름과 호스트 소유자로 등록된 Google 계정의 이름(호스트 소유자가 'johndoe@example.com'인 경우 'johndoe')을 비교합니다. 호스트 소유자의 이름이 호스트와 연결된 로컬 사용자의 이름과 다르면 이 호스트는 시작되지 않습니다. 소유자의 Google 계정이 특정 도메인에 연결되도록 하려면 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />과 정책을 함께 사용합니다.
 
       정책을 사용 중지하거나 설정하지 않으면 원격 액세스 호스트를 모든 로컬 사용자와 연결할 수 있습니다.</translation>

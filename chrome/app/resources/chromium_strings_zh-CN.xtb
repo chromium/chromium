@@ -165,7 +165,6 @@
 <translation id="3161522574479303604">所有语言</translation>
 <translation id="3179665906251668410">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="3185330573522821672">自定义您的新 Chromium 个人资料</translation>
-<translation id="3190315855212034486">哎呀！Chromium 崩溃了。要立即重新启动吗？</translation>
 <translation id="3224847870593914902">若要从 Chromium 中移除您的 Google 账号，请在“设置”页面中退出 Chromium</translation>
 <translation id="3258596308407688501">Chromium 无法读写其数据目录：
 
@@ -440,7 +439,6 @@
 <translation id="67706546131546258">Chromium 建议您扫描此文件，因为它可能包含危险因素。</translation>
 <translation id="6779406956731413166">Chromium 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="6831043979455480757">翻译</translation>
-<translation id="6843464627590537736">图片搜索搜索气泡</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
 <translation id="685279860330610299">Chromium 可以理解更多类型的信息，并更快地自动填充表单。详细了解 <ph name="BEGIN_LINK" />Chrome 自动填充功能<ph name="END_LINK" /></translation>
@@ -566,6 +564,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556420416730706394">您可以固定图片搜索功能以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
+<translation id="856656450041460113">搜索语言列表</translation>
 <translation id="8568283329061645092">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="8576826849825683917">多个组织负责管理 Chromium</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>

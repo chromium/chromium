@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1191518099344003522">L'APN està activat.</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
+<translation id="1196264380943975940">No es pot resumir. Prova-ho amb una transcripció més llarga.</translation>
 <translation id="1196959502276349371">Versió <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reprodueix / Posa en pausa</translation>
 <translation id="1201402288615127009">Següent</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">Latència alta als llocs web HTTPS</translation>
 <translation id="361575905210396100">Gràcies pels teus suggeriments</translation>
 <translation id="3621072146987826699">elefants</translation>
+<translation id="3628462041319107639">S'està baixant el model de transcripció…</translation>
 <translation id="3632040286124154621">El suggeriment és bo</translation>
 <translation id="3632579075709132555">Commutador de la pantalla de privadesa</translation>
 <translation id="3639873154908477486">Nom (de la A a la Z)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="382043424867370667">Fons de pantalla Posta de sol</translation>
 <translation id="3824259034819781947">Adjunta fitxers</translation>
+<translation id="383586991013681190">Selecciona l'idioma de transcripció i baixa a Configuració</translation>
 <translation id="3836587210832263413">Activa només les extensions de confiança</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="3845880861638660475">Prem <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per tancar el quadre de diàleg.</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">No hi ha cap resultat coincident</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
+<translation id="4483498983731992167">No es pot crear la transcripció</translation>
 <translation id="4486524074141928967">La teva sessió es tancarà a les <ph name="TIME" /></translation>
 <translation id="4500722292849917410">La drecera no està disponible. Prem una drecera nova amb una tecla modificadora (Ctrl, Alt, Maj o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfície</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
 <translation id="467715984478005772">Possible tallafoc</translation>
+<translation id="4678534708181186163">No es pot resumir. Prova-ho amb una transcripció més curta.</translation>
 <translation id="4683762547447150570">Toca el botó per enfocar l'assignació de tecles</translation>
 <translation id="4691278870498629773">S'ha aturat: no es troba la safata</translation>
 <translation id="469379815867856270">Intensitat del senyal</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">amunt</translation>
 <translation id="5107243100836678918">La drecera sense tecla de <ph name="META_KEY" /> pot entrar en conflicte amb la drecera d'alguna aplicació. Torna a prémer aquesta drecera per continuar utilitzant-la o prem-ne una altra mitjançant la tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Similars:</translation>
+<translation id="5121677070210013200">No es pot baixar el model de transcripció. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Complet</translation>
 <translation id="5140788690559353412">Si perds l'accés al teu compte de centre educatiu, ja no tindràs accés al correu electrònic ni als fitxers de Google Drive associats, com ara Gmail, Documents, Presentacions i més.</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">Estat de la bateria</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="517075088756846356">Desendolla i torna a endollar el cable d'alimentació del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
+<translation id="5178021559562393163">No es poden crear noms. Prova-ho amb una transcripció més curta.</translation>
 <translation id="5180108905184566358">baobabs</translation>
 <translation id="5180712487038406644">Expressiu</translation>
 <translation id="5190187232518914472">Reviu els teus records preferits. Per afegir o editar àlbums, ves a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Identitat</translation>
 <translation id="5317780077021120954">Desa</translation>
+<translation id="5318310531701770497">No es poden crear noms. Prova-ho amb una transcripció més llarga.</translation>
 <translation id="5318334351163689047">Errors en la sol·licitud de TCP</translation>
 <translation id="53196409393069519">Vols activar la transcripció?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@
 <translation id="7040729769968826896">Permet la identificació del parlant</translation>
 <translation id="7041549558901442110">El dispositiu no està connectat.</translation>
 <translation id="7046522406494308071">Vols restablir totes les dreceres als valors predeterminats?</translation>
+<translation id="7049916119678019302">Baixa el model de transcripció a Configuració</translation>
 <translation id="7058278511608979688">Finalitza i desa</translation>
 <translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
 <translation id="7066538517128343186">la tecla <ph name="KEY" /></translation>

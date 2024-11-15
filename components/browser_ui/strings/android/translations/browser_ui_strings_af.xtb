@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Die meeste werwe wat jy besoek, stoor waarskynlik data op jou toestel – dikwels om jou ervaring te verbeter deur jou voorkeure of inligting wat jy met die werf deel, te stoor. Ons beveel aan dat hierdie instelling aan bly.</translation>
 <translation id="2289270750774289114">Vra wanneer 'n werf Bluetooth-toestelle in die omtrek wil ontdek (aanbeveel)</translation>
 <translation id="2315043854645842844">Bedryfstelsel steun nie die sertifikaat wat die kliënt gekies het nie.</translation>
+<translation id="2356926036049612643">V8-optimeerder</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2379925928934107488">Pas donkertema op werwe toe wanneer Chrome donkertema gebruik, indien moontlik</translation>
 <translation id="2390272837142897736">Vergroot zoem</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Uitgevou – klik om in te vou.</translation>
 <translation id="2586657967955657006">Knipbord</translation>
 <translation id="2588271083332682494">Hou alles georganiseerd met oortjiegroepe</translation>
+<translation id="2594832159966169099">Bestuur V8-sekuriteit</translation>
 <translation id="2597457036804169544">Moenie donkertema op werwe toepas nie</translation>
 <translation id="2606760465469169465">Outoverifieer</translation>
 <translation id="2621115761605608342">Laat JavaScript vir 'n spesifieke werf toe.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Kies items</translation>
 <translation id="6838525730752203626">Gebruik Chrome by verstek</translation>
 <translation id="6840760312327750441">Raak en hou 'n oortjie om oortjies te groepeer. Sleep dit dan op 'n ander oortjie.</translation>
+<translation id="6851981911629679515">Skakel bykomende beskerming in Chrome se JavaScript- en WebAssembly-enjin aan</translation>
 <translation id="6864395892908308021">Hierdie toestel kan nie NFC lees nie</translation>
 <translation id="6870169401250095575">Versteek Veiligheidskontrole-kaart</translation>
 <translation id="6900883974539674431">Skep oortjiegroepe wat outomaties op al jou toestelle stoor en opdateer</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Enige werf wat jy besoek, kan vir jou enige advertensie wys</translation>
 <translation id="8087000398470557479">Hierdie inhoud kom van <ph name="DOMAIN_NAME" /> af, afgelewer deur Google.</translation>
 <translation id="8088603949666785339">Meer opsies in die <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Verminder werkverrigting, maar maak V8 meer bestand teen aanvalle</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome sal môre weer webkoekies beperk}other{# dae totdat Chrome weer webkoekies beperk}}</translation>
 <translation id="8116925261070264013">Gedemp</translation>
 <translation id="8117244575099414087">Wanneer dit aan is, kan werwe jou toestel se sensors gebruik. Wanneer dit af is, kan werwe nie sensors gebruik nie.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Kies 'n prent</translation>
 <translation id="8800034312320686233">Werk werf nie?</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript vir 'n spesifieke werf.</translation>
+<translation id="8801657293260363985">V8 is Chrome se JavaScript- en WebAssembly-enjin wat gebruik word om werf se werkverrigting te verbeter</translation>
 <translation id="8803526663383843427">As dit aan is</translation>
 <translation id="8805385115381080995">Jy kan vinniger blaai omdat die kans kleiner is dat ’n werf jou sal vra om te verifieer dat jy ’n regte persoon is</translation>
 <translation id="8816026460808729765">Blokkeer werwe om toegang tot sensors kry</translation>

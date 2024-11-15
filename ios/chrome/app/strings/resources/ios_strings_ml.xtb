@@ -729,6 +729,7 @@
 <translation id="4405320213589929829">പ്രാദേശിക വിവരങ്ങളും വഴികളും നേടാൻ വെബ് പേജുകളിലെ വിലാസങ്ങൾ ഉപയോഗിക്കുക.</translation>
 <translation id="441218095371040430">കീബോർഡ് ഉപയോഗിക്കുക</translation>
 <translation id="4415276339145661267">നിങ്ങളുടെ Google Account മാനേജ് ചെയ്യുക</translation>
+<translation id="4430277756566635951">നിലവിൽ <ph name="EMAIL" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു. അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4431224949908513835">പൂരിപ്പിക്കാൻ ഒരു പേയ്‌മെന്റ് രീതി തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ക്രമീകരണം<ph name="END_BOLD" /> തുറക്കുക</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> എന്നതിനുള്ള കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
@@ -781,6 +782,7 @@
 <translation id="4645575059429386691">നിങ്ങളുടെ രക്ഷിതാവ് നിയന്ത്രിക്കുന്നു</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />. Google Account-ൽ പിശക്. അക്കൗണ്ട് മെനു തുറക്കുക.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ആയി തുടരുക</translation>
+<translation id="4651927776207937667">{count,plural, =1{ഒരു മിനിറ്റിന് ശേഷം മറയ്ക്കുക}other{{count} മിനിറ്റിന് ശേഷം മറയ്ക്കുക}}</translation>
 <translation id="4652817563047461855">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമാണെന്ന് ഉറപ്പാക്കുക, അവ അപഹരിക്കപ്പെട്ടുവെന്ന് കണ്ടെത്തിയാൽ ഓൺലൈനിൽ സ്വയം പരിരക്ഷിക്കുന്നതിനുള്ള ഉപദേശം നേടുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">സംരക്ഷിക്കുക</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1312,6 +1314,7 @@
 <translation id="6943681254152031826">{COUNT,plural, =1{ഈ പാക്കേജ് ട്രാക്ക് ചെയ്യണോ?}other{{COUNT} പാക്കേജുകൾ ട്രാക്ക് ചെയ്യണോ?}}</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6950522403736391608">മറച്ചിരിക്കുന്നു</translation>
+<translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> നിലവിൽ തിരഞ്ഞെടുത്തിരിക്കുന്നു. അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6964760285928603117">ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6973630695168034713">ഫോൾഡറുകൾ</translation>
@@ -1512,7 +1515,6 @@
 <translation id="7889910613639381518">Google Password Manager വിജറ്റ് ഉപയോഗിച്ച് എളുപ്പവും സുരക്ഷിതവുമായ ആക്‌സസ്.</translation>
 <translation id="7899199123054742721">എല്ലാം വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="7911190106180361398">എല്ലാം സമന്വയിപ്പിക്കാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കുന്നില്ല.</translation>
-<translation id="7920949005883349320">സ്വകാര്യതയും സുരക്ഷയും</translation>
 <translation id="792357691529995513">പ്രശ്‌നങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7925108652071887026">യാന്ത്രിക പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="7926975587469166629">കാർഡിന്റെ വിളിപ്പേര്</translation>
@@ -1787,6 +1789,7 @@
 <translation id="9032405509996909363">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുന്നത് സ്ഥിരീകരിക്കുക</translation>
 <translation id="9034759925968272072">നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ആകില്ല. Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="9039373489628511875">ബാൻഡ്‌വിഡ്‌ത്ത്</translation>
+<translation id="9042893549633094279">സ്വകാര്യതയും സുരക്ഷയും</translation>
 <translation id="9057030985451135243">പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളെ കുറിച്ച് അറിയുക</translation>
 <translation id="9057972802061533987">പിന്തുടരാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>

@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Kependaman tinggi ke laman web HTTPS</translation>
 <translation id="361575905210396100">Terima kasih atas maklum balas anda</translation>
 <translation id="3621072146987826699">gajah</translation>
+<translation id="3628462041319107639">Memuat turun model transkrip…</translation>
 <translation id="3632040286124154621">Cadangan bagus</translation>
 <translation id="3632579075709132555">Togol skrin privasi</translation>
 <translation id="3639873154908477486">Nama (A hingga Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="382043424867370667">Hiasan latar matahari terbenam</translation>
 <translation id="3824259034819781947">Lampirkan fail</translation>
+<translation id="383586991013681190">Pilih bahasa transkrip dan muat turun dalam Tetapan</translation>
 <translation id="3836587210832263413">Hidupkan sambungan yang anda percayai sahaja</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Tiada hasil carian yang sepadan</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
+<translation id="4483498983731992167">Tidak dapat membuat transkrip</translation>
 <translation id="4486524074141928967">Anda akan dilog keluar pada pukul <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Pintasan tidak tersedia. Tekan pintasan baharu menggunakan kekunci pengubah suai (ctrl, alt, shift atau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Warna antara muka</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ke atas</translation>
 <translation id="5107243100836678918">Pintasan tanpa kekunci <ph name="META_KEY" /> mungkin bercanggah dengan sesetengah pintasan apl. Tekan pintasan ini sekali lagi untuk terus digunakan atau tekan pintasan baharu menggunakan kekunci <ph name="KEY" />. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Serupa:</translation>
+<translation id="5121677070210013200">Tidak dapat memuat turun model transkrip. Cuba lagi atau mulakan semula Chromebook anda.</translation>
 <translation id="5130848777448318809">kuda padi</translation>
 <translation id="5137451382116112100">Penuh</translation>
 <translation id="5140788690559353412">Apabila anda kehilangan akses kepada akaun sekolah anda, anda tidak akan dapat mengakses e-mel dan fail Google Drive yang dikaitkan lagi seperti Gmail, Docs, Slides dan pelbagai lagi.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Benarkan pengenalpastian pembesar suara</translation>
 <translation id="7041549558901442110">Peranti tidak disambungkan.</translation>
 <translation id="7046522406494308071">Tetapkan semula semua pintasan kepada lalai?</translation>
+<translation id="7049916119678019302">Muat turun model transkrip dalam Tetapan</translation>
 <translation id="7058278511608979688">Tamatkan &amp; simpan</translation>
 <translation id="7059230779847288458">Mengecas, <ph name="TIME_VALUE" /> sehingga penuh</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> kunci</translation>

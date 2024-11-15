@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Visoka latencija do HTTPS web-lokacija</translation>
 <translation id="361575905210396100">Zahvaljujemo na povratnim informacijama</translation>
 <translation id="3621072146987826699">slonovi</translation>
+<translation id="3628462041319107639">Preuzimanje modela prijepisa…</translation>
 <translation id="3632040286124154621">Dobar prijedlog</translation>
 <translation id="3632579075709132555">Prekidač zaslona privatnosti</translation>
 <translation id="3639873154908477486">Naziv (od A do Ž)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">PIN nije važeći.</translation>
 <translation id="382043424867370667">Pozadina s pogledom na zalazak sunca</translation>
 <translation id="3824259034819781947">Priloži datoteke</translation>
+<translation id="383586991013681190">Odaberite jezik prijepisa i preuzmite ga u postavkama</translation>
 <translation id="3836587210832263413">Uključite samo proširenja koja smatrate pouzdanima</translation>
 <translation id="3838338534323494292">Nova zaporka</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> i <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> da biste zatvorili dijaloški okvir.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Nema podudarnih rezultata</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pinganje pristupnika mreže koja nije zadana nije uspjelo</translation>
+<translation id="4483498983731992167">Prijepis se ne može izraditi</translation>
 <translation id="4486524074141928967">Odjavit ćete se u <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Prečac nije dostupan. Pritisnite novi prečac pomoću modifikatorske tipke (ctrl, alt, shift ili <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Boja sučelja</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">gore</translation>
 <translation id="5107243100836678918">Prečac bez tipke <ph name="META_KEY" /> može biti u sukobu s prečacem neke aplikacije. Ponovno pritisnite taj prečac kako biste ga nastavili upotrebljavati ili pritisnite novi prečac pomoću tipke <ph name="KEY" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Slično:</translation>
+<translation id="5121677070210013200">Preuzimanje modela prijepisa nije uspjelo. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
 <translation id="5130848777448318809">poniji</translation>
 <translation id="5137451382116112100">Pun</translation>
 <translation id="5140788690559353412">Kad izgubite pristup školskom računu, više nećete imati pristup povezanoj e-pošti i datotekama na Google disku kao što su Gmail, Dokumenti, Prezentacije i druge.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Omogući identifikaciju govornika</translation>
 <translation id="7041549558901442110">Uređaj nije povezan.</translation>
 <translation id="7046522406494308071">Želite li sve prečace vratiti na zadane?</translation>
+<translation id="7049916119678019302">Preuzmite model prijepisa u postavkama</translation>
 <translation id="7058278511608979688">Završi i spremi</translation>
 <translation id="7059230779847288458">Punjenje, <ph name="TIME_VALUE" /> do potpune napunjenosti</translation>
 <translation id="7066538517128343186">tipka <ph name="KEY" /></translation>

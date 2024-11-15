@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1191518099344003522">Точка доступа включена.</translation>
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
+<translation id="1196264380943975940">Невозможно создать краткий пересказ. Расшифровка слишком короткая.</translation>
 <translation id="1196959502276349371">Версия <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Воспроизведение/пауза</translation>
 <translation id="1201402288615127009">Далее</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">Длительная задержка у HTTPS-сайтов.</translation>
 <translation id="361575905210396100">Благодарим за отзыв!</translation>
 <translation id="3621072146987826699">слоны</translation>
+<translation id="3628462041319107639">Скачивание модели расшифровки…</translation>
 <translation id="3632040286124154621">Нравится</translation>
 <translation id="3632579075709132555">Включение экрана конфиденциальности</translation>
 <translation id="3639873154908477486">По названию (от А до Я)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
 <translation id="382043424867370667">Обои с закатом</translation>
 <translation id="3824259034819781947">Прикрепить файлы</translation>
+<translation id="383586991013681190">Перейдите в настройки, выберите язык расшифровки и скачайте модель.</translation>
 <translation id="3836587210832263413">Включайте только те расширения, которым вы доверяете</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3845880861638660475">Чтобы закрыть диалоговое окно, нажмите <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">Ничего не найдено</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
+<translation id="4483498983731992167">Не удалось создать расшифровку</translation>
 <translation id="4486524074141928967">В <ph name="TIME" /> запланирован выход из системы</translation>
 <translation id="4500722292849917410">Недопустимое сочетание клавиш. Выберите новое с клавишей-модификатором: Ctrl, Alt, Shift или <ph name="META_KEY" />.</translation>
 <translation id="4500966230243561393">Цвет интерфейса</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">Производитель</translation>
 <translation id="467510802200863975">Пароли не совпадают.</translation>
 <translation id="467715984478005772">потенциальный брандмауэр</translation>
+<translation id="4678534708181186163">Невозможно создать краткий пересказ. Расшифровка слишком длинная.</translation>
 <translation id="4683762547447150570">Чтобы перейти к назначению клавиш, нажмите кнопку</translation>
 <translation id="4691278870498629773">Печать прервана: нет лотка для бумаги</translation>
 <translation id="469379815867856270">Уровень сигнала</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">вверх</translation>
 <translation id="5107243100836678918">Сочетание без клавиши <ph name="META_KEY" /> может конфликтовать с сочетаниями клавиш некоторых приложений. Нажмите это сочетание клавиш ещё раз, чтобы продолжить его использовать, или выберите новое с клавишей <ph name="KEY" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Синонимы:</translation>
+<translation id="5121677070210013200">Не удалось скачать модель расшифровки. Повторите попытку или перезагрузите Chromebook.</translation>
 <translation id="5130848777448318809">пони</translation>
 <translation id="5137451382116112100">Полноэкранный режим</translation>
 <translation id="5140788690559353412">Если вы больше не сможете пользоваться учебным аккаунтом, то также потеряете доступ к данным в нем, включая письма из Gmail, а также документы, презентации и другие файлы на Google Диске.</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">Уровень заряда</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="517075088756846356">Чтобы продолжить обновление, отключите и снова вставьте кабель питания устройства "<ph name="DEVICE_NAME" />".</translation>
+<translation id="5178021559562393163">Невозможно создать названия. Расшифровка слишком длинная.</translation>
 <translation id="5180108905184566358">баобабы</translation>
 <translation id="5180712487038406644">Выразительная</translation>
 <translation id="5190187232518914472">Вспоминайте яркие моменты своей жизни. Чтобы добавить или изменить альбом, перейдите в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Идентификационные данные</translation>
 <translation id="5317780077021120954">Сохранить</translation>
+<translation id="5318310531701770497">Невозможно создать названия. Расшифровка слишком короткая.</translation>
 <translation id="5318334351163689047">Невыполненные запросы TCP.</translation>
 <translation id="53196409393069519">Включить расшифровку?</translation>
 <translation id="5326394068492324457">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, состояние: "<ph name="COMPLETION_STATUS" />"</translation>
@@ -1258,6 +1266,7 @@
 <translation id="7040729769968826896">Разрешить определять говорящих</translation>
 <translation id="7041549558901442110">Устройство не подключено.</translation>
 <translation id="7046522406494308071">Восстановить сочетания клавиш по умолчанию?</translation>
+<translation id="7049916119678019302">Перейдите в настройки и скачайте модель расшифровки.</translation>
 <translation id="7058278511608979688">Завершить и сохранить</translation>
 <translation id="7059230779847288458">Заряжается, осталось <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186">клавиша <ph name="KEY" /></translation>

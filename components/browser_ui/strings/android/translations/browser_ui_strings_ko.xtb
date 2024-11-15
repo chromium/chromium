@@ -78,6 +78,7 @@
 <translation id="228293613124499805">내가 방문하는 대부분의 사이트에서는 기기에 데이터를 저장하며, 사이트에 공유한 환경설정이나 정보를 저장하여 사용자 환경을 개선하는 경우가 많습니다. 이 설정을 유지하는 것이 좋습니다.</translation>
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2315043854645842844">클라이언트측 인증서 선택이 운영체제에서 지원되지 않습니다.</translation>
+<translation id="2356926036049612643">V8 옵티마이저</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2379925928934107488">가능하면 Chrome에서 어두운 테마를 사용할 때 사이트에도 어두운 테마를 적용합니다.</translation>
 <translation id="2390272837142897736">확대</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2588271083332682494">탭 그룹으로 깔끔하게 정리하기</translation>
+<translation id="2594832159966169099">V8 보안 관리</translation>
 <translation id="2597457036804169544">사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="2606760465469169465">자동 인증</translation>
 <translation id="2621115761605608342">특정 사이트에서 자바스크립트를 허용합니다.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">항목 선택</translation>
 <translation id="6838525730752203626">Chrome을 기본 브라우저로 사용</translation>
 <translation id="6840760312327750441">탭을 그룹화하려면 탭을 길게 터치한 다음 다른 탭으로 드래그하세요.</translation>
+<translation id="6851981911629679515">Chrome의 JavaScript 및 WebAssembly 엔진에서 추가 보호 기능 사용 설정</translation>
 <translation id="6864395892908308021">기기에서 NFC를 읽을 수 없음</translation>
 <translation id="6870169401250095575">안전 확인 숨기기 카드</translation>
 <translation id="6900883974539674431">모든 기기에서 자동으로 저장되고 업데이트되는 탭 그룹을 만드세요.</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>
 <translation id="8087000398470557479">이 콘텐츠의 출처는 Google에서 제공하는 <ph name="DOMAIN_NAME" />입니다.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> 옵션 더보기</translation>
+<translation id="8090579562279016251">성능은 감소하지만 V8의 공격에 대한 저항력이 강화됨</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{내일 Chrome에서 다시 쿠키를 제한합니다}other{#일 후 Chrome에서 다시 쿠키를 제한합니다}}</translation>
 <translation id="8116925261070264013">음소거됨</translation>
 <translation id="8117244575099414087">사용 설정하면 사이트에서 기기의 센서를 사용할 수 있습니다. 사용 중지하면 사이트에서 센서를 사용할 수 없습니다.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">이미지 선택</translation>
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
 <translation id="8801436777607969138">특정 사이트의 자바스크립트를 차단합니다.</translation>
+<translation id="8801657293260363985">V8은 사이트 속도를 개선하는 데 사용되는 Chrome의 JavaScript 및 WebAssembly 엔진입니다.</translation>
 <translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8805385115381080995">사이트에서 내가 실제 사람임을 확인할 가능성이 줄어들기 때문에 브라우징이 더 빨라집니다.</translation>
 <translation id="8816026460808729765">사이트에서 센서에 액세스하지 못하도록 차단</translation>

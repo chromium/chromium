@@ -402,7 +402,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
 <translation id="5947104538377036631">Кратенка за Chrome</translation>
 <translation id="5953954252731207958">Не сте отвориле одамна. Chrome ја отстрани следнава дозвола: <ph name="PERMISSION" /></translation>
-<translation id="5971400953982411053">Балонче за пребарување на Google Lens</translation>
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
 <translation id="6014316319780893079">Со <ph name="BEGIN_LINK" />алатките од Chrome<ph name="END_LINK" />, може да прелистувате безбедно и да ја контролирате ситуацијата</translation>
 <translation id="6022659036123304283">Направете го Chrome свој</translation>
@@ -606,7 +605,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8267953129876836456">Chrome најде неколку препораки за безбедност што може да ги прегледате</translation>
 <translation id="8270775718612349140">Сертификати управувани од Chrome</translation>
 <translation id="8286862437124483331">Google Chrome се обидува да покаже лозинки. Впишете ја лозинката за Windows за да се дозволи ова.</translation>
-<translation id="8290100596633877290">Google Chrome падна. Веднаш да се стартува повторно?</translation>
 <translation id="829923460755755423">Додајте кратенка за Google Password Manager</translation>
 <translation id="8313851650939857356">Грешка при стартување: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Зачувај како слика</translation>
@@ -632,6 +630,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="852529348814672339">Прикажувај го Chrome на овој јазик</translation>
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
 <translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
+<translation id="856656450041460113">Пребарајте го списокот со јазици</translation>
 <translation id="8571790202382503603">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Со ова е полесно да се одделат работата и забавата.</translation>
 <translation id="8601359445272098721">Ново! Може да ги преведувате и текстот и сликите на екранот така што ќе го изберете копчето „Преведи го екранот“</translation>
 <translation id="8614913330719544658">Google Chrome не реагира. Да се рестартира сега?</translation>

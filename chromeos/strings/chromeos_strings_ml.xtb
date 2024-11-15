@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1191518099344003522">APN പ്രവർത്തനക്ഷമമാക്കി.</translation>
 <translation id="1195447618553298278">അജ്ഞാത പിശക്.</translation>
+<translation id="1196264380943975940">സംഗ്രഹിക്കാനാകില്ല. ദൈർഘ്യമേറിയ ട്രാൻസ്‌ക്രിപ്റ്റ് പരീക്ഷിക്കുക.</translation>
 <translation id="1196959502276349371">പതിപ്പ് <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">പ്ലേ ചെയ്യുക/താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">ട്രാൻസ്ക്രിപ്റ്റ് മറയ്ക്കുക</translation>
 <translation id="160633243685262989">പ്രിവ്യൂ ചിത്രം</translation>
 <translation id="1611649489706141841">കൈമാറുക</translation>
+<translation id="1615144046047995187">ഡൗൺലോഡ് ചെയ്യാനാകില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ Chromebook റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
 <translation id="1618566998877964907">തീം ഉപയോഗിക്കുക</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
@@ -539,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS വെബ്‌സൈറ്റുകളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഉയർന്ന പ്രതികരണ സമയം</translation>
 <translation id="361575905210396100">നിങ്ങളുടെ ഫീഡ്ബാക്കിന് നന്ദി</translation>
 <translation id="3621072146987826699">ആനകൾ</translation>
+<translation id="3628462041319107639">ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
 <translation id="3632040286124154621">നല്ല നിർദ്ദേശം</translation>
 <translation id="3632579075709132555">സ്വകാര്യതാ സ്‌ക്രീൻ ടോഗിൾ</translation>
 <translation id="3639873154908477486">പേര് (A മുതൽ Z വരെ)</translation>
@@ -571,6 +574,7 @@
 <translation id="3820172043799983114">പിൻ നമ്പർ തെറ്റാണ്.</translation>
 <translation id="382043424867370667">സൂര്യാസ്തമയ വാൾപേപ്പർ</translation>
 <translation id="3824259034819781947">ഫയലുകൾ അറ്റാച്ച് ചെയ്യുക</translation>
+<translation id="383586991013681190">ട്രാൻസ്ക്രിപ്റ്റ് ഭാഷ തിരഞ്ഞെടുത്ത് ക്രമീകരണത്തിൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="3836587210832263413">നിങ്ങൾ വിശ്വസിക്കുന്ന വിപുലീകരണങ്ങൾ മാത്രം ഓണാക്കുക</translation>
 <translation id="3838338534323494292">പുതിയ പാസ്‌വേഡ്</translation>
 <translation id="3845880861638660475">ഡയലോഗ് അടയ്‌ക്കാൻ <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> അമർത്തുക.</translation>
@@ -590,6 +594,7 @@
 <translation id="3885327323343477505">സ്ക്രീൻ സേവർ മാറ്റുക</translation>
 <translation id="3889914174935857450">തീയതി റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="3897092660631435901">മെനു</translation>
+<translation id="3902271751020176019">ട്രാൻസ്‌ക്രിപ്ഷൻ ഭാഷ</translation>
 <translation id="391412459402535266">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലാപ്‌ടോപ്പ് മോഡിലേക്ക് മാറുക.</translation>
 <translation id="3916998944874125962">സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="3923184630988645767">ഡാറ്റ ഉപയോഗം</translation>
@@ -713,6 +718,7 @@
 <translation id="4474142134969976028">പൊരുത്തപ്പെടുന്ന ഫലങ്ങളൊന്നുമില്ല</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
+<translation id="4483498983731992167">ട്രാൻസ്‌ക്രിപ്റ്റ് സൃഷ്ടിക്കാനാകില്ല</translation>
 <translation id="4486524074141928967"><ph name="TIME" />-ന് നിങ്ങൾ സൈൻ ഔട്ട് ആകും</translation>
 <translation id="4500722292849917410">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4500966230243561393">ഇന്റര്‍ഫേസ് നിറം</translation>
@@ -754,6 +760,7 @@
 <translation id="4665014895760275686">നിര്‍മ്മാതാവ്</translation>
 <translation id="467510802200863975">പാസ്‌വേഡുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
 <translation id="467715984478005772">ഫയർവാൾ ഉണ്ടെന്ന് സംശയിക്കുന്നു</translation>
+<translation id="4678534708181186163">സംഗ്രഹിക്കാനാകില്ല. ഹ്രസ്വമായ ട്രാൻസ്‌ക്രിപ്റ്റ് പരീക്ഷിക്കുക.</translation>
 <translation id="4683762547447150570">പ്രധാന അസൈൻമെന്റിൽ ശ്രദ്ധ കേന്ദ്രീകരിക്കാൻ ബട്ടണിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4691278870498629773">പ്രിന്റ് ജോലി നിർത്തി - ട്രേ കാണുന്നില്ല</translation>
 <translation id="469379815867856270">സിഗ്‌നൽ ശക്തി</translation>
@@ -843,6 +850,7 @@
 <translation id="5099354524039520280">മുകളിലേക്ക്</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">സമാനമായത്:</translation>
+<translation id="5121677070210013200">ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യാനാകില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ Chromebook റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="5130848777448318809">പോണികൾ</translation>
 <translation id="5137451382116112100">പൂർണ്ണ സ്ക്രീൻ</translation>
 <translation id="5140788690559353412">സ്‌കൂൾ അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്ടപ്പെടുമ്പോൾ, അനുബന്ധ ഇമെയിലിലേക്കും Gmail, Docs, Slides, എന്നിവയും മറ്റും പോലുള്ള Google Drive ഫയലുകളിലേക്കും നിങ്ങൾക്ക് ഇനി ആക്‌സസ് ഉണ്ടായിരിക്കില്ല.</translation>
@@ -856,6 +864,7 @@
 <translation id="5168185087976003268">ബാറ്ററിയുടെ പ്രവർത്തനക്ഷമത</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="517075088756846356">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> എന്നതിന്റെ പവർ കേബിൾ അൺപ്ലഗ് ചെയ്ത ശേഷം വീണ്ടും പ്ലഗ് ചെയ്യുക</translation>
+<translation id="5178021559562393163">പേരുകൾ സൃഷ്ടിക്കാനാകില്ല. ഹ്രസ്വമായ ട്രാൻസ്‌ക്രിപ്റ്റ് പരീക്ഷിക്കുക.</translation>
 <translation id="5180108905184566358">ബെയോബാബ് മരങ്ങൾ</translation>
 <translation id="5180712487038406644">എക്‌സ്പ്രസീവ്</translation>
 <translation id="5190187232518914472">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഓർമ്മകളെ പുനരുജ്ജീവിപ്പിക്കുക. ആൽബങ്ങൾ ചേർക്കാനോ എഡിറ്റ് ചെയ്യാനോ <ph name="LINK_BEGIN" />Google Photos-ലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
@@ -890,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">വ്യക്തിത്വം</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
+<translation id="5318310531701770497">പേരുകൾ സൃഷ്ടിക്കാനാകില്ല. ദൈർഘ്യമേറിയ ട്രാൻസ്‌ക്രിപ്റ്റ് പരീക്ഷിക്കുക.</translation>
 <translation id="5318334351163689047">പരാജയപ്പെട്ട TCP അഭ്യർത്ഥനകൾ</translation>
 <translation id="53196409393069519">ട്രാൻസ്‌ക്രിപ്‌ഷൻ ഓണാക്കണോ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -943,6 +953,7 @@
 <translation id="5606865426897221650">ടാബ്</translation>
 <translation id="5613201299517339763">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു</translation>
 <translation id="5620281292257375798">ആന്തരികം മാത്രം</translation>
+<translation id="5628106863521633649">ലഭ്യമായ ഭാഷകൾ</translation>
 <translation id="5630438231335788050">ബൗഹൗസ്</translation>
 <translation id="5631759159893697722">സംക്ഷേപം</translation>
 <translation id="5655283760733841251">കീബോർഡ് തെളിച്ചം കൂട്ടുക</translation>
@@ -1255,6 +1266,7 @@
 <translation id="7040729769968826896">സ്‌പീക്കർ തിരിച്ചറിയൽ അനുവദിക്കുക</translation>
 <translation id="7041549558901442110">ഉപകരണം കണക്റ്റ് ചെയ്തിട്ടില്ല.</translation>
 <translation id="7046522406494308071">എല്ലാ കുറുക്കുവഴികളും ഡിഫോൾട്ടുകളിലേക്ക് റീസെറ്റ് ചെയ്യണോ?</translation>
+<translation id="7049916119678019302">ക്രമീകരണത്തിൽ ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7058278511608979688">അവസാനിപ്പിച്ച് സംരക്ഷിക്കുക</translation>
 <translation id="7059230779847288458">ചാർജ് ചെയ്യുന്നു, പൂർത്തിയാകാൻ <ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> കീ</translation>
@@ -1268,6 +1280,7 @@
 <translation id="710028965487274708">പരാജയപ്പെട്ടു - അംഗീകരിക്കൽ പ്രക്രിയ നടന്നില്ല</translation>
 <translation id="7101959270679078188">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരാൻ <ph name="DEVICE_NAME" /> അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />-ൽ <ph name="COUNT" />-ാമത്തെ ഉപകരണം, പേര് <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">തിരഞ്ഞെടുത്ത ഭാഷ</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> എക്‌സ്‌ക്ലൂസീവ് ആർട്ട്‌വർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7108668606237948702">നല്‍കുക</translation>
 <translation id="7117228822971127758">പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>

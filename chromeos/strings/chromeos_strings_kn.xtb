@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1191518099344003522">APN ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="1195447618553298278">ಅಪರಿಚಿತ ದೋಷ.</translation>
+<translation id="1196264380943975940">ಸಾರಾಂಶಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ದೀರ್ಘವಾದ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಅನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="1196959502276349371">ಆವೃತ್ತಿ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ಪ್ಲೇ/ವಿರಾಮ</translation>
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS ವೆಬ್‌ಸೈಟ್‌ಗಳ ವಿಳಂಬದ ಸಮಯವು ದೀರ್ಘವಾಗಿದೆ</translation>
 <translation id="361575905210396100">ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಗೆ ಧನ್ಯವಾದಗಳು</translation>
 <translation id="3621072146987826699">ಆನೆಗಳು</translation>
+<translation id="3628462041319107639">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="3632040286124154621">ಉತ್ತಮ ಸಲಹೆ</translation>
 <translation id="3632579075709132555">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಟಾಗಲ್</translation>
 <translation id="3639873154908477486">(A ದಿಂದ Z) ಅಕ್ಷರವರೆಗಿನ ಹೆಸರು</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">ಅಮಾನ್ಯ ಪಿನ್.</translation>
 <translation id="382043424867370667">ಸೂರ್ಯಾಸ್ತದ ವಾಲ್‌ಪೇಪರ್</translation>
 <translation id="3824259034819781947">ಫೈಲ್‌ಗಳನ್ನು ಲಗತ್ತಿಸಿ</translation>
+<translation id="383586991013681190">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="3836587210832263413">ನೀವು ನಂಬುವ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಮಾತ್ರ ಆನ್ ಮಾಡಿ</translation>
 <translation id="3838338534323494292">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="3845880861638660475">ಡೈಲಾಗ್ ಅನ್ನು ಮುಚ್ಚಲು <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ಅನ್ನು ಒತ್ತಿರಿ.</translation>
@@ -715,6 +718,7 @@
 <translation id="4474142134969976028">ಹೊಂದಾಣಿಕೆಯಾಗುವ ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="4483498983731992167">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4486524074141928967">ನಿಮ್ಮನ್ನು <ph name="TIME" /> ಗೆ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="4500722292849917410">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಮಾರ್ಪಡಿಸುವ ಕೀಯನ್ನು ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ (ctrl, alt, shift ಅಥವಾ <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">ಇಂಟರ್‌ಫೇಸ್ ಬಣ್ಣ</translation>
@@ -756,6 +760,7 @@
 <translation id="4665014895760275686">ತಯಾರಕರು</translation>
 <translation id="467510802200863975">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="467715984478005772">ಫೈರ್‌ವಾಲ್ ಇದೆ ಎಂಬ ಅನುಮಾನವಿದೆ</translation>
+<translation id="4678534708181186163">ಸಾರಾಂಶಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಚಿಕ್ಕದಾದ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಅನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="4683762547447150570">ಕೀ ನಿಯೋಜನೆಯ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡಲು ಬಟನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4691278870498629773">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಟ್ರೇ ಇಲ್ಲ</translation>
 <translation id="469379815867856270">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">ಮೇಲಕ್ಕೆ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ಕೀ ಇಲ್ಲದ ಶಾರ್ಟ್‌ಕಟ್ ಕೆಲವು ಆ್ಯಪ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್‌ನೊಂದಿಗೆ ಹೊಂದಿಕೊಳ್ಳದೇ ಇರಬಹುದು. ಇದನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿ ಅಥವಾ <ph name="KEY" /> ಕೀ ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ಸಮಾನ:</translation>
+<translation id="5121677070210013200">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡೆಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="5130848777448318809">ಪೋನಿಗಳು</translation>
 <translation id="5137451382116112100">ಸಂಪೂರ್ಣ</translation>
 <translation id="5140788690559353412">ನಿಮ್ಮ ಶಾಲಾ ಖಾತೆಗೆ ನೀವು ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಕಳೆದುಕೊಂಡಾಗ, ನೀವು ಇನ್ನು ಮುಂದೆ ಸಂಯೋಜಿತ ಇಮೇಲ್‌ ಮತ್ತು Google Drive ಫೈಲ್‌ಗಳಾದ Gmail, Docs, Slides ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಹೊಂದಿರುವುದಿಲ್ಲ.</translation>
@@ -858,6 +864,7 @@
 <translation id="5168185087976003268">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ:</translation>
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="517075088756846356">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು <ph name="DEVICE_NAME" /> ಪವರ್ ಕೇಬಲ್ ಅನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಿ ಮತ್ತು ಮರುಪ್ಲಗ್ ಮಾಡಿ</translation>
+<translation id="5178021559562393163">ಹೆಸರುಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಚಿಕ್ಕದಾದ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಅನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="5180108905184566358">ಬಾವೋಬಾಬ್ ಮರಗಳು</translation>
 <translation id="5180712487038406644">ಅಭಿವ್ಯಕ್ತಿಶೀಲ</translation>
 <translation id="5190187232518914472">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಮಧುರ ಕ್ಷಣಗಳನ್ನು ಮೆಲುಕು ಹಾಕಿ. ಆಲ್ಬಮ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಅಥವಾ ಎಡಿಟ್ ಮಾಡಲು, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ಗೆ ಹೋಗಿ.</translation>
@@ -892,6 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ಗುರುತು</translation>
 <translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
+<translation id="5318310531701770497">ಹೆಸರುಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ದೀರ್ಘವಾದ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಅನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="5318334351163689047">TCP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
 <translation id="53196409393069519">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ಆನ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1258,6 +1266,7 @@
 <translation id="7040729769968826896">ಸ್ಪೀಕರ್ ಗುರುತಿಸುವಿಕೆಯನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="7041549558901442110">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ.</translation>
 <translation id="7046522406494308071">ಎಲ್ಲಾ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
+<translation id="7049916119678019302">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡಲ್ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="7058278511608979688">ಕೊನೆಗೊಳಿಸಿ ಮತ್ತು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="7059230779847288458">ಚಾರ್ಜಿಂಗ್ ಆಗುತ್ತಿದೆ, ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗಲು <ph name="TIME_VALUE" /> ಸಮಯ ಬೇಕು</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> ಕೀ</translation>

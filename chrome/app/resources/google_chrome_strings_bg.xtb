@@ -396,7 +396,6 @@
 <translation id="5941830788786076944">Искам Google Chrome да бъде браузърът по подразбиране</translation>
 <translation id="5947104538377036631">Пряк път към Chrome</translation>
 <translation id="5953954252731207958">Не сте посещавали този сайт наскоро. Chrome премахна разрешението „<ph name="PERMISSION" />“</translation>
-<translation id="5971400953982411053">Балонче за търсене с Google Обектив</translation>
 <translation id="6003112304606738118">Изтегля се... Оставащо време: <ph name="HOURS" /> ч</translation>
 <translation id="6014316319780893079">С помощта на <ph name="BEGIN_LINK" />инструментите от Chrome<ph name="END_LINK" /> можете да сърфирате безопасно и да запазите контрол</translation>
 <translation id="6022659036123304283">Персонализирайте Chrome според вкуса си</translation>
@@ -600,7 +599,6 @@
 <translation id="8267953129876836456">Chrome откри някои препоръки за безопасност, които да прегледате</translation>
 <translation id="8270775718612349140">Сертификати, управлявани от Chrome</translation>
 <translation id="8286862437124483331">Google Chrome опитва да покаже паролите. За да разрешите това, въведете паролата си за Windows.</translation>
-<translation id="8290100596633877290">О, не! Google Chrome претърпя срив. Да се стартира ли отново сега?</translation>
 <translation id="829923460755755423">Добавете пряк път към Google Мениджър на пароли</translation>
 <translation id="8313851650939857356">Грешка при стартирането: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Запазване като изображение</translation>
@@ -626,6 +624,7 @@
 <translation id="852529348814672339">Показване на Chrome на този език</translation>
 <translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
 <translation id="8555465886620020932">Грешка в услугата: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="856656450041460113">Търсене в списъка с езици</translation>
 <translation id="8571790202382503603">С помощта на потребителските профили в Chrome можете да разделите нещата си в браузъра. Това улеснява разграничаването на работата и забавленията.</translation>
 <translation id="8601359445272098721">Ново! Можете да превеждате текст и изображения на екрана си, като изберете бутона „Превод на екрана“</translation>
 <translation id="8614913330719544658">Google Chrome блокира. Да се стартира ли отново сега?</translation>

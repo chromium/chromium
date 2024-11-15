@@ -78,6 +78,7 @@
 <translation id="228293613124499805">La plupart des sites que vous consultez enregistrent probablement des données sur votre appareil, comme vos préférences ou les informations que vous partagez avec le site, généralement pour améliorer votre expérience. Nous vous recommandons de laisser ce paramètre activé.</translation>
 <translation id="2289270750774289114">Me demander lorsqu'un site souhaite accéder aux appareils Bluetooth se trouvant à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection de certificat côté client n'est pas compatible avec le système d'exploitation.</translation>
+<translation id="2356926036049612643">Optimiseur V8</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2379925928934107488">Si le thème sombre est activé dans Chrome, il sera appliqué aux sites, si possible</translation>
 <translation id="2390272837142897736">Augmenter le zoom</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
 <translation id="2588271083332682494">Organisez-vous avec les groupes d'onglets</translation>
+<translation id="2594832159966169099">Gérer la sécurité de V8</translation>
 <translation id="2597457036804169544">Le thème sombre n'est pas appliqué aux sites</translation>
 <translation id="2606760465469169465">Validation automatique</translation>
 <translation id="2621115761605608342">Autorisez le langage JavaScript pour un site spécifique.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
 <translation id="6838525730752203626">Utiliser Chrome par défaut</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, appuyez de manière prolongée sur un onglet, puis faites-le glisser vers un autre.</translation>
+<translation id="6851981911629679515">Activer la protection supplémentaire dans le moteur JavaScript et WebAssembly de Chrome</translation>
 <translation id="6864395892908308021">Lecture NFC impossible sur cet appareil</translation>
 <translation id="6870169401250095575">Masquer la fiche "Contrôle de sécurité"</translation>
 <translation id="6900883974539674431">Créez des groupes d'onglets qui sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous montrer des annonces</translation>
 <translation id="8087000398470557479">Ce contenu est issu de <ph name="DOMAIN_NAME" />. Il est diffusé par Google.</translation>
 <translation id="8088603949666785339">Plus d'options dans <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Réduit les performances, mais rend V8 plus résistant aux attaques</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome limitera de nouveau les cookies demain}one{Chrome limitera de nouveau les cookies dans # jour}other{Chrome limitera de nouveau les cookies dans # jours}}</translation>
 <translation id="8116925261070264013">Son coupé</translation>
 <translation id="8117244575099414087">Lorsque cette option est activée, les sites peuvent utiliser les capteurs de votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser les capteurs.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Sélectionner une image</translation>
 <translation id="8800034312320686233">Impossible d'accéder au site ?</translation>
 <translation id="8801436777607969138">Bloquez JavaScript sur un site spécifique.</translation>
+<translation id="8801657293260363985">V8 est le moteur JavaScript et WebAssembly de Chrome qui permet d'améliorer les performances des sites</translation>
 <translation id="8803526663383843427">Lorsque la fonctionnalité est activée</translation>
 <translation id="8805385115381080995">La navigation est plus rapide, car les sites sont moins susceptibles de vous demander de confirmer que vous êtes une personne bien réelle</translation>
 <translation id="8816026460808729765">Bloque l'accès aux capteurs pour certains sites</translation>

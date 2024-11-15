@@ -166,7 +166,6 @@
 <translation id="3161522574479303604">সকল ভাষা</translation>
 <translation id="3179665906251668410">Chromium ছদ্মবেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="3185330573522821672">আপনার নতুন Chromium প্রোফাইল কাস্টমাইজ করুন</translation>
-<translation id="3190315855212034486">ওহো! Chromium ক্র্যাশ করেছে৷ এখন আবার শুরু করবেন?</translation>
 <translation id="3224847870593914902">Chromium থেকে আপনার Google অ্যাকাউন্ট সরিয়ে দিতে, সেটিংস পৃষ্ঠায় গিয়ে Chromium থেকে সাইন-আউট করুন</translation>
 <translation id="3258596308407688501">Chromium তার ডেটা ডিরেক্টরিতে পড়তে এবং লিখতে পারে না:
 
@@ -439,7 +438,6 @@
 <translation id="67706546131546258">ফাইলটি বিপজ্জনক হতে পারে বলে Chromium এটি স্ক্যান করার সাজেশন দেয়।</translation>
 <translation id="6779406956731413166">ChromeOS সম্ভবত অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" /> দিয়ে তৈরি।</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
-<translation id="6843464627590537736">'ছবি সার্চ করা' ফিচার আছে এমন সার্চ বাবল</translation>
 <translation id="6847869444787758381">আপনার পাসওয়ার্ড কখনও চুরি হলে তা Chromium আপনাকে জানিয়ে দেবে</translation>
 <translation id="684888714667046800">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। আপনি ফায়ারওয়াল ব্যবহার করলে, <ph name="PRODUCT_EXE_NAME" /> সাদাতালিকায় আছে কিনা দেখে নিন।</translation>
 <translation id="685279860330610299">Chromium আরও অনেক ধরনের তথ্য বুঝতে পারে এবং আপনার ফর্ম আরও দ্রুত অটোফিল করে দিতে পারে। <ph name="BEGIN_LINK" />Chrome অটোফিল<ph name="END_LINK" /> সম্পর্কে আরও জানুন</translation>

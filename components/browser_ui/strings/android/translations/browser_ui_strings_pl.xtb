@@ -78,6 +78,7 @@
 <translation id="228293613124499805">Aby strony, na które wchodzisz, mogły lepiej działać, przeważnie zapisują one na Twoim urządzeniu dane. Najczęściej są to informacje, które im udostępniasz, lub Twoje ustawienia. Zalecamy pozostawienie tego ustawienia włączonego.</translation>
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
+<translation id="2356926036049612643">Optymalizator V8</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2379925928934107488">Stosuj ciemny motyw witryn w przypadkach, w których stosuje go Chrome, tam, gdzie to możliwe</translation>
 <translation id="2390272837142897736">Zwiększ powiększenie</translation>
@@ -99,6 +100,7 @@
 <translation id="257931822824936280">Rozwinięty – kliknij, by zwinąć.</translation>
 <translation id="2586657967955657006">Schowek</translation>
 <translation id="2588271083332682494">Utrzymuj porządek dzięki grupom kart</translation>
+<translation id="2594832159966169099">Zarządzaj zabezpieczeniami V8</translation>
 <translation id="2597457036804169544">Nie stosuj ciemnego motywu witryn</translation>
 <translation id="2606760465469169465">Automatyczna weryfikacja</translation>
 <translation id="2621115761605608342">Zezwól na użycie JavaScriptu w określonej witrynie.</translation>
@@ -392,6 +394,7 @@
 <translation id="6818926723028410516">Wybierz elementy</translation>
 <translation id="6838525730752203626">Używaj domyślnie Chrome</translation>
 <translation id="6840760312327750441">Aby pogrupować karty, naciśnij i przytrzymaj jedną z nich. Następnie przeciągnij ją na inną kartę.</translation>
+<translation id="6851981911629679515">Włącz dodatkową ochronę w mechanizmie JavaScript i WebAssembly w Chrome</translation>
 <translation id="6864395892908308021">To urządzenie nie obsługuje NFC</translation>
 <translation id="6870169401250095575">Ukryj kartę Kontrola zabezpieczeń</translation>
 <translation id="6900883974539674431">Twórz grupy kart, które będą automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach</translation>
@@ -469,6 +472,7 @@
 <translation id="8077120325605624147">Każda witryna, którą odwiedzasz, może wyświetlać Ci dowolne reklamy</translation>
 <translation id="8087000398470557479">Treść z <ph name="DOMAIN_NAME" /> dostarczana przez Google.</translation>
 <translation id="8088603949666785339">Więcej opcji w banerze <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Zmniejsza wydajność, ale sprawia, że mechanizm V8 jest bardziej odporny na ataki</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome ponownie ograniczy pliki cookie jutro}few{Chrome ponownie ograniczy pliki cookie za # dni}many{Chrome ponownie ograniczy pliki cookie za # dni}other{Chrome ponownie ograniczy pliki cookie za # dnia}}</translation>
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="8117244575099414087">Gdy ta opcja jest włączona, strony internetowe mogą używać czujników urządzenia. Gdy jest wyłączona, strony nie mogą używać czujników.</translation>
@@ -523,6 +527,7 @@
 <translation id="8751914237388039244">Wybierz obraz</translation>
 <translation id="8800034312320686233">Strona nie działa?</translation>
 <translation id="8801436777607969138">Zablokuj JavaScript w określonej witrynie.</translation>
+<translation id="8801657293260363985">V8 to mechanizm JavaScript i WebAssembly w Chrome używany do zwiększania wydajności witryny</translation>
 <translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
 <translation id="8805385115381080995">Przeglądanie działa szybciej, bo witryny rzadziej proszą o potwierdzenie, że jesteś prawdziwą osobą.</translation>
 <translation id="8816026460808729765">Blokuj stronom dostęp do czujników</translation>
