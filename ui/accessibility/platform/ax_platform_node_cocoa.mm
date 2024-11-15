@@ -354,8 +354,19 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // If we're in old-accessibility-API mode, disable methods that we've added
   // to support the new API.
   if (!features::IsMacAccessibilityAPIMigrationEnabled()) {
-    if ([[[self class] newAccessibilityAPIMethods]
-            containsObject:NSStringFromSelector(selector)]) {
+    static std::unordered_set<SEL> newAccessibilityAPISelectors;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      NSSet<NSString*>* methodNames =
+          [AXPlatformNodeCocoa newAccessibilityAPIMethods];
+      for (NSString* methodName in methodNames) {
+        SEL methodSelector = NSSelectorFromString(methodName);
+        newAccessibilityAPISelectors.insert(methodSelector);
+      }
+    });
+
+    if (newAccessibilityAPISelectors.find(selector) !=
+        newAccessibilityAPISelectors.end()) {
       return NO;
     }
   }
