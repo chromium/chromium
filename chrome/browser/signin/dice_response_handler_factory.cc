@@ -73,7 +73,8 @@ DiceResponseHandlerFactory::DiceResponseHandlerFactory()
 DiceResponseHandlerFactory::~DiceResponseHandlerFactory() = default;
 
 // BrowserContextKeyedServiceFactory:
-KeyedService* DiceResponseHandlerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DiceResponseHandlerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   DiceResponseHandler::RegistrationTokenHelperFactory
@@ -83,7 +84,7 @@ KeyedService* DiceResponseHandlerFactory::BuildServiceInstanceFor(
       profile->GetPrefs(),
       UnexportableKeyServiceFactory::GetForProfile(profile));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  return new DiceResponseHandler(
+  return std::make_unique<DiceResponseHandler>(
       ChromeSigninClientFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       AccountReconcilorFactory::GetForProfile(profile),
