@@ -73,6 +73,7 @@ public class HubToolbarMediatorUnitTest {
     @Mock private PaneManager mPaneManager;
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
+    @Mock private Pane mTabGroupsPane;
     @Mock private FullButtonData mFullButtonData;
     @Mock private PaneOrderController mPaneOrderController;
     @Mock private DisplayButtonData mDisplayButtonData;
@@ -334,6 +335,8 @@ public class HubToolbarMediatorUnitTest {
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testSearchBoxSetup_FlagEnabled() {
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
         new HubToolbarMediator(
                 Robolectric.buildActivity(Activity.class).get(),
                 mModel,
@@ -350,6 +353,8 @@ public class HubToolbarMediatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     @Config(qualifiers = "sw600dp")
     public void testSearchBoxSetup_FlagEnabled_Tablet() {
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
         new HubToolbarMediator(
                 Robolectric.buildActivity(Activity.class).get(),
                 mModel,
@@ -369,5 +374,58 @@ public class HubToolbarMediatorUnitTest {
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
         assertNull(mModel.get(SEARCH_LISTENER));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testSearchBox_TogglePanesSearchBoxVisibility_Phone() {
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        new HubToolbarMediator(
+                Robolectric.buildActivity(Activity.class).get(),
+                mModel,
+                mPaneManager,
+                mTracker,
+                mSearchActivityClient);
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+        assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
+
+        when(mTabGroupsPane.getPaneId()).thenReturn(PaneId.TAB_GROUPS);
+        mFocusedPaneSupplier.set(mTabGroupsPane);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+        assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
+
+        when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+        assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    @Config(qualifiers = "sw600dp")
+    public void testSearchBox_TogglePanesSearchBoxVisibility_Tablet() {
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        new HubToolbarMediator(
+                Robolectric.buildActivity(Activity.class).get(),
+                mModel,
+                mPaneManager,
+                mTracker,
+                mSearchActivityClient);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+        assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
+
+        when(mTabGroupsPane.getPaneId()).thenReturn(PaneId.TAB_GROUPS);
+        mFocusedPaneSupplier.set(mTabGroupsPane);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+        assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
+
+        when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+        assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
     }
 }
