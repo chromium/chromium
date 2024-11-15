@@ -61,12 +61,12 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
 
  private:
   // ProfileKeyedServiceFactory overrides
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {
     Profile* profile = Profile::FromBrowserContext(context);
     DCHECK(!profile->IsOffTheRecord());
 
-    return new AuxiliarySearchProvider(
+    return std::make_unique<AuxiliarySearchProvider>(
         BookmarkModelFactory::GetForBrowserContext(profile));
   }
 };
