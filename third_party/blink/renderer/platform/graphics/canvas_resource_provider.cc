@@ -410,9 +410,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       return nullptr;
 
     CHECK(IsOriginTopLeft());
+    const SkImageInfo& info = GetSkImageInfo();
     return CanvasResourceSharedImage::Create(
-        GetSkImageInfo(), ContextProviderWrapper(), CreateWeakPtr(),
-        FilterQuality(), is_accelerated_, shared_image_usage_flags_);
+        gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
+        info.colorInfo().alphaType(), info.colorInfo().refColorSpace(),
+        ContextProviderWrapper(), CreateWeakPtr(), FilterQuality(),
+        is_accelerated_, shared_image_usage_flags_);
   }
 
   bool UseOopRasterization() final { return use_oop_rasterization_; }

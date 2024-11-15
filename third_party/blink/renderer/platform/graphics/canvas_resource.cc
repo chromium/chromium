@@ -434,7 +434,10 @@ void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
 //==============================================================================
 
 CanvasResourceSharedImage::CanvasResourceSharedImage(
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType sk_alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
@@ -442,11 +445,11 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     gpu::SharedImageUsageSet shared_image_usage_flags)
     : CanvasResource(std::move(provider),
                      filter_quality,
-                     info.colorInfo().colorType(),
-                     info.colorInfo().alphaType(),
-                     info.colorInfo().refColorSpace()),
+                     sk_color_type,
+                     sk_alpha_type,
+                     std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      size_(info.width(), info.height()),
+      size_(size),
       is_accelerated_(is_accelerated),
       is_overlay_candidate_(
           shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
@@ -536,7 +539,10 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
 }
 
 scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType sk_alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
@@ -544,8 +550,9 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   TRACE_EVENT0("blink", "CanvasResourceSharedImage::Create");
   auto resource = base::AdoptRef(new CanvasResourceSharedImage(
-      info, std::move(context_provider_wrapper), std::move(provider),
-      filter_quality, is_accelerated, shared_image_usage_flags));
+      size, sk_color_type, sk_alpha_type, std::move(sk_color_space),
+      std::move(context_provider_wrapper), std::move(provider), filter_quality,
+      is_accelerated, shared_image_usage_flags));
   return resource->IsValid() ? resource : nullptr;
 }
 

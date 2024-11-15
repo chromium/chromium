@@ -325,7 +325,10 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
 class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
  public:
   static scoped_refptr<CanvasResourceSharedImage> Create(
-      const SkImageInfo&,
+      gfx::Size size,
+      SkColorType sk_color_type,
+      SkAlphaType sk_alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
       cc::PaintFlags::FilterQuality,
@@ -404,7 +407,10 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
-  CanvasResourceSharedImage(const SkImageInfo&,
+  CanvasResourceSharedImage(gfx::Size size,
+                            SkColorType sk_color_type,
+                            SkAlphaType sk_alpha_type,
+                            sk_sp<SkColorSpace> sk_color_space,
                             base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                             base::WeakPtr<CanvasResourceProvider>,
                             cc::PaintFlags::FilterQuality,

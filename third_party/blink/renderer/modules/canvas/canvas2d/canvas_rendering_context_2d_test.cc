@@ -489,9 +489,12 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
   ~FakeCanvasResourceProvider() override = default;
   bool IsAccelerated() const override { return is_accelerated_; }
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
+    const SkImageInfo& info = GetSkImageInfo();
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
-        GetSkImageInfo(), SharedGpuContext::ContextProviderWrapper(),
-        CreateWeakPtr(), cc::PaintFlags::FilterQuality::kLow, IsAccelerated(),
+        gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
+        info.colorInfo().alphaType(), info.colorInfo().refColorSpace(),
+        SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
+        cc::PaintFlags::FilterQuality::kLow, IsAccelerated(),
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE));
   }
