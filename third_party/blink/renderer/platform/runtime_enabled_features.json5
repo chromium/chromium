@@ -2267,7 +2267,7 @@
     },
     {
       name: "HighlightInheritance",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "HighlightPointerEvents",
