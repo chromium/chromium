@@ -205,6 +205,24 @@ void PrintTo(const ServiceMap& service_map, std::ostream* os) {
 
 }  // namespace std
 
+// Tests that a service can handle two requests on the same object.
+TEST_F(ServiceTest, TwoRequests) {
+  base::Process service_process;
+  base::Process service_process2;
+
+  Microsoft::WRL::ComPtr<ITestService> test_service;
+  ASSERT_NO_FATAL_FAILURE(CreateService(test_service));
+  ASSERT_NO_FATAL_FAILURE(GetServiceProcess(test_service, service_process));
+  ASSERT_NO_FATAL_FAILURE(GetServiceProcess(test_service, service_process2));
+  test_service.Reset();
+
+  ASSERT_EQ(service_process.Pid(), service_process2.Pid());
+  service_process2.Close();
+  int exit_code = 0;
+  service_process.WaitForExit(&exit_code);
+  ASSERT_EQ(exit_code, 0);
+}
+
 // Tests that a service can handle rapid use that should result in some requests
 // happening in the same instance of the service as a previous request, while
 // some are handled in a separate instance of the service. This is a regression
@@ -285,7 +303,6 @@ TEST_F(ServiceTest, DISABLED_RapidReuse) {
         const DWORD tid = ::GetCurrentThreadId();
         for (base::ElapsedTimer timer; timer.Elapsed() < base::Seconds(5);) {
           base::Process service_process;
-          base::Process service_process2;
           Microsoft::WRL::ComPtr<ITestService> test_service;
           base::ElapsedTimer transaction_timer;
           const auto tick_count = ::GetTickCount();
@@ -294,10 +311,6 @@ TEST_F(ServiceTest, DISABLED_RapidReuse) {
               << " at tick_count: " << tick_count << " from thread: " << tid;
           ASSERT_NO_FATAL_FAILURE(
               GetServiceProcess(test_service, service_process));
-          // Make two calls back-to-back to be sure reusing the same interface
-          // pointer works.
-          ASSERT_NO_FATAL_FAILURE(
-              GetServiceProcess(test_service, service_process2));
           // Drop the connection.
           test_service.Reset();
           base::ProcessId pid = service_process.Pid();
@@ -305,7 +318,6 @@ TEST_F(ServiceTest, DISABLED_RapidReuse) {
           base::Time creation_time = service_process.CreationTime();
           ASSERT_FALSE(creation_time.is_null());
           service_process.Close();
-          service_process2.Close();
           task_transactions[std::make_pair(creation_time, pid)].emplace_back(
               tick_count, tid);
           last_pid = pid;
