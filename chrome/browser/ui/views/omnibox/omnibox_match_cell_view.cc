@@ -71,11 +71,10 @@ static constexpr int kWeatherBackgroundSize = 28;
 // The vertical gap between the contents and descriptions for multiline answers.
 static constexpr int kHistoryEmbeddingAnswerGap = 3;
 
-// The vertical padding above and below the contents and description for
-// multiline answers. Chosen so that the vertical distance between the bottom of
-// the answer text and the bottom of the hover fill is the same as for other,
-// 1-line matches.
-static constexpr int kHistoryEmbeddingAnswerPadding = 8;
+// The vertical padding above and below the description for multiline answers.
+// Chosen so that the vertical distance between the bottom of the answer text
+// and the bottom of the hover fill is the same as for other, 1-line matches.
+static constexpr int kHistoryEmbeddingAnswerBottomPadding = 8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlaceholderImageSource:
@@ -458,8 +457,8 @@ void OmniboxMatchCellView::Layout(PassKey) {
     }
 
     // Position contents above description. Leave `kHistoryEmbeddingAnswerGap`
-    // between them; and `kHistoryEmbeddingAnswerPadding` between the bottom of
-    // description and the bottom of this `OmniboxMatchCellView`.
+    // between them; and `kHistoryEmbeddingAnswerBottomPadding` between the
+    // bottom of description and the bottom of this `OmniboxMatchCellView`.
     int needed_content_height =
         content_view_->GetText().empty()
             ? 0
@@ -469,7 +468,7 @@ void OmniboxMatchCellView::Layout(PassKey) {
                                         : description_view_->GetLineHeight();
     int top_padding = row_height - needed_content_height -
                       needed_description_height - kHistoryEmbeddingAnswerGap -
-                      kHistoryEmbeddingAnswerPadding;
+                      kHistoryEmbeddingAnswerBottomPadding;
     content_view_->SetBounds(x, y + top_padding, text_width,
                              needed_content_height);
     description_view_->SetBounds(
@@ -528,7 +527,7 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
       // and padding above and below them.
       height = content_view_->GetHeightForWidth(width() - GetTextIndent()) +
                description_view_->GetLineHeight() + kHistoryEmbeddingAnswerGap +
-               kHistoryEmbeddingAnswerPadding * 2;
+               kHistoryEmbeddingAnswerBottomPadding;
     }
   } else if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
     // IPH suggestions have extra height.
