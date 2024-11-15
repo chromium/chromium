@@ -154,7 +154,6 @@ void AutofillManager::LogTypePredictionsAvailable(
 
 AutofillManager::AutofillManager(AutofillDriver* driver)
     : driver_(CHECK_DEREF(driver)),
-      log_manager_(client().GetLogManager()),
       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
   if (auto* translate_driver = client().GetTranslateDriver()) {
     translate_observation_.Observe(translate_driver);
@@ -321,8 +320,8 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   // queryable forms will be updated once the field type query is complete.
   driver().SendTypePredictionsToRenderer(non_queryable_forms);
   driver().SendTypePredictionsToRenderer(queryable_forms);
-  LogTypePredictionsAvailable(log_manager_, non_queryable_forms);
-  LogTypePredictionsAvailable(log_manager_, queryable_forms);
+  LogTypePredictionsAvailable(log_manager(), non_queryable_forms);
+  LogTypePredictionsAvailable(log_manager(), queryable_forms);
 
   // Query the server if at least one of the forms was parsed.
   if (!queryable_forms.empty() && client().GetCrowdsourcingManager()) {
@@ -565,15 +564,16 @@ void AutofillManager::ParseFormsAsync(
   for (const FormData& form_data : forms) {
     bool is_new_form = !base::Contains(form_structures_, form_data.global_id());
     if (num_managed_forms + is_new_form > kAutofillManagerMaxFormCacheSize) {
-      LOG_AF(log_manager_) << LoggingScope::kAbortParsing
-                           << LogMessage::kAbortParsingTooManyForms
-                           << form_data;
+      LOG_AF(log_manager())
+          << LoggingScope::kAbortParsing
+          << LogMessage::kAbortParsingTooManyForms << form_data;
       continue;
     }
 
     auto form_structure = std::make_unique<FormStructure>(form_data);
-    if (!form_structure->ShouldBeParsed(log_manager_))
+    if (!form_structure->ShouldBeParsed(log_manager())) {
       continue;
+    }
 
     num_managed_forms += is_new_form;
     DCHECK_LE(num_managed_forms, kAutofillManagerMaxFormCacheSize);
@@ -628,13 +628,13 @@ void AutofillManager::ParseFormAsync(
   bool is_new_form = !base::Contains(form_structures_, form_data.global_id());
   if (form_structures_.size() + is_new_form >
       kAutofillManagerMaxFormCacheSize) {
-    LOG_AF(log_manager_) << LoggingScope::kAbortParsing
-                         << LogMessage::kAbortParsingTooManyForms << form_data;
+    LOG_AF(log_manager()) << LoggingScope::kAbortParsing
+                          << LogMessage::kAbortParsingTooManyForms << form_data;
     return;
   }
 
   auto form_structure = std::make_unique<FormStructure>(form_data);
-  if (!form_structure->ShouldBeParsed(log_manager_)) {
+  if (!form_structure->ShouldBeParsed(log_manager())) {
     // For Autocomplete, events need to be handled even for forms that cannot be
     // parsed.
     std::move(callback).Run(*this, form_data);
@@ -716,8 +716,8 @@ void AutofillManager::ParseFormsAsyncCommon(
         if (!self) {
           return;
         }
-        if (context.log_manager && self->log_manager_) {
-          context.log_manager->Flush(*self->log_manager_);
+        if (context.log_manager && self->log_manager()) {
+          context.log_manager->Flush(*self->log_manager());
         }
         for (auto& form_structure : context.form_structures) {
           FormGlobalId id = form_structure->global_id();
@@ -745,7 +745,7 @@ void AutofillManager::ParseFormsAsyncCommon(
                 run_heuristics,
                 AsyncContext(std::move(forms),
                              self->client().GetVariationConfigCountryCode(),
-                             self->log_manager_)),
+                             self->log_manager())),
             std::move(update_cache));
       },
       parsing_weak_ptr_factory_.GetWeakPtr(), run_heuristics,
@@ -813,7 +813,7 @@ void AutofillManager::OnLoadedServerPredictions(
   // Parse and store the server predictions.
   ParseServerPredictionsQueryResponse(
       std::move(response->response), queried_forms,
-      response->queried_form_signatures, log_manager_);
+      response->queried_form_signatures, log_manager());
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.
@@ -826,7 +826,7 @@ void AutofillManager::OnLoadedServerPredictions(
   // Send field type predictions to the renderer so that it can possibly
   // annotate forms with the predicted types or add console warnings.
   driver().SendTypePredictionsToRenderer(queried_forms);
-  LogTypePredictionsAvailable(log_manager_, queried_forms);
+  LogTypePredictionsAvailable(log_manager(), queried_forms);
 
   for (const FormStructure* form : queried_forms) {
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),

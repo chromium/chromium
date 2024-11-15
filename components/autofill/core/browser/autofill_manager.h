@@ -345,7 +345,7 @@ class AutofillManager
   // Does not touch the LifecycleState, which is controlled by the caller.
   virtual void Reset();
 
-  LogManager* log_manager() { return log_manager_; }
+  LogManager* log_manager() { return client().GetLogManager(); }
 
   // Retrieves the page language from |client_|
   LanguageCode GetCurrentPageLanguage();
@@ -482,8 +482,6 @@ class AutofillManager
   // Provides driver-level context to the shared code of the component.
   // `*driver_` owns this object.
   const raw_ref<AutofillDriver> driver_;
-
-  const raw_ptr<LogManager> log_manager_;
 
   // Observer needed to re-run heuristics when the language has been detected.
   base::ScopedObservation<translate::TranslateDriver,
