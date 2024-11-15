@@ -16,10 +16,6 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/icons/vector_icons.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace ash {
 
 namespace {
@@ -108,25 +104,17 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
     case ui::VKEY_ZOOM:
       return &ash::kKsvFullscreenIcon;
     case ui::VKEY_MEDIA_LAUNCH_APP1:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return Shell::Get()->keyboard_capability()->UseRefreshedIcons()
-                 ? &kOverviewRefreshIcon
+                 ? &ash::kOverviewRefreshIcon
                  : &ash::kKsvOverviewIcon;
-#else
-      return &ash::kKsvOverviewIcon;
-#endif
     case ui::VKEY_MEDIA_LAUNCH_MAIL:
       return &ash::kKsMediaLaunchMailIcon;
     case ui::VKEY_BRIGHTNESS_DOWN:
       return &ash::kKsvBrightnessDownIcon;
     case ui::VKEY_BRIGHTNESS_UP:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return Shell::Get()->keyboard_capability()->UseRefreshedIcons()
-                 ? &kBrightnessUpRefreshIcon
+                 ? &ash::kBrightnessUpRefreshIcon
                  : &ash::kKsvBrightnessUpIcon;
-#else
-      return &ash::kKsvOverviewIcon;
-#endif
     case ui::VKEY_KBD_BACKLIGHT_TOGGLE:
       return &ash::kKsKeyboardBrightnessToggleIcon;
     case ui::VKEY_KBD_BRIGHTNESS_DOWN:
@@ -153,12 +141,9 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &ash::kKsvPrivacyScreenToggleIcon;
     case ui::VKEY_SNAPSHOT:
       return &ash::kKsvSnapshotIcon;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case ui::VKEY_RIGHT_ALT:
-      return &kRightAltInternalIcon;
-#endif
+      return &ash::kQuickInsertIcon;
     default:
-
       return nullptr;
   }
 }

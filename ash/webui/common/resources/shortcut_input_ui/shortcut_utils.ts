@@ -86,7 +86,7 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'AudioVolumeMute': 'volume-mute',
   'AudioVolumeUp': 'volume-up',
   'BrightnessDown': 'display-brightness-down',
-  'BrightnessUp': 'display-brightness-up',
+  'BrightnessUp': 'brightness-up-refresh',
   'BrowserBack': 'back',
   'BrowserForward': 'forward',
   'BrowserHome': 'browser-home',
@@ -98,7 +98,7 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'KeyboardBacklightToggle': 'keyboard-brightness-toggle',
   'KeyboardBrightnessUp': 'keyboard-brightness-up',
   'KeyboardBrightnessDown': 'keyboard-brightness-down',
-  'LaunchApplication1': 'overview',
+  'LaunchApplication1': 'overview-refresh',
   'LaunchApplication2': 'calculator',
   'LaunchAssistant': 'assistant',
   'LaunchMail': 'launch-mail',
@@ -117,19 +117,8 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'Settings': 'settings-icon',
   'Standby': 'lock',
   'ZoomToggle': 'fullscreen',
+  'RightAlt': 'quick-insert',
 };
-
-// <if expr="_google_chrome" >
-export const KeyToInternalIconNameMap: {[key: string]: string|undefined} = {
-  'RightAlt': 'right-alt',
-};
-
-export const KeyToInternalIconNameRefreshOnlyMap:
-    {[key: string]: string|undefined} = {
-      'LaunchApplication1': 'overview-refresh',
-      'BrightnessUp': 'brightness-up-refresh',
-    };
-// </if>
 
 /**
  * Map the modifier keys to the bit value. Currently the modifiers only

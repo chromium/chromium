@@ -333,7 +333,6 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
        {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static constexpr auto kRefreshIconCodes =
       base::MakeFixedFlatMap<std::u16string_view, IconCode>(
           {{u"LaunchApplication1",
@@ -347,7 +346,6 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
       it_refresh != kRefreshIconCodes.end()) {
     return it_refresh->second;
   }
-#endif
 
   auto it = kIconCodes.find(key_string);
   if (it == kIconCodes.end()) {

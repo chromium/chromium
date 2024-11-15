@@ -13,10 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 import '../os_settings_icons.html.js';
-// <if expr="_google_chrome" >
-import 'chrome://resources/ash/common/internal/ash_internal_icons.html.js';
-
-// </if>
+import 'chrome://resources/ash/common/shortcut_input_ui/icons.html.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -38,7 +35,8 @@ enum KeyState {
 }
 
 type KeyIcon = 'cr:search'|'os-settings:launcher'|'os-settings:assistant'|
-    'ash-internal:launcher-refresh'|'ash-internal:right-alt'|'';
+    'shortcut-input-keys:launcher-refresh'|'shortcut-input-keys:quick-insert'|
+    '';
 const KeyboardRemapModifierKeyRowElementBase = I18nMixin(PolymerElement);
 
 export class KeyboardRemapModifierKeyRowElement extends
@@ -260,12 +258,12 @@ export class KeyboardRemapModifierKeyRowElement extends
         return 'os-settings:launcher';
       }
       if (this.metaKey === MetaKey.kLauncherRefresh) {
-        return 'ash-internal:launcher-refresh';
+        return 'shortcut-input-keys:launcher-refresh';
       }
     } else if (this.key === ModifierKey.kAssistant) {
       return 'os-settings:assistant';
     } else if (this.key === ModifierKey.kRightAlt) {
-      return 'ash-internal:right-alt';
+      return 'shortcut-input-keys:quick-insert';
     }
 
     return '';
