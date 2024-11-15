@@ -372,6 +372,7 @@ the generic promo launch. -->
   <int value="2" label="The feature was disabled"/>
   <int value="3" label="The tab was OTR"/>
   <int value="4" label="The user was not signed in"/>
+  <int value="5" label="The feature was disabled by an enterprise policy"/>
 </enum>
 
 <enum name="IOSFilePickerDriveFilter">

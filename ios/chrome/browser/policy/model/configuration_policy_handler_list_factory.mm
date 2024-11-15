@@ -157,6 +157,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kDownloadRestrictions,
     policy::policy_prefs::kDownloadRestrictions,
     base::Value::Type::INTEGER },
+  { policy::key::kFilePickerChooseFromDriveSettings,
+    prefs::kIosChooseFromDriveFilePickerPolicySettings,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 

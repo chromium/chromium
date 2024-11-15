@@ -967,6 +967,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kIosSaveToDriveDownloadManagerPolicySettings,
       static_cast<int>(SaveToDrivePolicySettings::kEnabled));
+  // Preferences related to Choose from Drive settings.
+  registry->RegisterIntegerPref(
+      prefs::kIosChooseFromDriveFilePickerPolicySettings,
+      static_cast<int>(ChooseFromDrivePolicySettings::kEnabled));
 
   // Preferences related to download restrictions enterprise policy.
   registry->RegisterIntegerPref(policy::policy_prefs::kDownloadRestrictions, 0);
