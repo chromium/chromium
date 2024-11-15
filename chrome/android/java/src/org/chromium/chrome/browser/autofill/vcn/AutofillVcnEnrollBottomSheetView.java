@@ -14,6 +14,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.LoadingView;
 
 /** The view of the autofill virtual card enrollment bottom sheet UI. */
@@ -72,6 +73,10 @@ import org.chromium.ui.widget.LoadingView;
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
+        mContentView.setLayoutDirection(
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR);
         mScrollView = mContentView.findViewById(R.id.scroll_view);
         mDialogTitle = mContentView.findViewById(R.id.dialog_title);
         mVirtualCardDescription = mContentView.findViewById(R.id.virtual_card_description);
