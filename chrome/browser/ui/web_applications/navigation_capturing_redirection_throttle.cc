@@ -392,13 +392,17 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
 
   // Handle the use-case where the target_app_id has a launch handling mode of
   // kFocusExisting or kNavigateExisting. In both cases this navigation gets
-  // aborted, and in some cases the web contents being navigated gest closed.
+  // aborted, and in some cases the web contents being navigated gets closed.
   if (client_mode_and_browser.effective_client_mode ==
           LaunchHandler::ClientMode::kFocusExisting ||
       client_mode_and_browser.effective_client_mode ==
           LaunchHandler::ClientMode::kNavigateExisting) {
     CHECK(client_mode_and_browser.browser);
     CHECK(client_mode_and_browser.tab_index.has_value());
+    CHECK_NE(*client_mode_and_browser.tab_index, -1);
+
+    FocusAppContainer(client_mode_and_browser.browser,
+                      *client_mode_and_browser.tab_index);
 
     content::WebContents* pre_existing_contents =
         client_mode_and_browser.browser->tab_strip_model()->GetWebContentsAt(
@@ -440,8 +444,6 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
                           final_url, pre_existing_contents);
     }
 
-    pre_existing_contents->Focus();
-
     // Close the old tab or app window, if it was created as part of the current
     // navigation to mimic the behavior where the redirected url matches an
     // outcome without redirection. Any residual app windows or tabs that were
@@ -456,7 +458,6 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
     }
     return content::NavigationThrottle::CANCEL;
   }
-
   return content::NavigationThrottle::PROCEED;
 }
 

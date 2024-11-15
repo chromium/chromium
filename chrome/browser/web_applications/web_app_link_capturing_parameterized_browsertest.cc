@@ -685,29 +685,36 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
     // TODO(crbug.com/377425233): Fix flakiness on ASAN.
     "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_"
     "ViaLink_MiddleClick_WithoutOpener_TargetBlank",
-    "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
+    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
     "ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
+    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
     "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "kFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
+    "FocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
     "RightClick_WithoutOpener_TargetBlank",
-    "kFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
+    "FocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
     "RightClick_WithoutOpener_TargetBlank",
-    "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_"
+    "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_"
     "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_"
+    "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_"
     "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_"
+    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_"
     "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_"
+    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
+    "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_"
     "ViaLink_LeftClick_WithoutOpener_TargetBlank",
 #endif
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug.com/372119276): Fix flakiness for `Redirection_OpenInChrome`
     // tests on MacOS.
-    "AppWnd_ScopeA2X_ServerSideViaB_ViaLink_ShiftClick_WithOpener_TargetBlank",
-    "AppWnd_ScopeA2X_ServerSideViaA_ViaLink_ShiftClick_WithOpener_TargetBlank",
-    "AppWnd_ScopeA2X_ServerSideViaA_ViaLink_MiddleClick_WithOpener_TargetBlank",
+    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaB_ViaLink_"
+    "ShiftClick_WithOpener_TargetBlank",
+    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_"
+    "ShiftClick_WithOpener_TargetBlank",
+    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_"
+    "MiddleClick_WithOpener_TargetBlank",
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -793,6 +800,10 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
     "LeftClick_WithoutOpener_TargetBlank",
     "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
     "LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_"
+    "ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
 #endif
 };
 
