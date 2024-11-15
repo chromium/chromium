@@ -814,7 +814,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
     auto site_info_found = map_.find(site_info);
     if (site_info_found == map_.end())
       return false;
-    auto counts_per_process = site_info_found->second;
+    const auto& counts_per_process = site_info_found->second;
     return counts_per_process.find(render_process_host_id) !=
            counts_per_process.end();
   }
@@ -822,7 +822,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   // Returns true if |render_process_host_id| is present for any site in |map_|.
   bool ContainsHost(int render_process_host_id) {
     for (auto iter : map_) {
-      auto counts_per_process = iter.second;
+      const auto& counts_per_process = iter.second;
       if (counts_per_process.find(render_process_host_id) !=
           counts_per_process.end()) {
         return true;

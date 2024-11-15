@@ -765,7 +765,8 @@ class MediaStreamManager::DeviceRequest {
   std::optional<TransferState> GetTransferState(
       MediaStreamType stream_type,
       const base::UnguessableToken& transfer_id) {
-    auto transfer_map = transfer_status_map_[static_cast<int>(stream_type)];
+    const auto& transfer_map =
+        transfer_status_map_[static_cast<int>(stream_type)];
     auto it = transfer_map.find(transfer_id);
     if (it == transfer_map.end()) {
       return std::nullopt;
