@@ -122,7 +122,7 @@ VideoFrameSharedImageCache::GetSharedImage(
 
     shared_image_ = sii->CreateSharedImage(
         {format, video_frame->coded_size(), video_frame->ColorSpace(),
-         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, mailbox_usage,
+         kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, mailbox_usage,
          "VideoFrameYUV"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image_);

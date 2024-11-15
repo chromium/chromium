@@ -62,7 +62,7 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
       shared_image_cache_->GetSharedImage(video_frame, raster_context_provider);
   CHECK(src_shared_image);
   const viz::SharedImageFormat si_format = src_shared_image->format();
-  constexpr SkAlphaType kPlaneAlphaType = kPremul_SkAlphaType;
+  constexpr SkAlphaType kPlaneAlphaType = kUnpremul_SkAlphaType;
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
 
   for (int plane = 0; plane < si_format.NumberOfPlanes(); ++plane) {
