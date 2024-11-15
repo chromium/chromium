@@ -27,7 +27,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #endif
 
@@ -87,7 +87,7 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
         std::make_unique<safe_browsing::TailoredSecurityNotificationHandler>());
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     AddNotificationHandler(
         NotificationHandler::Type::EXTENSION,
         std::make_unique<extensions::ExtensionNotificationHandler>());

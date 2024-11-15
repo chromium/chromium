@@ -12,12 +12,16 @@ assert(enable_extensions_core)
 source_set("extensions") {
   # The files that can be included from other modules.
   public = [
+    "api/chrome_extensions_renderer_api_provider.h",
     "chrome_extensions_renderer_client.h",
     "renderer_permissions_policy_delegate.h",
   ]
 
   # Files that can only be included from here.
   sources = [
+    "api/chrome_extensions_renderer_api_provider.cc",
+    "api/notifications_native_handler.cc",
+    "api/notifications_native_handler.h",
     "chrome_extensions_renderer_client.cc",
     "chrome_resource_request_policy_delegate.cc",
     "chrome_resource_request_policy_delegate.h",
@@ -38,6 +42,7 @@ source_set("extensions") {
     "//components/guest_view/buildflags",
     "//content/public/renderer",
     "//extensions/common:common_constants",
+    "//gin",
     "//net",
     "//services/metrics/public/cpp:gen_ukm_builders",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -52,7 +57,6 @@ source_set("extensions") {
   if (enable_extensions) {
     public += [
       "api/accessibility_private_hooks_delegate.h",
-      "api/chrome_extensions_renderer_api_provider.h",
       "api/extension_hooks_delegate.h",
       "api/identity_hooks_delegate.h",
       "api/tabs_hooks_delegate.h",
@@ -63,13 +67,10 @@ source_set("extensions") {
       "api/accessibility_private_hooks_delegate.h",
       "api/app_hooks_delegate.cc",
       "api/app_hooks_delegate.h",
-      "api/chrome_extensions_renderer_api_provider.cc",
       "api/extension_hooks_delegate.cc",
       "api/identity_hooks_delegate.cc",
       "api/media_galleries_custom_bindings.cc",
       "api/media_galleries_custom_bindings.h",
-      "api/notifications_native_handler.cc",
-      "api/notifications_native_handler.h",
       "api/page_capture_custom_bindings.cc",
       "api/page_capture_custom_bindings.h",
       "api/sync_file_system_custom_bindings.cc",
@@ -84,7 +85,6 @@ source_set("extensions") {
       "//chrome/renderer:resources",
       "//chrome/renderer:resources_grit",
       "//extensions/common:mojom",
-      "//gin",
       "//net",
       "//printing/buildflags",
       "//storage/common",

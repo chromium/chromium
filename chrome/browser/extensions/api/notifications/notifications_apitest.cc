@@ -210,9 +210,6 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
   ASSERT_TRUE(RunExtensionTest("notifications/api/events")) << message_;
 }
 
-// TODO(crbug.com/371431032): Fix the tests below on Android.
-#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestBasicUsage) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
 }
@@ -220,6 +217,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestBasicUsage) {
 IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestCSP) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/csp")) << message_;
 }
+
+// TODO(crbug.com/371431032): Fix the tests below on Android.
+#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 // Native notifications don't support (or use) observers.
 #if !BUILDFLAG(IS_MAC)

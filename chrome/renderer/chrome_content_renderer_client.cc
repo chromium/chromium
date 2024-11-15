@@ -210,6 +210,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/common/initialize_extensions_client.h"
+#include "chrome/renderer/extensions/api/chrome_extensions_renderer_api_provider.h"
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/context_data.h"
@@ -223,10 +224,6 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/web/web_settings.h"
 #endif  // BUIDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/renderer/extensions/api/chrome_extensions_renderer_api_provider.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
@@ -449,10 +446,10 @@ void ChromeContentRendererClient::RenderThreadStarted() {
       extensions::ExtensionsRendererClient::Get();
   extensions_renderer_client->AddAPIProvider(
       std::make_unique<extensions::CoreExtensionsRendererAPIProvider>());
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions_renderer_client->AddAPIProvider(
       std::make_unique<extensions::ChromeExtensionsRendererAPIProvider>());
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions_renderer_client->AddAPIProvider(
       std::make_unique<
           controlled_frame::ControlledFrameExtensionsRendererAPIProvider>());
