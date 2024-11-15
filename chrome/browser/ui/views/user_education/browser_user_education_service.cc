@@ -878,7 +878,8 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSupervisedUserProfileSigninFeature,
           kToolbarAvatarButtonElementId,
-          IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT, IDS_LEARN_MORE,
+          IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT,
+          IDS_PROMO_LEARN_MORE_BUTTON,
           base::BindRepeating(
               [](ui::ElementContext ctx,
                  user_education::FeaturePromoHandle promo_handle) {
