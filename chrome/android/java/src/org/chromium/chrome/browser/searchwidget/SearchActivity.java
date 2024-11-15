@@ -160,6 +160,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     // NOTE: This is used to capture HISTOGRAM_SESSION_TERMINATION_REASON.
     // Do not shuffle or reassign values.
+    // LINT.IfChange(TerminationReason)
     @IntDef({
         TerminationReason.NAVIGATION,
         TerminationReason.UNSPECIFIED,
@@ -168,6 +169,7 @@ public class SearchActivity extends AsyncInitializationActivity
         TerminationReason.OMNIBOX_FOCUS_LOST,
         TerminationReason.ACTIVITY_FOCUS_LOST,
         TerminationReason.FRE_NOT_COMPLETED,
+        TerminationReason.CUSTOM_BACK_ARROW,
         TerminationReason.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -179,8 +181,11 @@ public class SearchActivity extends AsyncInitializationActivity
         int OMNIBOX_FOCUS_LOST = 4;
         int ACTIVITY_FOCUS_LOST = 5;
         int FRE_NOT_COMPLETED = 6;
-        int COUNT = 7;
+        int CUSTOM_BACK_ARROW = 7;
+        int COUNT = 8;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:SearchActivityTerminationReason)
 
     @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
 
@@ -688,10 +693,9 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator
                 .getStatusCoordinator()
                 .setOnStatusIconNavigateBackButtonPress(
-                        (View v) ->
-                                finish(
-                                        TerminationReason.BACK_KEY_PRESSED,
-                                        /* loadUrlParams= */ null));
+                        (View v) -> {
+                            finish(TerminationReason.CUSTOM_BACK_ARROW, /* loadUrlParams= */ null);
+                        });
     }
 
     private void setIncognitoColorScheme() {

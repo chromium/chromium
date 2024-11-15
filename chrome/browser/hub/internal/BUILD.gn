@@ -189,5 +189,6 @@ robolectric_library("junit") {
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
+    "//url:url_java",
   ]
 }

@@ -1942,6 +1942,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.HubSearch.SearchBoxEntrypointV2"
+    enum="HubSearchEntrypoint" expires_after="2025-03-30">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-hub-dev@google.com</owner>
+  <summary>
+    Reports under which context (incognito or non-incognito) and visual
+    component (search box or loupe) Hub Search is entered through. This includes
+    tablet specific data which only has the loupe icon enabled.
+  </summary>
+</histogram>
+
 <histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
     expires_after="2025-04-13">
   <owner>arabm@google.com</owner>

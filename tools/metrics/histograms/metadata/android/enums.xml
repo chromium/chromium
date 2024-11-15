@@ -1062,6 +1062,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/hub/android/java/src/org/chromium/chrome/browser/hub/PaneId.java:PaneId) -->
 
+<!-- LINT.IfChange(HubSearchEntrypoint) -->
+
+<enum name="HubSearchEntrypoint">
+  <int value="0" label="Regular searchbox"/>
+  <int value="1" label="Incognito searchbox"/>
+  <int value="2" label="Regular loupe"/>
+  <int value="3" label="Incognito loupe"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/hub/internal/android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java:HubSearchEntrypoint) -->
+
 <enum name="IncognitoReauthPromoActionType">
   <int value="0" label="Promo accepted"/>
   <int value="1" label="No thanks"/>
@@ -1427,6 +1438,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Lens"/>
 </enum>
 
+<!-- LINT.IfChange(SearchActivityTerminationReason) -->
+
 <enum name="SearchActivityTerminationReason">
   <int value="0" label="Navigation"/>
   <int value="1" label="Unspecified termination"/>
@@ -1435,7 +1448,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Omnibox Focus Lost"/>
   <int value="5" label="Activity Focus Lost"/>
   <int value="6" label="FRE Not Completed"/>
+  <int value="7" label="Custom back arrow"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java:TerminationReason) -->
 
 <enum name="SearchPrefetchTouchDownPrefetchResult">
   <int value="0" label="Hit, last prefetch matches navigation"/>

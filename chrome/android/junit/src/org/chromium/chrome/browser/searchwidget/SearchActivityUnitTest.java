@@ -25,6 +25,8 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 import org.junit.After;
 import org.junit.Before;
@@ -105,6 +107,7 @@ public class SearchActivityUnitTest {
     private static final String HISTOGRAM_SUFFIX_SHORTCUTS_WIDGET = ".ShortcutsWidget";
     private static final String HISTOGRAM_SUFFIX_CUSTOM_TAB = ".CustomTab";
     private static final String HISTOGRAM_SUFFIX_LAUNCHER = ".Launcher";
+    private static final String HISTOGRAM_SUFFIX_HUB = ".Hub";
 
     // SearchActivityUtils call intercepting mock.
     private interface TestSearchActivityUtils {
@@ -435,6 +438,54 @@ public class SearchActivityUnitTest {
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
 
         verify(statusCoordinator).setOnStatusIconNavigateBackButtonPress(any());
+    }
+
+    @Test
+    public void exitSearchViaCustomBackArrow_HubSearch() {
+        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
+        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
+        View view = mock(View.class);
+        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
+        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
+
+        ArgumentCaptor<OnClickListener> captor = ArgumentCaptor.forClass(OnClickListener.class);
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
+                                        + HISTOGRAM_SUFFIX_HUB,
+                                TerminationReason.CUSTOM_BACK_ARROW)
+                        .build();
+
+        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
+        verify(statusCoordinator).setOnStatusIconNavigateBackButtonPress(captor.capture());
+        OnClickListener listener = captor.getValue();
+        listener.onClick(view);
+        histograms.assertExpected();
+    }
+
+    @Test
+    public void cancelHubSearch_onBackKeyPressed() {
+        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
+        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
+        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
+        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
+
+        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
+                                        + HISTOGRAM_SUFFIX_HUB,
+                                TerminationReason.BACK_KEY_PRESSED)
+                        .build();
+
+        assertFalse(mActivity.isFinishing());
+        assertFalse(mActivity.isActivityFinishingOrDestroyed());
+        mActivity.handleBackKeyPressed();
+        assertTrue(mActivity.isActivityFinishingOrDestroyed());
+        assertTrue(mActivity.isFinishing());
+        histograms.assertExpected();
     }
 
     @Test
