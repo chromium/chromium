@@ -310,14 +310,6 @@ BASE_FEATURE(kFileTransferEnterpriseConnectorUI,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Show Flash deprecation warning to users who have manually enabled Flash.
-// https://crbug.com/918428
-BASE_FEATURE(kFlashDeprecationWarning,
-             "FlashDeprecationWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
              "ForcedAppRelaunchOnPlaceholderUpdate",
