@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_USER_EVENT_REPORTER_HELPER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_USER_EVENT_REPORTER_HELPER_H_
 
+#include <sys/types.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -65,10 +68,10 @@ class UserEventReporterHelper {
 
   virtual std::string GetDeviceDmToken() const;
 
-  // Returns a unique ID based on the user's email if the device is managed.
-  // Otherwise, returns an empty string. The ID will be the same for a given
-  // email. It will only change if the device DM token changes.
-  virtual std::string GetUniqueUserIdForThisDevice(
+  // Returns a unique ID number based on the user's email if the device is
+  // managed. Otherwise, returns std::nulopt. The ID will be the same for a
+  // given email. It will only change if the device DM token changes.
+  virtual std::optional<uint32_t> GetUniqueUserIdForThisDevice(
       std::string_view user_email) const;
 
   // Returns the only valid seq task runner for calls to ShouldReportUser and

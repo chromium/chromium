@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 
+#include <optional>
+
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -172,13 +174,14 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
   } else if (session_type == REGULAR_USER_SESSION) {
     if (reporter_helper_->ShouldReportUser(user_email)) {
       record.mutable_affiliated_user()->set_user_email(user_email);
-    } else {
+    } else if (std::optional<uint32_t> user_id =
+                   reporter_helper_->GetUniqueUserIdForThisDevice(user_email);
+               user_id.has_value()) {
       // This is an unaffiliated user. We can't report any personal information
       // about them, so we report a device-unique user id instead.
-      record.mutable_unaffiliated_user()->set_user_id(
-          reporter_helper_->GetUniqueUserIdForThisDevice(user_email));
+      record.mutable_unaffiliated_user()->set_user_id_num(user_id.value());
     }
-  }
+    }
   reporter_helper_->ReportEvent(
       std::make_unique<LoginLogoutRecord>(std::move(record)),
       ::reporting::Priority::SECURITY);

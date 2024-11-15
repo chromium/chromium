@@ -171,10 +171,12 @@ void UserSessionActivityReporterDelegate::SetUser(
 
   if (user->IsAffiliated()) {
     record->mutable_affiliated_user()->set_user_email(std::move(email));
-  } else {
-    const std::string& unique_id =
-        reporter_helper_->GetUniqueUserIdForThisDevice(std::move(email));
-    record->mutable_unaffiliated_user()->set_user_id(std::move(unique_id));
+  } else if (const auto unique_id =
+                 reporter_helper_->GetUniqueUserIdForThisDevice(
+                     std::move(email));
+             unique_id.has_value()) {
+    record->mutable_unaffiliated_user()->set_user_id_num(
+        std::move(unique_id.value()));
   }
 }
 

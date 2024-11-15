@@ -277,7 +277,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetUser_Unaffiliated) {
 
   EXPECT_FALSE(record.has_affiliated_user());
   EXPECT_TRUE(record.has_unaffiliated_user());
-  EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
+  EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
 }
 
 TEST_F(UserSessionActivityReporterDelegateTest, SetUser_ManagedGuest) {
