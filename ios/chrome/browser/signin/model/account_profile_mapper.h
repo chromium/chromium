@@ -72,6 +72,11 @@ class AccountProfileMapper {
   // Returns whether signin is supported by the provider.
   bool IsSigninSupported();
 
+  // Returns the name of the profile to which `gaia_id` is assigned, or nullopt
+  // if no such profile exists.
+  std::optional<std::string> FindProfileNameForGaiaID(
+      std::string_view gaia_id) const;
+
   // Iterates over all known identities for `profile_name`, sorted by
   // the ordering used in system identity manager, which is typically based
   // on the keychain ordering of the accounts.

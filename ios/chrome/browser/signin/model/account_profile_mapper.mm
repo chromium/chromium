@@ -535,6 +535,31 @@ bool AccountProfileMapper::IsSigninSupported() {
   return system_identity_manager_->IsSigninSupported();
 }
 
+std::optional<std::string> AccountProfileMapper::FindProfileNameForGaiaID(
+    std::string_view gaia_id) const {
+  if (!profile_manager_) {
+    CHECK_IS_TEST();
+    return std::nullopt;
+  }
+  const ProfileAttributesStorageIOS* profile_attributes_storage =
+      profile_manager_->GetProfileAttributesStorage();
+  if (!profile_attributes_storage) {
+    CHECK_IS_TEST();
+    return std::nullopt;
+  }
+  for (size_t i = 0; i < profile_attributes_storage->GetNumberOfProfiles();
+       ++i) {
+    ProfileAttributesIOS attr =
+        profile_attributes_storage->GetAttributesForProfileAtIndex(i);
+    if (attr.GetAttachedGaiaIds().contains(gaia_id)) {
+      return attr.GetProfileName();
+    }
+  }
+  // The identity isn't assigned to any profile. This can happen (temporarily)
+  // just after an identity is added to the device.
+  return std::nullopt;
+}
+
 void AccountProfileMapper::IterateOverIdentities(
     IdentityIteratorCallback callback,
     std::string_view profile_name) {

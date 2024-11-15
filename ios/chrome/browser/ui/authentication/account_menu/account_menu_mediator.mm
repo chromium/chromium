@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
@@ -182,17 +184,19 @@
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  if (_blockUpdates) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onAccountsOnDeviceChanged` instead.
     return;
   }
-  [self updateIdentities];
+  [self handleIdentityListChanged];
 }
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (_blockUpdates) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
-  [self updateIdentities];
+  [self handleIdentityUpdated];
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
@@ -228,6 +232,22 @@
       [self.delegate mediatorWantsToBeDismissed:self];
       break;
   }
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated];
+}
+
+- (void)onAccountsOnDeviceChanged {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityListChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
 }
 
 #pragma mark - SyncObserverModelBridge
@@ -279,10 +299,32 @@
   if (self.userInteractionsBlocked) {
     return;
   }
+
   [self.consumer switchingStarted];
   [self.delegate blockOtherScenesIfPossible];
   _blockUpdates = YES;
   self.userInteractionsBlocked = YES;
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    std::optional<std::string> profileName =
+        GetApplicationContext()
+            ->GetAccountProfileMapper()
+            ->FindProfileNameForGaiaID(base::SysNSStringToUTF8(gaiaID));
+    if (profileName &&
+        *profileName != _accountManagerService->GetProfileName()) {
+      // TODO(crbug.com/375604649): Unblock the UI (and show some error?) if
+      // switching failed.
+      // TODO(crbug.com/375604649): Provide a `completion` to ensure that after
+      // a successful profile switch, the correct account is signed in in the
+      // new profile.
+      [self.delegate triggerProfileSwitchToProfileNamed:base::SysUTF8ToNSString(
+                                                            *profileName)
+                                             completion:^(bool success){
+                                             }];
+      return;
+    }
+  }
+
   id<SystemIdentity> newIdentity = nil;
   for (id<SystemIdentity> identity : _identities) {
     if (identity.gaiaID == gaiaID) {
@@ -458,11 +500,32 @@
 
 #pragma mark - Private
 
+- (void)handleIdentityListChanged {
+  if (_blockUpdates) {
+    return;
+  }
+  [self updateIdentities];
+}
+
+- (void)handleIdentityUpdated {
+  if (_blockUpdates) {
+    return;
+  }
+  [self updateIdentities];
+}
+
 // Updates the identity list in `_identities`, and sends an notification to
 // the consumer.
 - (void)updateIdentities {
-  NSArray<id<SystemIdentity>>* allIdentities =
-      _accountManagerService->GetAllIdentities();
+  NSArray<id<SystemIdentity>>* allIdentities;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    std::vector<AccountInfo> accountInfos =
+        _identityManager->GetAccountsOnDevice();
+    allIdentities =
+        _accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
+  } else {
+    allIdentities = _accountManagerService->GetAllIdentities();
+  }
 
   NSMutableArray<NSString*>* gaiaIDsToRemove = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToAdd = [NSMutableArray array];

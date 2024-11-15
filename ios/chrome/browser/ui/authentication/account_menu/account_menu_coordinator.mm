@@ -17,6 +17,8 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -87,8 +89,8 @@
   SyncEncryptionTableViewController* _syncEncryptionTableViewController;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
-  // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
+  id<ChangeProfileCommands> _changeProfileHandler;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Callback to hide the activity overlay.
   base::ScopedClosureRunner _activityOverlayCallback;
@@ -124,6 +126,9 @@
   _prefService = profile->GetPrefs();
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);
+  _changeProfileHandler = HandlerForProtocol(
+      self.browser->GetSceneState().profileState.appState.appCommandDispatcher,
+      ChangeProfileCommands);
 
   _viewController = [[AccountMenuViewController alloc] init];
 
@@ -255,6 +260,14 @@
     }
   };
   [_signoutActionSheetCoordinator start];
+}
+
+- (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
+                                completion:(void (^)(bool success))completion {
+  SceneState* sceneState = self.browser->GetSceneState();
+  [_changeProfileHandler changeProfile:profileName
+                              forScene:sceneState.sceneSessionID
+                            completion:completion];
 }
 
 - (void)didTapAddAccountWithCompletion:
