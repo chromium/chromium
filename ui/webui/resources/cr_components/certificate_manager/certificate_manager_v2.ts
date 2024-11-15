@@ -373,6 +373,12 @@ export class CertificateManagerV2Element extends
             focusWithoutInk(this.$.viewOsImportedClientCerts);
           }
           break;
+        case Page.USER_CERTS:
+          if (route.page === Page.LOCAL_CERTS) {
+            await this.$.main.updateComplete;
+            this.$.localCertSection.setFocusToLinkRow(oldRoute.page);
+          }
+          break;
         default:
           assertNotReached();
       }

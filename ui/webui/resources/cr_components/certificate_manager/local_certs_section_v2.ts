@@ -41,7 +41,6 @@ export interface LocalCertsSectionV2Element {
     // <if expr="is_win or is_macosx">
     manageOsImportedCerts: HTMLElement,
     // </if>
-    userCertsInstalledLinkRow: HTMLElement,
 
     numSystemCerts: HTMLElement,
   };
@@ -117,13 +116,19 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
   setFocusToLinkRow(p: Page) {
     switch (p) {
       case Page.ADMIN_CERTS:
-        const linkRow = this.shadowRoot!.querySelector<HTMLElement>(
+        const adminLinkRow = this.shadowRoot!.querySelector<HTMLElement>(
             '#adminCertsInstalledLinkRow');
-        assert(linkRow);
-        focusWithoutInk(linkRow);
+        assert(adminLinkRow);
+        focusWithoutInk(adminLinkRow);
         break;
       case Page.PLATFORM_CERTS:
         focusWithoutInk(this.$.viewOsImportedCerts);
+        break;
+      case Page.USER_CERTS:
+        const userLinkRow = this.shadowRoot!.querySelector<HTMLElement>(
+            '#userCertsInstalledLinkRow');
+        assert(userLinkRow);
+        focusWithoutInk(userLinkRow);
         break;
       default:
         assertNotReached();
