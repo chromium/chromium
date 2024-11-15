@@ -49,6 +49,13 @@ BASE_FEATURE(kTabGroupSyncServiceDesktopMigration,
              "TabGroupSyncServiceDesktopMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag specific to Desktop platforms. When enabled, desktop platforms
+// will defer remote navigations in a tab group when the tab is in a
+// backgrounded state.
+BASE_FEATURE(kTabGroupsDeferRemoteNavigations,
+             "TabGroupDeferRemoteNavigations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature flag to disable auto-open of saved tab groups. Note that the
 // settings page for auto open will still be visible, and when user is allowed
 // to change. However the written pref from the user selection will not be
@@ -96,6 +103,10 @@ bool IsTabGroupsSaveUIUpdateEnabled() {
 
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration);
+}
+
+bool IsTabGroupsDeferringRemoteNavigations() {
+  return base::FeatureList::IsEnabled(kTabGroupsDeferRemoteNavigations);
 }
 
 bool IsTabGroupSyncCoordinatorEnabled() {

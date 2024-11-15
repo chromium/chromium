@@ -21,6 +21,8 @@ BASE_DECLARE_FEATURE(kTabGroupsSaveUIUpdate);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncServiceDesktopMigration);
 
+BASE_DECLARE_FEATURE(kTabGroupsDeferRemoteNavigations);
+
 BASE_DECLARE_FEATURE(kTabGroupSyncAutoOpenKillSwitch);
 
 BASE_DECLARE_FEATURE(kRestrictDownloadOnSyncedTabs);
@@ -38,6 +40,8 @@ extern bool IsTabGroupsSaveV2Enabled();
 extern bool IsTabGroupsSaveUIUpdateEnabled();
 
 extern bool IsTabGroupSyncServiceDesktopMigrationEnabled();
+
+extern bool IsTabGroupsDeferringRemoteNavigations();
 
 extern bool IsTabGroupSyncCoordinatorEnabled();
 

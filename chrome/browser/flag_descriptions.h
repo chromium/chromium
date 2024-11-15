@@ -549,6 +549,10 @@ extern const char kCapturedSurfaceControlDescription[];
 extern const char kCommerceHintAndroidName[];
 extern const char kCommerceHintAndroidDescription[];
 
+extern const char kCompactModeId[];
+extern const char kCompactModeName[];
+extern const char kCompactModeDescription[];
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kContextualCueingName[];
 extern const char kContextualCueingDescription[];
@@ -2077,13 +2081,13 @@ extern const char kToolbarPhoneCleanupDescription[];
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 
+extern const char kTabGroupsDeferRemoteNavigationsId[];
+extern const char kTabGroupsDeferRemoteNavigationsName[];
+extern const char kTabGroupsDeferRemoteNavigationsDescription[];
+
 extern const char kTabGroupsSaveV2Id[];
 extern const char kTabGroupsSaveV2Name[];
 extern const char kTabGroupsSaveV2Description[];
-
-extern const char kCompactModeId[];
-extern const char kCompactModeName[];
-extern const char kCompactModeDescription[];
 
 extern const char kTabGroupsSaveUIUpdateId[];
 extern const char kTabGroupsSaveUIUpdateName[];

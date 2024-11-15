@@ -3625,6 +3625,14 @@ const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";
 
+const char kTabGroupsDeferRemoteNavigationsId[] =
+    "tab-groups-defer-remote-navigations";
+const char kTabGroupsDeferRemoteNavigationsName[] =
+    "Tab Groups Defer Remote Navigations";
+const char kTabGroupsDeferRemoteNavigationsDescription[] =
+    "Prevents remote navigations from being performed when a tab is "
+    "backgrounded in a group";
+
 const char kTabGroupsSaveV2Id[] = "tab-groups-save-v2";
 const char kTabGroupsSaveV2Name[] = "Tab Groups Save and Sync V2";
 const char kTabGroupsSaveV2Description[] =
