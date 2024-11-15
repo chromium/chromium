@@ -285,16 +285,17 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
                                   purpose
                    completion:
                        (FetchSecurityDomainSecretCompletionBlock)completion {
+  __weak __typeof(self) weakSelf = self;
   _passkeyKeychainProvider->Reauthenticate(
       gaia, _navigationController, _navigationItemTitleView, purpose,
       base::BindOnce(^(const PasskeyKeychainProvider::SharedKeyList& key_list) {
-        [self onKeysFetchedForGaia:gaia
-                        credential:credential
-                canMarkKeysAsStale:canMarkKeysAsStale
-                           purpose:purpose
-                        completion:completion
-                           keyList:key_list
-                 canReauthenticate:NO];
+        [weakSelf onKeysFetchedForGaia:gaia
+                            credential:credential
+                    canMarkKeysAsStale:canMarkKeysAsStale
+                               purpose:purpose
+                            completion:completion
+                               keyList:key_list
+                     canReauthenticate:NO];
       }));
 }
 
