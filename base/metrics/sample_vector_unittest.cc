@@ -168,8 +168,7 @@ TEST_F(SampleVectorTest, BucketIndexDeath) {
   EXPECT_DEATH_IF_SUPPORTED(samples2.Accumulate(10, 100), "");
 }
 
-// TODO(crbug.com/363154866)
-TEST_F(SampleVectorTest, DISABLED_AddSubtractBucketNotMatchDeath) {
+TEST_F(SampleVectorTest, AddSubtractBucketNotMatch) {
   // Custom buckets 1: [1, 3) [3, 5)
   BucketRanges ranges1(3);
   ranges1.set_range(0, 1);
@@ -187,27 +186,27 @@ TEST_F(SampleVectorTest, DISABLED_AddSubtractBucketNotMatchDeath) {
   SampleVector samples2(2, &ranges2);
 
   samples2.Accumulate(1, 100);
-  samples1.Add(samples2);
-  EXPECT_EQ(100, samples1.GetCountAtIndex(0));
+  // Despite [1, 3) matching in both samples, we expect AddSubtractImpl to fail
+  // as it requires perfect alignment of buckets.
+  EXPECT_FALSE(samples1.Add(samples2));
 
-  // Extra bucket in the beginning. These should CHECK in GetBucketIndex.
+  // Extra bucket in the beginning. These should cause AddSubtractImpl to fail.
   samples2.Accumulate(0, 100);
-  EXPECT_DEATH_IF_SUPPORTED(samples1.Add(samples2), "");
-  EXPECT_DEATH_IF_SUPPORTED(samples1.Subtract(samples2), "");
+  EXPECT_FALSE(samples1.Add(samples2));
+  EXPECT_FALSE(samples1.Subtract(samples2));
 
-  // Extra bucket in the end. These should cause AddSubtractImpl to fail, and
-  // Add to DCHECK as a result.
+  // Extra bucket in the end. These should cause AddSubtractImpl to fail.
   samples2.Accumulate(0, -100);
   samples2.Accumulate(6, 100);
-  EXPECT_DCHECK_DEATH(samples1.Add(samples2));
-  EXPECT_DCHECK_DEATH(samples1.Subtract(samples2));
+  EXPECT_FALSE(samples1.Add(samples2));
+  EXPECT_FALSE(samples1.Subtract(samples2));
 
   // Bucket not match: [3, 5) VS [3, 6). These should cause AddSubtractImpl to
-  // DCHECK.
+  // fail.
   samples2.Accumulate(6, -100);
   samples2.Accumulate(3, 100);
-  EXPECT_NOTREACHED_DEATH(samples1.Add(samples2));
-  EXPECT_NOTREACHED_DEATH(samples1.Subtract(samples2));
+  EXPECT_FALSE(samples1.Add(samples2));
+  EXPECT_FALSE(samples1.Subtract(samples2));
 }
 
 TEST_F(SampleVectorTest, Iterate) {
