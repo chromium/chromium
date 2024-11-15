@@ -192,6 +192,9 @@ bool IsSpecialSymbol(char16_t c);
 // Returns true if 'type' is a username in a password-less form.
 bool IsSingleUsernameType(autofill::FieldType type);
 
+// Returns the prettified version of |signon_realm| to be displayed on the UI.
+std::u16string GetHumanReadableRealm(const std::string& signon_realm);
+
 }  // namespace password_manager_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_

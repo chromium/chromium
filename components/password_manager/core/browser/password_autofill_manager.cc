@@ -47,6 +47,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
@@ -320,7 +321,29 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         // Navigation happened before suggestion acceptance.
         return;
       }
-      OnPasswordCredentialSuggestionAccepted(*password_credential);
+      if (password_credential->is_grouped_affiliation) {
+#if BUILDFLAG(IS_ANDROID)
+        // TODO: crbug.com/372635361 - Add Android warning bottomsheet.
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+        // Show desktop warning.
+        cross_domain_confirmation_controller_ =
+            password_client_->ShowCrossDomainConfirmationPopup(
+                last_popup_open_args_.element_bounds,
+                last_popup_open_args_.text_direction,
+                /*domain=*/password_manager_driver_->GetLastCommittedURL(),
+                /*password_origin=*/
+                password_manager_util::GetHumanReadableRealm(
+                    password_credential->realm),
+                /*confirmation_callback=*/
+                base::BindOnce(&PasswordAutofillManager::
+                                   OnPasswordCredentialSuggestionAccepted,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               *password_credential));
+#endif
+      } else {
+        OnPasswordCredentialSuggestionAccepted(*password_credential);
+      }
   }
 
   if (!password_client_
@@ -478,6 +501,12 @@ void PasswordAutofillManager::DidNavigateMainFrame() {
   manual_fallback_flow_.reset();
   manual_fallback_metrics_recorder_ =
       std::make_unique<PasswordManualFallbackMetricsRecorder>();
+#if BUILDFLAG(IS_ANDROID)
+  // TODO: crbug.com/372635361 - Reset Android warning bottomsheet.
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+  cross_domain_confirmation_controller_.reset();
+#endif
 }
 
 bool PasswordAutofillManager::PreviewSuggestionForTest(

@@ -240,6 +240,13 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   std::unique_ptr<PasswordManualFallbackMetricsRecorder>
       manual_fallback_metrics_recorder_;
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+  // Stores the controller of warning popup UI on cross domain filling.
+  std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
+      cross_domain_confirmation_controller_;
+#endif
+
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };
 

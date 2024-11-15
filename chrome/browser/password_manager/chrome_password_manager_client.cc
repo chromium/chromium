@@ -1315,6 +1315,7 @@ void ChromePasswordManagerClient::OpenPasswordDetailsBubble(
   }
 }
 
+// TODO: crbug.com/372635361 - Rename `password_origin` to more suitable name.
 std::unique_ptr<
     password_manager::PasswordCrossDomainConfirmationPopupController>
 ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(

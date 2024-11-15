@@ -468,6 +468,7 @@ struct PasswordAndMetadata {
   mojo_base.mojom.String16 password_value;
   string realm;
   bool uses_account_store;
+  bool is_grouped_affiliation;
 };
 
 // autofill::PasswordFormFillData

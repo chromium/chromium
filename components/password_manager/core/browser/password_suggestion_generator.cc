@@ -48,22 +48,6 @@ std::u16string ReplaceEmptyUsername(const std::u16string& username,
   return username;
 }
 
-// Returns the prettified version of |signon_realm| to be displayed on the UI.
-std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
-  // For Android application realms, remove the hash component. Otherwise, make
-  // no changes.
-  FacetURI maybe_facet_uri(FacetURI::FromPotentiallyInvalidSpec(signon_realm));
-  if (maybe_facet_uri.IsValidAndroidFacetURI()) {
-    return base::UTF8ToUTF16("android://" +
-                             maybe_facet_uri.android_package_name() + "/");
-  }
-  GURL realm(signon_realm);
-  if (realm.is_valid()) {
-    return base::UTF8ToUTF16(realm.host());
-  }
-  return base::UTF8ToUTF16(signon_realm);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 Suggestion CreatePasskeyFromAnotherDeviceEntry(bool listed_passkeys) {
   return Suggestion(
@@ -183,7 +167,8 @@ void AppendSuggestionIfMatching(const std::u16string& field_suggestion,
     if (!signon_realm.empty()) {
       // The domainname is only shown for passwords with a common eTLD+1
       // but different subdomain.
-      suggestion.additional_label = GetHumanReadableRealm(signon_realm);
+      suggestion.additional_label =
+          password_manager_util::GetHumanReadableRealm(signon_realm);
       *suggestion.voice_over += u", ";
       *suggestion.voice_over += suggestion.additional_label;
     }
@@ -233,7 +218,8 @@ Suggestion CreateFillPasswordChildSuggestion(
   fill_password.payload = Suggestion::PasswordSuggestionDetails(
       credential.username, credential.password,
       credential.GetFirstSignonRealm(),
-      GetHumanReadableRealm(credential.GetFirstSignonRealm()),
+      password_manager_util::GetHumanReadableRealm(
+          credential.GetFirstSignonRealm()),
       is_cross_origin.value());
   return fill_password;
 }

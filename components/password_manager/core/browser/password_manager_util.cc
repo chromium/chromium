@@ -489,4 +489,20 @@ bool IsSingleUsernameType(autofill::FieldType type) {
                   kUsernameFirstFlowWithIntermediateValuesPredictions));
 }
 
+std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
+  // For Android application realms, remove the hash component. Otherwise, make
+  // no changes.
+  affiliations::FacetURI maybe_facet_uri(
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(signon_realm));
+  if (maybe_facet_uri.IsValidAndroidFacetURI()) {
+    return base::UTF8ToUTF16("android://" +
+                             maybe_facet_uri.android_package_name() + "/");
+  }
+  GURL realm(signon_realm);
+  if (realm.is_valid()) {
+    return base::UTF8ToUTF16(realm.host());
+  }
+  return base::UTF8ToUTF16(signon_realm);
+}
+
 }  // namespace password_manager_util

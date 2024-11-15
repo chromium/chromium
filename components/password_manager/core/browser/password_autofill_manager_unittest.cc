@@ -215,6 +215,19 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
               IsReauthBeforeFillingRequired,
               (device_reauth::DeviceAuthenticator*),
               (override));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+  MOCK_METHOD(
+      std::unique_ptr<
+          password_manager::PasswordCrossDomainConfirmationPopupController>,
+      ShowCrossDomainConfirmationPopup,
+      (const gfx::RectF& element_bounds,
+       base::i18n::TextDirection text_direction,
+       const GURL& domain,
+       const std::u16string& password_origin,
+       base::OnceClosure confirmation_callback),
+      (override));
+#endif
 
  private:
   MockPasswordManagerDriver driver_;
@@ -2379,6 +2392,26 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_THAT(histograms.GetTotalCountsForPrefix("Autofill.Funnel."),
               ::testing::IsEmpty());
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+TEST_F(PasswordAutofillManagerTest, ShowCrossDomainConfirmationPopup) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+  autofill::PasswordFormFillData cross_domain_fill_data =
+      CreateTestFormFillData();
+  cross_domain_fill_data.preferred_login.is_grouped_affiliation = true;
+  password_autofill_manager_->OnAddPasswordFillData(cross_domain_fill_data);
+  EXPECT_CALL(client, ShowCrossDomainConfirmationPopup);
+
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kPasswordEntry,
+          cross_domain_fill_data.preferred_login.username_value),
+      SuggestionPosition{.row = 0});
+}
+#endif
 
 }  // namespace
 }  // namespace password_manager
