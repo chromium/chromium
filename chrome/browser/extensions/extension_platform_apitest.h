@@ -78,6 +78,10 @@ class ExtensionPlatformApiTest : public ExtensionPlatformBrowserTest {
   // which is available to javascript tests using chrome.test.getConfig().
   void SetCustomArg(std::string_view custom_arg);
 
+  // Tests that exactly one extension loaded. If so, returns a pointer to
+  // the extension. If not, returns null and sets message_.
+  const Extension* GetSingleLoadedExtension();
+
   // All extensions tested by ExtensionPlatformApiTest are in the "api_test"
   // dir.
   void SetUpCommandLine(base::CommandLine* command_line) override;

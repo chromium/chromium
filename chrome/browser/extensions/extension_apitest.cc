@@ -26,6 +26,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/extensions/api_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -206,32 +207,8 @@ bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
 
 // Test that exactly one extension is loaded, and return it.
 const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
-
-  const Extension* result = nullptr;
-  for (const scoped_refptr<const Extension>& extension :
-       registry->enabled_extensions()) {
-    // Ignore any component extensions. They are automatically loaded into all
-    // profiles and aren't the extension we're looking for here.
-    if (extension->location() == mojom::ManifestLocation::kComponent)
-      continue;
-
-    if (result != nullptr) {
-      // TODO(yoz): this is misleading; it counts component extensions.
-      message_ = base::StringPrintf(
-          "Expected only one extension to be present.  Found %u.",
-          static_cast<unsigned>(registry->enabled_extensions().size()));
-      return nullptr;
-    }
-
-    result = extension.get();
-  }
-
-  if (!result) {
-    message_ = "extension pointer is NULL.";
-    return nullptr;
-  }
-  return result;
+  return api_test_util::GetSingleLoadedExtension(browser()->profile(),
+                                                 message_);
 }
 
 bool ExtensionApiTest::StartEmbeddedTestServer() {

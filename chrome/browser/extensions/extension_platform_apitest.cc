@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api_test_util.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/common/constants.h"
@@ -153,6 +154,10 @@ bool ExtensionPlatformApiTest::RunExtensionTest(
 
 void ExtensionPlatformApiTest::SetCustomArg(std::string_view custom_arg) {
   test_config_->Set(kTestCustomArg, base::Value(custom_arg));
+}
+
+const Extension* ExtensionPlatformApiTest::GetSingleLoadedExtension() {
+  return api_test_util::GetSingleLoadedExtension(profile(), message_);
 }
 
 void ExtensionPlatformApiTest::SetUpCommandLine(

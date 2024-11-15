@@ -289,6 +289,13 @@ static_library("test_support") {
     ]
   }
 
+  if (enable_extensions_core) {
+    sources += [
+      "../browser/extensions/api_test_util.cc",
+      "../browser/extensions/api_test_util.h",
+    ]
+  }
+
   if (enable_desktop_android_extensions) {
     sources += [
       "../browser/extensions/extension_platform_apitest.cc",
