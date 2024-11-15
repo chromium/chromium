@@ -656,7 +656,7 @@ protocol::Response InspectorOverlayAgent::setShowWindowControlsOverlay(
     protocol::Maybe<protocol::Overlay::WindowControlsOverlayConfig>
         wco_config) {
   // Hide WCO when called without a configuration.
-  if (!wco_config.has_value()) {
+  if (!wco_config) {
     SetInspectTool(nullptr);
     return protocol::Response::Success();
   }
@@ -664,7 +664,7 @@ protocol::Response InspectorOverlayAgent::setShowWindowControlsOverlay(
   std::unique_ptr<protocol::DictionaryValue> result =
       protocol::DictionaryValue::create();
 
-  protocol::Overlay::WindowControlsOverlayConfig& config = wco_config.value();
+  protocol::Overlay::WindowControlsOverlayConfig& config = *wco_config;
 
   result->setBoolean("showCSS", config.getShowCSS());
   result->setString("selectedPlatform", config.getSelectedPlatform());
@@ -691,10 +691,8 @@ protocol::Response InspectorOverlayAgent::highlightRect(
   std::unique_ptr<gfx::QuadF> quad =
       std::make_unique<gfx::QuadF>(gfx::RectF(x, y, width, height));
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
-      this, GetFrontend(), std::move(quad),
-      ParseColor(color.has_value() ? &color.value() : nullptr),
-      ParseColor(outline_color.has_value() ? &outline_color.value()
-                                           : nullptr)));
+      this, GetFrontend(), std::move(quad), ParseColor(color.get()),
+      ParseColor(outline_color.get())));
 }
 
 protocol::Response InspectorOverlayAgent::highlightQuad(
@@ -706,16 +704,14 @@ protocol::Response InspectorOverlayAgent::highlightQuad(
     return protocol::Response::ServerError("Invalid Quad format");
   }
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
-      this, GetFrontend(), std::move(quad),
-      ParseColor(color.has_value() ? &color.value() : nullptr),
-      ParseColor(outline_color.has_value() ? &outline_color.value()
-                                           : nullptr)));
+      this, GetFrontend(), std::move(quad), ParseColor(color.get()),
+      ParseColor(outline_color.get())));
 }
 
 protocol::Response InspectorOverlayAgent::setShowHinge(
     protocol::Maybe<protocol::Overlay::HingeConfig> tool_config) {
   // Hide the hinge when called without a configuration.
-  if (!tool_config.has_value()) {
+  if (!tool_config) {
     hinge_ = nullptr;
     if (!inspect_tool_) {
       DisableFrameOverlay();
@@ -725,7 +721,7 @@ protocol::Response InspectorOverlayAgent::setShowHinge(
   }
 
   // Create a hinge
-  protocol::Overlay::HingeConfig& config = tool_config.value();
+  protocol::Overlay::HingeConfig& config = *tool_config;
   protocol::DOM::Rect* rect = config.getRect();
   int x = rect->getX();
   int y = rect->getY();
@@ -991,10 +987,8 @@ protocol::Response InspectorOverlayAgent::highlightFrame(
   std::unique_ptr<InspectorHighlightConfig> highlight_config =
       std::make_unique<InspectorHighlightConfig>();
   highlight_config->show_info = true;  // Always show tooltips for frames.
-  highlight_config->content =
-      ParseColor(color.has_value() ? &color.value() : nullptr);
-  highlight_config->content_outline =
-      ParseColor(outline_color.has_value() ? &outline_color.value() : nullptr);
+  highlight_config->content = ParseColor(color.get());
+  highlight_config->content_outline = ParseColor(outline_color.get());
 
   return SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
       this, GetFrontend(), frame->DeprecatedLocalOwner(), String(),
@@ -1594,8 +1588,8 @@ protocol::Response InspectorOverlayAgent::setInspectMode(
   }
 
   std::vector<uint8_t> serialized_config;
-  if (highlight_inspector_object.has_value()) {
-    highlight_inspector_object.value().AppendSerialized(&serialized_config);
+  if (highlight_inspector_object) {
+    highlight_inspector_object->AppendSerialized(&serialized_config);
   }
   std::unique_ptr<InspectorHighlightConfig> config;
   protocol::Response response = HighlightConfigFromInspectorObject(
@@ -1719,13 +1713,12 @@ InspectorOverlayAgent::SourceOrderConfigFromInspectorObject(
 protocol::Response InspectorOverlayAgent::HighlightConfigFromInspectorObject(
     Maybe<protocol::Overlay::HighlightConfig> highlight_inspector_object,
     std::unique_ptr<InspectorHighlightConfig>* out_config) {
-  if (!highlight_inspector_object.has_value()) {
+  if (!highlight_inspector_object) {
     return protocol::Response::ServerError(
         "Internal error: highlight configuration parameter is missing");
   }
 
-  protocol::Overlay::HighlightConfig& config =
-      highlight_inspector_object.value();
+  protocol::Overlay::HighlightConfig& config = *highlight_inspector_object;
 
   String format = config.getColorFormat("hex");
 
