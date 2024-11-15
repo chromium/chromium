@@ -7,13 +7,17 @@
 
 #include "base/threading/platform_thread.h"
 #include "cc/layers/texture_layer_client.h"
-#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "ui/gfx/geometry/size.h"
+
+namespace gpu {
+class ClientSharedImage;
+}
 
 namespace blink {
 
@@ -61,17 +65,9 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
     ColorBuffer(base::WeakPtr<XRWebGLDrawingBuffer>,
                 const gfx::Size&,
                 scoped_refptr<gpu::ClientSharedImage> shared_image,
-                std::unique_ptr<gpu::SharedImageTexture> texture);
+                GLuint texture_id);
     ColorBuffer(const ColorBuffer&) = delete;
     ColorBuffer& operator=(const ColorBuffer&) = delete;
-
-    // Begin/end the scoped access of |texture|.
-    void BeginAccess();
-    void EndAccess();
-
-    GLuint texture_id() { return scoped_access_->texture_id(); }
-
-    void CleanUp();
 
     // The thread on which the ColorBuffer is created and the DrawingBuffer is
     // bound to.
@@ -82,6 +78,10 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
     // of its ColorBuffers.
     base::WeakPtr<XRWebGLDrawingBuffer> drawing_buffer;
     const gfx::Size size;
+
+    // The id of the texture that imports the shared image into the
+    // DrawingBuffer's context.
+    const GLuint texture_id = 0;
 
     // The client shared image backing this color buffer.
     scoped_refptr<gpu::ClientSharedImage> shared_image;
@@ -96,11 +96,6 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
    private:
     friend class ThreadSafeRefCounted<ColorBuffer>;
     ~ColorBuffer();
-
-    // The texture that imports the shared image into the DrawingBuffer's
-    // context.
-    std::unique_ptr<gpu::SharedImageTexture> texture_;
-    std::unique_ptr<gpu::SharedImageTexture::ScopedAccess> scoped_access_;
   };
 
   XRWebGLDrawingBuffer(DrawingBuffer*,
@@ -139,11 +134,9 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
   GLuint depth_stencil_buffer_ = 0;
   gfx::Size size_;
 
-  // Valid for shared buffer mode from UseSharedBuffer until
+  // Nonzero for shared buffer mode from UseSharedBuffer until
   // DoneWithSharedBuffer.
-  std::unique_ptr<gpu::SharedImageTexture> shared_buffer_texture_;
-  std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
-      shared_buffer_scoped_access_;
+  GLuint shared_buffer_texture_id_ = 0;
 
   // Checking framebuffer completeness is extremely expensive, it's basically a
   // glFinish followed by a synchronous wait for a reply. Do so only once per
@@ -170,8 +163,6 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
 
   int max_texture_size_ = 0;
   int sample_count_ = 0;
-
-  base::flat_set<scoped_refptr<ColorBuffer>> exported_color_buffers_;
 
   base::WeakPtrFactory<XRWebGLDrawingBuffer> weak_factory_;
 };
