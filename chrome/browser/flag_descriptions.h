@@ -1019,12 +1019,6 @@ extern const char kEvDetailsInPageInfoDescription[];
 extern const char kExperimentalWebPlatformFeaturesName[];
 extern const char kExperimentalWebPlatformFeaturesDescription[];
 
-extern const char kSafeBrowsingAsyncRealTimeCheckName[];
-extern const char kSafeBrowsingAsyncRealTimeCheckDescription[];
-
-extern const char kSafeBrowsingHashPrefixRealTimeLookupsName[];
-extern const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[];
-
 extern const char kSafeBrowsingLocalListsUseSBv5Name[];
 extern const char kSafeBrowsingLocalListsUseSBv5Description[];
 
