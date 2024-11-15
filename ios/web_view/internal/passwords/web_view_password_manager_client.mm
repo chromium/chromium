@@ -200,6 +200,11 @@ WebViewPasswordManagerClient::GetPasswordReuseManager() const {
   return reuse_manager_;
 }
 
+password_manager::PasswordChangeServiceInterface*
+WebViewPasswordManagerClient::GetPasswordChangeService() const {
+  return nullptr;
+}
+
 void WebViewPasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {

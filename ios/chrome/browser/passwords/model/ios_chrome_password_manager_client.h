@@ -108,6 +108,8 @@ class IOSChromePasswordManagerClient
       const override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
+  password_manager::PasswordChangeServiceInterface* GetPasswordChangeService()
+      const override;
 
   void NotifyUserAutoSignin(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,

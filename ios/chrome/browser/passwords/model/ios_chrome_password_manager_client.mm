@@ -188,6 +188,11 @@ IOSChromePasswordManagerClient::GetPasswordReuseManager() const {
   return IOSChromePasswordReuseManagerFactory::GetForProfile(bridge_.profile);
 }
 
+password_manager::PasswordChangeServiceInterface*
+IOSChromePasswordManagerClient::GetPasswordChangeService() const {
+  return nullptr;
+}
+
 void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {

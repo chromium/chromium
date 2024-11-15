@@ -98,6 +98,11 @@ PasswordReuseManager* StubPasswordManagerClient::GetPasswordReuseManager()
   return nullptr;
 }
 
+PasswordChangeServiceInterface*
+StubPasswordManagerClient::GetPasswordChangeService() const {
+  return nullptr;
+}
+
 const PasswordManagerInterface* StubPasswordManagerClient::GetPasswordManager()
     const {
   return nullptr;
