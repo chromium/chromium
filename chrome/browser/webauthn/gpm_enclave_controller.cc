@@ -460,6 +460,7 @@ void GPMEnclaveController::OnEnclaveLoaded() {
           account.account_id);
   if (signin_error.IsPersistentError()) {
     FIDO_LOG(EVENT) << "Recoverable sign-in error: " << signin_error.ToString();
+    device::enclave::RecordEvent(device::enclave::Event::kEnclaveReauthNeeded);
     account_state_ = AccountState::kNone;
     SetActive(EnclaveEnabledStatus::kEnabledAndReauthNeeded);
     return;
