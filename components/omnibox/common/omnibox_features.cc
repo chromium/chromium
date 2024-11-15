@@ -342,7 +342,7 @@ BASE_FEATURE(kUseFusedLocationProvider, "UseFusedLocationProvider", DISABLED);
 BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);
 
 // Enables deletion of old shortcuts on profile load.
-BASE_FEATURE(kOmniboxDeleteOldShortcuts, "OmniboxDeleteOldShortcuts", DISABLED);
+BASE_FEATURE(kOmniboxDeleteOldShortcuts, "OmniboxDeleteOldShortcuts", ENABLED);
 
 // When enabled, it increases ipad's zps matches limit on web,srp and ntp.
 BASE_FEATURE(kIpadZeroSuggestMatches, "IpadZeroSuggestMatches", DISABLED);
