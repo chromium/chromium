@@ -29,6 +29,9 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/app_constants/constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -47,12 +50,6 @@ class CoralControllerTest : public AshTestBase {
     BirchChipButton* coral_button = GetFirstCoralButton();
     CHECK(coral_button);
     LeftClickOn(coral_button);
-  }
-
-  void AddCoralEntry(const std::string& name) {
-    AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
-                      base::Uuid::GenerateRandomV4(), name, base::Time::Now(),
-                      DeskTemplateType::kCoral);
   }
 
   void SetUp() override {
@@ -216,9 +213,79 @@ TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
                                                                 window2.get()));
 }
 
-TEST_F(CoralControllerTest, MaxCoralSavedGroupLimit) {
-  ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
+class CoralSavedGroupTest : public CoralControllerTest {
+ public:
+  desks_storage::DeskModel* desk_model() {
+    return ash_test_helper()->saved_desk_test_helper()->desk_model();
+  }
 
+  void AddCoralEntry(const std::string& name) {
+    AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(), name,
+                      base::Time::Now(), DeskTemplateType::kCoral);
+  }
+
+  // Right click on the coral button to bring up the context menu and return the
+  // save as group option menu item.
+  views::MenuItemView* GetSaveAsGroupMenuItem() {
+    RightClickOn(GetFirstCoralButton());
+    BirchBarMenuModelAdapter* model_adapter =
+        BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+    EXPECT_TRUE(model_adapter->IsShowingMenu());
+    views::MenuItemView* save_as_group_item =
+        model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
+    CHECK_EQ(save_as_group_item->GetCommand(),
+             base::to_underlying(
+                 BirchChipContextMenuModel::CommandId::kCoralSaveForLater));
+    return save_as_group_item;
+  }
+
+  void SetUp() override {
+    CoralControllerTest::SetUp();
+    ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
+  }
+};
+
+// Tests saving a group that has a couple tabs in it.
+TEST_F(CoralSavedGroupTest, SaveBrowserInGroup) {
+  // Prepare a coral response with two tabs.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")},
+                       {"Youtube", GURL("https://youtube.com/")}},
+                      "Coral desk"));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Enter overview and click on the save as group menu item.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
+  LeftClickOn(save_as_group_item);
+
+  // Verify the desk model entry name and type.
+  const desks_storage::DeskModel::GetAllEntriesResult& result =
+      desk_model()->GetAllEntries();
+  ASSERT_EQ(result.entries.size(), 1u);
+  const DeskTemplate* coral_template = result.entries[0];
+  EXPECT_EQ(coral_template->template_name(), u"saved group");
+  EXPECT_EQ(coral_template->type(), DeskTemplateType::kCoral);
+
+  // Verify that the desk model entry browser info matches our fake coral
+  // response.
+  const app_restore::RestoreData* restore_data =
+      coral_template->desk_restore_data();
+  ASSERT_TRUE(restore_data);
+  const app_restore::AppRestoreData* app_restore_data =
+      restore_data->GetAppRestoreData(app_constants::kChromeAppId,
+                                      /*window_id=*/0);
+  ASSERT_TRUE(app_restore_data);
+  app_restore::BrowserExtraInfo browser_extra_info =
+      app_restore_data->browser_extra_info;
+  EXPECT_THAT(browser_extra_info.urls,
+              testing::ElementsAre(GURL("https://google.com/"),
+                                   GURL("https://youtube.com/")));
+}
+
+TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {
   // Add enough entries to hit the max.
   for (int i = 0; i < 6; ++i) {
     AddCoralEntry(base::NumberToString(i));
@@ -226,18 +293,7 @@ TEST_F(CoralControllerTest, MaxCoralSavedGroupLimit) {
 
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kTests);
-
-  // Right click on the coral button to bring up the context menu and the save
-  // as group option.
-  RightClickOn(GetFirstCoralButton());
-  BirchBarMenuModelAdapter* model_adapter =
-      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
-  EXPECT_TRUE(model_adapter->IsShowingMenu());
-  views::MenuItemView* save_as_group_item =
-      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
-  ASSERT_EQ(save_as_group_item->GetCommand(),
-            base::to_underlying(
-                BirchChipContextMenuModel::CommandId::kCoralSaveForLater));
+  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
 
   // Left click on the menu item and test that the toast shows up since we
   // cannot create more coral saved groups.

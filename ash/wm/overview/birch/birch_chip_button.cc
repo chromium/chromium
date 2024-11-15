@@ -7,13 +7,13 @@
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/coral_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/overview/birch/birch_animation_utils.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
@@ -477,7 +477,7 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       }
 
       auto* coral_provider = BirchCoralProvider::Get();
-      Shell::Get()->coral_delegate()->CreateSavedDeskFromGroup(
+      Shell::Get()->coral_controller()->CreateSavedDeskFromGroup(
           coral_provider->ExtractGroupById(
               static_cast<BirchCoralItem*>(item_)->group_id()));
       break;

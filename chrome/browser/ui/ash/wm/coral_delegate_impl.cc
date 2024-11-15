@@ -234,5 +234,6 @@ void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
   }
 }
 
-void CoralDelegateImpl::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) {
+int CoralDelegateImpl::GetChromeDefaultRestoreId() {
+  return Browser::kDefaultRestoreId;
 }

@@ -28,10 +28,9 @@ class ASH_PUBLIC_EXPORT CoralDelegate {
       const std::vector<coral::mojom::Tab>& tabs,
       size_t src_desk_index) = 0;
 
-  // Creates a saved desk with up to one browser with tabs from `group`.
-  // Closes apps based on the apps from `group`, and places them in the saved
-  // desk to be launched at a later time.
-  virtual void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) = 0;
+  // The default restore Id for chrome browser is under chrome/browser/. This
+  // lets us get the correct Id in ash/.
+  virtual int GetChromeDefaultRestoreId() = 0;
 };
 
 }  // namespace ash

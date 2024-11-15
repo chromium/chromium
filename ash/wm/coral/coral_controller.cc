@@ -7,6 +7,8 @@
 #include "ash/birch/coral_util.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/coral_delegate.h"
+#include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/coral/fake_coral_service.h"
@@ -20,6 +22,9 @@
 #include "base/command_line.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "components/app_constants/constants.h"
+#include "components/app_restore/restore_data.h"
+#include "components/desks_storage/core/desk_model.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
@@ -283,6 +288,43 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
     Shell::Get()->coral_delegate()->MoveTabsInGroupToNewDesk(tabs_apps.tabs,
                                                              src_desk_index);
   }
+}
+
+void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) {
+  std::vector<GURL> tab_urls;
+  for (const coral::mojom::EntityPtr& entity : group->entities) {
+    if (entity->is_tab()) {
+      tab_urls.push_back(entity->get_tab()->url);
+    }
+  }
+
+  if (tab_urls.empty()) {
+    return;
+  }
+
+  // TODO(crbug.com/365839564): Handle the apps in `group`. Functionality should
+  // be shared with `RestoreDataCollector`, except we exclude browsers and
+  // windows on the active desk not in `group`.
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+  auto& launch_list =
+      restore_data
+          ->mutable_app_id_to_launch_list()[app_constants::kChromeAppId];
+  // All tabs go into the same window.
+  auto& app_restore_data =
+      launch_list[Shell::Get()->coral_delegate()->GetChromeDefaultRestoreId()];
+  app_restore_data = std::make_unique<app_restore::AppRestoreData>();
+  app_restore_data->browser_extra_info.urls = std::move(tab_urls);
+
+  // TODO(crbug.com/365839564): The title can be nullopt and updated async
+  // after. Figure out how to handle that case.
+  auto saved_group = std::make_unique<DeskTemplate>(
+      base::Uuid::GenerateRandomV4(), DeskTemplateSource::kUser, "saved group",
+      base::Time::Now(), DeskTemplateType::kCoral);
+  saved_group->set_desk_restore_data(std::move(restore_data));
+
+  // TODO(crbug.com/365839564): Callback should show the templates library view.
+  Shell::Get()->saved_desk_delegate()->GetDeskModel()->AddOrUpdateEntry(
+      std::move(saved_group), base::DoNothing());
 }
 
 }  // namespace ash

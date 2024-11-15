@@ -113,6 +113,9 @@ class ASH_EXPORT CoralController {
   // Creates a new desk for the content group.
   void OpenNewDeskWithGroup(CoralResponse::Group group);
 
+  // Creates a saved desk with up to one browser with tabs from `group`.
+  void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group);
+
  private:
   using CoralService = coral::mojom::CoralService;
 
