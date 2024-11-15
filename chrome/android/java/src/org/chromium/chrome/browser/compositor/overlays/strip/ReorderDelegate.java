@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
@@ -456,6 +457,47 @@ public class ReorderDelegate {
 
         // Animate the group indicator after updating the tab model.
         animateGroupIndicatorForTabReorder(groupTitle, /* isMovingOutOfGroup= */ false, towardEnd);
+    }
+
+    /**
+     * This method determines the new index for the interacting tab, based on whether or not it has
+     * met the conditions to be moved past a neighboring collapsed tab group.
+     *
+     * @param groupTitle The collapsed group title we are attempting to drag past.
+     * @param offset The distance the interacting tab has been dragged from its ideal position.
+     * @param curIndex The index of the interacting tab.
+     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     */
+    int maybeMovePastCollapsedGroup(
+            StripLayoutGroupTitle groupTitle, float offset, int curIndex, boolean towardEnd) {
+        int numTabsToSkip =
+                mTabGroupModelFilter.getRelatedTabCountForRootId(groupTitle.getRootId());
+        float threshold = groupTitle.getWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+
+        // Animate group title moving to new position. mStripViews will be rebuilt when we receive
+        // the #didMoveTab event from the TabModel.
+        if (Math.abs(offset) > threshold) {
+            int destIndex = towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
+
+            final float startOffset =
+                    MathUtils.flipSignIf(
+                            mEffectiveTabWidth, !towardEnd ^ LocalizationUtils.isLayoutRtl());
+            // TODO(crbug.com/338130577): We intentionally start this outside of the
+            //  "RunningAnimator" pattern so it doesn't finish early due to the subsequent
+            //  #didMoveTab event. Fix this when we update #reorderTab to handle non-tab views.
+            CompositorAnimator.ofFloatProperty(
+                            mAnimationHost.getAnimationHandler(),
+                            groupTitle,
+                            StripLayoutView.X_OFFSET,
+                            startOffset,
+                            0,
+                            ANIM_TAB_MOVE_MS)
+                    .start();
+
+            return destIndex;
+        }
+
+        return TabModel.INVALID_TAB_INDEX;
     }
 
     /**

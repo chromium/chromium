@@ -3745,42 +3745,6 @@ public class StripLayoutHelper
     }
 
     /**
-     * This method determines the new index for the interacting tab, based on whether or not it has
-     * met the conditions to be moved past a neighboring collapsed tab group.
-     */
-    private int maybeMovePastCollapsedGroup(
-            StripLayoutGroupTitle groupTitle, float offset, int curIndex, boolean towardEnd) {
-        int groupId = groupTitle.getRootId();
-        int numTabsToSkip = mTabGroupModelFilter.getRelatedTabCountForRootId(groupId);
-        float threshold = groupTitle.getWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
-
-        // Animate group title moving to new position. mStripViews will be rebuilt when we receive
-        // the #didMoveTab event from the TabModel.
-        if (Math.abs(offset) > threshold) {
-            int destIndex = towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
-
-            final float startOffset =
-                    MathUtils.flipSignIf(
-                            getEffectiveTabWidth(), !towardEnd ^ LocalizationUtils.isLayoutRtl());
-            // TODO(crbug.com/338130577): We intentionally start this outside of the
-            //  "RunningAnimator" pattern so it doesn't finish early due to the subsequent
-            //  #didMoveTab event. Fix this when we update #reorderTab to handle non-tab views.
-            CompositorAnimator.ofFloatProperty(
-                            mUpdateHost.getAnimationHandler(),
-                            groupTitle,
-                            StripLayoutView.X_OFFSET,
-                            startOffset,
-                            0,
-                            ANIM_TAB_MOVE_MS)
-                    .start();
-
-            return destIndex;
-        }
-
-        return TabModel.INVALID_TAB_INDEX;
-    }
-
-    /**
      * @param id The id of the selected tab.
      * @return The outline color if the selected tab will show its Tab Group Indicator outline.
      *     {@code Color.TRANSPARENT} otherwise.
@@ -3873,7 +3837,7 @@ public class StripLayoutHelper
                     // 3.b. Tab is not in a group. Adjacent group is collapsed. Maybe reorder
                     // past the collapsed group.
                     destIndex =
-                            maybeMovePastCollapsedGroup(
+                            mReorderDelegate.maybeMovePastCollapsedGroup(
                                     interactingGroupTitle, offset, curIndex, towardEnd);
                 } else {
                     // 3.c. Tab is not in a group. Adjacent group is not collapsed. Maybe merge
