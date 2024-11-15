@@ -33987,13 +33987,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="218" label="BoxDecorationBreak"/>
   <int value="219" label="PageOrientation"/>
   <int value="220" label="FontSizeAdjust"/>
-  <int value="221" label="V8ResizableArrayBuffer"/>
-  <int value="222" label="V8GrowableSharedArrayBuffer"/>
-  <int value="223" label="V8ArrayByCopy"/>
-  <int value="224" label="V8ArrayFromAsync"/>
-  <int value="225" label="V8IteratorMethods"/>
-  <int value="226" label="V8PromiseAny"/>
-  <int value="227" label="V8SetMethods"/>
+  <int value="221" label="ResizableBuffers"/>
+  <int value="222" label="OBSOLETE_V8GrowableSharedArrayBuffer"/>
+  <int value="223" label="ArrayByCopy"/>
+  <int value="224" label="ArrayFromasync"/>
+  <int value="225" label="IteratorMethods"/>
+  <int value="226" label="PromiseAny"/>
+  <int value="227" label="SetMethods"/>
   <int value="228" label="ScrollSnapEvent"/>
   <int value="229" label="MoveBeforeAPI"/>
   <int value="230" label="ScrollDrivenAnimations"/>

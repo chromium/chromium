@@ -395,25 +395,23 @@ void UseCounterCallback(v8::Isolate* isolate,
       blink_feature = WebFeature::kV8ConsoleContext;
       break;
     case v8::Isolate::kResizableArrayBuffer:
-      webdx_feature = WebDXFeature::kV8ResizableArrayBuffer;
-      break;
     case v8::Isolate::kGrowableSharedArrayBuffer:
-      webdx_feature = WebDXFeature::kV8GrowableSharedArrayBuffer;
+      webdx_feature = WebDXFeature::kResizableBuffers;
       break;
     case v8::Isolate::kArrayByCopy:
-      webdx_feature = WebDXFeature::kV8ArrayByCopy;
+      webdx_feature = WebDXFeature::kArrayByCopy;
       break;
     case v8::Isolate::kArrayFromAsync:
-      webdx_feature = WebDXFeature::kV8ArrayFromAsync;
+      webdx_feature = WebDXFeature::kArrayFromasync;
       break;
     case v8::Isolate::kIteratorMethods:
-      webdx_feature = WebDXFeature::kV8IteratorMethods;
+      webdx_feature = WebDXFeature::kIteratorMethods;
       break;
     case v8::Isolate::kPromiseAny:
-      webdx_feature = WebDXFeature::kV8PromiseAny;
+      webdx_feature = WebDXFeature::kPromiseAny;
       break;
     case v8::Isolate::kSetMethods:
-      webdx_feature = WebDXFeature::kV8SetMethods;
+      webdx_feature = WebDXFeature::kSetMethods;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink
