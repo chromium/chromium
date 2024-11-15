@@ -479,8 +479,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   TestIsolatedWebAppInstallerModelObserver(&model).WaitForStepChange(
       Step::kInstallSuccess);
-  EXPECT_TRUE(
-      fake_provider()->registrar_unsafe().IsInstalled(url_info.app_id()));
+  EXPECT_TRUE(fake_provider()->registrar_unsafe().IsInstallState(
+      url_info.app_id(), {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
@@ -558,8 +558,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   controller.OnChildDialogAccepted();
 
   TestIsolatedWebAppInstallerModelObserver(&model).WaitForChildDialog();
-  EXPECT_FALSE(
-      fake_provider()->registrar_unsafe().IsInstalled(url_info.app_id()));
+  EXPECT_FALSE(fake_provider()->registrar_unsafe().IsInstallState(
+      url_info.app_id(), {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
