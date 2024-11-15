@@ -19,6 +19,10 @@ const char kLowPriceParamGoodDealNow[] = "GoodDealNow";
 
 const char kLowPriceParamSeePriceHistory[] = "SeePriceHistory";
 
+bool IsPriceInsightsEnabled() {
+  return base::FeatureList::IsEnabled(commerce::kPriceInsightsIos);
+}
+
 bool IsPriceInsightsEnabled(ProfileIOS* profile) {
   if (!base::FeatureList::IsEnabled(commerce::kPriceInsightsIos)) {
     return false;

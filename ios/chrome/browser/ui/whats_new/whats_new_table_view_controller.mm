@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -207,9 +208,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
 
   // Add subtitle
-  [model addSectionWithIdentifier:SectionSubtitleIdentifier];
-  [model setHeader:[self subtitleSectionCell]
-      forSectionWithIdentifier:SectionSubtitleIdentifier];
+  if (IsPriceInsightsEnabled()) {
+    [model addSectionWithIdentifier:SectionSubtitleIdentifier];
+    [model setHeader:[self subtitleSectionCell]
+        forSectionWithIdentifier:SectionSubtitleIdentifier];
+  }
 
   [self loadFeatures:model];
   [self loadChromeTip:model];
