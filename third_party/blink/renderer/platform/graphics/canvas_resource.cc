@@ -990,14 +990,18 @@ ExternalCanvasResource::ExternalCanvasResource(
 // CanvasResourceSwapChain
 //==============================================================================
 scoped_refptr<CanvasResourceSwapChain> CanvasResourceSwapChain::Create(
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType sk_alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality) {
   TRACE_EVENT0("blink", "CanvasResourceSwapChain::Create");
-  auto resource = AdoptRef(
-      new CanvasResourceSwapChain(info, std::move(context_provider_wrapper),
-                                  std::move(provider), filter_quality));
+  auto resource = AdoptRef(new CanvasResourceSwapChain(
+      size, sk_color_type, sk_alpha_type, std::move(sk_color_space),
+      std::move(context_provider_wrapper), std::move(provider),
+      filter_quality));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -1126,17 +1130,20 @@ CanvasResourceSwapChain::ContextProviderWrapper() const {
 }
 
 CanvasResourceSwapChain::CanvasResourceSwapChain(
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType sk_alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality)
     : CanvasResource(std::move(provider),
                      filter_quality,
-                     info.colorInfo().colorType(),
-                     info.colorInfo().alphaType(),
-                     info.colorInfo().refColorSpace()),
+                     sk_color_type,
+                     sk_alpha_type,
+                     std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      size_(info.width(), info.height()),
+      size_(size),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
                                  .gpu_rasterization) {

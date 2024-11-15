@@ -521,7 +521,10 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
 class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
  public:
   static scoped_refptr<CanvasResourceSwapChain> Create(
-      const SkImageInfo&,
+      gfx::Size size,
+      SkColorType sk_color_type,
+      SkAlphaType sk_alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
       cc::PaintFlags::FilterQuality);
@@ -556,7 +559,10 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
 
-  CanvasResourceSwapChain(const SkImageInfo&,
+  CanvasResourceSwapChain(gfx::Size size,
+                          SkColorType sk_color_type,
+                          SkAlphaType sk_alpha_type,
+                          sk_sp<SkColorSpace> sk_color_space,
                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                           base::WeakPtr<CanvasResourceProvider>,
                           cc::PaintFlags::FilterQuality);
