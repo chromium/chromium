@@ -950,8 +950,9 @@ bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
     return false;
   }
 
-  // Skip obfuscation for chrome-initiated and save package downloads.
-  if (item && !item->RequireSafetyChecks() && item->IsSavePackageDownload()) {
+  // Skip obfuscation for chrome-initiated, save package or parallel downloads.
+  if (!item || !item->RequireSafetyChecks() || item->IsSavePackageDownload() ||
+      item->IsParallelDownload()) {
     return false;
   }
 

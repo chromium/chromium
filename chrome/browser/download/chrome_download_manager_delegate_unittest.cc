@@ -2520,7 +2520,14 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 
   EXPECT_TRUE(delegate()->ShouldObfuscateDownload(download_item.get()));
 
+  // Chrome-initiated download, matching connector policies
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(false));
+  EXPECT_FALSE(delegate()->ShouldObfuscateDownload(download_item.get()));
+
   // User-initiated download, matching connector policies, but report-only
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
   enterprise_connectors::test::SetAnalysisConnector(
       pref_service(), enterprise_connectors::FILE_DOWNLOADED,
       R"({
