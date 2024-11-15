@@ -46,11 +46,13 @@
 // Because some tests here rely on browser activation, an
 // interactive_ui_test is preferred over a browser test.
 class DefaultLinkCapturingInteractiveUiTest
-    : public web_app::WebAppNavigationBrowserTest {
+    : public web_app::WebAppNavigationBrowserTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   DefaultLinkCapturingInteractiveUiTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
   }
 
   void SetUpOnMainThread() override {
@@ -94,8 +96,8 @@ class DefaultLinkCapturingInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
-                       IntentPickerBubbleAcceptCorrectActions) {
+IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
+                       BubbleAcceptCorrectActions) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
@@ -129,8 +131,7 @@ IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
       web_app::AppBrowserController::IsForWebApp(app_browser, outer_app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
-                       IntentPickerBubbleCancel) {
+IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest, BubbleCancel) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
@@ -144,8 +145,7 @@ IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
-                       IntentPickerBubbleIgnored) {
+IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest, BubbleIgnored) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
@@ -160,10 +160,9 @@ IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-using IntentPickerInteractiveUiTest = DefaultLinkCapturingInteractiveUiTest;
 // Test that if there is a Universal Link for a site, it shows the picker
 // with the app icon.
-IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
                        ShowUniversalLinkAppInIntentChip) {
   const GURL url1(embedded_test_server()->GetURL("/title1.html"));
   const GURL url2(embedded_test_server()->GetURL("/title2.html"));
@@ -197,3 +196,10 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
       web_app::AreColorsEqual(SK_ColorRED, final_color, /*threshold=*/50));
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DefaultLinkCapturingInteractiveUiTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
+    apps::test::LinkCapturingVersionToString);
