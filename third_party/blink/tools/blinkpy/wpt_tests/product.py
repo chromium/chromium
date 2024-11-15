@@ -11,6 +11,7 @@ from typing import List
 
 from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
+from blinkpy.web_tests.port.base import Port
 
 _log = logging.getLogger(__name__)
 IOS_VERSION = '17.0'
@@ -63,7 +64,7 @@ class Product:
     name = ''
     aliases = []
 
-    def __init__(self, port, options):
+    def __init__(self, port: Port, options):
         self._port = port
         self._host = port.host
         self._options = options
@@ -210,6 +211,17 @@ class ChromeAndroidBase(Product):
             device.Uninstall(path)
 
     @contextlib.contextmanager
+    def _install_incremental_apk(self, device, path):
+        """Helper context manager for ensuring a device uninstalls incremental
+        APK."""
+        self._host.executive.run_command([path, 'install', '--device', device])
+        try:
+            yield
+        finally:
+            self._host.executive.run_command(
+                [path, 'uninstall', '--device', device])
+
+    @contextlib.contextmanager
     def get_devices(self):
         instances = []
         try:
@@ -327,8 +339,15 @@ class ChromeAndroidBase(Product):
         with contextlib.ExitStack() as exit_stack:
             for apk in self._options.additional_apk:
                 exit_stack.enter_context(self._install_apk(device, apk))
-            exit_stack.enter_context(
-                self._install_apk(device, self.browser_apk))
+            if self._port._build_is_incremental_install():
+                incremental_install_script = self._port.build_path(
+                    'bin/chrome_public_apk')
+                install_context_manager = self._install_incremental_apk(
+                    device, incremental_install_script)
+            else:
+                install_context_manager = self._install_apk(
+                    device, self.browser_apk)
+            exit_stack.enter_context(cm=install_context_manager)
             _log.info('Provisioned device (serial: %s)', device.serial)
             yield
 
@@ -383,4 +402,7 @@ class ChromeAndroid(ChromeAndroidBase):
 
     @property
     def default_browser_apk(self):
+        if self._port._build_is_incremental_install():
+            return self._port.build_path('apks',
+                                         'ChromePublic_incremental.apk')
         return self._port.build_path('apks', 'ChromePublic.apk')

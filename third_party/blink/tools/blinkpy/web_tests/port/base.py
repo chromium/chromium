@@ -485,6 +485,13 @@ class Port(object):
                       re.MULTILINE))
 
     @memoized
+    def _build_is_incremental_install(self):
+        contents = self._build_args_gn_content()
+        return bool(
+            re.search(r'^\s*incremental_install\s*=\s*true\s*(#.*)?$',
+                      contents, re.MULTILINE))
+
+    @memoized
     def _build_is_chrome_branded(self):
         chrome_branded = self.get_option('chrome_branded')
         if chrome_branded:

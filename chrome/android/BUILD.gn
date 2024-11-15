@@ -3383,8 +3383,6 @@ if (current_toolchain == default_toolchain) {
              "crashtest",
              "print-reftest",
              "--zero-tests-executed-ok",
-             "--browser-apk",
-             "@WrappedPath(apks/ChromePublic.apk)",
            ]
     data = [
       "//third_party/blink/web_tests/platform/android/",
