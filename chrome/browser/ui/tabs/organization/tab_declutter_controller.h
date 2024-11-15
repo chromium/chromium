@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/callback_list.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
+#include "url/gurl.h"
 
 class TabStripModel;
 class TabSearchContainer;
@@ -43,15 +45,21 @@ class TabDeclutterController {
   void AddObserver(TabDeclutterObserver* observer) {
     observers_.AddObserver(observer);
   }
+
   void RemoveObserver(TabDeclutterObserver* observer) {
     observers_.RemoveObserver(observer);
   }
+
   bool HasObserver(TabDeclutterObserver* observer) {
     return observers_.HasObserver(observer);
   }
 
   base::TimeDelta stale_tab_threshold_duration() const {
     return stale_tab_threshold_duration_;
+  }
+
+  base::RepeatingTimer* GetDeclutterTimerForTesting() const {
+    return declutter_timer_.get();
   }
 
   base::TimeDelta declutter_timer_interval() const {
@@ -68,21 +76,33 @@ class TabDeclutterController {
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
+
   virtual std::vector<tabs::TabInterface*> GetStaleTabs();
+
+  std::map<GURL, std::vector<tabs::TabInterface*>> GetDuplicateTabs();
+
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   void ExcludeFromStaleTabs(tabs::TabInterface* tabs);
 
+  void DidBecomeActive(BrowserWindowInterface* browser_window_interface);
+
+  void DidBecomeInactive(BrowserWindowInterface* browser_window_interface);
+
   // Closes the tabs from the tabstrip if they are present.
   void DeclutterTabs(std::vector<tabs::TabInterface*> tabs);
 
-  void DidBecomeActive(BrowserWindowInterface* browser_window_interface);
-  void DidBecomeInactive(BrowserWindowInterface* browser_window_interface);
-
  private:
   void StartDeclutterTimer();
+
   bool DeclutterNudgeCriteriaMet(base::span<tabs::TabInterface*> stale_tabs);
+
+  void ProcessTabs();
+
+  void ProcessDuplicateTabs();
+
   void ProcessStaleTabs();
+
   void StartNudgeTimer();
 
   // Duration of inactivity after which a tab is considered stale.

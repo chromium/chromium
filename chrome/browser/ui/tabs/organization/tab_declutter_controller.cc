@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -73,8 +74,26 @@ TabDeclutterController::~TabDeclutterController() {}
 void TabDeclutterController::StartDeclutterTimer() {
   declutter_timer_->Start(
       FROM_HERE, declutter_timer_interval_,
-      base::BindRepeating(&TabDeclutterController::ProcessStaleTabs,
+      base::BindRepeating(&TabDeclutterController::ProcessTabs,
                           base::Unretained(this)));
+}
+
+void TabDeclutterController::ProcessTabs() {
+  if (features::IsTabstripDedupeEnabled()) {
+    ProcessDuplicateTabs();
+  }
+  ProcessStaleTabs();
+}
+
+void TabDeclutterController::ProcessDuplicateTabs() {
+  CHECK(features::IsTabstripDedupeEnabled());
+  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs =
+      GetDuplicateTabs();
+  for (auto& observer : observers_) {
+    observer.OnDuplicateTabsProcessed(duplicate_tabs);
+  }
+
+  // TODO(shibalik): Add observer call for nudge behavior.
 }
 
 void TabDeclutterController::ProcessStaleTabs() {
@@ -97,6 +116,43 @@ void TabDeclutterController::ProcessStaleTabs() {
     stale_tabs_previous_nudge_.clear();
     stale_tabs_previous_nudge_.insert(tabs.begin(), tabs.end());
   }
+}
+
+std::map<GURL, std::vector<tabs::TabInterface*>>
+TabDeclutterController::GetDuplicateTabs() {
+  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
+  CHECK(features::IsTabstripDedupeEnabled());
+
+  for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
+       tab_index++) {
+    tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
+
+    if (tab->IsPinned() || tab->GetGroup().has_value()) {
+      continue;
+    }
+
+    GURL url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
+
+    if (url.is_empty()) {
+      continue;
+    }
+
+    if (duplicate_tabs.find(url) != duplicate_tabs.end()) {
+      duplicate_tabs[url].push_back(tab);
+    } else {
+      duplicate_tabs[url] = std::vector<tabs::TabInterface*>{tab};
+    }
+  }
+
+  // Filter out entries with only 1 unique GURL.
+  for (auto it = duplicate_tabs.begin(); it != duplicate_tabs.end();) {
+    if (it->second.size() <= 1) {
+      it = duplicate_tabs.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  return duplicate_tabs;
 }
 
 std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
