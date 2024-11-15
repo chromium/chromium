@@ -4,9 +4,11 @@
 
 #include "sandbox/policy/linux/bpf_screen_ai_policy_linux.h"
 
+#include <sys/mman.h>
 #include <sys/prctl.h>
 
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
+#include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/system_headers/linux_futex.h"
@@ -32,6 +34,11 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
     return sandbox_linux->HandleViaBroker(system_call_number);
 
   switch (system_call_number) {
+#if defined(__x86_64__)
+    case __NR_alarm:
+      return Allow();
+#endif
+
     case __NR_futex:
 #if defined(__NR_futex_time64)
     case __NR_futex_time64:
@@ -54,6 +61,12 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
     case __NR_get_mempolicy: {
       const Arg<unsigned long> which(4);
       return If(which == 0, Allow()).Else(Error(EPERM));
+    }
+
+    case __NR_mremap: {
+      const Arg<int> flags(3);
+      return If((flags & ~(MREMAP_MAYMOVE | MREMAP_FIXED)) == 0, Allow())
+          .Else(CrashSIGSYS());
     }
 
 #if defined(__arm__) || defined(__aarch64__)
