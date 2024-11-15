@@ -124,6 +124,10 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return [self.window rootViewController];
 }
 
+- (UIEdgeInsets)safeAreaInsets {
+  return self.window.safeAreaInsets;
+}
+
 - (void)setScene:(UIWindowScene*)scene {
   _scene = scene;
   if (_scene) {

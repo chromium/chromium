@@ -103,6 +103,9 @@
 // sign-in prompt UI.
 @property(nonatomic, assign) BOOL signinInProgress;
 
+// Root view's safe area insets.
+@property(nonatomic, assign, readonly) UIEdgeInsets safeAreaInsets;
+
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.
 - (void)addObserver:(id<SceneStateObserver>)observer;
