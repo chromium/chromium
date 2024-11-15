@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
@@ -442,6 +443,45 @@ public class TabSwitcherSearchTest {
                         .getUrl()
                         .getSpec()
                         .contains("foobar"));
+        assertFalse(cta.getCurrentTabModel().isIncognitoBranded());
+    }
+
+    @Test
+    @MediumTest
+    public void testTypedSuggestions_OpenSearchSuggestion_Incognito() {
+        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
+        TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ true);
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        SearchActivity searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        assertEquals(ActivityState.STOPPED, ApplicationStatus.getStateForActivity(cta));
+        assertEquals(ActivityState.RESUMED, ApplicationStatus.getStateForActivity(searchActivity));
+
+        OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
+        omniboxTestUtils.requestFocus();
+        omniboxTestUtils.typeText("foobar", /* execute= */ false);
+        omniboxTestUtils.waitAnimationsComplete();
+
+        clickSuggestion("foobar", /* includePrefix= */ false);
+        CriteriaHelper.pollUiThread(
+                () -> ActivityState.RESUMED == ApplicationStatus.getStateForActivity(cta));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ActivityState.DESTROYED
+                                == ApplicationStatus.getStateForActivity(searchActivity));
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
+        assertTrue(
+                cta.getCurrentTabModel()
+                        .getCurrentTabSupplier()
+                        .get()
+                        .getUrl()
+                        .getSpec()
+                        .contains("foobar"));
+        assertTrue(cta.getCurrentTabModel().isIncognitoBranded());
     }
 
     @Test

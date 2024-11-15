@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
+import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -658,6 +659,13 @@ public class SearchActivity extends AsyncInitializationActivity
 
         if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {
             intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
+        }
+
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()
+                && mSearchBoxDataProvider.isIncognitoBranded()) {
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, getApplicationContext().getPackageName());
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+            IntentUtils.addTrustedIntentExtras(intent);
         }
 
         IntentUtils.safeStartActivity(
