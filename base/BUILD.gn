@@ -219,6 +219,7 @@ component("base") {
     "compiler_specific.h",
     "component_export.h",
     "containers/adapters.h",
+    "containers/adapters_internal.h",
     "containers/buffer_iterator.h",
     "containers/checked_iterators.h",
     "containers/circular_deque.h",
