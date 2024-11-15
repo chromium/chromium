@@ -6125,11 +6125,6 @@ const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "
     "launchable template in a new desk";
 
-const char kPreferConstantFrameRateName[] = "Prefer Constant Frame Rate";
-const char kPreferConstantFrameRateDescription[] =
-    "Enables this flag to prefer using constant frame rate for camera when "
-    "streaming";
-
 const char kForceControlFaceAeName[] = "Force control face AE";
 const char kForceControlFaceAeDescription[] =
     "Control this flag to force enable or disable face AE for camera";

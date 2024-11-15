@@ -3541,9 +3541,6 @@ extern const char kDeskButtonDescription[];
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 
-extern const char kPreferConstantFrameRateName[];
-extern const char kPreferConstantFrameRateDescription[];
-
 extern const char kForceControlFaceAeName[];
 extern const char kForceControlFaceAeDescription[];
 

@@ -6125,10 +6125,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnableTouchscreenMappingExperience)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"prefer-constant-frame-rate",
-     flag_descriptions::kPreferConstantFrameRateName,
-     flag_descriptions::kPreferConstantFrameRateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPreferConstantFrameRate)},
     {"force-control-face-ae", flag_descriptions::kForceControlFaceAeName,
      flag_descriptions::kForceControlFaceAeDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kForceControlFaceAeChoices)},
