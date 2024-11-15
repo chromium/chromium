@@ -456,10 +456,6 @@ const DELEGATE: ClientApiDelegate = {
   async onPdfContextMenuHide() {
     await mahiUntrustedService?.onPdfContextMenuHide();
   },
-  async getMantisFeatureStatus() {
-    const response = await mantisUntrustedService?.getMantisFeatureStatus();
-    return response.status;
-  },
   async initializeMantis() {
     if (mantisUntrustedProcessor) {
       mantisUntrustedProcessor.$.close();
