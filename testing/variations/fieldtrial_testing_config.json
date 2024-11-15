@@ -2093,6 +2093,27 @@
             ]
         }
     ],
+    "AutofillI18nFRAddressModel": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillUseFRAddressModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillImportFromAutocompleteUnrecognized": [
         {
             "platforms": [
