@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <if expr="not is_ios and not use_titlecase">
+  <if expr="not use_titlecase">
     <message name="IDS_BOOKMARK_BAR_FOLDER_NAME" desc="Name shown in the tree for the Bookmarks Bar folder.">
       Bookmarks bar
     </message>
   </if>
-  <if expr="not is_ios and use_titlecase">
+  <if expr="use_titlecase">
     <message name="IDS_BOOKMARK_BAR_FOLDER_NAME" desc="In Title Case: Name shown in the tree for the Bookmarks Bar folder.">
       Bookmarks Bar
-    </message>
-  </if>
-  <if expr="is_ios">
-    <message name="IDS_BOOKMARK_BAR_FOLDER_NAME" desc="Mobile: Name shown in the tree for the desktop bookmarks folder">
-      Desktop Bookmarks
     </message>
   </if>
 
