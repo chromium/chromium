@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Events, implicit button
-  assert_array_equals: after showing lengths differ, expected array ["focusin on option1 at select", "focusin on option1 at wrapper"] length 2, got [] length 0
-[FAIL] Events, explicit button
-  assert_array_equals: after showing lengths differ, expected array ["focusin on option1 at select", "focusin on option1 at wrapper"] length 2, got [] length 0
-Harness: the test ran to completion.
-
