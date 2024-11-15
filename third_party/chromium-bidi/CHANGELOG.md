@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.9.1...chromium-bidi-v0.10.0) (2024-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 133.0.6835.0 ([#2758](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2758))
+
+### Features
+
+* **chrome:** update the pinned browser version to 133.0.6835.0 ([#2758](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2758)) ([1aa0a5e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1aa0a5e3df21ff7a6bf3caf0554cdf0d6ecb0d01))
+
+
+### Bug Fixes
+
+* allow setting `bluetooth.simulateAdapter` multiple times ([#2762](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2762)) ([3963880](https://github.com/GoogleChromeLabs/chromium-bidi/commit/39638809e878cd0db5cd40d65489816033ad51b4))
+
 ## [0.9.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.9.0...chromium-bidi-v0.9.1) (2024-11-06)
 
 
