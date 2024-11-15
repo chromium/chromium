@@ -197,8 +197,8 @@ TEST_F(TracingObserverProtoTest,
   data_source_tester.EndTracing();
 }
 
-// crbug.com/379290393: consistent failures on linux
-#if BUILDFLAG(IS_LINUX)
+// crbug.com/379290393: consistent failures on linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_AddChromeDumpToTraceIfEnabled \
   DISABLED_AddChromeDumpToTraceIfEnabled
 #else
