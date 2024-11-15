@@ -42,6 +42,8 @@
 #pragma mark - SceneStateObserver
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  _firstRunUIBlocker.reset();
+
   [_firstRunCoordinator stop];
   _firstRunCoordinator = nil;
 
