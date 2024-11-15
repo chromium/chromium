@@ -254,6 +254,7 @@ constexpr CGFloat kErrorIconImageSize = 22.;
   self.imageView.image = nil;
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
+  self.accessibilityLabel = nil;
   self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   self.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [self setStatusView:nil];
@@ -268,6 +269,13 @@ constexpr CGFloat kErrorIconImageSize = 22.;
 #pragma mark - NSObject(Accessibility)
 
 - (NSString*)accessibilityLabel {
+  // The accessibilityLabel property may have been set by the owner of this
+  // cell.
+  if (super.accessibilityLabel) {
+    // If the value was explicitly set, use it.
+    return super.accessibilityLabel;
+  }
+  // Default value.
   return self.textLabel.text;
 }
 
