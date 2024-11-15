@@ -65,8 +65,7 @@ public class DataSharingNotificationManager {
 
     public DataSharingNotificationManager(Context context) {
         mContext = context;
-        mNotificationManagerProxy =
-                BaseNotificationManagerProxyFactory.create(context.getApplicationContext());
+        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
     }
 
     @VisibleForTesting

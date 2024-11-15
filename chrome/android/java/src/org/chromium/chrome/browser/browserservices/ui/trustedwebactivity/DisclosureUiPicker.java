@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 
 import javax.inject.Inject;
 
@@ -43,7 +43,6 @@ public class DisclosureUiPicker implements NativeInitObserver {
     private final Lazy<DisclosureSnackbar> mDisclosureSnackbar;
     private final Lazy<DisclosureNotification> mDisclosureNotification;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final NotificationManagerProxy mNotificationManager;
 
     @Inject
     public DisclosureUiPicker(
@@ -51,13 +50,11 @@ public class DisclosureUiPicker implements NativeInitObserver {
             Lazy<DisclosureSnackbar> disclosureSnackbar,
             Lazy<DisclosureNotification> disclosureNotification,
             BrowserServicesIntentDataProvider intentDataProvider,
-            NotificationManagerProxy notificationManager,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mDisclosureInfobar = disclosureInfobar;
         mDisclosureSnackbar = disclosureSnackbar;
         mDisclosureNotification = disclosureNotification;
         mIntentDataProvider = intentDataProvider;
-        mNotificationManager = notificationManager;
         lifecycleDispatcher.register(this);
     }
 
@@ -80,7 +77,7 @@ public class DisclosureUiPicker implements NativeInitObserver {
     }
 
     private boolean areHeadsUpNotificationsEnabled() {
-        if (!mNotificationManager.areNotificationsEnabled()) return false;
+        if (!NotificationManagerProxyImpl.getInstance().areNotificationsEnabled()) return false;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
         // Android Automotive doesn't currently allow heads-up notifications.
         if (BuildInfo.getInstance().isAutomotive) return false;
@@ -90,7 +87,8 @@ public class DisclosureUiPicker implements NativeInitObserver {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private boolean isChannelEnabled(String channelId) {
-        NotificationChannel channel = mNotificationManager.getNotificationChannel(channelId);
+        NotificationChannel channel =
+                NotificationManagerProxyImpl.getInstance().getNotificationChannel(channelId);
 
         // If the Channel is null we've not created it yet. Since we know that Chrome notifications
         // are not disabled in general, we know that once the channel is created it should be

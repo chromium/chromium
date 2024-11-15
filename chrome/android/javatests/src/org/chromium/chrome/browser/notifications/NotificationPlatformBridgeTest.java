@@ -1086,6 +1086,7 @@ public class NotificationPlatformBridgeTest {
     }
 
     private void showNotification(String title, String options) throws TimeoutException {
+        mNotificationTestRule.flushNotificationManagerMutations();
         runJavaScript(
                 "GetActivatedServiceWorkerForTest()"
                         + ".then(reg => reg.showNotification('"

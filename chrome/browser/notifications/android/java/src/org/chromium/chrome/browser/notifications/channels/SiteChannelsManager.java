@@ -18,7 +18,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge.SiteChannel;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 
@@ -31,15 +30,11 @@ public class SiteChannelsManager {
     private static final String CHANNEL_ID_PREFIX_SITES = "web:";
     private static final String CHANNEL_ID_SEPARATOR = ";";
 
-    private final NotificationManagerProxy mNotificationManager;
-
     private static SiteChannelsManager sInstance;
 
     public static SiteChannelsManager getInstance() {
         if (sInstance == null) {
-            sInstance =
-                    new SiteChannelsManager(
-                            new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
+            sInstance = new SiteChannelsManager();
         }
         return sInstance;
     }
@@ -50,10 +45,7 @@ public class SiteChannelsManager {
         ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
-    @VisibleForTesting
-    SiteChannelsManager(NotificationManagerProxy notificationManagerProxy) {
-        mNotificationManager = notificationManagerProxy;
-    }
+    private SiteChannelsManager() {}
 
     /**
      * Creates a channel for the given origin. Don't call this if the channel for the origin already
@@ -77,7 +69,7 @@ public class SiteChannelsManager {
                         .getChannelGroup(ChromeChannelDefinitions.ChannelGroupId.SITES)
                         .toNotificationChannelGroup(
                                 ContextUtils.getApplicationContext().getResources());
-        mNotificationManager.createNotificationChannelGroup(channelGroup);
+        NotificationManagerProxyImpl.getInstance().createNotificationChannelGroup(channelGroup);
         SiteChannel siteChannel =
                 new SiteChannel(
                         createChannelId(origin, creationTime),
@@ -86,7 +78,8 @@ public class SiteChannelsManager {
                         enabled
                                 ? NotificationChannelStatus.ENABLED
                                 : NotificationChannelStatus.BLOCKED);
-        mNotificationManager.createNotificationChannel(siteChannel.toChannel());
+        NotificationManagerProxyImpl.getInstance()
+                .createNotificationChannel(siteChannel.toChannel());
         return siteChannel;
     }
 
@@ -102,15 +95,16 @@ public class SiteChannelsManager {
 
     /** Deletes all site channels. */
     public void deleteAllSiteChannels() {
-        mNotificationManager.deleteAllNotificationChannels(
-                channelId -> {
-                    return isValidSiteChannelId(channelId);
-                });
+        NotificationManagerProxyImpl.getInstance()
+                .deleteAllNotificationChannels(
+                        channelId -> {
+                            return isValidSiteChannelId(channelId);
+                        });
     }
 
     /** Deletes the channel associated with this channel ID. */
     public void deleteSiteChannel(String channelId) {
-        mNotificationManager.deleteNotificationChannel(channelId);
+        NotificationManagerProxyImpl.getInstance().deleteNotificationChannel(channelId);
     }
 
     /**
@@ -119,7 +113,8 @@ public class SiteChannelsManager {
      * @return ALLOW, BLOCKED, or UNAVAILABLE (if the channel was never created or was deleted).
      */
     public @NotificationChannelStatus int getChannelStatus(String channelId) {
-        NotificationChannel channel = mNotificationManager.getNotificationChannel(channelId);
+        NotificationChannel channel =
+                NotificationManagerProxyImpl.getInstance().getNotificationChannel(channelId);
         if (channel == null) return NotificationChannelStatus.UNAVAILABLE;
         return toChannelStatus(channel.getImportance());
     }
@@ -129,7 +124,8 @@ public class SiteChannelsManager {
      * manager). This includes enabled and blocked channels.
      */
     public SiteChannel[] getSiteChannels() {
-        List<NotificationChannel> channels = mNotificationManager.getNotificationChannels();
+        List<NotificationChannel> channels =
+                NotificationManagerProxyImpl.getInstance().getNotificationChannels();
         List<SiteChannel> siteChannels = new ArrayList<>();
         for (NotificationChannel channel : channels) {
             if (isValidSiteChannelId(channel.getId())) {

@@ -48,7 +48,7 @@ public class NotificationSuspender {
         this(
                 profile,
                 ContextUtils.getApplicationContext(),
-                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()));
+                BaseNotificationManagerProxyFactory.create());
     }
 
     public NotificationSuspender(

@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +45,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
@@ -105,7 +105,7 @@ public class CommerceSubscriptionsServiceUnitTest {
 
         mMockNotificationManager = new MockNotificationManagerProxy();
         mMockNotificationManager.setNotificationsEnabled(false);
-        PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
@@ -114,11 +114,6 @@ public class CommerceSubscriptionsServiceUnitTest {
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mProfile);
         mService =
                 new CommerceSubscriptionsService(mShoppingService, mPriceDropNotificationManager);
-    }
-
-    @After
-    public void tearDown() {
-        PriceDropNotificationManagerImpl.setNotificationManagerForTesting(null);
     }
 
     @Test

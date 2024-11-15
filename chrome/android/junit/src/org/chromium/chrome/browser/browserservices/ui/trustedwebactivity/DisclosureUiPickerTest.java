@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotificatio
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 
 /** Tests for {@link DisclosureUiPicker}. */
@@ -61,14 +62,13 @@ public class DisclosureUiPickerTest {
         MockitoAnnotations.initMocks(this);
 
         when(mIntentDataProvider.getTwaDisclosureUi()).thenReturn(TwaDisclosureUi.DEFAULT);
-
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);
         mPicker =
                 new DisclosureUiPicker(
                         new FilledLazy<>(mInfobar),
                         new FilledLazy<>(mSnackbar),
                         new FilledLazy<>(mNotification),
                         mIntentDataProvider,
-                        mNotificationManager,
                         mLifecycleDispatcher);
     }
 

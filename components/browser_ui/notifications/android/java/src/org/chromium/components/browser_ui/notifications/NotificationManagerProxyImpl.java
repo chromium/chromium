@@ -7,14 +7,15 @@ package org.chromium.components.browser_ui.notifications;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
-import android.content.Context;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
 
 import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -29,12 +30,26 @@ import java.util.stream.Collectors;
  */
 public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     private static final String TAG = "NotifManagerProxy";
-    private final Context mContext;
     private final NotificationManagerCompat mNotificationManager;
 
-    public NotificationManagerProxyImpl(Context context) {
-        mContext = context;
-        mNotificationManager = NotificationManagerCompat.from(mContext);
+    private static NotificationManagerProxy sInstance;
+
+    public static NotificationManagerProxy getInstance() {
+        // No need to cache the real instance, it makes testing more difficult as tests that shadow
+        // the NotificationManager would have to clear this.
+        if (sInstance == null) return new NotificationManagerProxyImpl();
+        return sInstance;
+    }
+
+    /** Call {@link BaseNotificationManagerProxyFactory#setInstanceForTesting} instead. */
+    /* package */ static void setInstanceForTesting(NotificationManagerProxy instance) {
+        var oldValue = sInstance;
+        sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
+    }
+
+    public NotificationManagerProxyImpl() {
+        mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
     }
 
     @Override

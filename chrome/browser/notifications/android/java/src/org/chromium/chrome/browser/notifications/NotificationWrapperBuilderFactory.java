@@ -41,12 +41,9 @@ public class NotificationWrapperBuilderFactory {
             String channelId, @Nullable NotificationMetadata metadata) {
         Context context = ContextUtils.getApplicationContext();
 
-        NotificationManagerProxyImpl notificationManagerProxy =
-                new NotificationManagerProxyImpl(context);
-
         ChannelsInitializer channelsInitializer =
                 new ChannelsInitializer(
-                        notificationManagerProxy,
+                        NotificationManagerProxyImpl.getInstance(),
                         ChromeChannelDefinitions.getInstance(),
                         context.getResources());
 

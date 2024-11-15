@@ -16,8 +16,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,6 +30,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -73,11 +72,8 @@ public class ReengagementNotificationControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        FeatureList.setTestFeatures(
-                Map.of(
-                        ChromeFeatureList.REENGAGEMENT_NOTIFICATION,
-                        true));
-        mContext = ApplicationProvider.getApplicationContext();
+        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.REENGAGEMENT_NOTIFICATION, true));
+        mContext = ContextUtils.getApplicationContext();
         mShadowNotificationManager =
                 Shadows.shadowOf(
                         (NotificationManager)

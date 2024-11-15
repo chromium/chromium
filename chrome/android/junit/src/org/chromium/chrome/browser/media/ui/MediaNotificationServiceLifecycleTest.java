@@ -53,7 +53,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {MediaNotificationTestShadowResources.class})
+        shadows = {ShadowNotificationManager.class, MediaNotificationTestShadowResources.class})
 public class MediaNotificationServiceLifecycleTest extends MediaNotificationTestBase {
     @Test
     public void testServiceLifeCycle() {

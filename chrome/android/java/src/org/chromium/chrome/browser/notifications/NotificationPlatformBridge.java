@@ -102,8 +102,6 @@ public class NotificationPlatformBridge {
 
     private static NotificationPlatformBridge sInstance;
 
-    private static BaseNotificationManagerProxy sNotificationManagerOverride;
-
     private final long mNativeNotificationPlatformBridge;
 
     private final BaseNotificationManagerProxy mNotificationManager;
@@ -216,36 +214,9 @@ public class NotificationPlatformBridge {
         return sInstance;
     }
 
-    /**
-     * Overrides the notification manager which is to be used for displaying Notifications on the
-     * Android framework. Should only be used for testing. Tests are expected to clean up after
-     * themselves by setting this to NULL again.
-     *
-     * @param notificationManager The notification manager instance to use instead of the system's.
-     */
-    static void overrideNotificationManagerForTesting(
-            BaseNotificationManagerProxy notificationManager) {
-        sNotificationManagerOverride = notificationManager;
-    }
-
-    /**
-     * Retuns the abstraction around the NotificationManager that either delegates to the real thing
-     * in production code or to a fake in tests.
-     */
-    private static BaseNotificationManagerProxy createNotificationManagerProxy(Context context) {
-        BaseNotificationManagerProxy notificationManager;
-        if (sNotificationManagerOverride != null) {
-            notificationManager = sNotificationManagerOverride;
-        } else {
-            notificationManager = BaseNotificationManagerProxyFactory.create(context);
-        }
-        return notificationManager;
-    }
-
     private NotificationPlatformBridge(long nativeNotificationPlatformBridge) {
         mNativeNotificationPlatformBridge = nativeNotificationPlatformBridge;
-        Context context = ContextUtils.getApplicationContext();
-        mNotificationManager = createNotificationManagerProxy(context);
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
     }
 
     /**
@@ -283,9 +254,8 @@ public class NotificationPlatformBridge {
             // revoke the permission. Also keep the `sOriginsWithProvisionallyRevokedPermissions` in
             // place until native processing finishes in case there are other user interactions
             // racing with this intent.
-            Context context = ContextUtils.getApplicationContext();
             BaseNotificationManagerProxy notificationManager =
-                    createNotificationManagerProxy(context);
+                    BaseNotificationManagerProxyFactory.create();
             notificationManager.cancel(attributes.notificationId, PLATFORM_ID);
             return true;
         }
@@ -1041,7 +1011,8 @@ public class NotificationPlatformBridge {
         NotificationWrapper notification =
                 buildNotificationWrapper(notificationBuilder, identifyingAttributes.notificationId);
 
-        BaseNotificationManagerProxy notificationManager = createNotificationManagerProxy(context);
+        BaseNotificationManagerProxy notificationManager =
+                BaseNotificationManagerProxyFactory.create();
         notificationManager.notify(notification);
     }
 
@@ -1355,7 +1326,7 @@ public class NotificationPlatformBridge {
                 };
 
         Context context = ContextUtils.getApplicationContext();
-        var notificationManager = createNotificationManagerProxy(context);
+        var notificationManager = BaseNotificationManagerProxyFactory.create();
         NotificationSuspender suspender =
                 new NotificationSuspender(/* profile= */ null, context, notificationManager);
         suspender.getActiveNotificationsForOrigins(
@@ -1428,7 +1399,7 @@ public class NotificationPlatformBridge {
                 };
 
         Context context = ContextUtils.getApplicationContext();
-        var notificationManager = createNotificationManagerProxy(context);
+        var notificationManager = BaseNotificationManagerProxyFactory.create();
         notificationManager.getActiveNotifications(
                 (activeNotifications) -> {
                     var tappedStatusBarNotification =

@@ -121,8 +121,7 @@ public class DownloadNotificationService {
 
     @VisibleForTesting
     DownloadNotificationService() {
-        mNotificationManager =
-                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext());
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
         mDownloadSharedPreferenceHelper = DownloadSharedPreferenceHelper.getInstance();
         mDownloadForegroundServiceManager = new DownloadForegroundServiceManager();
         mDownloadUserInitiatedTaskManager = new DownloadUserInitiatedTaskManager();

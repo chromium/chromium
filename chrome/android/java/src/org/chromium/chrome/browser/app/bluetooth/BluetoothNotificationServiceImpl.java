@@ -7,15 +7,13 @@ package org.chromium.chrome.browser.app.bluetooth;
 import android.content.Intent;
 import android.os.IBinder;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManagerDelegate;
-import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 
 /**
- * Service that manages the Web Bluetooth notification when a website is either connected
- * to a Bluetooth device or scanning for nearby Bluetooth devices.
+ * Service that manages the Web Bluetooth notification when a website is either connected to a
+ * Bluetooth device or scanning for nearby Bluetooth devices.
  */
 public class BluetoothNotificationServiceImpl extends BluetoothNotificationService.Impl {
     private BluetoothNotificationManagerDelegate mManagerDelegate =
@@ -41,11 +39,7 @@ public class BluetoothNotificationServiceImpl extends BluetoothNotificationServi
 
     @Override
     public void onCreate() {
-        mManager =
-                new BluetoothNotificationManager(
-                        BaseNotificationManagerProxyFactory.create(
-                                ContextUtils.getApplicationContext()),
-                        mManagerDelegate);
+        mManager = new BluetoothNotificationManager(mManagerDelegate);
         super.onCreate();
     }
 

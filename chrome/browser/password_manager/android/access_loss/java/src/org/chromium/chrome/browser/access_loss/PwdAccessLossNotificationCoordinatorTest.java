@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.AsyncNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
@@ -50,8 +51,8 @@ public class PwdAccessLossNotificationCoordinatorTest {
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.getApplication();
-        mCoordinator =
-                new PwdAccessLossNotificationCoordinator(mContext, mNotificationManagerProxy);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManagerProxy);
+        mCoordinator = new PwdAccessLossNotificationCoordinator(mContext);
     }
 
     @Test

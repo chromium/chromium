@@ -108,14 +108,13 @@ public final class SharingNotificationUtil {
         }
         NotificationWrapper notification = builder.buildNotificationWrapper();
 
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
 
     public static void dismissNotification(String tag, int notificationId) {
-        Context context = ContextUtils.getApplicationContext();
-        BaseNotificationManagerProxyFactory.create(context).cancel(tag, notificationId);
+        BaseNotificationManagerProxyFactory.create().cancel(tag, notificationId);
     }
 
     /**
@@ -146,7 +145,7 @@ public final class SharingNotificationUtil {
                         .setDefaults(Notification.DEFAULT_ALL);
         NotificationWrapper notification = builder.buildNotificationWrapper();
 
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
@@ -194,7 +193,7 @@ public final class SharingNotificationUtil {
 
         NotificationWrapper notification = builder.buildWithBigTextStyle(contentText);
 
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }

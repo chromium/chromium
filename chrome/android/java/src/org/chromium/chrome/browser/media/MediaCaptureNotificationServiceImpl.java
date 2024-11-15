@@ -75,8 +75,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
 
     @Override
     public void onCreate() {
-        mNotificationManager =
-                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext());
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
         mSharedPreferences = ChromeSharedPreferences.getInstance();
         super.onCreate();
     }

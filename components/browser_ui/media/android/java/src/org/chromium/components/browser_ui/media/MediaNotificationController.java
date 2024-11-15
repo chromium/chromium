@@ -770,8 +770,7 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo.supportsSwipeAway() && mMediaNotificationInfo.isPaused) {
             ForegroundServiceUtils.getInstance()
                     .stopForeground(mService, Service.STOP_FOREGROUND_DETACH);
-            BaseNotificationManagerProxy manager =
-                    BaseNotificationManagerProxyFactory.create(getContext());
+            BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
             manager.notify(notification);
         } else if (!finishedForegroundingService) {
             // We did not foreground the service and update the notification above, so we should do
@@ -787,8 +786,7 @@ public class MediaNotificationController {
                                 notification.getNotification(),
                                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
             } catch (RuntimeException e) {
-                BaseNotificationManagerProxy manager =
-                        BaseNotificationManagerProxyFactory.create(getContext());
+                BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
                 manager.notify(notification);
             }
         }

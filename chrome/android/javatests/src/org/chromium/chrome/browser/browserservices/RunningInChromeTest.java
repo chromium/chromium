@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
@@ -37,13 +36,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
-import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.embedder_support.util.Origin;
@@ -75,77 +73,11 @@ public class RunningInChromeTest {
     private final MockNotificationManagerProxy mMockNotificationManager =
             new MockNotificationManagerProxy();
 
-    private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule()
-                    .setOverride(
-                            ChromeActivityCommonsModule.Factory.class,
-                            (activity,
-                                    tabModelSelectorSupplier,
-                                    browserControlsManager,
-                                    browserControlsVisibilityManager,
-                                    fullscreenManager,
-                                    layoutManagerSupplier,
-                                    lifecycleDispatcher,
-                                    snackbarManagerSupplier,
-                                    profileProvider,
-                                    activityTabProvider,
-                                    tabContentManager,
-                                    activityWindowAndroid,
-                                    compositorViewHolderSupplier,
-                                    tabCreatorManager,
-                                    tabCreatorSupplier,
-                                    statusBarColorController,
-                                    screenOrientationProvider,
-                                    notificationManagerProxySupplier,
-                                    tabContentManagerSupplier,
-                                    legacyTabStartupMetricsTracker,
-                                    startupMetricsTrackerSupplier,
-                                    compositorViewHolderInitializer,
-                                    modalDialogManagerSupplier,
-                                    browserControlsStateProvider,
-                                    savedInstanceStateSupplier,
-                                    autofillUiBottomInsetSupplier,
-                                    shareDelegateSupplier,
-                                    tabModelInitializer,
-                                    activityType) -> {
-                                return new ChromeActivityCommonsModule(
-                                        activity,
-                                        tabModelSelectorSupplier,
-                                        browserControlsManager,
-                                        browserControlsVisibilityManager,
-                                        fullscreenManager,
-                                        layoutManagerSupplier,
-                                        lifecycleDispatcher,
-                                        snackbarManagerSupplier,
-                                        profileProvider,
-                                        activityTabProvider,
-                                        tabContentManager,
-                                        activityWindowAndroid,
-                                        compositorViewHolderSupplier,
-                                        tabCreatorManager,
-                                        tabCreatorSupplier,
-                                        statusBarColorController,
-                                        screenOrientationProvider,
-                                        () -> mMockNotificationManager,
-                                        tabContentManagerSupplier,
-                                        legacyTabStartupMetricsTracker,
-                                        startupMetricsTrackerSupplier,
-                                        compositorViewHolderInitializer,
-                                        modalDialogManagerSupplier,
-                                        browserControlsStateProvider,
-                                        savedInstanceStateSupplier,
-                                        autofillUiBottomInsetSupplier,
-                                        shareDelegateSupplier,
-                                        tabModelInitializer,
-                                        activityType);
-                            });
-
     @Rule
     public RuleChain mRuleChain =
             RuleChain.emptyRuleChain()
                     .around(mCustomTabActivityTestRule)
-                    .around(mEmbeddedTestServerRule)
-                    .around(mModuleOverridesRule);
+                    .around(mEmbeddedTestServerRule);
 
     private String mTestPage;
 
@@ -158,6 +90,7 @@ public class RunningInChromeTest {
         mTestPage = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
 
         mMockNotificationManager.setNotificationsEnabled(false);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
 
         BrowserServicesStore.removeTwaDisclosureAcceptanceForPackage(PACKAGE_NAME);
     }

@@ -136,7 +136,7 @@ public class ReengagementNotificationController {
                 .setAutoCancel(true);
 
         BaseNotificationManagerProxy notificationManager =
-                BaseNotificationManagerProxyFactory.create(mContext);
+                BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         notificationManager.notify(notification);
 

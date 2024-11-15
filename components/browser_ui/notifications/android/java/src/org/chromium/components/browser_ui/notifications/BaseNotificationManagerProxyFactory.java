@@ -4,9 +4,6 @@
 
 package org.chromium.components.browser_ui.notifications;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
@@ -19,20 +16,34 @@ public class BaseNotificationManagerProxyFactory {
 
     private BaseNotificationManagerProxyFactory() {}
 
-    public static BaseNotificationManagerProxy create(@NonNull Context applicationContext) {
-        applicationContext = applicationContext.getApplicationContext();
+    public static BaseNotificationManagerProxy create() {
         if (sProxyForTest != null) {
             return sProxyForTest;
         } else if (BrowserUiUtilsCachedFlags.getInstance().getAsyncNotificationManagerFlag()) {
-            return new AsyncNotificationManagerProxyImpl(applicationContext);
+            return new AsyncNotificationManagerProxyImpl();
         } else {
-            return new NotificationManagerProxyImpl(applicationContext);
+            return NotificationManagerProxyImpl.getInstance();
         }
     }
 
     /** Overrides the proxy instance for tests. */
-    public static void setInstanceForTesting(BaseNotificationManagerProxy proxy) {
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> sProxyForTest = proxy);
+    public static void setInstanceForTesting(NotificationManagerProxy proxy) {
+        ThreadUtils.runOnUiThreadBlocking(
+                (Runnable)
+                        () -> {
+                            sProxyForTest = proxy;
+                            NotificationManagerProxyImpl.setInstanceForTesting(proxy);
+                        });
+        ResettersForTesting.register(() -> sProxyForTest = null);
+    }
+
+    /** Overrides the proxy instance for tests. */
+    public static void setInstanceForTesting(AsyncNotificationManagerProxy proxy) {
+        ThreadUtils.runOnUiThreadBlocking(
+                (Runnable)
+                        () -> {
+                            sProxyForTest = proxy;
+                        });
         ResettersForTesting.register(() -> sProxyForTest = null);
     }
 }

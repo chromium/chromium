@@ -9,7 +9,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
@@ -39,7 +38,7 @@ public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
 
     /** Constructor used by the Android framework. */
     public DisclosureAcceptanceBroadcastReceiver() {
-        this(BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()));
+        this(BaseNotificationManagerProxyFactory.create());
     }
 
     /** Constructor that allows dependency injection for use in tests. */

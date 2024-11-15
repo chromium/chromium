@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
@@ -69,7 +68,6 @@ public class ChromeActivityCommonsModule {
     private final Supplier<TabCreator> mTabCreatorSupplier;
     private final StatusBarColorController mStatusBarColorController;
     private final ScreenOrientationProvider mScreenOrientationProvider;
-    private final Supplier<NotificationManagerProxy> mNotificationManagerProxySupplier;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final Supplier<LegacyTabStartupMetricsTracker> mLegacyTabStartupMetricsTrackerSupplier;
     private final Supplier<StartupMetricsTracker> mStartupMetricsTrackerSupplier;
@@ -102,7 +100,6 @@ public class ChromeActivityCommonsModule {
                 Supplier<TabCreator> tabCreatorSupplier,
                 StatusBarColorController statusBarColorController,
                 ScreenOrientationProvider screenOrientationProvider,
-                Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
                 Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
                 Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
@@ -134,7 +131,6 @@ public class ChromeActivityCommonsModule {
             Supplier<TabCreator> tabCreatorSupplier,
             StatusBarColorController statusBarColorController,
             ScreenOrientationProvider screenOrientationProvider,
-            Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
             Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
@@ -163,7 +159,6 @@ public class ChromeActivityCommonsModule {
         mTabCreatorSupplier = tabCreatorSupplier;
         mStatusBarColorController = statusBarColorController;
         mScreenOrientationProvider = screenOrientationProvider;
-        mNotificationManagerProxySupplier = notificationManagerProxySupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLegacyTabStartupMetricsTrackerSupplier = legacyTabStartupMetricsTrackerSupplier;
         mStartupMetricsTrackerSupplier = startupMetricsTrackerSupplier;
@@ -291,11 +286,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public ScreenOrientationProvider provideScreenOrientationProvider() {
         return mScreenOrientationProvider;
-    }
-
-    @Provides
-    public NotificationManagerProxy provideNotificationManagerProxy() {
-        return mNotificationManagerProxySupplier.get();
     }
 
     @Provides

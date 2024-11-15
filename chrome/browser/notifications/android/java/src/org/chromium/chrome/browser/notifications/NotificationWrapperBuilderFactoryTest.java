@@ -43,7 +43,7 @@ public class NotificationWrapperBuilderFactoryTest {
     public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
 
-        mNotificationManager = new NotificationManagerProxyImpl(context);
+        mNotificationManager = NotificationManagerProxyImpl.getInstance();
 
         // Don't rely on channels already being registered.
         clearNotificationChannels(mNotificationManager);

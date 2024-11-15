@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -62,11 +63,9 @@ public class BluetoothNotificationManager {
     private SharedPreferencesManager mSharedPreferences;
     private final SparseIntArray mNotifications = new SparseIntArray();
 
-    public BluetoothNotificationManager(
-            BaseNotificationManagerProxy notificationManager,
-            BluetoothNotificationManagerDelegate delegate) {
+    public BluetoothNotificationManager(BluetoothNotificationManagerDelegate delegate) {
         mDelegate = delegate;
-        mNotificationManager = notificationManager;
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
         mSharedPreferences = ChromeSharedPreferences.getInstance();
     }
 

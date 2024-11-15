@@ -189,8 +189,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -568,10 +566,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Subclasses must create a {@link RootUiCoordinator}. */
     protected abstract RootUiCoordinator createRootUiCoordinator();
 
-    private NotificationManagerProxy getNotificationManagerProxy() {
-        return new NotificationManagerProxyImpl(getApplicationContext());
-    }
-
     private C createComponent() {
         ChromeActivityCommonsModule.Factory overridenCommonsFactory =
                 ModuleFactoryOverrides.getOverrideFor(ChromeActivityCommonsModule.Factory.class);
@@ -596,7 +590,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 this::getCurrentTabCreator,
                                 mRootUiCoordinator.getStatusBarColorController(),
                                 ScreenOrientationProvider.getInstance(),
-                                this::getNotificationManagerProxy,
                                 getTabContentManagerSupplier(),
                                 this::getLegacyTabStartupMetricsTracker,
                                 this::getStartupMetricsTracker,
@@ -626,7 +619,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 this::getCurrentTabCreator,
                                 mRootUiCoordinator.getStatusBarColorController(),
                                 ScreenOrientationProvider.getInstance(),
-                                this::getNotificationManagerProxy,
                                 getTabContentManagerSupplier(),
                                 this::getLegacyTabStartupMetricsTracker,
                                 this::getStartupMetricsTracker,

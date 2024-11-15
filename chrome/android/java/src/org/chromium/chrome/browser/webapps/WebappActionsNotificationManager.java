@@ -82,7 +82,7 @@ public class WebappActionsNotificationManager implements PauseResumeWithNativeOb
 
         Context appContext = ContextUtils.getApplicationContext();
         NotificationWrapper notification = createNotification(appContext, tab, webappExtras);
-        BaseNotificationManagerProxyFactory.create(appContext).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
 
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(

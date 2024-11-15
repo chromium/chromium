@@ -21,7 +21,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,9 +42,9 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tracing.TracingController;
-import org.chromium.chrome.browser.tracing.TracingNotificationManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.settings.ButtonPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -74,12 +73,7 @@ public class TracingSettingsTest {
     @Before
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
-        TracingNotificationManager.overrideNotificationManagerForTesting(mMockNotificationManager);
-    }
-
-    @After
-    public void tearDown() {
-        TracingNotificationManager.overrideNotificationManagerForTesting(null);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
     }
 
     /**

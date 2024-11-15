@@ -52,7 +52,7 @@ public class ChannelsUpdaterTest {
         MockitoAnnotations.initMocks(this);
 
         Context context = RuntimeEnvironment.getApplication();
-        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create(context);
+        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
 
         mMockResources = context.getResources();
 

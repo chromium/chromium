@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -32,16 +31,9 @@ public class PwdAccessLossNotificationCoordinator {
     @VisibleForTesting protected static final String TAG = "access_loss_warning";
 
     private final Context mContext;
-    private final BaseNotificationManagerProxy mNotificationManagerProxy;
-
-    @VisibleForTesting
-    PwdAccessLossNotificationCoordinator(Context context, BaseNotificationManagerProxy manager) {
-        mContext = context;
-        mNotificationManagerProxy = manager;
-    }
 
     public PwdAccessLossNotificationCoordinator(Context context) {
-        this(context, BaseNotificationManagerProxyFactory.create(context));
+        mContext = context;
     }
 
     private static NotificationWrapperBuilder createNotificationBuilder() {
@@ -78,7 +70,7 @@ public class PwdAccessLossNotificationCoordinator {
         NotificationWrapper notification =
                 notificationWrapperBuilder.buildWithBigTextStyle(contents);
 
-        mNotificationManagerProxy.notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
 
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(

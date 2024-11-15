@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringDef;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.notifications.R;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -330,7 +329,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             int priceDropDefaultChannelImportance = NotificationManager.IMPORTANCE_DEFAULT;
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
                 NotificationManagerProxy notificationManager =
-                        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
+                        NotificationManagerProxyImpl.getInstance();
                 NotificationChannel priceDropChannel =
                         notificationManager.getNotificationChannel(ChannelId.PRICE_DROP);
                 if (priceDropChannel != null) {

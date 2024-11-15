@@ -183,7 +183,7 @@ public class WebApkInstallService {
         }
 
         NotificationWrapper notification = notificationBuilder.buildNotificationWrapper();
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
@@ -191,7 +191,7 @@ public class WebApkInstallService {
     /** Cancels any ongoing notification for the WebAPK. */
     @CalledByNative
     static void cancelNotification(String notificationId) {
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
+        BaseNotificationManagerProxyFactory.create()
                 .cancel(getInstallNotificationTag(notificationId), PLATFORM_ID);
     }
 
