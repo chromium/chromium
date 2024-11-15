@@ -10,8 +10,11 @@ namespace media {
 
 ColorPlaneLayout::ColorPlaneLayout() = default;
 
-ColorPlaneLayout::ColorPlaneLayout(size_t stride, size_t offset, size_t size)
-    : stride(stride), offset(offset), size(size) {}
+ColorPlaneLayout::ColorPlaneLayout(int32_t stride, size_t offset, size_t size)
+    : stride(stride), offset(offset), size(size) {
+  // TODO(crbug.com/338570700): Make strides unsigned and remove the CHECK().
+  CHECK_GE(stride, 0);
+}
 
 ColorPlaneLayout::~ColorPlaneLayout() = default;
 

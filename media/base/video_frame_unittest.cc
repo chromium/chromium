@@ -289,7 +289,7 @@ TEST(VideoFrame, CreateFrame) {
                                   size, kTimestamp);
   EXPECT_EQ(PIXEL_FORMAT_ARGB, frame->format());
   EXPECT_GE(frame->stride(VideoFrame::Plane::kARGB),
-            static_cast<size_t>(frame->coded_size().width()));
+            frame->coded_size().width());
 
   // Test double planar frame.
   frame = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, size, gfx::Rect(size),
@@ -562,8 +562,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   EXPECT_EQ(frame->layout().num_planes(), 2u);
   EXPECT_EQ(frame->layout().is_multi_planar(), false);
   for (size_t i = 0; i < 2; ++i) {
-    EXPECT_EQ(frame->layout().planes()[i].stride,
-              static_cast<size_t>(coded_size.width()));
+    EXPECT_EQ(frame->layout().planes()[i].stride, coded_size.width());
   }
   EXPECT_EQ(frame->layout().modifier(), modifier);
   EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
@@ -580,7 +579,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
 TEST(VideoFrame, WrapExternalDmabufs) {
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
-  std::vector<size_t> strides = {384, 192, 192};
+  std::vector<int32_t> strides = {384, 192, 192};
   std::vector<size_t> offsets = {0, 100, 200};
   std::vector<size_t> sizes = {100, 50, 50};
   std::vector<ColorPlaneLayout> planes(strides.size());
@@ -881,7 +880,7 @@ TEST(VideoFrame, NoFrameSizeExceedsUint32) {
 TEST(VideoFrame, WrapExternalDataWithInvalidLayout) {
   auto coded_size = gfx::Size(320, 180);
 
-  std::vector<size_t> strides = {384, 192, 192};
+  std::vector<int32_t> strides = {384, 192, 192};
   std::vector<size_t> offsets = {0, 200, 300};
   std::vector<size_t> sizes = {200, 100, 100};
   std::vector<ColorPlaneLayout> planes(strides.size());

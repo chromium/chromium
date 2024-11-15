@@ -296,9 +296,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      size_t y_stride,
-      size_t u_stride,
-      size_t v_stride,
+      int32_t y_stride,
+      int32_t u_stride,
+      int32_t v_stride,
       const uint8_t* y_data,
       const uint8_t* u_data,
       const uint8_t* v_data,
@@ -309,9 +309,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      size_t y_stride,
-      size_t u_stride,
-      size_t v_stride,
+      int32_t y_stride,
+      int32_t u_stride,
+      int32_t v_stride,
       base::span<const uint8_t> y_data,
       base::span<const uint8_t> u_data,
       base::span<const uint8_t> v_data,
@@ -344,10 +344,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      size_t y_stride,
-      size_t u_stride,
-      size_t v_stride,
-      size_t a_stride,
+      int32_t y_stride,
+      int32_t u_stride,
+      int32_t v_stride,
+      int32_t a_stride,
       const uint8_t* y_data,
       const uint8_t* u_data,
       const uint8_t* v_data,
@@ -359,10 +359,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      size_t y_stride,
-      size_t u_stride,
-      size_t v_stride,
-      size_t a_stride,
+      int32_t y_stride,
+      int32_t u_stride,
+      int32_t v_stride,
+      int32_t a_stride,
       base::span<const uint8_t> y_data,
       base::span<const uint8_t> u_data,
       base::span<const uint8_t> v_data,
@@ -376,8 +376,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      size_t y_stride,
-      size_t uv_stride,
+      int32_t y_stride,
+      int32_t uv_stride,
       const uint8_t* y_data,
       const uint8_t* uv_data,
       base::TimeDelta timestamp);
@@ -504,8 +504,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static int BytesPerElement(VideoPixelFormat format, size_t plane);
 
   // Calculates strides for each plane based on |format| and |coded_size|.
-  static std::vector<size_t> ComputeStrides(VideoPixelFormat format,
-                                            const gfx::Size& coded_size);
+  static std::vector<int32_t> ComputeStrides(VideoPixelFormat format,
+                                             const gfx::Size& coded_size);
 
   // Returns the number of rows for the given plane, format, and height.
   // The height may be aligned to format requirements.
@@ -657,7 +657,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // anamorphic frames, or to "soft-apply" any custom scaling.
   const gfx::Size& natural_size() const { return natural_size_; }
 
-  size_t stride(size_t plane) const {
+  int stride(size_t plane) const {
     CHECK(IsValidPlane(format(), plane));
     CHECK_LT(plane, layout_.num_planes());
     return layout_.planes()[plane].stride;

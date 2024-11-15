@@ -302,7 +302,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     rows += height % rows_per_chunk;
 
   struct PlaneMetaData {
-    size_t stride;
+    int stride;
     raw_ptr<const uint8_t> data;
   };
   std::array<PlaneMetaData, VideoFrame::kMaxPlanes> plane_meta;
