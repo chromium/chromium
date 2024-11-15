@@ -69,12 +69,13 @@ bool VpnServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-KeyedService* VpnServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+VpnServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!VpnService::GetVpnService() || !IsContextForMainProfile(context)) {
     return nullptr;
   }
-  return new VpnService(context);
+  return std::make_unique<VpnService>(context);
 }
 
 }  // namespace chromeos
