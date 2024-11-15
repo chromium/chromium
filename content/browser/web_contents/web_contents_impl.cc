@@ -165,7 +165,6 @@
 #include "content/public/common/referrer_type_converters.h"
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
-#include "media/base/user_input_monitor.h"
 #include "net/base/url_util.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -10509,11 +10508,6 @@ WebContentsImpl::CreateAudioStreamFactory() {
   }
   return std::make_unique<ForwardingAudioStreamFactory>(
       this,
-      // BrowserMainLoop::GetInstance() may be null in unit tests.
-      BrowserMainLoop::GetInstance()
-          ? static_cast<media::UserInputMonitorBase*>(
-                BrowserMainLoop::GetInstance()->user_input_monitor())
-          : nullptr,
       std::move(broker_factory));
 }
 

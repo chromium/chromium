@@ -318,7 +318,6 @@ class AudioStreamBrokerFactory final
       const std::string& device_id,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
-      media::UserInputMonitorBase* user_input_monitor,
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
       content::AudioStreamBroker::DeleterCallback deleter,
@@ -326,9 +325,8 @@ class AudioStreamBrokerFactory final
           renderer_factory_client) final {
     return base_factory_->CreateAudioInputStreamBroker(
         render_process_id, render_frame_id, device_id, params,
-        shared_memory_count, user_input_monitor, enable_agc,
-        std::move(processing_config), std::move(deleter),
-        std::move(renderer_factory_client));
+        shared_memory_count, enable_agc, std::move(processing_config),
+        std::move(deleter), std::move(renderer_factory_client));
   }
 
   std::unique_ptr<content::AudioStreamBroker> CreateAudioLoopbackStreamBroker(

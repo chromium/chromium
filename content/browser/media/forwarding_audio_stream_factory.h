@@ -28,7 +28,6 @@
 
 namespace media {
 class AudioParameters;
-class UserInputMonitorBase;
 }
 
 namespace content {
@@ -57,7 +56,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   class CONTENT_EXPORT Core final : public AudioStreamBroker::LoopbackSource {
    public:
     Core(base::WeakPtr<ForwardingAudioStreamFactory> owner,
-         media::UserInputMonitorBase* user_input_monitor,
          std::unique_ptr<AudioStreamBrokerFactory> factory);
 
     Core(const Core&) = delete;
@@ -129,8 +127,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void ResetRemoteFactoryPtrIfIdle();
     void ResetRemoteFactoryPtr();
 
-    const raw_ptr<media::UserInputMonitorBase> user_input_monitor_;
-
     // Used for posting tasks the UI thread to communicate when a loopback
     // stream is started/stopped. Weak since |this| on the IO thread outlives
     // |owner| on the UI thread.
@@ -182,7 +178,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   // the streams created with this factory will not be consumed by a renderer.
   ForwardingAudioStreamFactory(
       WebContents* web_contents,
-      media::UserInputMonitorBase* user_input_monitor,
       std::unique_ptr<AudioStreamBrokerFactory> factory);
 
   ForwardingAudioStreamFactory(const ForwardingAudioStreamFactory&) = delete;

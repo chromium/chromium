@@ -122,7 +122,6 @@ class MockBrokerFactory final : public AudioStreamBrokerFactory {
       const std::string& device_id,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
-      media::UserInputMonitorBase* user_input_monitor,
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
       AudioStreamBroker::DeleterCallback deleter,
@@ -284,7 +283,6 @@ TEST_F(ForwardingAudioStreamFactoryTest, CreateInputStream_CreatesInputStream) {
   base::WeakPtr<MockBroker> broker = ExpectInputBrokerConstruction(main_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   auto config_ptr = media::mojom::AudioProcessingConfig::New(
@@ -309,12 +307,10 @@ TEST_F(ForwardingAudioStreamFactoryTest,
       ExpectLoopbackBrokerConstruction(main_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   ForwardingAudioStreamFactory source_factory(
-      source_contents.get(), nullptr /*user_input_monitor*/,
-      std::make_unique<MockBrokerFactory>());
+      source_contents.get(), std::make_unique<MockBrokerFactory>());
 
   EXPECT_CALL(*broker, CreateStream(NotNull()));
   std::ignore = client.InitWithNewPipeAndPassReceiver();
@@ -330,7 +326,6 @@ TEST_F(ForwardingAudioStreamFactoryTest,
   base::WeakPtr<MockBroker> broker = ExpectOutputBrokerConstruction(main_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   EXPECT_CALL(*broker, CreateStream(NotNull()));
@@ -348,7 +343,6 @@ TEST_F(ForwardingAudioStreamFactoryTest,
       ExpectInputBrokerConstruction(other_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   {
@@ -389,12 +383,10 @@ TEST_F(ForwardingAudioStreamFactoryTest,
       ExpectLoopbackBrokerConstruction(other_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   ForwardingAudioStreamFactory source_factory(
-      source_contents.get(), nullptr /*user_input_monitor*/,
-      std::make_unique<MockBrokerFactory>());
+      source_contents.get(), std::make_unique<MockBrokerFactory>());
 
   {
     EXPECT_CALL(*main_rfh_broker, CreateStream(NotNull()));
@@ -433,7 +425,6 @@ TEST_F(ForwardingAudioStreamFactoryTest,
       ExpectOutputBrokerConstruction(other_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   {
@@ -480,12 +471,10 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyFrame_DestroysRelatedStreams) {
       ExpectOutputBrokerConstruction(other_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   ForwardingAudioStreamFactory source_factory(
-      source_contents.get(), nullptr /*user_input_monitor*/,
-      std::make_unique<MockBrokerFactory>());
+      source_contents.get(), std::make_unique<MockBrokerFactory>());
 
   {
     EXPECT_CALL(*main_rfh_input_broker, CreateStream(NotNull()));
@@ -580,7 +569,6 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyWebContents_DestroysStreams) {
       ExpectOutputBrokerConstruction(main_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   EXPECT_CALL(*input_broker, CreateStream(NotNull()));
@@ -621,7 +609,6 @@ TEST_F(ForwardingAudioStreamFactoryTest, LastStreamDeleted_ClearsFactoryPtr) {
       ExpectOutputBrokerConstruction(other_rfh());
 
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   {
@@ -692,7 +679,6 @@ TEST_F(ForwardingAudioStreamFactoryTest, LastStreamDeleted_ClearsFactoryPtr) {
 TEST_F(ForwardingAudioStreamFactoryTest,
        MuteNoOutputStreams_DoesNotConnectMuter) {
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
   EXPECT_FALSE(factory.IsMuted());
 
@@ -713,7 +699,6 @@ TEST_F(ForwardingAudioStreamFactoryTest, MuteWithOutputStream_ConnectsMuter) {
   mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client;
   base::WeakPtr<MockBroker> broker = ExpectOutputBrokerConstruction(main_rfh());
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   EXPECT_CALL(*broker, CreateStream(NotNull()));
@@ -745,7 +730,6 @@ TEST_F(ForwardingAudioStreamFactoryTest,
   mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client;
   base::WeakPtr<MockBroker> broker = ExpectOutputBrokerConstruction(main_rfh());
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   EXPECT_FALSE(stream_factory_.IsConnected());
@@ -782,7 +766,6 @@ TEST_F(ForwardingAudioStreamFactoryTest,
   base::WeakPtr<MockBroker> another_broker =
       ExpectOutputBrokerConstruction(main_rfh());
   ForwardingAudioStreamFactory factory(web_contents(),
-                                       nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
   {
@@ -838,7 +821,6 @@ TEST_F(ForwardingAudioStreamFactoryTest,
   EXPECT_CALL(sink2, OnSourceGone());
   {
     ForwardingAudioStreamFactory factory(web_contents(),
-                                         nullptr /*user_input_monitor*/,
                                          std::move(broker_factory_));
 
     factory.core()->AddLoopbackSink(&sink1);

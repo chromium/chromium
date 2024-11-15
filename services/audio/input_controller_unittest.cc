@@ -25,7 +25,6 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
-#include "media/base/user_input_monitor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/device_output_listener.h"
 #include "services/audio/processing_audio_fifo.h"
@@ -84,16 +83,6 @@ class MockSyncWriter : public InputController::SyncWriter {
                     base::TimeTicks capture_time,
                     const media::AudioGlitchInfo& audio_glitch_info));
   MOCK_METHOD0(Close, void());
-};
-
-class MockUserInputMonitor : public media::UserInputMonitor {
- public:
-  MockUserInputMonitor() = default;
-
-  uint32_t GetKeyPressCount() const override { return 0; }
-
-  MOCK_METHOD0(EnableKeyPressMonitoring, void());
-  MOCK_METHOD0(DisableKeyPressMonitoring, void());
 };
 
 class MockAudioInputStream : public media::AudioInputStream {
@@ -171,7 +160,6 @@ class TimeSourceInputControllerTest
   virtual void CreateAudioController() {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
-        &user_input_monitor_,
         /*device_output_listener =*/nullptr, &aecdump_recording_manager_,
         /*processing_config =*/nullptr, params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
@@ -198,7 +186,6 @@ class TimeSourceInputControllerTest
   media::FakeAudioLogFactory log_factory_;
   MockInputControllerEventHandler event_handler_;
   MockSyncWriter sync_writer_;
-  MockUserInputMonitor user_input_monitor_;
   media::AudioParameters params_;
 };
 
@@ -241,7 +228,6 @@ TEST_P(SystemTimeInputControllerTest, CreateRecordAndClose) {
   {
     // Wait for Write() to be called ten times.
     testing::InSequence s;
-    EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
         .Times(AtLeast(1))
@@ -250,11 +236,9 @@ TEST_P(SystemTimeInputControllerTest, CreateRecordAndClose) {
   controller_->Record();
   loop.Run();
 
-  testing::Mock::VerifyAndClearExpectations(&user_input_monitor_);
   testing::Mock::VerifyAndClearExpectations(&sync_writer_);
 
   EXPECT_CALL(sync_writer_, Close());
-  EXPECT_CALL(user_input_monitor_, DisableKeyPressMonitoring());
   controller_->Close();
 
   task_environment_.RunUntilIdle();
@@ -295,11 +279,9 @@ TEST_P(InputControllerTest, RecordTwice) {
   CreateAudioController();
   ASSERT_TRUE(controller_.get());
 
-  EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
   controller_->Record();
   controller_->Record();
 
-  EXPECT_CALL(user_input_monitor_, DisableKeyPressMonitoring());
   EXPECT_CALL(sync_writer_, Close());
   controller_->Close();
 }
@@ -309,10 +291,8 @@ TEST_P(InputControllerTest, CloseTwice) {
   CreateAudioController();
   ASSERT_TRUE(controller_.get());
 
-  EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
   controller_->Record();
 
-  EXPECT_CALL(user_input_monitor_, DisableKeyPressMonitoring());
   EXPECT_CALL(sync_writer_, Close());
   controller_->Close();
 
@@ -427,9 +407,9 @@ class TimeSourceInputControllerTestWithDeviceListener
     // https://stackoverflow.com/q/4643074
     this->controller_ = InputController::Create(
         this->audio_manager_.get(), &this->event_handler_, &this->sync_writer_,
-        &this->user_input_monitor_, &this->device_output_listener_,
-        &this->aecdump_recording_manager_, std::move(processing_config_),
-        this->params_, media::AudioDeviceDescription::kDefaultDeviceId, false);
+        &this->device_output_listener_, &this->aecdump_recording_manager_,
+        std::move(processing_config_), this->params_,
+        media::AudioDeviceDescription::kDefaultDeviceId, false);
 
     helper_ =
         std::make_unique<InputControllerTestHelper>(this->controller_.get());
@@ -702,7 +682,6 @@ TEST_P(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
   {
     // Wait for Write() to be called ten times.
     testing::InSequence s;
-    EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
         .Times(AtLeast(1))
@@ -716,11 +695,9 @@ TEST_P(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
 
   loop.Run();
 
-  testing::Mock::VerifyAndClearExpectations(&user_input_monitor_);
   testing::Mock::VerifyAndClearExpectations(&sync_writer_);
 
   EXPECT_CALL(sync_writer_, Close());
-  EXPECT_CALL(user_input_monitor_, DisableKeyPressMonitoring());
   controller_->Close();
 
   // The processing thread should be stopped after controller has closed.

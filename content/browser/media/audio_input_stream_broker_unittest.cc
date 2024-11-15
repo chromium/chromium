@@ -165,7 +165,6 @@ struct TestEnvironment {
             kDeviceId,
             TestParams(),
             kShMemCount,
-            nullptr /*user_input_monitor*/,
             kEnableAgc,
             media::mojom::AudioProcessingConfig::New(
                 remote_controls_.BindNewPipeAndPassReceiver(),
@@ -203,10 +202,10 @@ TEST(AudioInputStreamBrokerTest, StoresProcessAndFrameId) {
   MockDeleterCallback deleter;
   StrictMock<MockRendererAudioInputStreamFactoryClient> renderer_factory_client;
 
-  AudioInputStreamBroker broker(
-      kRenderProcessId, kRenderFrameId, kDeviceId, TestParams(), kShMemCount,
-      nullptr /*user_input_monitor*/, kEnableAgc, nullptr /*processing_config*/,
-      deleter.Get(), renderer_factory_client.MakeRemote());
+  AudioInputStreamBroker broker(kRenderProcessId, kRenderFrameId, kDeviceId,
+                                TestParams(), kShMemCount, kEnableAgc,
+                                nullptr /*processing_config*/, deleter.Get(),
+                                renderer_factory_client.MakeRemote());
 
   EXPECT_EQ(kRenderProcessId, broker.render_process_id());
   EXPECT_EQ(kRenderFrameId, broker.render_frame_id());

@@ -130,7 +130,6 @@
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_system.h"
 #include "media/audio/audio_thread_impl.h"
-#include "media/base/user_input_monitor.h"
 #include "media/media_buildflags.h"
 #include "media/midi/midi_service.h"
 #include "media/mojo/buildflags.h"
@@ -1266,9 +1265,6 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
       // Intentionally leak AudioManager if shutdown failed.
       // We might run into various CHECK(s) in AudioManager destructor.
       std::ignore = audio_manager_.release();
-      // |user_input_monitor_| may be in use by stray streams in case
-      // AudioManager shutdown failed.
-      std::ignore = user_input_monitor_.release();
     }
 
     // Leaking AudioSystem: we cannot correctly destroy it since Audio service
@@ -1417,14 +1413,6 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
                  "BrowserMainLoop::PostCreateThreads:InitSpeechRecognition");
     speech_recognition_manager_.reset(new SpeechRecognitionManagerImpl(
         audio_system_.get(), media_stream_manager_.get()));
-  }
-
-  {
-    TRACE_EVENT0("startup",
-                 "BrowserMainLoop::PostCreateThreads::InitUserInputMonitor");
-    user_input_monitor_ = media::UserInputMonitor::Create(
-        io_thread_->task_runner(),
-        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   {

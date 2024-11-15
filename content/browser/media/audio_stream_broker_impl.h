@@ -20,7 +20,6 @@ class AudioStreamBrokerFactoryImpl final : public AudioStreamBrokerFactory {
       const std::string& device_id,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
-      media::UserInputMonitorBase* user_input_monitor,
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
       AudioStreamBroker::DeleterCallback deleter,
