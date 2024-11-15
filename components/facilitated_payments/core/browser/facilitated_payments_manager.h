@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
@@ -64,6 +65,7 @@ class FacilitatedPaymentsManager {
 
  private:
   friend class FacilitatedPaymentsManagerTest;
+  friend class FacilitatedPaymentsManagerTestForUiScreens;
   // TODO(crbug.com/367751320): Sort below tests in alphabetical order.
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RegisterPixAllowlist);
@@ -219,10 +221,17 @@ class FacilitatedPaymentsManager {
                            PixPayflowBlockedWhenFlagDisabled);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestInLandscapeMode,
                            PayflowExitedReason_LandscapeScreenOrientation);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           ShowPixPaymentPrompt);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, ShowProgressScreen);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, ShowErrorScreen);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, DismissPrompt);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
                            NewScreenShown);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
-                           ScreenClosedNotByUser);
+                           NewScreenCouldNotBeShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
+                           ScreenClosedWithoutUserInteraction);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
                            ScreenClosedByUser);
 
@@ -289,6 +298,20 @@ class FacilitatedPaymentsManager {
 
   // Called by the view to communicate UI events.
   void OnUiEvent(UiEvent ui_event_type);
+
+  // Sets the internal state and triggers dismissal.
+  void DismissPrompt();
+
+  // Sets the internal state and triggers showing the Pix payment prompt.
+  void ShowPixPaymentPrompt(
+      base::span<const autofill::BankAccount> bank_account_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Sets the internal state and triggers showing the progress screen.
+  void ShowProgressScreen();
+
+  // Sets the internal state and triggers showing the error screen.
+  void ShowErrorScreen();
 
   // Owner.
   const raw_ref<FacilitatedPaymentsDriver> driver_;

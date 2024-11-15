@@ -40,7 +40,7 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
 }
 
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() {
-  client_->DismissPrompt();
+  DismissPrompt();
 }
 
 void FacilitatedPaymentsManager::Reset() {
@@ -178,7 +178,7 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
       autofill::payments::GetBillingCustomerId(
           client_->GetPaymentsDataManager());
 
-  client_->ShowPixPaymentPrompt(
+  ShowPixPaymentPrompt(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -195,7 +195,7 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     return;
   }
 
-  client_->ShowProgressScreen();
+  ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
 
@@ -210,7 +210,7 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
   LogLoadRiskDataResultAndLatency(/*was_successful=*/!risk_data.empty(),
                                   base::TimeTicks::Now() - start_time);
   if (risk_data.empty()) {
-    client_->ShowErrorScreen();
+    ShowErrorScreen();
     LogPayflowExitedReason(PayflowExitedReason::kRiskDataNotAvailable);
     return;
   }
@@ -228,7 +228,7 @@ void FacilitatedPaymentsManager::OnGetClientToken(
       !client_token.empty(),
       (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
-    client_->ShowErrorScreen();
+    ShowErrorScreen();
     LogPayflowExitedReason(PayflowExitedReason::kClientTokenNotAvailable);
     return;
   }
@@ -263,7 +263,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     LogInitiatePaymentResultAndLatency(/*result=*/false, latency);
     LogPayflowExitedReason(PayflowExitedReason::kInitiatePaymentFailed);
-    client_->ShowErrorScreen();
+    ShowErrorScreen();
     return;
   }
   LogInitiatePaymentResultAndLatency(/*result=*/true, latency);
@@ -271,7 +271,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
     LogPayflowExitedReason(PayflowExitedReason::kActionTokenNotAvailable);
-    client_->ShowErrorScreen();
+    ShowErrorScreen();
     return;
   }
   std::optional<CoreAccountInfo> account_info = client_->GetCoreAccountInfo();
@@ -280,7 +280,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   // abandon the payment flow.
   if (!account_info.has_value() || account_info.value().IsEmpty()) {
     LogPayflowExitedReason(PayflowExitedReason::kUserLoggedOut);
-    client_->ShowErrorScreen();
+    ShowErrorScreen();
     return;
   }
   purchase_action_start_time_ = base::TimeTicks::Now();
@@ -295,7 +295,7 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
   // When server responds to the purchase action, Google Play Services takes
   // over, and the progress screen gets dismissed. Calling `DismissPrompt`
   // clears the associated Java objects.
-  client_->DismissPrompt();
+  DismissPrompt();
   LogInitiatePurchaseActionResult(
       /*result=*/result ==
           FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk,
@@ -336,6 +336,29 @@ void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
       break;
     }
   }
+}
+
+void FacilitatedPaymentsManager::DismissPrompt() {
+  ui_state_ = UiState::kHidden;
+  client_->DismissPrompt();
+}
+
+void FacilitatedPaymentsManager::ShowPixPaymentPrompt(
+    base::span<const autofill::BankAccount> bank_account_suggestions,
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+  ui_state_ = UiState::kFopSelector;
+  client_->ShowPixPaymentPrompt(std::move(bank_account_suggestions),
+                                std::move(on_user_decision_callback));
+}
+
+void FacilitatedPaymentsManager::ShowProgressScreen() {
+  ui_state_ = UiState::kProgressScreen;
+  client_->ShowProgressScreen();
+}
+
+void FacilitatedPaymentsManager::ShowErrorScreen() {
+  ui_state_ = UiState::kErrorScreen;
+  client_->ShowErrorScreen();
 }
 
 }  // namespace payments::facilitated

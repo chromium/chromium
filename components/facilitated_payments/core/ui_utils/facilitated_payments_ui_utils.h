@@ -14,8 +14,8 @@ enum class UiState {
   kHidden = 0,
   // Represents FOP selector being shown.
   kFopSelector = 1,
-  // Represents loading screen being shown.
-  kLoadingScreen = 2,
+  // Represents progress screen being shown.
+  kProgressScreen = 2,
   // Represents error screen being shown.
   kErrorScreen = 3,
   // Max value, needs to be updated every time a new enum is added.
