@@ -19,7 +19,6 @@ import android.os.Bundle;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,15 +26,12 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 
 /** Robolectric tests for CombinedPolicyProvider */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CombinedPolicyProviderTest {
     private static final int NATIVE_POINTER = 1234;
-
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private PolicyConverter mPolicyConverter;
     @Mock private CombinedPolicyProvider.Natives mCombinedPolicyConverterJniMock;
     @Mock private PolicyMap mPolicyMap;
@@ -43,7 +39,7 @@ public class CombinedPolicyProviderTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(CombinedPolicyProviderJni.TEST_HOOKS, mCombinedPolicyConverterJniMock);
+        CombinedPolicyProviderJni.setInstanceForTesting(mCombinedPolicyConverterJniMock);
         CombinedPolicyProvider.setForTesting(new CombinedPolicyProvider());
     }
 

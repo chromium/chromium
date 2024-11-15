@@ -16,7 +16,6 @@ import android.content.Context;
 import android.os.PersistableBundle;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
@@ -49,7 +47,6 @@ import org.chromium.net.ConnectionType;
         shadows = {ShadowDeviceConditions.class})
 @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
 public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
-    @Rule public JniMocker mocker = new JniMocker();
 
     private PersistableBundle mTaskExtras;
     private long mTaskTime;
@@ -73,7 +70,7 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
 
         ShadowDeviceConditions.setCurrentNetworkConnectionType(ConnectionType.CONNECTION_NONE);
 
-        mocker.mock(PeriodicBackgroundSyncChromeWakeUpTaskJni.TEST_HOOKS, mNativeMock);
+        PeriodicBackgroundSyncChromeWakeUpTaskJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

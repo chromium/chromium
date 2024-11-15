@@ -21,7 +21,6 @@ import android.content.res.Resources;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -35,7 +34,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
@@ -154,8 +152,6 @@ public class WebContentsDarkModeMessageControllerUnitTest {
             return sIsFeatureEnabled;
         }
     }
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock Activity mMockActivity;
     @Mock Profile mMockProfile;

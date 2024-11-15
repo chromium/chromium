@@ -22,7 +22,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -49,8 +48,6 @@ import java.util.Set;
 public class PrivacyGuideMetricsDelegateTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
-
-    @Rule public JniMocker mocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -69,11 +66,11 @@ public class PrivacyGuideMetricsDelegateTest {
     public void setUp() {
         mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate(mProfile);
 
-        mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
+        UnifiedConsentServiceBridgeJni.setInstanceForTesting(mNativeMock);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
-        mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
+        SafeBrowsingBridgeJni.setInstanceForTesting(mSafeBrowsingNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
     }
 

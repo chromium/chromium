@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -25,7 +24,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
@@ -50,14 +48,12 @@ public class TrustedWebActivityOpenTimeRecorderTest {
     @Mock WebContents mWebContents;
     @Mock Tab mTab;
 
-    public @Rule JniMocker mJniMocker = new JniMocker();
-
     private TrustedWebActivityOpenTimeRecorder mRecorder;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         doNothing()
                 .when(mCurrentPageVerifier)

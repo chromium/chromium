@@ -8,14 +8,12 @@ import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
 
-import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelperFactoryImpl;
 import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
@@ -45,8 +43,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 public class SafetyHubTestRule implements TestRule {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
@@ -62,9 +58,9 @@ public class SafetyHubTestRule implements TestRule {
 
     private void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
-        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNatives);
-        mJniMocker.mock(PasswordManagerHelperJni.TEST_HOOKS, mPasswordManagerHelperNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNatives);
+        PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperNativeMock);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);

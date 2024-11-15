@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.payments.test_support.MockPaymentUiServiceBuilder;
@@ -75,8 +74,6 @@ public class PaymentRequestIntegrationTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private ErrorMessageUtil.Natives mErrorMessageUtilMock;
     @Mock private NavigationController mNavigationController;
     @Mock private WebContentsImpl.Natives mWebContentsJniMock;
@@ -94,7 +91,7 @@ public class PaymentRequestIntegrationTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(WebContentsImplJni.TEST_HOOKS, mWebContentsJniMock);
+        WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
         WebContentsImpl webContentsImpl =
                 Mockito.spy(
                         WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
@@ -102,18 +99,18 @@ public class PaymentRequestIntegrationTest {
         Mockito.doNothing().when(webContentsImpl).addObserver(Mockito.any());
         webContentsImpl.initializeForTesting();
 
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
+        ProfileJni.setInstanceForTesting(mProfileJniMock);
 
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
 
         mPaymentRequestWebContentsData = new PaymentRequestWebContentsData(webContentsImpl);
         PaymentRequestWebContentsData.setInstanceForTesting(mPaymentRequestWebContentsData);
 
-        mJniMocker.mock(PaymentRequestWebContentsDataJni.TEST_HOOKS, mWebContentsDataJniMock);
+        PaymentRequestWebContentsDataJni.setInstanceForTesting(mWebContentsDataJniMock);
         Mockito.doNothing().when(mWebContentsDataJniMock).recordActivationlessShow(Mockito.any());
         Mockito.doReturn(false).when(mWebContentsDataJniMock).hadActivationlessShow(Mockito.any());
 
-        mJniMocker.mock(ErrorMessageUtilJni.TEST_HOOKS, mErrorMessageUtilMock);
+        ErrorMessageUtilJni.setInstanceForTesting(mErrorMessageUtilMock);
         Mockito.doAnswer(
                         args -> {
                             String[] methods = args.getArgument(0);

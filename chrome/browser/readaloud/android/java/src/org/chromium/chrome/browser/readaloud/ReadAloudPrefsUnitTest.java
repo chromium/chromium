@@ -12,7 +12,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,7 +20,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.components.prefs.PrefService;
 
@@ -33,14 +31,12 @@ import java.util.Map;
 public class ReadAloudPrefsUnitTest {
     private MockPrefServiceHelper mMockPrefServiceHelper;
     private PrefService mPrefService;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock ReadAloudPrefs.Natives mNativeMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mNativeMock);
+        ReadAloudPrefsJni.setInstanceForTesting(mNativeMock);
         mMockPrefServiceHelper = new MockPrefServiceHelper();
         mPrefService = mMockPrefServiceHelper.getPrefService();
     }

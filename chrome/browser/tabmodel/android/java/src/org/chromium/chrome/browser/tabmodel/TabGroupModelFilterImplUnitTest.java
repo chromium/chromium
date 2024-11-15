@@ -40,7 +40,6 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -61,7 +60,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -133,8 +131,6 @@ public class TabGroupModelFilterImplUnitTest {
 
     private static final String TAB_GROUP_SYNC_IDS_FILE_NAME = "tab_group_sync_ids";
     private static final String TAB_GROUP_COLLAPSED_FILE_NAME = "tab_group_collapsed";
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock Profile mProfile;
     @Mock Token.Natives mTokenJniMock;
@@ -409,8 +405,8 @@ public class TabGroupModelFilterImplUnitTest {
 
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(TokenJni.TEST_HOOKS, mTokenJniMock);
-        mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
+        TokenJni.setInstanceForTesting(mTokenJniMock);
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
 
         when(mProfile.isNativeInitialized()).thenReturn(true);
         when(mTabModel.getProfile()).thenReturn(mProfile);

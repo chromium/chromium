@@ -36,7 +36,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -93,7 +92,6 @@ public final class EditUrlSuggestionProcessorUnitTest {
         }
     }
 
-    public @Rule JniMocker mJniMocker = new JniMocker();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock ShareDelegate mShareDelegate;
@@ -116,7 +114,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         mOldClipboardManager =
                 ((ClipboardImpl) Clipboard.getInstance())

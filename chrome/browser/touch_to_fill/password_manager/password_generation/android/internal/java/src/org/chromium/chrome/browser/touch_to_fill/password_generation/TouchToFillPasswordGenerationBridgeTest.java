@@ -18,7 +18,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.WebContents;
@@ -30,7 +29,6 @@ import org.chromium.ui.base.WindowAndroid;
 @Batch(Batch.PER_CLASS)
 public class TouchToFillPasswordGenerationBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -48,7 +46,7 @@ public class TouchToFillPasswordGenerationBridgeTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(TouchToFillPasswordGenerationBridgeJni.TEST_HOOKS, mBridgeJniMock);
+        TouchToFillPasswordGenerationBridgeJni.setInstanceForTesting(mBridgeJniMock);
 
         mActivityScenarioRule
                 .getScenario()

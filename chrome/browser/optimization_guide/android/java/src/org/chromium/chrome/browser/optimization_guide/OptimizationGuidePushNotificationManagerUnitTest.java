@@ -31,7 +31,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,7 +51,6 @@ import java.util.HashSet;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS)
 public class OptimizationGuidePushNotificationManagerUnitTest {
-    @Rule public JniMocker mocker = new JniMocker();
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -76,9 +74,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
     @Before
     public void setUp() {
-        mocker.mock(
-                org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni
-                        .TEST_HOOKS,
+        OptimizationGuideBridgeFactoryJni.setInstanceForTesting(
                 mOptimizationGuideBridgeFactoryJniMock);
         doReturn(mOptimizationGuideBridge)
                 .when(mOptimizationGuideBridgeFactoryJniMock)

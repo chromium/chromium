@@ -55,7 +55,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        SecurityStateModelJni.TEST_HOOKS.setInstanceForTesting(mSecurityStateMocks);
+        SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
         when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
         when(mActivity.getTabObserverRegistrar()).thenReturn(mTabObserverRegistrar);
         when(mActivity.getCloseButtonVisibilityManager()).thenReturn(mCloseButtonVisibilityManager);

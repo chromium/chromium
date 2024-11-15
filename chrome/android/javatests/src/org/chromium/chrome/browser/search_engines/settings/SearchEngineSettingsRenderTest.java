@@ -27,7 +27,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -63,8 +62,6 @@ public class SearchEngineSettingsRenderTest {
 
     public final @Rule MockitoRule mMocks = MockitoJUnit.rule();
 
-    public final @Rule JniMocker mJniMocker = new JniMocker();
-
     private @Mock TemplateUrlService mMockTemplateUrlService;
     private @Mock Profile mProfile;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
@@ -93,7 +90,7 @@ public class SearchEngineSettingsRenderTest {
                 .getSearchEngineUrlFromTemplateUrl(engine2Keyword);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNativeMock);
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNativeMock);
 
         mActivityTestRule.launchActivity(null);
         TestLargeIconBridge largeIconBridge = new TestLargeIconBridge(mProfile);

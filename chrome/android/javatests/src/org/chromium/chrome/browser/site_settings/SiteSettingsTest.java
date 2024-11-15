@@ -84,7 +84,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
@@ -182,8 +181,6 @@ public class SiteSettingsTest {
                     .build();
 
     @Mock private SettingsNavigation mSettingsNavigation;
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     private PermissionUpdateWaiter mPermissionUpdateWaiter;
 

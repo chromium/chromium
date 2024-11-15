@@ -17,7 +17,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -30,7 +29,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
@@ -68,8 +66,6 @@ public final class ToolbarSecurityIconTest {
                 ConnectionSecurityLevel.SECURE
             };
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock private Tab mTab;
 
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
@@ -89,12 +85,10 @@ public final class ToolbarSecurityIconTest {
         MockitoAnnotations.initMocks(this);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
-        mocker.mock(
-                ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+        SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
+        ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
-        mocker.mock(
-                org.chromium.chrome.browser.toolbar.LocationBarModelJni.TEST_HOOKS,
+        org.chromium.chrome.browser.toolbar.LocationBarModelJni.setInstanceForTesting(
                 mLocationBarModelJni);
 
         GURL exampleUrl = JUnitTestGURLs.EXAMPLE_URL;

@@ -33,7 +33,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -58,8 +57,6 @@ public class ThemeSettingsFragmentTest {
     public BlankUiTestActivitySettingsTestRule mSettingsTestRule =
             new BlankUiTestActivitySettingsTestRule();
 
-    @Rule public JniMocker mMocker = new JniMocker();
-
     @Mock public WebsitePreferenceBridge.Natives mMockWebsitePreferenceBridgeJni;
     @Mock public Profile mProfile;
     @Mock public Tracker mTracker;
@@ -72,12 +69,10 @@ public class ThemeSettingsFragmentTest {
 
     @Before
     public void setUp() {
-        // For some reason MockitoRule does not work with JniMocker (seems like an order issue), and
-        // RuleChain cannot be applied to MockitoRule since it is not a TestRule.
         MockitoAnnotations.initMocks(this);
         ChromeSharedPreferences.getInstance().removeKey(UI_THEME_SETTING);
 
-        mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mMockWebsitePreferenceBridgeJni);
 
         TrackerFactory.setTrackerForTests(mTracker);
 

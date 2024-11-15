@@ -31,7 +31,6 @@ import org.robolectric.Shadows;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
@@ -53,7 +52,6 @@ public class SearchActivityClientImplUnitTest {
             new ComponentName(ContextUtils.getApplicationContext(), SearchActivity.class);
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock ResourceRequestBodyJni mResourceRequestBodyJni;
 
     private Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
@@ -62,7 +60,7 @@ public class SearchActivityClientImplUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(ResourceRequestBodyJni.TEST_HOOKS, mResourceRequestBodyJni);
+        ResourceRequestBodyJni.setInstanceForTesting(mResourceRequestBodyJni);
         doAnswer(i -> i.getArgument(0))
                 .when(mResourceRequestBodyJni)
                 .createResourceRequestBodyFromBytes(any());

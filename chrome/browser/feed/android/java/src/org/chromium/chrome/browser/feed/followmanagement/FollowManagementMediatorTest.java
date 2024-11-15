@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -24,7 +23,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.TestWebFeedFaviconFetcher;
@@ -61,8 +59,6 @@ public class FollowManagementMediatorTest {
 
     @Captor ArgumentCaptor<Callback<WebFeedBridge.FollowResults>> mFollowCallbackCaptor;
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock WebFeedBridge.Natives mWebFeedBridgeJni;
 
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
@@ -75,8 +71,8 @@ public class FollowManagementMediatorTest {
         mActivity = Robolectric.setupActivity(Activity.class);
         mModelList = new ModelList();
         MockitoAnnotations.initMocks(this);
-        mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
-        mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
+        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJni);
+        FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
 
         mFollowManagementMediator =
                 new FollowManagementMediator(mActivity, mModelList, mObserver, mFaviconFetcher);

@@ -21,7 +21,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.JUnitTestGURLs;
@@ -32,8 +31,6 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SimpleHttpClientUnitTest {
     private static final long FAKE_NATIVE_POINTER = 123456789L;
-
-    @Rule public JniMocker mMocker = new JniMocker();
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
 
     @Mock public SimpleHttpClient.Natives mNativeMock;
@@ -47,7 +44,7 @@ public class SimpleHttpClientUnitTest {
     @Before
     public void setUp() {
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
-        mMocker.mock(SimpleHttpClientJni.TEST_HOOKS, mNativeMock);
+        SimpleHttpClientJni.setInstanceForTesting(mNativeMock);
         Mockito.when(mNativeMock.init(mMockProfile)).thenReturn(FAKE_NATIVE_POINTER);
 
         mHttpClient = new SimpleHttpClient(mMockProfile);

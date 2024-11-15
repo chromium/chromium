@@ -34,7 +34,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -53,7 +52,6 @@ public final class OmniboxImageSupplierUnitTest {
     private static final int FALLBACK_COLOR = 0xACE0BA5E;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
 
     private ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
@@ -72,7 +70,7 @@ public final class OmniboxImageSupplierUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
 
         var context = ContextUtils.getApplicationContext();
         mFaviconSize =

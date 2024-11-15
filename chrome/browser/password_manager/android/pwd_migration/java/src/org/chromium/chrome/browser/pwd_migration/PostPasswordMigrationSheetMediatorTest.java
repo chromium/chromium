@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -40,7 +39,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Batch(Batch.PER_CLASS)
 public class PostPasswordMigrationSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private final PostPasswordMigrationSheetMediator mMediator =
             new PostPasswordMigrationSheetMediator();
@@ -51,7 +49,7 @@ public class PostPasswordMigrationSheetMediatorTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         when(mUserPrefsJni.get(eq(mProfile))).thenReturn(mPrefService);
         mMediator.initialize(
                 mProfile,

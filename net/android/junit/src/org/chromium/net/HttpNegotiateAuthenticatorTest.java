@@ -34,7 +34,6 @@ import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -51,7 +50,6 @@ import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.net.HttpNegotiateAuthenticator.GetAccountsCallback;
 import org.chromium.net.HttpNegotiateAuthenticator.RequestData;
 
@@ -76,7 +74,6 @@ public class HttpNegotiateAuthenticatorTest {
         }
     }
 
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private static AccountManager sMockAccountManager;
     @Mock private HttpNegotiateAuthenticator.Natives mAuthenticatorJniMock;
     @Captor private ArgumentCaptor<AccountManagerCallback<Bundle>> mBundleCallbackCaptor;
@@ -86,7 +83,7 @@ public class HttpNegotiateAuthenticatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(HttpNegotiateAuthenticatorJni.TEST_HOOKS, mAuthenticatorJniMock);
+        HttpNegotiateAuthenticatorJni.setInstanceForTesting(mAuthenticatorJniMock);
     }
 
     /** Test of {@link HttpNegotiateAuthenticator#getNextAuthToken} */

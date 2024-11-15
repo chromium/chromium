@@ -11,7 +11,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -20,7 +19,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.LanguageTestUtils;
@@ -39,7 +37,6 @@ import java.util.stream.Collectors;
 @RunWith(BaseRobolectricTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LanguagesManagerTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private FakeTranslateBridgeJni mFakeTranslateBridge;
     @Mock private Profile mProfile;
@@ -63,7 +60,7 @@ public class LanguagesManagerTest {
                         neverLanguages,
                         alwaysLanguages,
                         targetLanguage);
-        mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
+        TranslateBridgeJni.setInstanceForTesting(mFakeTranslateBridge);
     }
 
     @After

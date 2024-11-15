@@ -56,7 +56,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
@@ -96,7 +95,6 @@ import java.util.List;
 public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Mock private Tracker mTracker;
     @Mock private SnackbarManager mSnackbarManager;
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
 
     @Rule
@@ -139,7 +137,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
+        UrlFormatterJni.setInstanceForTesting(mUrlFormatterJniMock);
         when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
                         any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(

@@ -17,7 +17,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,7 +28,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
@@ -58,8 +56,6 @@ public class LocationBarModelUnitTest {
         }
     }
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private Tab mIncognitoTabMock;
     @Mock private Tab mIncognitoNonPrimaryTabMock;
     @Mock private Tab mRegularTabMock;
@@ -80,12 +76,11 @@ public class LocationBarModelUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(
-                ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+        ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
-        mJniMocker.mock(LocationBarModelJni.TEST_HOOKS, mLocationBarModelJni);
-        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
-        mJniMocker.mock(OmniboxUrlEmphasizerJni.TEST_HOOKS, mOmniboxUrlEmphasizerJni);
+        LocationBarModelJni.setInstanceForTesting(mLocationBarModelJni);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        OmniboxUrlEmphasizerJni.setInstanceForTesting(mOmniboxUrlEmphasizerJni);
 
         when(mPrimaryOtrProfileMock.isOffTheRecord()).thenReturn(true);
         when(mNonPrimaryOtrProfileMock.isOffTheRecord()).thenReturn(true);

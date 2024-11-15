@@ -11,7 +11,6 @@ import android.util.Pair;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -20,14 +19,12 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the {@link AddToHomescreenMediator} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AddToHomescreenMediatorTest {
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock private AddToHomescreenMediator.Natives mNativeMock;
     @Mock private WindowAndroid mWindowAndroid;
@@ -40,7 +37,7 @@ public class AddToHomescreenMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(AddToHomescreenMediatorJni.TEST_HOOKS, mNativeMock);
+        AddToHomescreenMediatorJni.setInstanceForTesting(mNativeMock);
         when(mNativeMock.initialize(Mockito.any())).thenReturn(NATIVE_POINTER);
     }
 

@@ -30,7 +30,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -56,7 +55,6 @@ import java.util.Collections;
 @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)
 public class PrivacySandboxSurveyControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock UserPrefs.Natives mUserPrefsJniMock;
     @Mock PrefService mPrefServiceMock;
@@ -77,8 +75,8 @@ public class PrivacySandboxSurveyControllerTest {
         PrivacySandboxSurveyController.setEnableForTesting();
         doReturn(Mockito.mock(Resources.class)).when(mActivity).getResources();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        mJniMocker.mock(PrivacySandboxSurveyBridgeJni.TEST_HOOKS, mPrivacySandboxSurveyBridge);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        PrivacySandboxSurveyBridgeJni.setInstanceForTesting(mPrivacySandboxSurveyBridge);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
         SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);

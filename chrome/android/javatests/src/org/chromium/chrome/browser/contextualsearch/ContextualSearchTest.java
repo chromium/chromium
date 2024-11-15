@@ -8,7 +8,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -18,7 +17,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -31,7 +29,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock ContextualSearchManager.Natives mContextualSearchManagerJniMock;
 
@@ -41,7 +38,7 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
         super.setUp();
 
         MockitoAnnotations.initMocks(this);
-        mocker.mock(ContextualSearchManagerJni.TEST_HOOKS, mContextualSearchManagerJniMock);
+        ContextualSearchManagerJni.setInstanceForTesting(mContextualSearchManagerJniMock);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

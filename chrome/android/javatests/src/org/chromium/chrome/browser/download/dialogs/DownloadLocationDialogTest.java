@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import androidx.annotation.StringRes;
 import androidx.test.filters.MediumTest;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,7 +30,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
@@ -66,8 +64,6 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
     private static final String PRIMARY_STORAGE_PATH = "/sdcard";
     private static final String SECONDARY_STORAGE_PATH = "/android/Download";
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private DownloadLocationDialogController mController;
     @Mock private Profile mProfileMock;
     @Mock private Profile mIncognitoProfileMock;
@@ -83,9 +79,9 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(any())).thenReturn(mPrefService);
-        mJniMocker.mock(DownloadDialogBridgeJni.TEST_HOOKS, mDownloadDialogBridgeJniMock);
+        DownloadDialogBridgeJni.setInstanceForTesting(mDownloadDialogBridgeJniMock);
         when(mPrefService.getString(Pref.DOWNLOAD_DEFAULT_DIRECTORY))
                 .thenReturn(PRIMARY_STORAGE_PATH);
 

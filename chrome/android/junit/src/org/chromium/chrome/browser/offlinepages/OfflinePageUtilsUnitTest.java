@@ -29,7 +29,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,7 +46,6 @@ import java.io.File;
         manifest = Config.NONE,
         shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class})
 public class OfflinePageUtilsUnitTest {
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock public Profile.Natives mMockProfileNatives;
 
     @Mock private File mMockDataDirectory;
@@ -61,7 +59,7 @@ public class OfflinePageUtilsUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
+        ProfileJni.setInstanceForTesting(mMockProfileNatives);
         WrappedEnvironment.setDataDirectoryForTest(mMockDataDirectory);
 
         // Setting up a mock tab. These are the values common to most tests, but individual

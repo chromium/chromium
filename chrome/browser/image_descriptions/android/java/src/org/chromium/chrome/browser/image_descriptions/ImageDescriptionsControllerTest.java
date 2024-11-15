@@ -27,7 +27,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,7 +35,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -54,7 +52,6 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 /** Unit tests for {@link ImageDescriptionsController} */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ImageDescriptionsController.Natives mControllerJniMock;
 
@@ -78,14 +75,14 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
+        ProfileJni.setInstanceForTesting(mProfileJniMock);
         when(mProfileJniMock.fromWebContents(mWebContents)).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
-        mJniMocker.mock(ImageDescriptionsControllerJni.TEST_HOOKS, mControllerJniMock);
+        ImageDescriptionsControllerJni.setInstanceForTesting(mControllerJniMock);
 
         resetSharedPreferences();
 

@@ -25,7 +25,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -58,7 +57,6 @@ public class PlusAddressCreationViewBridgeTest {
                     "Cancel");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
     @Mock private PlusAddressCreationViewBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
@@ -82,7 +80,7 @@ public class PlusAddressCreationViewBridgeTest {
                         mTabModel,
                         mTabModelSelector,
                         mCoordinatorFactory);
-        mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mBridgeNatives);
+        PlusAddressCreationViewBridgeJni.setInstanceForTesting(mBridgeNatives);
     }
 
     private void setupCoordinatorFactory() {

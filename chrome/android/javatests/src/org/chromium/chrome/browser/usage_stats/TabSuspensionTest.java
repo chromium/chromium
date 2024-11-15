@@ -31,7 +31,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -87,8 +86,6 @@ public class TabSuspensionTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
-    @Rule public JniMocker jniMocker = new JniMocker();
-
     @Mock private UsageStatsBridge.Natives mUsageStatsNativeMock;
     @Mock private UsageStatsBridge mUsageStatsBridge;
     @Mock private SuspensionTracker mSuspensionTracker;
@@ -107,7 +104,7 @@ public class TabSuspensionTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
-        jniMocker.mock(UsageStatsBridgeJni.TEST_HOOKS, mUsageStatsNativeMock);
+        UsageStatsBridgeJni.setInstanceForTesting(mUsageStatsNativeMock);
         doReturn(123456L).when(mUsageStatsNativeMock).init(any(), any());
         // TokenTracker and EventTracker hold a promise, and Promises can only be used on a single
         // thread, so we have to initialize them on the thread where they will be used.

@@ -17,7 +17,6 @@ import androidx.test.filters.SmallTest;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +30,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -65,8 +63,6 @@ public class NotificationSuspenderUnitTest {
     private static final String TEST_NOTIFICATION_ID_OTHER_DOMAIN = "p#https://not-example.com#10";
     private static final String TEST_NOTIFICATION_ID_INVALID = "p##10";
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private NotificationSuspender.Natives mNotificationSuspenderJniMock;
     @Mock private Profile mProfile;
 
@@ -76,7 +72,7 @@ public class NotificationSuspenderUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(NotificationSuspenderJni.TEST_HOOKS, mNotificationSuspenderJniMock);
+        NotificationSuspenderJni.setInstanceForTesting(mNotificationSuspenderJniMock);
 
         mFakeNotificationManager = new MockNotificationManagerProxy();
         mNotificationSuspender =

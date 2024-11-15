@@ -44,7 +44,6 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -102,8 +101,6 @@ public class SigninManagerImplTest {
                     .givenName("given name")
                     .build();
 
-    @Rule public final JniMocker mocker = new JniMocker();
-
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -127,11 +124,11 @@ public class SigninManagerImplTest {
 
     @Before
     public void setUp() {
-        mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
-        mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        mocker.mock(BrowsingDataBridgeJni.TEST_HOOKS, mBrowsingDataBridgeNativeMock);
-        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativeMock);
+        SigninManagerImplJni.setInstanceForTesting(mNativeMock);
+        IdentityManagerJni.setInstanceForTesting(mIdentityManagerNativeMock);
+        BrowsingDataBridgeJni.setInstanceForTesting(mBrowsingDataBridgeNativeMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);
         when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefService);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         BookmarkModel.setInstanceForTesting(FakeBookmarkModel.createModel());

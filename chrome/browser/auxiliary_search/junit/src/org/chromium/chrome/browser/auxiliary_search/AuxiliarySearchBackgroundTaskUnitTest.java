@@ -37,7 +37,6 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchBackgroundTask.DonateResult;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -62,7 +61,6 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AuxiliarySearchBackgroundTaskUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     public @Rule FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private static final int TAB_ID_1 = 1;

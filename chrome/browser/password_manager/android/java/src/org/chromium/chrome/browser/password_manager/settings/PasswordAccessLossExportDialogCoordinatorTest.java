@@ -50,7 +50,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -86,7 +85,6 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     private static final long TIME_PASSED_SINCE_LAST_AUTH_MINS = 1000L * 60 * 10;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     private PasswordAccessLossExportDialogCoordinator mCoordinator;
     private FragmentActivity mActivity;
     @Mock private Profile mProfile;
@@ -102,9 +100,9 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     private FakePasswordManagerHandler mPasswordManagerHandler;
 
     public void setUp(@PasswordAccessLossWarningType int type) {
-        mJniMocker.mock(PasswordStoreBridgeJni.TEST_HOOKS, mPasswordStoreBridgeJniMock);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+        PasswordStoreBridgeJni.setInstanceForTesting(mPasswordStoreBridgeJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         setUpAccessLossWarningType(type);

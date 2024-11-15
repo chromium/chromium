@@ -9,7 +9,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -18,7 +17,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog.LanguageItemAdapter;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -34,7 +32,6 @@ import java.util.LinkedHashSet;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AppLanguagePromoDialogTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Profile mProfile;
 
@@ -69,10 +66,10 @@ public class AppLanguagePromoDialogTest {
 
         // Setup fake translate and language preferences.
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
-        mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
+        TranslateBridgeJni.setInstanceForTesting(mFakeTranslateBridge);
 
         mFakeLanguageBridge = new FakeLanguageBridgeJni();
-        mJniMocker.mock(LanguageBridgeJni.TEST_HOOKS, mFakeLanguageBridge);
+        LanguageBridgeJni.setInstanceForTesting(mFakeLanguageBridge);
     }
 
     @After

@@ -43,7 +43,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -68,7 +67,6 @@ public class PageZoomViewTest {
     private static ViewGroup sContentView;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private PageZoomCoordinatorDelegate mDelegate;
     @Mock private HostZoomMapImpl.Natives mHostZoomMapJniMock;
@@ -100,8 +98,8 @@ public class PageZoomViewTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapJniMock);
-        mJniMocker.mock(PageZoomMetricsJni.TEST_HOOKS, mPageZoomMetricsJniMock);
+        HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapJniMock);
+        PageZoomMetricsJni.setInstanceForTesting(mPageZoomMetricsJniMock);
         when(mHostZoomMapJniMock.getDefaultZoomLevel(any())).thenReturn(0.0);
         when(mHostZoomMapJniMock.getZoomLevel(any())).thenReturn(0.0);
 

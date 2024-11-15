@@ -33,7 +33,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -44,7 +43,6 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillProgressDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mMocker = new JniMocker();
 
     private static final String PROGRESS_DIALOG_TITLE = "Verify your card";
     private static final String PROGRESS_DIALOG_MESSAGE = "Contacting your bank...";
@@ -73,7 +71,7 @@ public class AutofillProgressDialogBridgeTest {
                         NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW,
                         mModalDialogManager,
                         ApplicationProvider.getApplicationContext());
-        mMocker.mock(AutofillProgressDialogBridgeJni.TEST_HOOKS, mNativeMock);
+        AutofillProgressDialogBridgeJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

@@ -34,7 +34,6 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -54,7 +53,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -122,8 +120,6 @@ public class CompositorViewHolderUnitTest {
         TOUCH_EVENT_OBSERVER;
     }
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
@@ -161,9 +157,9 @@ public class CompositorViewHolderUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(OnscreenContentProviderJni.TEST_HOOKS, mOnscreenContentProviderJni);
-        mJniMocker.mock(ContentCaptureFeaturesJni.TEST_HOOKS, mContentCaptureFeaturesJni);
-        mJniMocker.mock(InputHintCheckerJni.TEST_HOOKS, mInputHintCheckerJni);
+        OnscreenContentProviderJni.setInstanceForTesting(mOnscreenContentProviderJni);
+        ContentCaptureFeaturesJni.setInstanceForTesting(mContentCaptureFeaturesJni);
+        InputHintCheckerJni.setInstanceForTesting(mInputHintCheckerJni);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 

@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -35,7 +34,6 @@ import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 /** JUnit tests of the class {@link MSBBFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MSBBFragmentTest {
-    @Rule public JniMocker mocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -47,7 +45,7 @@ public class MSBBFragmentTest {
 
     @Before
     public void setUp() {
-        mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
+        UnifiedConsentServiceBridgeJni.setInstanceForTesting(mNativeMock);
     }
 
     @After

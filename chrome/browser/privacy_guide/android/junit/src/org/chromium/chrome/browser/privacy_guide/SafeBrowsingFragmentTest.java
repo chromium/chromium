@@ -32,7 +32,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,7 +46,6 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 @RunWith(BaseRobolectricTestRunner.class)
 public class SafeBrowsingFragmentTest {
     // TODO(crbug.com/40860773): Use Espresso for view interactions.
-    @Rule public JniMocker mMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -61,7 +59,7 @@ public class SafeBrowsingFragmentTest {
 
     @Before
     public void setUp() {
-        mMocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mNativeMock);
+        SafeBrowsingBridgeJni.setInstanceForTesting(mNativeMock);
     }
 
     @After

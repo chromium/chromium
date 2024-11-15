@@ -29,7 +29,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -72,7 +71,6 @@ public class SaveUpdateAddressProfilePromptRenderTest {
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private SaveUpdateAddressProfilePromptController.Natives mPromptControllerJni;
     @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
@@ -110,9 +108,8 @@ public class SaveUpdateAddressProfilePromptRenderTest {
                 SaveUpdateAddressProfilePromptController.create(
                         NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);
 
-        mJniMocker.mock(
-                SaveUpdateAddressProfilePromptControllerJni.TEST_HOOKS, mPromptControllerJni);
-        mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
+        SaveUpdateAddressProfilePromptControllerJni.setInstanceForTesting(mPromptControllerJni);
+        AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
     }
 
     @After

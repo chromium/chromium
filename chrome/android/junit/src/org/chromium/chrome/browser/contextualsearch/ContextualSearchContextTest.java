@@ -16,7 +16,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -24,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 
 /** Tests parts of the ContextualSearchContext class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,14 +43,12 @@ public class ContextualSearchContextTest {
         }
     }
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock private ContextualSearchContext.Natives mContextJniMock;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(ContextualSearchContextJni.TEST_HOOKS, mContextJniMock);
+        ContextualSearchContextJni.setInstanceForTesting(mContextJniMock);
         when(mContextJniMock.init(any())).thenReturn(NATIVE_PTR);
         mDidSelectionChange = false;
         mContext = new ContextualSearchContextForTest();

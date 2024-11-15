@@ -18,13 +18,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.WebContents;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public final class UkmRecorderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private @Mock WebContents mWebContents;
     private @Mock UkmRecorder.Natives mUkmRecorderJniMock;
@@ -35,7 +33,7 @@ public final class UkmRecorderTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
     }
 
     @Test

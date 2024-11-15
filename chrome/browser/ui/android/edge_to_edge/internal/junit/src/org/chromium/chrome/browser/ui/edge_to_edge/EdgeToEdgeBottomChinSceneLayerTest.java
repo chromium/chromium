@@ -22,13 +22,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class EdgeToEdgeBottomChinSceneLayerTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Runnable mRequestRenderRunnable;
     @Mock private EdgeToEdgeBottomChinSceneLayerJni mSceneLayerJni;
     private EdgeToEdgeBottomChinSceneLayer mSceneLayer;
@@ -36,7 +34,7 @@ public class EdgeToEdgeBottomChinSceneLayerTest {
     @Before
     public void setUp() {
         doReturn(123L).when(mSceneLayerJni).init(any());
-        mJniMocker.mock(EdgeToEdgeBottomChinSceneLayerJni.TEST_HOOKS, mSceneLayerJni);
+        EdgeToEdgeBottomChinSceneLayerJni.setInstanceForTesting(mSceneLayerJni);
         mSceneLayer = new EdgeToEdgeBottomChinSceneLayer(mRequestRenderRunnable);
     }
 

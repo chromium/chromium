@@ -12,7 +12,6 @@ import android.os.Looper;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,21 +21,19 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 
 /** Tests for JankReportingRunnable. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class JankReportingRunnableTest {
     ShadowLooper mShadowLooper;
     Handler mHandler;
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock JankMetricUMARecorder.Natives mNativeMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(JankMetricUMARecorderJni.TEST_HOOKS, mNativeMock);
+        JankMetricUMARecorderJni.setInstanceForTesting(mNativeMock);
         mShadowLooper = ShadowLooper.shadowMainLooper();
         mHandler = new Handler(Looper.getMainLooper());
     }

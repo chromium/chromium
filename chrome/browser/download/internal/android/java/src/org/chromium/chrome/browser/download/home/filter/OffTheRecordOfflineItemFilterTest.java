@@ -19,7 +19,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.OtrProfileIdJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,7 +31,6 @@ import java.util.Collection;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OffTheRecordOfflineItemFilterTest {
-    @Rule public JniMocker mMocker = new JniMocker();
 
     @Mock private OtrProfileId.Natives mOtrProfileIdNatives;
 
@@ -47,7 +45,7 @@ public class OffTheRecordOfflineItemFilterTest {
     @Before
     public void setup() {
         ProfileManager.setLastUsedProfileForTesting(mRegularProfile);
-        mMocker.mock(OtrProfileIdJni.TEST_HOOKS, mOtrProfileIdNatives);
+        OtrProfileIdJni.setInstanceForTesting(mOtrProfileIdNatives);
         when(mRegularProfile.hasOffTheRecordProfile(any())).thenReturn(true);
     }
 

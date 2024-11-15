@@ -29,7 +29,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
@@ -44,7 +43,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for the context menu header mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextMenuHeaderMediatorTest {
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -63,7 +61,7 @@ public class ContextMenuHeaderMediatorTest {
     public void setUpTest() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         MockitoAnnotations.initMocks(this);
-        mocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
+        LargeIconBridgeJni.setInstanceForTesting(mMockLargeIconBridgeJni);
 
         when(mMockLargeIconBridgeJni.init()).thenReturn(1L);
     }

@@ -28,7 +28,6 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
@@ -40,7 +39,6 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SafetyHubFetchTaskTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Context mContext;
     @Mock private Profile mProfile;

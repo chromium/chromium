@@ -34,7 +34,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -65,8 +64,6 @@ public class PasswordCheckupLauncherTest {
     private static final String TEST_NO_EMAIL_ADDRESS = null;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Spy private Context mContext = RuntimeEnvironment.application.getApplicationContext();
 
@@ -103,8 +100,8 @@ public class PasswordCheckupLauncherTest {
 
     @Before
     public void setUp() throws PasswordCheckBackendException {
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
-        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mMockPasswordManagerUtilBridgeJni);
+        UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mMockPasswordManagerUtilBridgeJni);
         when(mMockPasswordManagerUtilBridgeJni.areMinUpmRequirementsMet()).thenReturn(true);
 
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);

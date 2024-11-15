@@ -41,7 +41,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -78,7 +77,6 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     private static final long NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE = 0xa1fabe7a;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private AutofillVcnEnrollBottomSheetBridge.Natives mBridgeNatives;
     @Mock private Profile.Natives mProfileNatives;
@@ -99,9 +97,9 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     @Before
     public void setUp() {
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNatives);
+        ProfileJni.setInstanceForTesting(mProfileNatives);
         when(mProfileNatives.fromWebContents(any())).thenReturn(mProfile);
-        mJniMocker.mock(AutofillVcnEnrollBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
+        AutofillVcnEnrollBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mShadowActivity = shadowOf(activity);
         mWindow = new WindowAndroid(activity, /* trackOcclusion= */ false);

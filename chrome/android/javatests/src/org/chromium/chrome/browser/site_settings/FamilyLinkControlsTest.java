@@ -32,7 +32,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
@@ -64,7 +63,6 @@ public class FamilyLinkControlsTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
 
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
 
     @Before
@@ -124,7 +122,7 @@ public class FamilyLinkControlsTest {
     @Test
     @SmallTest
     public void testDeletingOnDeviceDataAllowedForSupervisedUsers() throws InterruptedException {
-        mocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
         when(mWebsitePreferenceBridgeJniMock.isContentSettingManagedByCustodian(
                         any(), eq(ContentSettingsType.COOKIES)))
                 .thenReturn(false);

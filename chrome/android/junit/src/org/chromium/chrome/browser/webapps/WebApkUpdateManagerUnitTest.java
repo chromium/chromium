@@ -48,7 +48,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -91,8 +90,6 @@ public class WebApkUpdateManagerUnitTest {
     @Mock private Activity mActivityMock;
 
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
     private static final String UNBOUND_WEBAPK_PACKAGE_NAME = "com.webapk.test_package";
@@ -744,7 +741,7 @@ public class WebApkUpdateManagerUnitTest {
         PathUtils.setPrivateDataDirectorySuffix("chrome");
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
 
-        mJniMocker.mock(WebApkUpdateManagerJni.TEST_HOOKS, new TestWebApkUpdateManagerJni());
+        WebApkUpdateManagerJni.setInstanceForTesting(new TestWebApkUpdateManagerJni());
 
         WebappRegistry.refreshSharedPrefsForTesting();
         registerWebApk(

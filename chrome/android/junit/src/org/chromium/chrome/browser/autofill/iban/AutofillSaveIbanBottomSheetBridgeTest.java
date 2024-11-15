@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
@@ -58,7 +57,6 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private AutofillSaveIbanBottomSheetBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
@@ -70,7 +68,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(AutofillSaveIbanBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
+        AutofillSaveIbanBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         // set a MaterialComponents theme which is required for the `OutlinedBox` text field.
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);

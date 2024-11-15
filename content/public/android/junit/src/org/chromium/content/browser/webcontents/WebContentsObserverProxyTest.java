@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -20,7 +19,6 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 /** Unit tests for {@link WebContentsObserverProxy}. */
@@ -30,7 +28,6 @@ public class WebContentsObserverProxyTest {
     @Mock private WebContentsObserver mWebContentsObserver;
     @Mock private WebContentsObserver mWebContentsObserver2;
     @Mock private WebContentsObserverProxy.Natives mWebContentsObserverProxyJni;
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private WebContentsImpl mWebContentsImpl;
     private final long mNativeWebContentsAndroid = 1;
@@ -38,7 +35,7 @@ public class WebContentsObserverProxyTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebContentsObserverProxyJni.TEST_HOOKS, mWebContentsObserverProxyJni);
+        WebContentsObserverProxyJni.setInstanceForTesting(mWebContentsObserverProxyJni);
         when(mWebContentsObserverProxyJni.init(any(), any())).thenReturn(1L);
     }
 

@@ -20,7 +20,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -33,7 +32,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -63,8 +61,6 @@ import java.util.concurrent.TimeUnit;
 @Config(manifest = Config.NONE)
 public class CommerceSubscriptionsServiceUnitTest {
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private ShoppingService mShoppingService;
     @Mock TabModelSelector mTabModelSelector;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -88,10 +84,10 @@ public class CommerceSubscriptionsServiceUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
-        mJniMocker.mock(ShoppingServiceFactoryJni.TEST_HOOKS, mShoppingServiceFactoryJniMock);
+        ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
 
         doNothing().when(mActivityLifecycleDispatcher).register(any());
@@ -111,7 +107,7 @@ public class CommerceSubscriptionsServiceUnitTest {
         mMockNotificationManager.setNotificationsEnabled(false);
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
 
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
 

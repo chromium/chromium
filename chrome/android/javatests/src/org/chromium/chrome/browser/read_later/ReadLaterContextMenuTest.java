@@ -43,7 +43,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -72,7 +71,6 @@ public class ReadLaterContextMenuTest {
 
     @Rule public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private Tracker mTracker;
     @Mock RequestCoordinatorBridge.Natives mRequestCoordinatorBridgeJniMock;
 
@@ -97,7 +95,7 @@ public class ReadLaterContextMenuTest {
         when(mTracker.shouldTriggerHelpUiWithSnooze(any()))
                 .thenReturn(new TriggerDetails(false, false));
         mActivityTestRule.startMainActivityOnBlankPage();
-        mocker.mock(RequestCoordinatorBridgeJni.TEST_HOOKS, mRequestCoordinatorBridgeJniMock);
+        RequestCoordinatorBridgeJni.setInstanceForTesting(mRequestCoordinatorBridgeJniMock);
     }
 
     @Test

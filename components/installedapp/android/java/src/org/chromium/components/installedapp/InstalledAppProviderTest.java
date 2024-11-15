@@ -17,7 +17,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,7 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -83,8 +81,6 @@ public class InstalledAppProviderTest {
     private static final String ORIGIN_DIFFERENT_SCHEME = "http://example.com:8000";
     private static final String ORIGIN_DIFFERENT_HOST = "https://example.org:8000";
     private static final String ORIGIN_DIFFERENT_PORT = "https://example.com:8001";
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock private MockRenderFrameHost mMockRenderFrameHost;
     private FakePackageManager mFakePackageManager;
@@ -385,7 +381,7 @@ public class InstalledAppProviderTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mTestInstalledAppProviderImplJni = new TestInstalledAppProviderImplJni();
-        mocker.mock(InstalledAppProviderImplJni.TEST_HOOKS, mTestInstalledAppProviderImplJni);
+        InstalledAppProviderImplJni.setInstanceForTesting(mTestInstalledAppProviderImplJni);
 
         GURL urlOnOrigin = new GURL(URL_ON_ORIGIN);
         Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(urlOnOrigin);

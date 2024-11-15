@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 import com.google.common.primitives.UnsignedLongs;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +29,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -50,8 +48,6 @@ import java.util.Optional;
 @RunWith(BaseRobolectricTestRunner.class)
 public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     private ObservableSupplierImpl<Tab> mTabSupplier;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     @Mock private Profile mMockProfile;
@@ -63,7 +59,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
+        PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
 
         mTabSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier = new ObservableSupplierImpl<>();

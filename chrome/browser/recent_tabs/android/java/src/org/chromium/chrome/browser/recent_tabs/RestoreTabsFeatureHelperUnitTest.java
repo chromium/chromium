@@ -28,7 +28,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -51,7 +50,6 @@ public class RestoreTabsFeatureHelperUnitTest {
     private static final String RESTORE_TABS_FEATURE = FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Mock ForeignSessionHelper.Natives mForeignSessionHelperJniMock;
     @Mock private RestoreTabsControllerDelegate mDelegate;
@@ -67,7 +65,7 @@ public class RestoreTabsFeatureHelperUnitTest {
 
     @Before
     public void setUp() {
-        jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniMock);
+        ForeignSessionHelperJni.setInstanceForTesting(mForeignSessionHelperJniMock);
         TrackerFactory.setTrackerForTests(mMockTracker);
         when(mMockTracker.wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE))).thenReturn(true);
         when(mMockTracker.shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE))).thenReturn(true);

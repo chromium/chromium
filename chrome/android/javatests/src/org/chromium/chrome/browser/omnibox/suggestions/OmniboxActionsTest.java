@@ -29,7 +29,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
@@ -62,7 +61,6 @@ import java.util.List;
 public class OmniboxActionsTest {
     public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock OmniboxActionJni mOmniboxActionJni;
@@ -81,8 +79,8 @@ public class OmniboxActionsTest {
     public void setUp() throws InterruptedException {
         sActivityTestRule.loadUrl("about:blank");
         mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
-        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, mOmniboxActionJni);
+        AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
+        OmniboxActionJni.setInstanceForTesting(mOmniboxActionJni);
     }
 
     @After
@@ -97,8 +95,8 @@ public class OmniboxActionsTest {
         if (mTargetActivity != null) {
             ApplicationTestUtils.finishActivity(mTargetActivity);
         }
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
-        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
+        AutocompleteControllerJni.setInstanceForTesting(null);
+        OmniboxActionJni.setInstanceForTesting(null);
     }
 
     /**

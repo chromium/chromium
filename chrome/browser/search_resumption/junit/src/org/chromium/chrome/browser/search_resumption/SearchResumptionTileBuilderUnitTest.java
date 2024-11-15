@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -37,8 +35,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class SearchResumptionTileBuilderUnitTest {
     // The search suggestions are meant to be shown on any website.
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Tab mTab;
     @Mock private SearchResumptionTileContainerView mSuggestionTilesContainerView;

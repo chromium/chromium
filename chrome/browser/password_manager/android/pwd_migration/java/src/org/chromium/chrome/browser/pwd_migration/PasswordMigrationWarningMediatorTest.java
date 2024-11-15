@@ -33,7 +33,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
@@ -69,8 +68,6 @@ import java.util.Collections;
 public class PasswordMigrationWarningMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     private PasswordMigrationWarningMediator mMediator;
     private PropertyModel mModel;
     @Mock private FragmentManager mFragmentManager;
@@ -87,8 +84,8 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
-        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         mMediator =
                 new PasswordMigrationWarningMediator(

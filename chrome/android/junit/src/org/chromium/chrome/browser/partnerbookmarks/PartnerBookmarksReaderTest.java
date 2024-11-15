@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.partnerbookmarks;
 import android.content.Context;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -18,14 +17,12 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 
 /** Unit tests for PartnerBookmarksReader. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PartnerBookmarksReaderTest {
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock Context mContextMock;
 
@@ -38,7 +35,7 @@ public class PartnerBookmarksReaderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(PartnerBookmarksReaderJni.TEST_HOOKS, mJniMock);
+        PartnerBookmarksReaderJni.setInstanceForTesting(mJniMock);
         Mockito.doNothing()
                 .when(mBrowserCustomizations)
                 .setOnInitializeAsyncFinished(mBrowserCustomizationsInitCallback.capture());

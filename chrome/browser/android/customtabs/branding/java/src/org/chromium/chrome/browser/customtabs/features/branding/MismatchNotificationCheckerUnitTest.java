@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,7 +37,6 @@ public class MismatchNotificationCheckerUnitTest {
     private static final int INIT_USER_ACT_COUNT = 1;
 
     @Rule public MockitoRule mTestRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock MismatchNotificationChecker.Delegate mDelegate;
 

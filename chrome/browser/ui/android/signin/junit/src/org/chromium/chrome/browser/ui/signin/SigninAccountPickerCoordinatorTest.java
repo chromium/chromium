@@ -34,7 +34,6 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -60,7 +59,6 @@ import java.lang.ref.WeakReference;
 @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class SigninAccountPickerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -91,7 +89,7 @@ public class SigninAccountPickerCoordinatorTest {
                             mActivity.setContentView(mContainerView);
                         });
         ShadowPostTask.setTestImpl((taskTraits, task, delay) -> task.run());
-        mJniMocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
+        SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsNativeMock);
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacadeMock);
         when(mAccountManagerFacadeMock.getCoreAccountInfos()).thenReturn(new Promise<>());
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);

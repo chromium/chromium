@@ -26,7 +26,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 
 import java.util.Optional;
 
@@ -39,7 +38,6 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     private static final long sFakeNativePointer = 7;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private PasswordSettingsUpdaterReceiverBridge.Natives mReceiverBridgeJniMock;
     @Mock private PasswordSettingsUpdaterMetricsRecorder mMetricsRecorderMock;
 
@@ -47,8 +45,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(
-                PasswordSettingsUpdaterReceiverBridgeJni.TEST_HOOKS, mReceiverBridgeJniMock);
+        PasswordSettingsUpdaterReceiverBridgeJni.setInstanceForTesting(mReceiverBridgeJniMock);
         mReceiverBridge = new PasswordSettingsUpdaterReceiverBridge(sFakeNativePointer);
     }
 

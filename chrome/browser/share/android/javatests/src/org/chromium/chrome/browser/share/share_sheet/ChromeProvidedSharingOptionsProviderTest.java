@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
@@ -77,7 +76,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -108,9 +106,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
-        mJniMocker.mock(
-                SendTabToSelfAndroidBridgeJni.TEST_HOOKS, mSendTabToSelfAndroidBridgeNatives);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), anyString()))
                 .thenReturn(null);

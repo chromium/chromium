@@ -31,7 +31,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
@@ -73,8 +72,6 @@ public class AllSiteSettingsTest {
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(mPermissionRule, false);
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     private static BrowserContextHandle getBrowserContextHandle() {
         return ProfileManager.getLastUsedRegularProfile();
@@ -202,7 +199,7 @@ public class AllSiteSettingsTest {
     public void testOneRwsGroupWithRelatedFilter() throws Exception {
         FakeRwsPrivacySandboxBridge fakeRwsPrivacySandboxBridge =
                 new FakeRwsPrivacySandboxBridge(C_GITHUB_IO, Set.of(A_GITHUB_IO, B_GITHUB_IO));
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, fakeRwsPrivacySandboxBridge);
+        PrivacySandboxBridgeJni.setInstanceForTesting(fakeRwsPrivacySandboxBridge);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

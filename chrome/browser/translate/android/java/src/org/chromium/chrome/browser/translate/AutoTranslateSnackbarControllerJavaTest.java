@@ -22,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -39,8 +38,6 @@ import java.util.concurrent.ExecutionException;
 public final class AutoTranslateSnackbarControllerJavaTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private static final long NATIVE_SNACKBAR_VIEW = 1001L;
 
@@ -62,7 +59,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
                 new AutoTranslateSnackbarController(
                         weakReference, mSnackbarManager, NATIVE_SNACKBAR_VIEW);
 
-        mJniMocker.mock(AutoTranslateSnackbarControllerJni.TEST_HOOKS, mMockJni);
+        AutoTranslateSnackbarControllerJni.setInstanceForTesting(mMockJni);
     }
 
     @Test

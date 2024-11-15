@@ -64,7 +64,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
@@ -127,7 +126,6 @@ public class AndroidShareSheetControllerUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock SendTabToSelfAndroidBridgeJni mMockSendTabToSelfAndroidBridge;
     @Mock UserPrefsJni mMockUserPrefsJni;
@@ -152,23 +150,23 @@ public class AndroidShareSheetControllerUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Set up send to self option.
-        mJniMocker.mock(SendTabToSelfAndroidBridgeJni.TEST_HOOKS, mMockSendTabToSelfAndroidBridge);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mMockSendTabToSelfAndroidBridge);
         doReturn(0)
                 .when(mMockSendTabToSelfAndroidBridge)
                 .getEntryPointDisplayReason(any(), anyString());
         // Set up print tab option.
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
+        UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         PrefService service = mock(PrefService.class);
         doReturn(service).when(mMockUserPrefsJni).get(mProfile);
         doReturn(true).when(service).getBoolean(Pref.PRINTING_ENABLED);
         // Set up favicon helper.
-        mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mMockFaviconHelperJni);
+        FaviconHelperJni.setInstanceForTesting(mMockFaviconHelperJni);
         doReturn(1L).when(mMockFaviconHelperJni).init();
         mTestWebFavicon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         ShadowShareImageFileUtils.sExpectedWebBitmap = mTestWebFavicon;
         setFaviconToFetchForTest(mTestWebFavicon);
         // Set up mMockDomDistillerUrlUtilsJni. Needed for link-to-text sharing.
-        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mMockDomDistillerUrlUtilsJni);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mMockDomDistillerUrlUtilsJni);
         doAnswer(invocation -> new GURL(invocation.getArgument(0)))
                 .when(mMockDomDistillerUrlUtilsJni)
                 .getOriginalUrlFromDistillerUrl(anyString());

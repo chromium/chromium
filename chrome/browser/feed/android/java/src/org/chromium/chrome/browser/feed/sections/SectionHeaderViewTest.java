@@ -19,7 +19,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,7 +28,6 @@ import org.robolectric.Robolectric;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.feed.test.R;
@@ -43,8 +41,6 @@ import org.chromium.components.feature_engagement.Tracker;
 public final class SectionHeaderViewTest {
     private SectionHeaderView mSectionHeaderView;
     private Activity mActivity;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Tracker mTracker;
     @Mock private UserEducationHelper mHelper;

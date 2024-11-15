@@ -35,7 +35,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -75,7 +74,6 @@ public class LocalTabGroupMutationHelperUnitTest {
     private static final GURL UNSYNCABLE_URL_1 = new GURL("chrome://flags");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
     private MockTabModel mTabModel;
     @Mock private TabRemover mTabRemover;
@@ -91,7 +89,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(TabGroupSyncUtilsJni.TEST_HOOKS, mTabGroupSyncUtilsJni);
+        TabGroupSyncUtilsJni.setInstanceForTesting(mTabGroupSyncUtilsJni);
         mTabModel = spy(new MockTabModel(mProfile, null));
         mTabModel.setTabRemoverForTesting(mTabRemover);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);

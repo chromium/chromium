@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 
 /** Test class for {@link PasswordManagerLifecycleHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -30,13 +29,12 @@ public class PasswordManagerLifecycleHelperTest {
     private static final long sFakeNativePointer = 96024;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private PasswordManagerLifecycleHelper.Natives mBridgeJniMock;
 
     @Before
     public void setUp() {
-        mJniMocker.mock(PasswordManagerLifecycleHelperJni.TEST_HOOKS, mBridgeJniMock);
+        PasswordManagerLifecycleHelperJni.setInstanceForTesting(mBridgeJniMock);
     }
 
     @Test

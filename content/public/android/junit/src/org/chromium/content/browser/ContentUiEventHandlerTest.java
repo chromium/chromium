@@ -15,7 +15,6 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -24,7 +23,6 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImplJni;
 import org.chromium.content_public.browser.NavigationController;
@@ -41,15 +39,14 @@ public class ContentUiEventHandlerTest {
     @Mock private NavigationController mNavigationController;
     @Mock private WebContentsImpl.Natives mWebContentsJniMock;
     @Mock private ContentUiEventHandler.Natives mContentUiEventHandlerJniMock;
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private ContentUiEventHandler mContentUiEventHandler;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebContentsImplJni.TEST_HOOKS, mWebContentsJniMock);
-        mJniMocker.mock(ContentUiEventHandlerJni.TEST_HOOKS, mContentUiEventHandlerJniMock);
+        WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
+        ContentUiEventHandlerJni.setInstanceForTesting(mContentUiEventHandlerJniMock);
 
         WebContentsImpl webContentsImpl =
                 spy(WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));

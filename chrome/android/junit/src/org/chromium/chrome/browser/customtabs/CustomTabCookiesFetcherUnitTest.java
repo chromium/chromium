@@ -8,7 +8,6 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,7 +20,6 @@ import org.robolectric.util.TempDirectory;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -35,7 +33,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
 public class CustomTabCookiesFetcherUnitTest {
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Mock private ProfileProvider mProfileProvider;
 
@@ -49,7 +46,7 @@ public class CustomTabCookiesFetcherUnitTest {
 
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
 
-        jniMocker.mock(CookiesFetcherJni.TEST_HOOKS, mCookiesFetcherJni);
+        CookiesFetcherJni.setInstanceForTesting(mCookiesFetcherJni);
 
         TempDirectory tmpDir = new TempDirectory();
         String cookieFileDir = tmpDir.create("foo").toAbsolutePath().toString();

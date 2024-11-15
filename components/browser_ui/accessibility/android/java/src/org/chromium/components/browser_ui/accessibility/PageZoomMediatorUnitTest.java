@@ -14,7 +14,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -22,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.HostZoomMap;
@@ -60,8 +58,6 @@ public class PageZoomMediatorUnitTest {
             "Failure in seekbar value method. Expected 1 JNI call but none occurred.";
     private static final String RESET_ZOOM_FAILURE = "Failure to reset to the default zoom level.";
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private WebContents mWebContentsMock;
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
@@ -73,7 +69,7 @@ public class PageZoomMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
+        HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapMock);
 
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
         mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, 0.0);

@@ -34,7 +34,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -58,7 +57,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
@@ -142,8 +140,6 @@ public class ReadAloudControllerUnitTest {
     private ReadAloudController mController2;
     private Activity mActivity;
     private Locale mDefaultLocale;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private FakeTranslateBridgeJni mFakeTranslateBridge;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
@@ -242,10 +238,10 @@ public class ReadAloudControllerUnitTest {
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
-        mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
-        mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mReadAloudPrefsNatives);
-        mJniMocker.mock(ReadAloudFeaturesJni.TEST_HOOKS, mReadAloudFeaturesNatives);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        TranslateBridgeJni.setInstanceForTesting(mFakeTranslateBridge);
+        ReadAloudPrefsJni.setInstanceForTesting(mReadAloudPrefsNatives);
+        ReadAloudFeaturesJni.setInstanceForTesting(mReadAloudFeaturesNatives);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         doReturn(mPrefService).when(mUserPrefsNatives).get(any());
         when(mPrefService.getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)).thenReturn(true);
         mTabModelSelector =

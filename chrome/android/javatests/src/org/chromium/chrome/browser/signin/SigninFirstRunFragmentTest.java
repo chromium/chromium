@@ -191,7 +191,7 @@ public class SigninFirstRunFragmentTest {
         mFakeEnterpriseInfo.initialize(
                 new OwnedState(/* isDeviceOwned= */ false, /* isProfileOwned= */ false));
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
-        FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
+        FirstRunUtilsJni.setInstanceForTesting(mFirstRunUtils);
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
 
         ThreadUtils.runOnUiThreadBlocking(

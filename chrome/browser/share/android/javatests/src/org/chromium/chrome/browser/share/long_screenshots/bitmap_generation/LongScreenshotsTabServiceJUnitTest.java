@@ -19,14 +19,12 @@ import android.graphics.Rect;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Unit tests for the Long Screenshot Tab Service Test. */
@@ -34,8 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 @Config(manifest = Config.NONE)
 public class LongScreenshotsTabServiceJUnitTest {
     public static final long FAKE_NATIVE_ADDR = 345L;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Tab mTab;
     private LongScreenshotsTabService mLongScreenshotsTabService;
@@ -71,7 +67,7 @@ public class LongScreenshotsTabServiceJUnitTest {
     public void setUp() {
         initMocks(this);
         when(mTab.getWebContents()).thenReturn(null);
-        mJniMocker.mock(LongScreenshotsTabServiceJni.TEST_HOOKS, mLongScreenshotsTabServiceJniMock);
+        LongScreenshotsTabServiceJni.setInstanceForTesting(mLongScreenshotsTabServiceJniMock);
         mProcessor = new TestCaptureProcessor();
         mLongScreenshotsTabService = new LongScreenshotsTabService(FAKE_NATIVE_ADDR);
         mLongScreenshotsTabService.setCaptureProcessor(mProcessor);

@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -31,8 +30,6 @@ public class WebSigninBridgeTest {
     private static final CoreAccountInfo CORE_ACCOUNT_INFO =
             CoreAccountInfo.createFromEmailAndGaiaId("user@domain.com", "gaia-id-user");
     private static final long NATIVE_WEB_SIGNIN_BRIDGE = 1000L;
-
-    @Rule public final JniMocker mocker = new JniMocker();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -46,7 +43,7 @@ public class WebSigninBridgeTest {
 
     @Before
     public void setUp() {
-        mocker.mock(WebSigninBridgeJni.TEST_HOOKS, mNativeMock);
+        WebSigninBridgeJni.setInstanceForTesting(mNativeMock);
         when(mNativeMock.create(mProfileMock, CORE_ACCOUNT_INFO, mListenerMock))
                 .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
     }

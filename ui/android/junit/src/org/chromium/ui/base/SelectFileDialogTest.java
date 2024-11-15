@@ -926,7 +926,7 @@ public class SelectFileDialogTest {
 
     @Test
     public void testFilePathTasks() throws IOException {
-        FileUtilsJni.TEST_HOOKS.setInstanceForTesting(mFileUtilsMocks);
+        FileUtilsJni.setInstanceForTesting(mFileUtilsMocks);
         doReturn("/tmp/xyz.jpn").when(mFileUtilsMocks).getAbsoluteFilePath(any());
 
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);

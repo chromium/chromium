@@ -42,7 +42,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
@@ -78,7 +77,6 @@ public class AuxiliarySearchProviderTest {
     private static final String NEW_TAB_PAGE_URL = "chrome-native://newtab";
     private static final long FAKE_NATIVE_PROVIDER = 1;
 
-    public @Rule JniMocker mJniMocker = new JniMocker();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
@@ -98,10 +96,10 @@ public class AuxiliarySearchProviderTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(AuxiliarySearchBridgeJni.TEST_HOOKS, mMockAuxiliarySearchBridgeJni);
+        AuxiliarySearchBridgeJni.setInstanceForTesting(mMockAuxiliarySearchBridgeJni);
         doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
         when(mMockFaviconHelperJni.init()).thenReturn(1L);
-        mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mMockFaviconHelperJni);
+        FaviconHelperJni.setInstanceForTesting(mMockFaviconHelperJni);
 
         when(mContext.getResources()).thenReturn(mResources);
         mAuxiliarySearchProvider =

@@ -20,7 +20,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,7 +31,6 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -57,8 +55,6 @@ import org.chromium.url.GURL;
 public final class ShareButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     private Context mContext;
 
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
@@ -81,7 +77,7 @@ public final class ShareButtonControllerUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
-        mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         doReturn(mTab).when(mTabProvider).get();
         doReturn(mContext).when(mTab).getContext();

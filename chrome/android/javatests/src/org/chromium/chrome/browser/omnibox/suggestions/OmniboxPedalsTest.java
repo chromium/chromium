@@ -45,7 +45,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
@@ -93,7 +92,6 @@ public class OmniboxPedalsTest {
     public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock OmniboxActionJni mOmniboxActionJni;
 
     private OmniboxTestUtils mOmniboxUtils;
@@ -111,7 +109,7 @@ public class OmniboxPedalsTest {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         sActivityTestRule.loadUrl("about:blank");
         mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
-        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, mOmniboxActionJni);
+        OmniboxActionJni.setInstanceForTesting(mOmniboxActionJni);
     }
 
     @After
@@ -129,8 +127,8 @@ public class OmniboxPedalsTest {
                                 .getActivity()
                                 .getModalDialogManager()
                                 .dismissAllDialogs(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
-        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
+        AutocompleteControllerJni.setInstanceForTesting(null);
+        OmniboxActionJni.setInstanceForTesting(null);
     }
 
     /**

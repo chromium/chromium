@@ -33,7 +33,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -44,7 +43,6 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillErrorDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mMocker = new JniMocker();
 
     private static final String ERROR_DIALOG_TITLE = "title";
     private static final String ERROR_DIALOG_DESCRIPTION = "description";
@@ -67,7 +65,7 @@ public class AutofillErrorDialogBridgeTest {
                         NATIVE_AUTOFILL_ERROR_DIALOG_VIEW,
                         mModalDialogManager,
                         ApplicationProvider.getApplicationContext());
-        mMocker.mock(AutofillErrorDialogBridgeJni.TEST_HOOKS, mNativeMock);
+        AutofillErrorDialogBridgeJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

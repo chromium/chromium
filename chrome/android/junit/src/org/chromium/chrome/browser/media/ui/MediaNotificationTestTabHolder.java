@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -48,7 +47,7 @@ public class MediaNotificationTestTabHolder {
         }
     }
 
-    public MediaNotificationTestTabHolder(int tabId, String url, String title, JniMocker mocker) {
+    public MediaNotificationTestTabHolder(int tabId, String url, String title) {
         MockitoAnnotations.initMocks(this);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);

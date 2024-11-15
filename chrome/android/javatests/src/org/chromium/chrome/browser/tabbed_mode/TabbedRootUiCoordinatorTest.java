@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -51,7 +50,6 @@ public class TabbedRootUiCoordinatorTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule public JniMocker mocker = new JniMocker();
     @Rule public MockitoRule mockito = MockitoJUnit.rule();
 
     private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
@@ -61,7 +59,7 @@ public class TabbedRootUiCoordinatorTest {
 
     @Before
     public void setUp() {
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mPrivacySandboxBridgeJni);
+        PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

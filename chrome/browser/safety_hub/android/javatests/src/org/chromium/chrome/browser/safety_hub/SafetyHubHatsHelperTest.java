@@ -27,7 +27,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -56,8 +55,6 @@ import java.util.concurrent.ExecutionException;
 public class SafetyHubHatsHelperTest {
     private static final String TEST_URL1 = "https://www.example.com/";
     private static final String TEST_URL2 = "https://www.google.com/";
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -81,7 +78,7 @@ public class SafetyHubHatsHelperTest {
     public void setUp() throws ExecutionException {
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
 
-        mJniMocker.mock(SafetyHubHatsBridgeJni.TEST_HOOKS, mSafetyHubHatsBridgeNatives);
+        SafetyHubHatsBridgeJni.setInstanceForTesting(mSafetyHubHatsBridgeNatives);
         doReturn(true)
                 .when(mSafetyHubHatsBridgeNatives)
                 .triggerHatsSurveyIfEnabled(any(), any(), any(), anyBoolean(), any());
@@ -91,16 +88,15 @@ public class SafetyHubHatsHelperTest {
         updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
         doReturn(updateStatus).when(mSafetyHubFetchService).getUpdateStatus();
 
-        mJniMocker.mock(UnusedSitePermissionsBridgeJni.TEST_HOOKS, mUnusedPermissionsBridge);
-        mJniMocker.mock(
-                NotificationPermissionReviewBridgeJni.TEST_HOOKS,
+        UnusedSitePermissionsBridgeJni.setInstanceForTesting(mUnusedPermissionsBridge);
+        NotificationPermissionReviewBridgeJni.setInstanceForTesting(
                 mNotificationPermissionReviewBridge);
 
         mUnusedPermissionsBridge.setPermissionsDataForReview(new PermissionsData[] {});
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {});
 
-        mJniMocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingBridgeNativeMock);
+        SafeBrowsingBridgeJni.setInstanceForTesting(mSafeBrowsingBridgeNativeMock);
         doReturn(SafeBrowsingState.NO_SAFE_BROWSING)
                 .when(mSafeBrowsingBridgeNativeMock)
                 .getSafeBrowsingState(mProfile);

@@ -34,7 +34,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.account_storage_notice.AccountStorageNoticeCoordinator.CloseReason;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -71,8 +70,6 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private AccountStorageNoticeCoordinator.Natives mJniMock;
 
     private static final long NATIVE_OBSERVER_PTR = 42;
@@ -84,7 +81,7 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(AccountStorageNoticeCoordinatorJni.TEST_HOOKS, mJniMock);
+        AccountStorageNoticeCoordinatorJni.setInstanceForTesting(mJniMock);
         mActivityRule.startMainActivityOnBlankPage();
     }
 

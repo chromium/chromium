@@ -51,7 +51,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -129,8 +128,6 @@ public class Fido2CredentialRequestTest {
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
-
-    @Rule public JniMocker mMocker = new JniMocker();
 
     @Mock ClientDataJsonImpl.Natives mClientDataJsonImplMock;
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
@@ -506,8 +503,8 @@ public class Fido2CredentialRequestTest {
 
         MockitoAnnotations.initMocks(this);
         mTestAuthenticatorImplJni = new TestAuthenticatorImplJni(mCallback);
-        mMocker.mock(InternalAuthenticatorJni.TEST_HOOKS, mTestAuthenticatorImplJni);
-        mMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
+        InternalAuthenticatorJni.setInstanceForTesting(mTestAuthenticatorImplJni);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
@@ -1787,7 +1784,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
         String clientDataJson = "520";
-        Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
+        Fido2ApiTestHelper.mockClientDataJson(clientDataJson);
 
         mFrameHost.setLastCommittedUrl(new GURL("https://www.chromium.org/pay"));
 
@@ -1817,7 +1814,7 @@ public class Fido2CredentialRequestTest {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
-        Fido2ApiTestHelper.mockClientDataJson(mMocker, null);
+        Fido2ApiTestHelper.mockClientDataJson(null);
 
         mFrameHost.setLastCommittedUrl(new GURL("https://www.chromium.org/pay"));
 
@@ -1849,7 +1846,7 @@ public class Fido2CredentialRequestTest {
         // ClientDataJsonImplJni is mocked directly instead of using
         // Fido2ApiTestHelper.mockClientDataJson so that it can be used to verify the call arguments
         // below.
-        mMocker.mock(ClientDataJsonImplJni.TEST_HOOKS, mClientDataJsonImplMock);
+        ClientDataJsonImplJni.setInstanceForTesting(mClientDataJsonImplMock);
 
         PaymentOptions payment = Fido2ApiTestHelper.createPaymentOptions();
         mRequestOptions.challenge = new byte[3];
@@ -2517,7 +2514,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
         String clientDataJson = "520";
-        Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
+        Fido2ApiTestHelper.mockClientDataJson(clientDataJson);
 
         mFrameHost.setLastCommittedUrl(new GURL("https://www.example.com"));
 
@@ -2547,7 +2544,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
 
         String clientDataJson = "520";
-        Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
+        Fido2ApiTestHelper.mockClientDataJson(clientDataJson);
 
         mFrameHost.setLastCommittedUrl(new GURL("https://www.example.com"));
 

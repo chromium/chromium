@@ -28,12 +28,6 @@ public class WebFeedBridge {
     public static final int CHANGE_REASON_RECOMMENDATION_WEB_PAGE_ACCELERATOR = 6;
     public static final int CHANGE_REASON_SINGLE_WEB_FEED = 7;
 
-    // Access to JNI test hooks for other libraries. This can go away once more Feed code is
-    // migrated to chrome/browser/feed.
-    public static org.jni_zero.JniStaticTestMocker getTestHooksForTesting() {
-        return WebFeedBridgeJni.TEST_HOOKS;
-    }
-
     private WebFeedBridge() {}
 
     /** Container for past visit counts. */

@@ -10,7 +10,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,17 +20,16 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 
-/** Unit test for {@link NetworkStatusListenerAndroid} and {@link BackgroundNetworkStatusListener}. */
+/**
+ * Unit test for {@link NetworkStatusListenerAndroid} and {@link BackgroundNetworkStatusListener}.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NetworkStatusListenerAndroidTest {
     private static final int NATIVE_PTR = 1;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private NetworkChangeNotifierAutoDetect mAutoDetect;
     @Mock NetworkChangeNotifierAutoDetect.NetworkState mNetworkState;
     @Mock private NetworkStatusListenerAndroid.Natives mNativeMock;
@@ -60,7 +58,7 @@ public class NetworkStatusListenerAndroidTest {
         MockitoAnnotations.initMocks(this);
         BackgroundNetworkStatusListener.setAutoDetectFactory(
                 new TestAutoDetectFactory(mAutoDetect));
-        mJniMocker.mock(NetworkStatusListenerAndroidJni.TEST_HOOKS, mNativeMock);
+        NetworkStatusListenerAndroidJni.setInstanceForTesting(mNativeMock);
     }
 
     private void runBackgroundThread() {

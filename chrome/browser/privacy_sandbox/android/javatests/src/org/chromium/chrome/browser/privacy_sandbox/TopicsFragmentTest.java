@@ -45,7 +45,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -82,15 +81,13 @@ public final class TopicsFragmentTest {
     public SettingsActivityTestRule<TopicsFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(TopicsFragment.class);
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
 
         mUserActionTester = new UserActionTester();
     }
@@ -443,7 +440,7 @@ public final class TopicsFragmentTest {
     @SmallTest
     public void testTopicsIconsExist() {
         var activity = mSettingsActivityTestRule.startSettingsActivity();
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, new PrivacySandboxBridgeJni());
+        PrivacySandboxBridgeJni.setInstanceForTesting(new PrivacySandboxBridgeJni());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrivacySandboxBridge privacySandboxBridge =

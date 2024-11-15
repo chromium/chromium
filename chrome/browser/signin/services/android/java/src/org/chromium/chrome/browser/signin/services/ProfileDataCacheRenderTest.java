@@ -38,7 +38,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -84,8 +83,6 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Rule public final JniMocker mocker = new JniMocker();
-
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -99,7 +96,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
 
     @Before
     public void setUp() {
-        mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
+        IdentityManagerJni.setInstanceForTesting(mIdentityManagerNativeMock);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

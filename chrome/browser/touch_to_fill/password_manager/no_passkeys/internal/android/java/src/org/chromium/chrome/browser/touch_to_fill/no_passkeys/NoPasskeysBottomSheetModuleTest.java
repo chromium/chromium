@@ -37,7 +37,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.lang.ref.WeakReference;
@@ -51,7 +50,6 @@ public class NoPasskeysBottomSheetModuleTest {
     private static final String TEST_ORIGIN = "origin.com";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Mock private NoPasskeysBottomSheetBridge.Natives mNativeMock;
     @Mock private BottomSheetController mBottomSheetController;
@@ -65,7 +63,7 @@ public class NoPasskeysBottomSheetModuleTest {
 
     @Before
     public void setUp() {
-        jniMocker.mock(NoPasskeysBottomSheetBridgeJni.TEST_HOOKS, mNativeMock);
+        NoPasskeysBottomSheetBridgeJni.setInstanceForTesting(mNativeMock);
         doReturn(true)
                 .when(mBottomSheetController)
                 .requestShowContent(any(NoPasskeysBottomSheetContent.class), anyBoolean());

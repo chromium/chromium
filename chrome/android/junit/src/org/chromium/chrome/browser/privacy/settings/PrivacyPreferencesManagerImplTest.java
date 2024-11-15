@@ -132,7 +132,7 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
                 mock(PrivacyPreferencesManagerImpl.Natives.class);
         when(preferenceManagerNatives.isMetricsReportingDisabledByPolicy()).thenReturn(false);
-        PrivacyPreferencesManagerImplJni.TEST_HOOKS.setInstanceForTesting(preferenceManagerNatives);
+        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
 
         // Simulate native initialization notification call.
         preferenceManager.onNativeInitialized();
@@ -156,7 +156,7 @@ public class PrivacyPreferencesManagerImplTest {
         PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
                 mock(PrivacyPreferencesManagerImpl.Natives.class);
         when(preferenceManagerNatives.isMetricsReportingDisabledByPolicy()).thenReturn(true);
-        PrivacyPreferencesManagerImplJni.TEST_HOOKS.setInstanceForTesting(preferenceManagerNatives);
+        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
 
         // Simulate native initialization notification call.
         preferenceManager.onNativeInitialized();

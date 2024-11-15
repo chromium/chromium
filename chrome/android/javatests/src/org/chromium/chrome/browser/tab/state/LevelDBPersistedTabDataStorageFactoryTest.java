@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -36,8 +35,6 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule public JniMocker mMocker = new JniMocker();
-
     @Mock private Profile mProfile1;
 
     @Mock private Profile mProfile2;
@@ -48,7 +45,7 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         MockitoAnnotations.initMocks(this);
-        mMocker.mock(LevelDBPersistedDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
+        LevelDBPersistedDataStorageJni.setInstanceForTesting(mLevelDBPersistedTabDataStorage);
         doNothing()
                 .when(mLevelDBPersistedTabDataStorage)
                 .init(any(LevelDBPersistedDataStorage.class), any(BrowserContextHandle.class));

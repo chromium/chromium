@@ -18,7 +18,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,7 +32,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -82,7 +80,6 @@ import java.util.concurrent.atomic.AtomicInteger;
     ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
 })
 public class TabPersistentStoreIntegrationTest {
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
@@ -145,10 +142,10 @@ public class TabPersistentStoreIntegrationTest {
         mTabModelSelector = mOrchestrator.getTabModelSelector();
         mTabPersistentStore = mOrchestrator.getTabPersistentStore();
 
-        jniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridgeJni);
-        jniMocker.mock(RecentlyClosedBridgeJni.TEST_HOOKS, mRecentlyClosedBridgeJni);
-        jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
-        TabTestUtils.mockTabJni(jniMocker);
+        TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
+        RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
+        PersistedTabDataJni.setInstanceForTesting(mPersistedTabDataJni);
+        TabTestUtils.mockTabJni();
         mOrchestrator.onNativeLibraryReady(mTabContentManager);
     }
 

@@ -10,7 +10,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -18,19 +17,17 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 
 /** Tests for {@link TraceEvent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TraceEventTest {
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock TraceEvent.Natives mNativeMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(TraceEventJni.TEST_HOOKS, mNativeMock);
+        TraceEventJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.ui.MotionEventUtils;
 
@@ -38,7 +37,6 @@ import org.chromium.ui.MotionEventUtils;
 @Batch(Batch.UNIT_TESTS)
 public class EventForwarderDeviceTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock EventForwarder.Natives mNativeMock;
 
@@ -46,7 +44,7 @@ public class EventForwarderDeviceTest {
 
     @Before
     public void setUp() {
-        mocker.mock(EventForwarderJni.TEST_HOOKS, mNativeMock);
+        EventForwarderJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

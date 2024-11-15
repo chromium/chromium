@@ -25,7 +25,6 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -48,8 +47,6 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public final JniMocker mocker = new JniMocker();
-
     @Mock private ProfileOAuth2TokenServiceDelegate.Natives mNativeMock;
 
     @Spy
@@ -59,7 +56,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Before
     public void setUp() {
-        mocker.mock(ProfileOAuth2TokenServiceDelegateJni.TEST_HOOKS, mNativeMock);
+        ProfileOAuth2TokenServiceDelegateJni.setInstanceForTesting(mNativeMock);
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
         mDelegate = new ProfileOAuth2TokenServiceDelegate(NATIVE_DELEGATE);
     }

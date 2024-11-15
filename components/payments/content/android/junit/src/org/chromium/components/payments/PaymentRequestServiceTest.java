@@ -22,7 +22,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -56,7 +55,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private List<PaymentApp> mNotifiedPendingApps;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private NavigationController mNavigationController;
     @Mock private WebContentsImpl.Natives mWebContentsJniMock;
@@ -87,7 +85,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(WebContentsImplJni.TEST_HOOKS, mWebContentsJniMock);
+        WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
         WebContentsImpl webContentsImpl =
                 Mockito.spy(
                         WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
@@ -97,7 +95,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         mPaymentRequestWebContentsData = new PaymentRequestWebContentsData(webContentsImpl);
         PaymentRequestWebContentsData.setInstanceForTesting(mPaymentRequestWebContentsData);
 
-        mJniMocker.mock(PaymentRequestWebContentsDataJni.TEST_HOOKS, mWebContentsDataJniMock);
+        PaymentRequestWebContentsDataJni.setInstanceForTesting(mWebContentsDataJniMock);
         Mockito.doNothing().when(mWebContentsDataJniMock).recordActivationlessShow(Mockito.any());
         Mockito.doReturn(false).when(mWebContentsDataJniMock).hadActivationlessShow(Mockito.any());
 
@@ -806,7 +804,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Test
     @Feature({"Payments"})
     public void testActivationlessShow() {
-        mJniMocker.mock(PaymentRequestWebContentsDataJni.TEST_HOOKS, mWebContentsDataJniMock);
+        PaymentRequestWebContentsDataJni.setInstanceForTesting(mWebContentsDataJniMock);
         // The first show() with no user gesture is allowed.
         mIsUserGestureShow = false;
         PaymentRequestService service = defaultBuilder().setOptions(new PaymentOptions()).build();

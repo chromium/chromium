@@ -31,7 +31,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -45,7 +44,6 @@ import org.robolectric.shadows.ShadowApplication;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -98,8 +96,6 @@ public class Fido2CredentialRequestRobolectricTest {
     @Mock AuthenticationContextProvider mAuthenticationContextProviderMock;
     @Mock Fido2GetCredentialsComparator mGetCredentialsComparator;
 
-    @Rule public JniMocker mMocker = new JniMocker();
-
     @Before
     public void setUp() throws Exception {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
@@ -125,7 +121,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mBrowserOptions.putString("com.android.chrome.CHANNEL", TEST_CHANNEL_EXTRA);
         mBrowserOptions.putBoolean("com.android.chrome.INCOGNITO", TEST_INCOGNITO_EXTRA);
 
-        mMocker.mock(GURLUtilsJni.TEST_HOOKS, mGURLUtilsJniMock);
+        GURLUtilsJni.setInstanceForTesting(mGURLUtilsJniMock);
         Mockito.when(mGURLUtilsJniMock.getOrigin(any(String.class)))
                 .thenReturn("https://subdomain.example.test:443");
 
@@ -148,8 +144,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 .thenReturn(mFrameHost);
         mRequest = new Fido2CredentialRequest(mAuthenticationContextProviderMock);
 
-        Fido2ApiTestHelper.mockFido2CredentialRequestJni(mMocker);
-        Fido2ApiTestHelper.mockClientDataJson(mMocker, TEST_CLIENT_DATA_JSON);
+        Fido2ApiTestHelper.mockFido2CredentialRequestJni();
+        Fido2ApiTestHelper.mockClientDataJson(TEST_CLIENT_DATA_JSON);
 
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
 

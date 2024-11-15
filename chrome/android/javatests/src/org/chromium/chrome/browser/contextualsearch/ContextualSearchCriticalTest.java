@@ -14,7 +14,6 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -28,7 +27,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -44,7 +42,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchCriticalTest extends ContextualSearchInstrumentationBase {
-    @Rule public JniMocker mocker = new JniMocker();
 
     // Needed to avoid issues on Release builds where Natives is made final and can not be Spy'd
     // below.
@@ -59,7 +56,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
 
         mTestPage = "/chrome/test/data/android/contextualsearch/tap_test.html";
         mContextualSearchManagerNatives = Mockito.spy(new ContextualSearchManagerJni());
-        mocker.mock(ContextualSearchManagerJni.TEST_HOOKS, mContextualSearchManagerNatives);
+        ContextualSearchManagerJni.setInstanceForTesting(mContextualSearchManagerNatives);
         super.setUp();
     }
 

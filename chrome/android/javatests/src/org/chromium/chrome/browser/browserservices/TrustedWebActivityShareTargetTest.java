@@ -26,7 +26,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,8 +64,6 @@ public class TrustedWebActivityShareTargetTest {
 
     @Rule public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String SHARE_TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final String PACKAGE_NAME =
@@ -84,7 +81,7 @@ public class TrustedWebActivityShareTargetTest {
 
     @Before
     public void setUp() throws Exception {
-        mJniMocker.mock(WebApkPostShareTargetNavigatorJni.TEST_HOOKS, mPostNavigatorNatives);
+        WebApkPostShareTargetNavigatorJni.setInstanceForTesting(mPostNavigatorNatives);
         mCustomTabActivityTestRule.setFinishActivity(true);
 
         LibraryLoader.getInstance().ensureInitialized();

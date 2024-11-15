@@ -23,7 +23,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -38,8 +37,6 @@ public class CookiesFetcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
-
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Mock private Profile mProfile1;
     @Mock private Profile mIncognitoProfile1;
@@ -60,14 +57,14 @@ public class CookiesFetcherTest {
         Mockito.when(mIncognitoProfile1.getOriginalProfile()).thenReturn(mProfile1);
         Mockito.when(mIncognitoProfile1.isPrimaryOtrProfile()).thenReturn(true);
 
-        jniMocker.mock(CookiesFetcherJni.TEST_HOOKS, mCookiesFetcherJni);
+        CookiesFetcherJni.setInstanceForTesting(mCookiesFetcherJni);
 
         TempDirectory tmpDir = new TempDirectory();
         String cookieFileDir = tmpDir.create("foo").toAbsolutePath().toString();
         Mockito.when(mCookiesFetcherJni.getCookieFileDirectory(Mockito.any()))
                 .thenReturn(cookieFileDir);
 
-        jniMocker.mock(ImportantFileWriterAndroidJni.TEST_HOOKS, mImportantFileWriterJni);
+        ImportantFileWriterAndroidJni.setInstanceForTesting(mImportantFileWriterJni);
         Mockito.when(
                         mImportantFileWriterJni.writeFileAtomically(
                                 Mockito.anyString(), Mockito.any(byte[].class)))
