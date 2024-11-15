@@ -27,7 +27,7 @@
 - (void)start {
   _viewController = [[AIPrototypingViewController alloc] init];
   _mediator = [[AIPrototypingMediator alloc]
-      initWithWebState:self.browser->GetWebStateList()->GetActiveWebState()];
+      initWithWebStateList:self.browser->GetWebStateList()];
 
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;

@@ -11,6 +11,7 @@ namespace optimization_guide {
 namespace proto {
 class BlingPrototypingRequest;
 class StringValue;
+enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 }  // namespace proto
 }  // namespace optimization_guide
 
@@ -25,6 +26,11 @@ class StringValue;
 
 // Executes a prototyping request to an on-device model.
 - (void)executeOnDeviceQuery:(optimization_guide::proto::StringValue)request;
+
+// Executes a tab organization request with a given organization `strategy`.
+- (void)executeGroupTabsWithStrategy:
+    (optimization_guide::proto::
+         TabOrganizationRequest_TabOrganizationModelStrategy)strategy;
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end

@@ -16,6 +16,7 @@
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
+#import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"
 #endif
 
@@ -37,9 +38,15 @@ constexpr CGFloat kVerticalInset = 12;
 
 @property(nonatomic, strong) UIButton* serverSideSubmitButton;
 @property(nonatomic, strong) UIButton* onDeviceSubmitButton;
+@property(nonatomic, strong) UIButton* groupTabsButton;
 @property(nonatomic, strong) UITextField* queryField;
 @property(nonatomic, strong) UITextField* nameField;
+@property(nonatomic, strong) UIButton* groupingStrategyMenu;
 @property(nonatomic, strong) UITextView* responseContainer;
+
+// The currently selected strategy for tab grouping.
+@property(nonatomic, assign) optimization_guide::proto::
+    TabOrganizationRequest_TabOrganizationModelStrategy groupingStrategy;
 
 @end
 
@@ -75,6 +82,20 @@ constexpr CGFloat kVerticalInset = 12;
   UIView* nameFieldContainer = [self textFieldContainer];
   [nameFieldContainer addSubview:_nameField];
 
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  _groupingStrategy = optimization_guide::proto::
+      TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED;
+#endif
+  _groupingStrategyMenu = [UIButton buttonWithType:UIButtonTypeSystem];
+  _groupingStrategyMenu.layer.borderColor = [primaryColor CGColor];
+  _groupingStrategyMenu.layer.borderWidth = kBorderWidth;
+  [_groupingStrategyMenu setTitle:@"Grouping strategy"
+                         forState:UIControlStateNormal];
+  [_groupingStrategyMenu setTitleColor:primaryColor
+                              forState:UIControlStateNormal];
+  _groupingStrategyMenu.showsMenuAsPrimaryAction = YES;
+  _groupingStrategyMenu.menu = [self createTabGroupingStrategyMenu];
+
   _serverSideSubmitButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _serverSideSubmitButton.layer.borderColor = [primaryColor CGColor];
   _serverSideSubmitButton.layer.borderWidth = kBorderWidth;
@@ -99,9 +120,20 @@ constexpr CGFloat kVerticalInset = 12;
                             action:@selector(onDeviceSubmitButtonPressed:)
                   forControlEvents:UIControlEventTouchUpInside];
 
+  _groupTabsButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _groupTabsButton.layer.borderColor = [primaryColor CGColor];
+  _groupTabsButton.layer.borderWidth = kBorderWidth;
+  [_groupTabsButton setTitle:@"Group tabs" forState:UIControlStateNormal];
+  [_groupTabsButton setTitleColor:primaryColor forState:UIControlStateNormal];
+  [_groupTabsButton addTarget:self
+                       action:@selector(onGroupTabsButtonPressed:)
+             forControlEvents:UIControlEventTouchUpInside];
+
   UIStackView* buttonStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        _serverSideSubmitButton, _onDeviceSubmitButton
+        _serverSideSubmitButton,
+        _onDeviceSubmitButton,
+        _groupTabsButton,
       ]];
   buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
   buttonStackView.axis = UILayoutConstraintAxisHorizontal;
@@ -118,8 +150,8 @@ constexpr CGFloat kVerticalInset = 12;
   _responseContainer.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    label, queryFieldContainer, nameFieldContainer, _responseContainer,
-    buttonStackView
+    label, queryFieldContainer, nameFieldContainer, _groupingStrategyMenu,
+    _responseContainer, buttonStackView
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -180,6 +212,12 @@ constexpr CGFloat kVerticalInset = 12;
 #endif
 }
 
+- (void)onGroupTabsButtonPressed:(UIButton*)button {
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  [self.mutator executeGroupTabsWithStrategy:self.groupingStrategy];
+#endif
+}
+
 #pragma mark - AIPrototypingConsumer
 
 - (void)updateQueryResult:(NSString*)result {
@@ -198,6 +236,66 @@ constexpr CGFloat kVerticalInset = 12;
       [[UIColor colorNamed:kTextPrimaryColor] CGColor];
   container.layer.borderWidth = kBorderWidth;
   return container;
+}
+
+// Creates menu for tab grouping strategy.
+- (UIMenu*)createTabGroupingStrategyMenu {
+  NSMutableArray<UIAction*>* strategies = [NSMutableArray array];
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  UIAction* topicBasedStrategy = [UIAction
+      actionWithTitle:@"Topic based"
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                self.groupingStrategy = optimization_guide::proto::
+                    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED;
+                self.groupingStrategyMenu.menu =
+                    [self createTabGroupingStrategyMenu];
+              }];
+  [strategies addObject:topicBasedStrategy];
+  UIAction* taskBasedStrategy = [UIAction
+      actionWithTitle:@"Task based"
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                self.groupingStrategy = optimization_guide::proto::
+                    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED;
+                self.groupingStrategyMenu.menu =
+                    [self createTabGroupingStrategyMenu];
+              }];
+  [strategies addObject:taskBasedStrategy];
+  UIAction* domainBasedStrategy = [UIAction
+      actionWithTitle:@"Domain based"
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                self.groupingStrategy = optimization_guide::proto::
+                    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED;
+                self.groupingStrategyMenu.menu =
+                    [self createTabGroupingStrategyMenu];
+              }];
+  [strategies addObject:domainBasedStrategy];
+
+  switch (self.groupingStrategy) {
+    case optimization_guide::proto::
+        TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED:
+      topicBasedStrategy.state = UIMenuElementStateOn;
+      break;
+    case optimization_guide::proto::
+        TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED:
+      taskBasedStrategy.state = UIMenuElementStateOn;
+      break;
+    case optimization_guide::proto::
+        TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED:
+      domainBasedStrategy.state = UIMenuElementStateOn;
+      break;
+    default:
+      break;
+  }
+#endif
+
+  return [UIMenu menuWithTitle:@"Tab grouping strategy" children:strategies];
 }
 
 @end

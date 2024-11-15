@@ -6,22 +6,25 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #endif
 
 @implementation AIPrototypingMediator {
-  // The web state that triggered the menu.
-  base::WeakPtr<web::WebState> _webState;
-
+  raw_ptr<WebStateList> _webStateList;
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   // Service used to execute LLM queries.
   raw_ptr<OptimizationGuideService> _service;
@@ -32,13 +35,14 @@
 #endif
 }
 
-- (instancetype)initWithWebState:(web::WebState*)webState {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
-    _webState = webState->GetWeakPtr();
+    _webStateList = webStateList;
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
     _service = OptimizationGuideServiceFactory::GetForProfile(
-        ProfileIOS::FromBrowserState(_webState->GetBrowserState()));
+        ProfileIOS::FromBrowserState(
+            _webStateList->GetActiveWebState()->GetBrowserState()));
 
     [self startOnDeviceSession];
 #endif
@@ -76,6 +80,38 @@
                 result) {
             [weakSelf onDeviceModelExecuteResponse:std::move(result)];
           })));
+}
+
+- (void)executeGroupTabsWithStrategy:
+    (optimization_guide::proto::
+         TabOrganizationRequest_TabOrganizationModelStrategy)strategy {
+  // Sets up tab grouping request.
+  optimization_guide::proto::TabOrganizationRequest request;
+  request.set_active_tab_id(
+      _webStateList->GetActiveWebState()->GetUniqueIdentifier().identifier());
+  request.set_allow_reorganizing_existing_groups(true);
+  request.set_model_strategy(strategy);
+
+  // Adds information from each open tab to the request.
+  // TODO(crbug.com/370768381): Add page context for each tab.
+  for (int index = 0; index < _webStateList->count(); ++index) {
+    web::WebState* webState = _webStateList->GetWebStateAt(index);
+    ::optimization_guide::proto::Tab* tab = request.add_tabs();
+    tab->set_tab_id(webState->GetUniqueIdentifier().identifier());
+    tab->set_title(base::UTF16ToUTF8(webState->GetTitle()));
+    tab->set_url(webState->GetVisibleURL().spec());
+  }
+
+  // Execute the request.
+  __weak __typeof(self) weakSelf = self;
+  _service->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kTabOrganization, request,
+      /*execution_timeout*/ std::nullopt,
+      base::BindOnce(
+          ^(optimization_guide::OptimizationGuideModelExecutionResult result,
+            std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
+            [weakSelf onGroupTabsResponse:std::move(result)];
+          }));
 }
 
 #pragma mark - Private
@@ -123,6 +159,52 @@
     response =
         base::StringPrintf("On-device model execution error: %d",
                            static_cast<int>(result.response.error().error()));
+  }
+
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)];
+}
+
+// Handles the response for a tab organization query.
+- (void)onGroupTabsResponse:
+    (optimization_guide::OptimizationGuideModelExecutionResult)result {
+  std::string response = "";
+
+  // The model doesn't necessarily group every tab, so track the tabs that have
+  // been grouped in order to later list the ungrouped tabs.
+  NSMutableSet<NSNumber*>* groupedTabIdentifiers = [NSMutableSet set];
+
+  auto parsed = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::TabOrganizationResponse>(
+      result.response.value());
+
+  // For each tab group, print its name and the information of each tab within
+  // it.
+  for (const optimization_guide::proto::TabGroup& tab_group :
+       parsed->tab_groups()) {
+    response +=
+        base::StringPrintf("Group name: %s\n", tab_group.label().c_str());
+
+    for (const optimization_guide::proto::Tab& tab : tab_group.tabs()) {
+      response += base::StringPrintf("- %s (%s)\n", tab.title().c_str(),
+                                     tab.url().c_str());
+      [groupedTabIdentifiers addObject:[NSNumber numberWithInt:tab.tab_id()]];
+    }
+    response += "\n";
+  }
+
+  // Find the tabs that haven't been grouped, and print them under "Ungrouped
+  // tabs".
+  response += "\nUngrouped tabs:\n";
+  for (int index = 0; index < _webStateList->count(); ++index) {
+    web::WebState* webState = _webStateList->GetWebStateAt(index);
+    if (![groupedTabIdentifiers
+            containsObject:[NSNumber
+                               numberWithInt:webState->GetUniqueIdentifier()
+                                                 .identifier()]]) {
+      response += base::StringPrintf(
+          "- %s (%s)\n", base::UTF16ToUTF8(webState->GetTitle()).c_str(),
+          webState->GetVisibleURL().spec().c_str());
+    }
   }
 
   [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)];

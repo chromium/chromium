@@ -11,9 +11,7 @@
 
 @protocol AIPrototypingConsumer;
 
-namespace web {
-class WebState;
-}
+class WebStateList;
 
 // The mediator for the AI prototyping menu.
 @interface AIPrototypingMediator : NSObject <AIPrototypingMutator>
@@ -21,7 +19,7 @@ class WebState;
 // The consumer used to interact with the view controller.
 @property(nonatomic, weak) id<AIPrototypingConsumer> consumer;
 
-- (instancetype)initWithWebState:(web::WebState*)webState
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
