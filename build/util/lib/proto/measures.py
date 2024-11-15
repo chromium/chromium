@@ -56,6 +56,12 @@ def time_consumption(*name_pieces: str) -> TimeConsumption:
   return _register(TimeConsumption(_create_name(*name_pieces)))
 
 
+def tag(*args: str) -> None:
+  """Adds a tag to the Metric to tag the final results; see Metric for details.
+  """
+  _metric.tag(*args)
+
+
 def clear() -> None:
   """Clears all the registered Measures."""
   _metric.clear()

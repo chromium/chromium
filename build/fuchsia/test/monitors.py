@@ -15,7 +15,8 @@ PROTO_DIR = os.path.abspath(
 if os.path.isdir(PROTO_DIR):
     sys.path.append(PROTO_DIR)
     # pylint: disable=import-error, unused-import
-    from measures import average, count, data_points, dump, time_consumption
+    from measures import average, count, data_points, dump, tag, \
+            time_consumption
 else:
 
     class Dummy(AbstractContextManager):
@@ -57,3 +58,6 @@ else:
 
     def dump(*_) -> None:
         """Dummy implementation of measures.dump."""
+
+    def tag(*_) -> None:
+        """Dummy implementation of measures.tag."""

@@ -183,7 +183,10 @@ if __name__ == '__main__':
         # command line flags.
         logging.warning('Chrome version %s %s', version.chrome_version_str(),
                         version.git_revision())
-        logging.warning('Fuchsia build info %s', get_build_info())
+        build_info = get_build_info()
+        logging.warning('Fuchsia build info %s', build_info)
+        monitors.tag(version.chrome_version_str(), build_info.version,
+                     version.chrome_version_str() + '/' + build_info.version)
     # Setting a temporary isolate daemon dir and share it with the webpage
     # runner.
     with StartProcess(server.start, [HTTP_SERVER_PORT], True), \
