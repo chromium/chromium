@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
@@ -99,6 +98,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "Flaky, crbug.com/40757167")
     public void testPrefetchFailoverRequestMadeAfterOpen() throws Exception {
         simulateSlowResolveSearch("states");
 
@@ -124,6 +124,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "Flaky, crbug.com/40757167")
     // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
     public void testResolveDisablePreload() throws Exception {
         simulateSlowResolveSearch("intelligence");
@@ -366,6 +367,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "Flaky, crbug.com/40757167")
     public void testChainedSearchContentVisibility() throws Exception {
         // Chained searches are tap-triggered very close to existing tap-triggered searches, which
         // we refer to as tap-near.
@@ -401,6 +403,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "Flaky, crbug.com/40757167")
     public void testSeparateSearchContentVisibility() throws Exception {
         // Chained searches are tap-triggered very close to existing tap-triggered searches, which
         // we refer to as tap-near.
@@ -438,6 +441,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "Flaky, crbug.com/40757167")
     public void testTapCloseRemovedFromHistory() throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
         simulateResolveSearch("search");
@@ -486,8 +490,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // TODO(crbug.com/369556626): Flaky on automotive.
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisabledTest(message = "Flaky, crbug.com/40757167")
     public void testChainedTapsRemovedFromHistory() throws Exception {
         // Make sure we use tap for the simulateResolveSearch since only tap chains.
         // Simulate a resolving search and make sure a URL was loaded.
