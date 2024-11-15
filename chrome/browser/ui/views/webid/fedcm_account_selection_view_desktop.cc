@@ -89,6 +89,7 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   }
   input_protector_->VisibilityChanged(true);
   GetDialogWidget()->Show();
+  account_selection_view_->DidShowWidget();
   // An active widget would steal the focus when displayed, this would lead
   // to some unexpected consequences. e.g.
   //   1. links/buttons from the web contents area would require two clicks,
@@ -1139,6 +1140,7 @@ void FedCmAccountSelectionView::HideDialogWidget() {
   // views::Widget from being shown during focus traversal.
   // TODO(crbug.com/40239995): fix the issue on Mac.
   GetDialogWidget()->Hide();
+  account_selection_view_->DidHideWidget();
   GetDialogWidget()->widget_delegate()->SetCanActivate(false);
   // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
   // match production.

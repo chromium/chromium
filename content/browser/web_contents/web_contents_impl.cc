@@ -2948,6 +2948,10 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
                                  : std::nullopt));
 }
 
+bool WebContentsImpl::ShouldIgnoreInputEventsForTesting() {
+  return ShouldIgnoreInputEvents();
+}
+
 bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() {
   return IsFullscreen() &&
          media_web_contents_observer_->HasActiveEffectivelyFullscreenVideo();

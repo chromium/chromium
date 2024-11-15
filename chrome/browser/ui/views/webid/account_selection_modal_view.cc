@@ -200,6 +200,7 @@ void AccountSelectionModalView::InitDialogWidget() {
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 
   widget->Show();
+  DidShowWidget();
   UpdateDialogPosition();
 
   // Add the widget observer, if available. It is null in tests.
@@ -916,10 +917,19 @@ void AccountSelectionModalView::CloseDialog() {
     dialog_widget_->RemoveObserver(widget_observer_);
   }
   dialog_widget_.reset();
+  scoped_ignore_input_events_.reset();
 }
 
 std::string AccountSelectionModalView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_label_->GetText());
+}
+
+void AccountSelectionModalView::DidShowWidget() {
+  scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents(std::nullopt);
+}
+
+void AccountSelectionModalView::DidHideWidget() {
+  scoped_ignore_input_events_.reset();
 }
 
 std::u16string AccountSelectionModalView::GetQueuedAnnouncementForTesting() {

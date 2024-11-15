@@ -1458,6 +1458,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       base::RepeatingCallback<bool(const blink::WebInputEvent&)>;
   [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents(
       std::optional<WebInputEventAuditCallback> audit_callback) = 0;
+  virtual bool ShouldIgnoreInputEventsForTesting() = 0;
 
   // Returns the group id for all audio streams that correspond to a single
   // WebContents. This can be used to determine if a AudioOutputStream was
