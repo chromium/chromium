@@ -647,42 +647,6 @@ void ProcessRequirement::GatherMetrics() {
         "FallbackValidationCategory",
         fallback_validation_category_has_expected_value);
   }
-
-  bool all_fields_have_expected_values =
-      team_id_has_expected_value &&
-      fallback_validation_category_has_expected_value;
-  if (CSOpsProvider()->SupportsValidationCategory()) {
-    all_fields_have_expected_values = all_fields_have_expected_values &&
-                                      validation_category_has_expected_value;
-  }
-
-  if (!all_fields_have_expected_values) {
-    // Use `DumpWithoutCrashing` to understand unexpected values, except in
-    // specific situations where "unexpected" values are expected.
-    if (fallback_validation_category == ValidationCategory::None &&
-        (team_id == base::unexpected(ENOENT) ||
-         team_id == base::unexpected(EINVAL))) {
-      // A build with Chrome branding that is unsigned or ad-hoc signed,
-      // such as for local development.
-    } else if (team_id_has_expected_value &&
-               fallback_validation_category ==
-                   ValidationCategory::Development) {
-      // A build with Chrome branding signed with the development identity.
-    } else if (validation_category == ValidationCategory::Platform) {
-      // Being reported as a platform binary indicates that
-      // `amfi_get_out_of_my_way=1` is set in the boot arguments.
-    } else {
-      SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "TeamIdentifier",
-                                StringForCrashKey(team_id));
-      SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "Category",
-                                StringForCrashKey(validation_category));
-      SCOPED_CRASH_KEY_STRING32(
-          "ProcessRequirement", "FallbackCategory",
-          StringForCrashKey(fallback_validation_category));
-
-      debug::DumpWithoutCrashing();
-    }
-  }
 #endif
 
   std::optional<ProcessRequirement> requirement;
