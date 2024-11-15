@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -141,16 +142,18 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     /** Update the logo based on default search engine changes. */
     @Override
     public void onTemplateURLServiceChanged() {
-        String currentSearchEngineKeyword =
+        TemplateUrl defaultSearchEngineTemplateUrl =
                 TemplateUrlServiceFactory.getForProfile(mProfile)
-                        .getDefaultSearchEngineTemplateUrl()
-                        .getKeyword();
-        if (mSearchEngineKeyword != null
-                && mSearchEngineKeyword.equals(currentSearchEngineKeyword)) {
-            return;
+                        .getDefaultSearchEngineTemplateUrl();
+        if (defaultSearchEngineTemplateUrl != null) {
+            String currentSearchEngineKeyword = defaultSearchEngineTemplateUrl.getKeyword();
+            if (mSearchEngineKeyword != null
+                    && mSearchEngineKeyword.equals(currentSearchEngineKeyword)) {
+                return;
+            }
+            mSearchEngineKeyword = currentSearchEngineKeyword;
         }
 
-        mSearchEngineKeyword = currentSearchEngineKeyword;
         mHasLogoLoadedForCurrentSearchEngine = false;
         loadSearchProviderLogoWithAnimation();
     }
