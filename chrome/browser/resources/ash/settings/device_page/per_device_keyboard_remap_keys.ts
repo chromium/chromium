@@ -768,6 +768,14 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         !this.hasFunctionKey;
   }
 
+  private getShortcutRowLabel(name: string): string {
+    return this.i18n('keyboardShortcutRowDescription', this.i18n(name));
+  }
+
+  private getActionRowLabel(name: string): string {
+    return this.i18n('keyboardActionRowDescription', this.i18n(name));
+  }
+
   private onPoliciesChanged(): void {
     if (this.shouldShowFkeys()) {
       this.f11KeyPref = {
