@@ -475,9 +475,9 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
     if (shared_texture_memory_.EndAccess(texture_, &end_access_desc) !=
         wgpu::Status::Success) {
+      // NOTE: Dawn ensures that `end_access_desc.fenceCount` is set to zero in
+      // the case of an error, so there is no need to early-out here.
       LOG(ERROR) << "Failed to end access for texture";
-      ResetStorage();
-      return;
     }
 
     wgpu::SharedFenceExportInfo export_info;
