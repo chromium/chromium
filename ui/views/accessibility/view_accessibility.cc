@@ -82,7 +82,10 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
 #endif
 
 ViewAccessibility::ViewAccessibility(View* view)
-    : view_(view), focused_virtual_child_(nullptr) {}
+    : view_(view), focused_virtual_child_(nullptr) {
+  data_.id = GetUniqueId();
+  CHECK(data_.id != ui::kInvalidAXNodeID);
+}
 
 ViewAccessibility::~ViewAccessibility() = default;
 
@@ -157,7 +160,6 @@ std::optional<size_t> ViewAccessibility::GetIndexOf(
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
-  data->id = GetUniqueId();
   data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
                            view_->GetClassName());
 
@@ -184,17 +186,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   // the attributes computed by `View::GetAccessibleNodeData` to ensure that the
   // cached attributes take precedence.
   views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
-
-  // TODO(crbug.com/325137417): This next check should be added to SetRole.
-  if (data->role == ax::mojom::Role::kAlertDialog) {
-    // When an alert dialog is used, indicate this with xml-roles. This helps
-    // JAWS understand that it's a dialog and not just an ordinary alert, even
-    // though xml-roles is normally used to expose ARIA roles in web content.
-    // Specifically, this enables the JAWS Insert+T read window title command.
-    // Note: if an alert has focusable descendants such as buttons, it should
-    // use kAlertDialog, not kAlert.
-    data->AddStringAttribute(ax::mojom::StringAttribute::kRole, "alertdialog");
-  }
 
   data->relative_bounds.bounds = gfx::RectF(view_->bounds());
 
@@ -404,6 +395,19 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   }
 
   data_.role = role;
+
+  if (data_.role == ax::mojom::Role::kAlertDialog) {
+    // When an alert dialog is used, indicate this with xml-roles. This helps
+    // JAWS understand that it's a dialog and not just an ordinary alert, even
+    // though xml-roles is normally used to expose ARIA roles in web content.
+    // Specifically, this enables the JAWS Insert+T read window title command.
+    // Note: if an alert has focusable descendants such as buttons, it should
+    // use kAlertDialog, not kAlert.
+    data_.AddStringAttribute(ax::mojom::StringAttribute::kRole, "alertdialog");
+  } else {
+    data_.RemoveStringAttribute(ax::mojom::StringAttribute::kRole);
+  }
+
   UpdateIgnoredState();
   UpdateInvisibleState();
 
@@ -1306,6 +1310,9 @@ void ViewAccessibility::SetWidgetClosedRecursive(Widget* widget, bool value) {
 }
 
 void ViewAccessibility::SetDataForClosedWidget(ui::AXNodeData* data) const {
+  data->id = data_.id;
+  CHECK_EQ(data->id, GetUniqueId());
+
   data->role = ax::mojom::Role::kUnknown;
   data->SetRestriction(ax::mojom::Restriction::kDisabled);
 
