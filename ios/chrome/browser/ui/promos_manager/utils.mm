@@ -40,7 +40,7 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
   }
 
   // (3) There is no UI blocker.
-  if (scene_state.profileState.appState.currentUIBlocker) {
+  if (scene_state.profileState.currentUIBlocker) {
     return NO;
   }
 

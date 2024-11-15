@@ -172,7 +172,7 @@
 
   // Return NO when the scene cannot present views because it is blocked. This
   // is what prevents showing more than one dialog at a time.
-  return !self.sceneState.profileState.appState.currentUIBlocker;
+  return !self.sceneState.profileState.currentUIBlocker;
 }
 
 // Shows the User Policy notification dialog if the requirements are fulfilled.
@@ -197,7 +197,12 @@
 - (void)showNotification {
   DCHECK(self.sceneState.UIEnabled);
 
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
+  // Raise a UI blocker with the UIBlockerExtent::kProfile extent since the
+  // user policies concern a specific account hence profile. Other profiles that
+  // aren't subject to user policies shouldn't be concerned by the User Policy
+  // dialog.
+  _uiBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState,
+                                                 UIBlockerExtent::kProfile);
 
   __weak __typeof(self) weakSelf = self;
   [self.applicationCommandsHandler dismissModalDialogsWithCompletion:^{

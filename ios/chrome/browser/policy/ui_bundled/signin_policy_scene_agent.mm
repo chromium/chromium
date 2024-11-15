@@ -229,8 +229,13 @@
     // target counter. If the scene is dismissed, the count will be decremented
     // to zero leaving the way for another scene to take over the forced
     // sign-in prompt.
+    //
+    // Use the UIBlockerExtent::kApplication extent since the sign-in policies
+    // have to be pushed through the platform which concerns the entire app in
+    // itself including all profiles.
     __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
-        std::make_unique<ScopedUIBlocker>(self.sceneState);
+        std::make_unique<ScopedUIBlocker>(self.sceneState,
+                                          UIBlockerExtent::kApplication);
 
     __weak __typeof(self) weakSelf = self;
     [self.applicationCommandsHandler dismissModalDialogsWithCompletion:^{
