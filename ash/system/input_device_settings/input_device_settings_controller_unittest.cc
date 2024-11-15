@@ -236,6 +236,7 @@ const AccountId kAccountId3 =
     AccountId::FromUserEmailGaiaId(kUserEmail3, kUserEmail3);
 
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kKbdTopRowLayoutUnspecified[] = "";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
 constexpr char kKbdTopRowLayout2Tag[] = "2";
 constexpr char kBluetoothDeviceName[] = "Bluetooth Device";
@@ -374,17 +375,23 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
   void UpdateDefaultChromeOSKeyboardSettings(
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
-      const mojom::Keyboard& keyboard) override {}
+      const mojom::Keyboard& keyboard) override {
+    ++num_update_default_chromeos_keyboard_settings_calls_;
+  }
 
   void UpdateDefaultNonChromeOSKeyboardSettings(
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
-      const mojom::Keyboard& keyboard) override {}
+      const mojom::Keyboard& keyboard) override {
+    ++num_update_default_non_chromeos_keyboard_settings_calls_;
+  }
 
   void UpdateDefaultSplitModifierKeyboardSettings(
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
-      const mojom::Keyboard& keyboard) override {}
+      const mojom::Keyboard& keyboard) override {
+    ++num_update_default_split_modifier_keyboard_settings_calls_;
+  }
 
   void ForceInitializeWithDefaultSettings(
       PrefService* pref_service,
@@ -417,6 +424,18 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
     return num_force_initialize_with_default_settings_calls_;
   }
 
+  uint32_t num_update_default_chromeos_keyboard_settings_calls() {
+    return num_update_default_chromeos_keyboard_settings_calls_;
+  }
+
+  uint32_t num_update_default_non_chromeos_keyboard_settings_calls() {
+    return num_update_default_non_chromeos_keyboard_settings_calls_;
+  }
+
+  uint32_t num_update_default_split_modifier_keyboard_settings_calls() {
+    return num_update_default_split_modifier_keyboard_settings_calls_;
+  }
+
   void reset_num_keyboard_settings_initialized() {
     num_keyboard_settings_initialized_ = 0;
   }
@@ -428,6 +447,9 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
   uint32_t num_login_screen_keyboard_settings_initialized_ = 0;
   uint32_t num_login_screen_keyboard_settings_updated_ = 0;
   uint32_t num_initialize_default_keyboard_settings_calls_ = 0;
+  uint32_t num_update_default_chromeos_keyboard_settings_calls_ = 0;
+  uint32_t num_update_default_non_chromeos_keyboard_settings_calls_ = 0;
+  uint32_t num_update_default_split_modifier_keyboard_settings_calls_ = 0;
 };
 
 class FakeInputDeviceSettingsControllerObserver
@@ -1092,6 +1114,54 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
+  fake_device_manager_->RemoveAllDevices();
+}
+
+TEST_F(InputDeviceSettingsControllerTest, UpdateChromeOSDefaultSettings) {
+  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
+                                        kKbdTopRowLayout1Tag);
+
+  EXPECT_EQ(1u, keyboard_pref_handler_
+                    ->num_update_default_chromeos_keyboard_settings_calls());
+  EXPECT_EQ(0u,
+            keyboard_pref_handler_
+                ->num_update_default_non_chromeos_keyboard_settings_calls());
+  EXPECT_EQ(0u,
+            keyboard_pref_handler_
+                ->num_update_default_split_modifier_keyboard_settings_calls());
+
+  fake_device_manager_->RemoveAllDevices();
+}
+
+TEST_F(InputDeviceSettingsControllerTest, UpdateNonChromeOSDefaultSettings) {
+  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardBluetooth,
+                                        kKbdTopRowLayoutUnspecified);
+
+  EXPECT_EQ(0u, keyboard_pref_handler_
+                    ->num_update_default_chromeos_keyboard_settings_calls());
+  EXPECT_EQ(1u,
+            keyboard_pref_handler_
+                ->num_update_default_non_chromeos_keyboard_settings_calls());
+  EXPECT_EQ(0u,
+            keyboard_pref_handler_
+                ->num_update_default_split_modifier_keyboard_settings_calls());
+
+  fake_device_manager_->RemoveAllDevices();
+}
+
+TEST_F(InputDeviceSettingsControllerTest, UpdateSplitModifierDefaultSettings) {
+  fake_device_manager_->AddFakeKeyboard(kSampleSplitModifierKeyboard,
+                                        kKbdTopRowLayout1Tag);
+
+  EXPECT_EQ(0u, keyboard_pref_handler_
+                    ->num_update_default_chromeos_keyboard_settings_calls());
+  EXPECT_EQ(0u,
+            keyboard_pref_handler_
+                ->num_update_default_non_chromeos_keyboard_settings_calls());
+  EXPECT_EQ(1u,
+            keyboard_pref_handler_
+                ->num_update_default_split_modifier_keyboard_settings_calls());
+
   fake_device_manager_->RemoveAllDevices();
 }
 

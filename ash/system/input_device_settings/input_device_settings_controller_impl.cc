@@ -2916,7 +2916,8 @@ void InputDeviceSettingsControllerImpl::RefreshKeyboardDefaultSettings() {
   auto non_chromeos_iter =
       base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
                          /*value=*/false, [](const auto& keyboard) {
-                           return IsChromeOSKeyboard(*keyboard.second);
+                           return IsChromeOSKeyboard(*keyboard.second) ||
+                                  IsSplitModifierKeyboard(*keyboard.second);
                          });
   auto split_modifier_iter =
       base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
