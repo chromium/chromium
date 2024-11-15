@@ -5277,10 +5277,6 @@ const char kNtpRealboxMatchSearchboxThemeName[] =
 const char kNtpRealboxMatchSearchboxThemeDescription[] =
     "Makes NTP Realbox drop shadow match that of the Searchbox when enabled.";
 
-const char kNtpRealboxPedalsName[] = "NTP Realbox Pedals";
-const char kNtpRealboxPedalsDescription[] =
-    "Shows pedals in the NTP Realbox when enabled.";
-
 const char kNtpRealboxUseGoogleGIconName[] = "NTP Realbox Google G Icon";
 const char kNtpRealboxUseGoogleGIconDescription[] =
     "Shows Google G icon "

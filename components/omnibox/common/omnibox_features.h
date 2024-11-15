@@ -72,7 +72,6 @@ BASE_DECLARE_FEATURE(kClipboardSuggestionContentHidden);
 BASE_DECLARE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed);
 BASE_DECLARE_FEATURE(kMostVisitedTilesHorizontalRenderGroup);
 BASE_DECLARE_FEATURE(kRichAutocompletion);
-BASE_DECLARE_FEATURE(kNtpRealboxPedals);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the

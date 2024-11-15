@@ -3042,9 +3042,6 @@ extern const char kNtpRealboxCr23ThemingDescription[];
 extern const char kNtpRealboxMatchSearchboxThemeName[];
 extern const char kNtpRealboxMatchSearchboxThemeDescription[];
 
-extern const char kNtpRealboxPedalsName[];
-extern const char kNtpRealboxPedalsDescription[];
-
 extern const char kNtpRealboxUseGoogleGIconName[];
 extern const char kNtpRealboxUseGoogleGIconDescription[];
 

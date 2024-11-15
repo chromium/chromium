@@ -209,9 +209,6 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 
-// Feature used to enable Pedals in the NTP Realbox.
-BASE_FEATURE(kNtpRealboxPedals, "NtpRealboxPedals", ENABLED);
-
 // If enabled, shows the omnibox suggestions popup in WebUI.
 BASE_FEATURE(kWebUIOmniboxPopup, "WebUIOmniboxPopup", DISABLED);
 

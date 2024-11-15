@@ -182,8 +182,7 @@ std::u16string GetAdditionalA11yMessage(
     searchbox::mojom::SelectionLineState state) {
   switch (state) {
     case searchbox::mojom::SelectionLineState::kNormal: {
-      if (match.has_tab_match.value_or(false) &&
-          base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+      if (match.has_tab_match.value_or(false)) {
         return l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_SUFFIX);
       }
       const OmniboxAction* action = match.GetActionAt(0u);
@@ -318,16 +317,14 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
         match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED;
-    if (base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
-      for (const auto& action : match.actions) {
-        const OmniboxAction::LabelStrings& label_strings =
-            action->GetLabelStrings();
-        mojom_match->actions.emplace_back(searchbox::mojom::Action::New(
-            label_strings.accessibility_hint, label_strings.hint,
-            label_strings.suggestion_contents,
-            SearchboxHandler::ActionVectorIconToResourceName(
-                action->GetVectorIcon())));
-      }
+    for (const auto& action : match.actions) {
+      const OmniboxAction::LabelStrings& label_strings =
+          action->GetLabelStrings();
+      mojom_match->actions.emplace_back(searchbox::mojom::Action::New(
+          label_strings.accessibility_hint, label_strings.hint,
+          label_strings.suggestion_contents,
+          SearchboxHandler::ActionVectorIconToResourceName(
+              action->GetVectorIcon())));
     }
     mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
         match, match.contents, line, 0,

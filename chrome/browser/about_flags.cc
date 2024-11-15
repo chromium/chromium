@@ -7039,10 +7039,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxMatchSearchboxThemeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kRealboxMatchSearchboxTheme)},
 
-    {"ntp-realbox-pedals", flag_descriptions::kNtpRealboxPedalsName,
-     flag_descriptions::kNtpRealboxPedalsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kNtpRealboxPedals)},
-
     {"ntp-realbox-use-google-g-icon",
      flag_descriptions::kNtpRealboxUseGoogleGIconName,
      flag_descriptions::kNtpRealboxUseGoogleGIconDescription, kOsDesktop,
