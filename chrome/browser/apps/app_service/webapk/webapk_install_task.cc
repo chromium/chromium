@@ -278,7 +278,11 @@ void WebApkInstallTask::Start(ResultCallback callback) {
   // again in case anything changed while the install request was queued.
   // Manifest URL is always set for apps installed or updated in recent
   // versions, but might be missing for older apps.
-  if (!registrar.IsInstalled(app_id_) ||
+  if (!registrar.IsInstallState(
+          app_id_,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
       !registrar.GetAppShareTarget(app_id_) ||
       registrar.GetAppManifestUrl(app_id_).is_empty()) {
     DeliverResult(WebApkInstallStatus::kAppInvalid);
