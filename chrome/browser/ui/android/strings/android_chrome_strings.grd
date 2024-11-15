@@ -6653,6 +6653,205 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Data Sharing -->
+      <!-- Data Sharing Create Flow -->
+      <message name ="IDS_COLLABORATION_SHARE_GROUP_TITLE" desc="The Title for the creation flow for a shared group.">
+          Share “<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>” tab group
+      </message>
+      <!-- Data Sharing Create Flow -->
+
+      <!-- Data Sharing Owner Manage Flow -->
+      <message name ="IDS_COLLABORATION_MANAGE_GROUP_TITLE" desc="The Title for the manage flow dialog for a shared group.">
+        Manage access
+      </message>
+      <message name ="IDS_COLLABORATION_MANAGE_STOP_SHARING_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
+        Stop sharing
+      </message>
+      <!-- Data Sharing Owner Manage Flow -->
+
+      <!-- Data Sharing Owner Stop Sharing Dialog -->
+      <message name ="IDS_COLLABORATION_OWNER_STOP_SHARING_DIALOG_TITLE" desc="The title for the stop sharing dialog.">
+        Stop sharing?
+      </message>
+      <!-- Data Sharing Owner Stop Sharing Dialog -->
+
+      <!-- Data Sharing Owner Remove Member Dialog -->
+      <message name ="IDS_COLLABORATION_OWNER_REMOVE_MEMBER_DIALOG_TITLE" desc="The title of the remove member dialog.">
+        Remove <ph name="MEMBER_FULL_NAME">%1$s<ex>John Doe</ex></ph>?
+      </message>
+      <message name ="IDS_COLLABORATION_OWNER_REMOVE_MEMBER_DIALOG_CONFIRM" desc="The confirmation button for the remove member dialog.">
+        Remove
+      </message>
+      <!-- DataSharing Owner Remove Member Dialog -->
+
+      <!-- Data Sharing Owner Delete Group -->
+      <message name ="IDS_COLLABORATION_OWNER_DELETE_DIALOG_TITLE" desc="The title of the group owner's delete group dialog.">
+        Delete tab group?
+      </message>
+      <message name ="IDS_COLLABORATION_OWNER_DELETE_DIALOG_CONFIRM" desc="The confirmation button for the delete group dialog.">
+        Delete
+      </message>
+      <!-- Data Sharing Owner Delete Group -->
+
+      <!-- Data Sharing Preview Dialog -->
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
+
+        {NUM_OTHER_MEMBERS, plural,
+          =0 {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph>}
+          =1 {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and # other}
+          other {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and # others}
+        }
+      </message>
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
+        Join and open
+      </message>
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_DETAILS_TITLE" desc="The title for the details page of the dialog that shows a preview of a tab group.">
+        Tab group details
+      </message>
+      <message name="IDS_COLLABORATION_LINK_FAILED_TITLE" desc="The title for the link failed dialog.">
+        This link doesn’t work
+      </message>
+      <!-- Data Sharing Preview Dialog -->
+
+      <!-- Data Sharing Leave Dialog -->
+      <message name="IDS_COLLABORATION_LEAVE_DIALOG_TITLE" desc="The title for the leave group dialog.">
+        Leave tab group?
+      </message>
+      <message name="IDS_COLLABORATION_LEAVE_DIALOG_CONFIRM" desc="The text for the confirmation button for the leave group dialog.">
+        Leave
+      </message>
+      <!-- Data Sharing Leave Dialog -->
+
+      <!-- Data Sharing Owner Block Member Dialog -->
+      <message name ="IDS_COLLABORATION_OWNER_BLOCK_DIALOG_TITLE" desc="The title of the block member dialog.">
+        Block <ph name="MEMBER_FULL_NAME">%1$s<ex>John Doe</ex></ph>?
+      </message>
+      <message name ="IDS_COLLABORATION_OWNER_BLOCK_DIALOG_CONFIRM" desc="The confirmation button for the block member dialog.">
+        Block
+      </message>
+      <!-- DataSharing Owner Block Member Dialog -->
+
+      <!-- Data Sharing Block and Leave Dialog -->
+      <message name="IDS_COLLABORATION_BLOCK_LEAVE_DIALOG_TITLE" desc="The title for the block and leave group dialog.">
+        Block and leave group?
+      </message>
+      <message name="IDS_COLLABORATION_BLOCK_LEAVE_DIALOG_CONFIRM" desc="The text for a button to block and leave a shared group.">
+        Block and leave
+      </message>
+      <!-- Data Sharing Block and Leave Dialog -->
+
+      <!-- Delete Last Tab Dialog -->
+      <message name="IDS_COLLABORATION_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog.">
+        Keep tab group?
+      </message>
+      <message name="IDS_COLLABORATION_DELETE_LAST_TAB_CANCEL" desc="cancel button text for the delete last tab dialog.">
+        Keep group
+      </message>
+      <message name="IDS_COLLABORATION_OWNER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the owner of the group.">
+        Delete group
+      </message>
+      <message name="IDS_COLLABORATION_MEMBER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the member of the group.">
+        Leave group
+      </message>
+      <!-- Delete Last Tab Dialog -->
+
+      <!-- Data Sharing Create Flow -->
+      <message name ="IDS_COLLABORATION_SHARE_GROUP_BODY" desc="The description of how shared group links work.">Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.</message>
+      <message name ="IDS_COLLABORATION_SHARE_GROUP_SHARE_AS" desc="A sublabel showing which profile the shared group is being shared as.">Share as <ph name="OWNER_FULL_NAME">%1$s<ex>John Doe</ex></ph></message>
+      <!-- Data Sharing Create Flow -->
+
+      <!-- Data Sharing Owner Manage Flow -->
+      <message name ="IDS_COLLABORATION_MANAGE_GROUP_DESCRIPTION" desc="The description of how link sharing works for manage screen.">
+        Anyone with the link can edit all tabs. Learn about shared tab groups
+      </message>
+      <message name ="IDS_COLLABORATION_MANAGE_SHARE_WISELY" desc="The description of how link sharing works.">
+        Always share wisely. Links expire in 48 hours.
+      </message>
+      <!-- Data Sharing Owner Manage Flow -->
+
+      <!-- Data Sharing Owner Stop Sharing Dialog -->
+      <message name ="IDS_COLLABORATION_OWNER_STOP_SHARING_DIALOG_BODY" desc="The body for the owner's stop sharing dialog.">
+        Everyone will immediately lose access to the “<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>” tab group, and all invitation links will be turned off
+      </message>
+      <!-- Data Sharing Owner Stop Sharing Dialog -->
+
+      <!-- Data Sharing Owner Remove Member Dialog -->
+      <message name ="IDS_COLLABORATION_OWNER_REMOVE_MEMBER_DIALOG_BODY" desc="The body for the owner's remove member dialog.">
+        <ph name="MEMBER_FULL_NAME">%1$s<ex>John Doe</ex></ph> (<ph name="EMAIL">%2$s<ex>johndoe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">%3$s<ex>Vacation</ex></ph>” tab group
+      </message>
+      <!-- DataSharing Owner Remove Member Dialog -->
+
+      <!-- Data Sharing Owner Delete Group -->
+      <message name ="IDS_COLLABORATION_OWNER_DELETE_DIALOG_BODY" desc="The body for the owner's delete group dialog.">
+        Everyone will immediately lose access to the “<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>” tab group, and it will be deleted from all devices
+      </message>
+      <!-- Data Sharing Owner Delete Group -->
+
+      <!-- Data Sharing Preview Dialog -->
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_BODY" desc="The body for the dialog that shows a preview of a tab group.">
+        <ph name="OWNER_FULL_NAME">%1$s<ex>Ali Connors</ex></ph> (<ph name="OWNER_EMAIL">%2$s<ex>ali.connors@gmail.com</ex></ph>) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
+      </message>
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_DETAILS_TABS_IN_GROUP" desc="The title for the tabs in group section in the preview details for a group.">
+        Tabs in group
+      </message>
+      <message name="IDS_COLLABORATION_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
+        Contact the sender to ask for a new link
+      </message>
+      <message name ="IDS_COLLABORATION_JOIN_GROUP_AS" desc="A sublabel showing which profile the shared group is being joined as.">
+        Join as <ph name="MEMBER_FULL_NAME">%1$s<ex>John Doe</ex></ph>
+      </message>
+      <!-- Data Sharing Preview Dialog -->
+
+      <!-- Data Sharing Leave Dialog -->
+      <message name="IDS_COLLABORATION_LEAVE_DIALOG_BODY" desc="The body for the leave group dialog.">
+        You’ll immediately lose access to the “<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>” tab group, and it will be deleted from all your devices
+      </message>
+      <!-- Data Sharing Leave Dialog -->
+
+      <!-- Data Sharing Owner Block Member Dialog -->
+      <message name ="IDS_COLLABORATION_OWNER_BLOCK_DIALOG_BODY" desc="The body for the owner's block member dialog.">
+        <ph name="MEMBER_FULL_NAME">%1$s<ex>John Doe</ex></ph> (<ph name="EMAIL">%2$s<ex>johndoe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">%3$s<ex>Vacation</ex></ph>” tab group, and will no longer be able to interact with you across Google services.
+      </message>
+      <!-- DataSharing Owner Block Member Dialog -->
+
+      <!-- Data Sharing Block and Leave Dialog -->
+        <message name="IDS_COLLABORATION_BLOCK_LEAVE_DIALOG_BODY" desc="The body for the block and leave group dialog.">
+          You’ll immediately lose access to the “<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>” tab group, and <ph name="BLOCKED_MEMBER_FULL_NAME">%1$s<ex>Ali Connors</ex></ph> (<ph name="BLOCKED_MEMBER_EMAIL">%2$s<ex>ali.connors@gmail.com</ex></ph>) will no longer be able to interact with you across Google services.
+        </message>
+        <message name="IDS_COLLABORATION_BLOCK_LEAVE_LEARN_MORE" desc="The text for the learn more link for the block and leave group dialog.">
+          Learn about blocked accounts
+        </message>
+      <!-- Data Sharing Block and Leave Dialog -->
+
+      <!-- Delete Last Tab Dialog -->
+      <message name="IDS_COLLABORATION_OWNER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the owner deleting the last tab of the shared group.">
+        Keep this group to add tabs later, or delete it if you no longer need it.
+      </message>
+      <message name="IDS_COLLABORATION_OWNER_DELETE_LAST_TAB_BODY_2" desc="More description for the confirming the owner deleting the last tab of the shared group.">
+        If you delete it, everyone will immediately lose access to the "<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices.
+      </message>
+      <message name="IDS_COLLABORATION_MEMBER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the member deleting the last tab of the shared group.">
+        Keep this group to add tabs later, or leave it if you no longer want access to it
+      </message>
+      <!-- Delete Last Tab Dialog -->
+
+      <!-- Misc -->
+      <message name ="IDS_COLLABORATION_LEARN_ABOUT_SHARED_GROUPS" desc="The title for a link that can be clicked to go to the help page for shared groups.">
+        Learn about shared tab groups
+      </message>
+      <message name ="IDS_COLLABORATION_PEOPLE_WITH_ACCESS" desc="Text describing a list of members of a group.">
+        People with access
+      </message>
+      <message name ="IDS_COLLABORATION_LINK_EDIT_ACCESS" desc="Text describing how link sharing works.">
+        Anyone with the link can edit all tabs
+      </message>
+      <message name ="IDS_COLLABORATION_LINK_JOIN_TOGGLE" desc="A description of how the the toggle for link sharing works.">
+        Let anyone with the link join
+      </message>
+      <message name ="IDS_COLLABORATION_CANCEL" desc="The label for buttons that cancel any dialogs in data sharing.">
+        Cancel
+      </message>
+      <!-- Misc -->
+
       <message name="IDS_SHARED_IMAGE_TILES_COUNT" desc="The count string for number of tiles that overflows from shared image tiles. |COUNT_NUMBER| will be a number between 1 and 99 (it will be 1-2 digits at most). [CHAR_LIMIT=3]">
         +<ph name="COUNT_NUMBER">%1$s<ex>1</ex></ph>
       </message>

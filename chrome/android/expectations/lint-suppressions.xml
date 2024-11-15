@@ -293,6 +293,55 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.discount_container_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.discount_expiration_date_android` appears to be unused"/>
 
+    <!-- TODO(b/379316800): Remove this once data sharing and collaboration is using these. -->
+    <ignore regexp="The resource `R.string.collaboration_manage_group_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_manage_stop_sharing_option` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_stop_sharing_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_remove_member_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_remove_member_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_preview_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_link_failed_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_leave_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_leave_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_block_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_block_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_block_leave_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_block_leave_dialog_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_delete_last_tab_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_delete_last_tab_cancel` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_last_tab_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_member_delete_last_tab_confirm` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_share_group_share_as` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_stop_sharing_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_remove_member_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_link_failed_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_join_group_as` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_leave_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_block_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_block_leave_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_block_leave_learn_more` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_last_tab_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_owner_delete_last_tab_body_2` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_member_delete_last_tab_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_learn_about_shared_groups` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_people_with_access` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_link_edit_access` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_link_join_toggle` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_cancel` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_something_went_wrong_header` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_something_went_wrong_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_share_group_title` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.collaboration_preview_dialog_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_preview_dialog_details_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_share_group_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_manage_group_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_manage_share_wisely` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_preview_dialog_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.collaboration_preview_dialog_details_tabs_in_group` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
