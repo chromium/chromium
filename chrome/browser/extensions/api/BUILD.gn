@@ -25,14 +25,16 @@ group("api") {
 group("api_implementations") {
   # APIs supported on Win/Mac/Linux and desktop Android go here.
   # TODO(https://crbug.com/356905053): Add more APIs here.
-  public_deps = [ "//chrome/browser/extensions/api/notifications" ]
+  public_deps = [
+    "//chrome/browser/extensions/api/browsing_data",
+    "//chrome/browser/extensions/api/notifications",
+  ]
 
   if (enable_extensions) {
     # TODO(crbug.com/40245282): Add more API implementations here.
     public_deps += [
       "//chrome/browser/extensions/api/activity_log_private",
       "//chrome/browser/extensions/api/autofill_private",
-      "//chrome/browser/extensions/api/browsing_data",
       "//chrome/browser/extensions/api/command_line_private",
       "//chrome/browser/extensions/api/content_settings",
       "//chrome/browser/extensions/api/context_menus",
