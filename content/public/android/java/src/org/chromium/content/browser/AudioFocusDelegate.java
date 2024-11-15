@@ -108,7 +108,15 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
                         .setWillPauseWhenDucked(false)
                         .setOnAudioFocusChangeListener(this, mHandler)
                         .build();
-        result = am.requestAudioFocus(mFocusRequest);
+        try {
+            result = am.requestAudioFocus(mFocusRequest);
+        } catch (SecurityException e) {
+            // If we get a SecurityException, the platform has a bug and requestAudioFocus is broken
+            // (at least under our current running conditions). Pretend that everything worked,
+            // because the alternative is that media such as videos may refuse to ever play.
+            Log.w(TAG, "audio focus coordination is broken", e);
+            return true;
+        }
 
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
