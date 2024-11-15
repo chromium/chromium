@@ -25,7 +25,9 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -65,11 +67,16 @@ void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure,
     optimization_guide::OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+    std::unique_ptr<optimization_guide::proto::TabOrganizationLoggingData>
+        logging_data) {
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  optimization_guide::ModelQualityLogsUploaderService* logs_uploader =
+      optimization_guide_keyed_service->GetModelQualityLogsUploaderService();
+  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+      logs_uploader ? logs_uploader->GetWeakPtr() : nullptr);
+  *log_entry->log_ai_data_request()->mutable_tab_organization() = *logging_data;
   if (!result.response.has_value()) {
-    // TODO(b/322206302): remove this when this is fixed in the
-    // ModelQualityLogEntry API
-    optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
     std::move(on_failure).Run();
     return;
   }
@@ -79,7 +86,6 @@ void OnTabOrganizationModelExecutionResult(
       result.response.value());
 
   if (!response) {
-    optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
     std::move(on_failure).Run();
     return;
   }
@@ -208,7 +214,8 @@ void PerformTabOrganizationExecution(
 
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  optimization_guide_keyed_service->ExecuteModel(
+  ExecuteModelWithLogging(
+      optimization_guide_keyed_service,
       optimization_guide::ModelBasedCapabilityKey::kTabOrganization,
       tab_organization_request, /*execution_timeout=*/std::nullopt,
       base::BindOnce(OnTabOrganizationModelExecutionResult, profile,
