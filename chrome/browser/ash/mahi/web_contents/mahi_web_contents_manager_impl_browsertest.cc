@@ -275,8 +275,7 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
             fake_mahi_web_contents_manager_->focused_web_content_state().title);
 }
 
-IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
-                       DISABLED_GetPDFContents) {
+IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPDFContents) {
   // Initially, the focused state and the requested state should be different.
   base::UnguessableToken focused_page_id =
       fake_mahi_web_contents_manager_->focused_web_content_state().page_id;
