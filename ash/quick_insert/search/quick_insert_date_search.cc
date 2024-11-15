@@ -18,6 +18,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
@@ -229,13 +230,7 @@ std::vector<ResolvedDate> ResolveQuery(const base::Time& now,
 std::vector<QuickInsertSearchResult> QuickInsertDateSearch(
     const base::Time& now,
     std::u16string_view query) {
-  std::vector<ResolvedDate> resolved_dates = ResolveQuery(now, query);
-  std::vector<QuickInsertSearchResult> results;
-  results.reserve(resolved_dates.size());
-  for (const ResolvedDate& resolved_date : resolved_dates) {
-    results.push_back(MakeResult(resolved_date));
-  }
-  return results;
+  return base::ToVector(ResolveQuery(now, query), MakeResult);
 }
 
 std::vector<QuickInsertSearchResult> QuickInsertSuggestedDateResults() {

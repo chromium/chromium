@@ -14,6 +14,7 @@
 #include "ash/quick_insert/quick_insert_search_result.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -82,30 +83,24 @@ QuickInsertEmojiSuggester::GetSuggestedEmoji() const {
     }
   }
 
-  std::vector<QuickInsertEmojiResult> results;
-  results.reserve(recent_emojis.size());
-  for (const auto& item : recent_emojis) {
+  return base::ToVector(recent_emojis, [this](const HistoryItem& item) {
     switch (item.category) {
       case ui::EmojiPickerCategory::kEmojis:
-        results.push_back(QuickInsertEmojiResult::Emoji(
+        return QuickInsertEmojiResult::Emoji(
             base::UTF8ToUTF16(item.text),
-            base::UTF8ToUTF16(get_name_.Run(item.text))));
-        break;
+            base::UTF8ToUTF16(get_name_.Run(item.text)));
       case ui::EmojiPickerCategory::kEmoticons:
-        results.push_back(QuickInsertEmojiResult::Emoticon(
+        return QuickInsertEmojiResult::Emoticon(
             base::UTF8ToUTF16(item.text),
-            base::UTF8ToUTF16(get_name_.Run(item.text))));
-        break;
+            base::UTF8ToUTF16(get_name_.Run(item.text)));
       case ui::EmojiPickerCategory::kSymbols:
-        results.push_back(QuickInsertEmojiResult::Symbol(
+        return QuickInsertEmojiResult::Symbol(
             base::UTF8ToUTF16(item.text),
-            base::UTF8ToUTF16(get_name_.Run(item.text))));
-        break;
+            base::UTF8ToUTF16(get_name_.Run(item.text)));
       case ui::EmojiPickerCategory::kGifs:
         NOTREACHED();
     }
-  }
-  return results;
+  });
 }
 
 }  // namespace ash

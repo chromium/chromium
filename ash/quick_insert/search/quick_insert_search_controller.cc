@@ -22,6 +22,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -279,17 +280,16 @@ void QuickInsertSearchController::OnGifSearchResponse(
 
   std::vector<ash::QuickInsertGifResult> gif_results;
   CHECK(response);
-  gif_results.reserve(response->results.size());
-  for (const tenor::mojom::GifResponsePtr& result : response->results) {
-    CHECK(result);
-    const tenor::mojom::GifUrlsPtr& urls = result->url;
-    CHECK(urls);
-    gif_results.push_back(ash::QuickInsertGifResult(
-        urls->preview, urls->preview_image, result->preview_size, urls->full,
-        result->full_size, base::UTF8ToUTF16(result->content_description)));
-  }
-
-  std::move(callback).Run(std::move(gif_results));
+  std::move(callback).Run(base::ToVector(
+      response->results, [](const tenor::mojom::GifResponsePtr& result) {
+        CHECK(result);
+        const tenor::mojom::GifUrlsPtr& urls = result->url;
+        CHECK(urls);
+        return ash::QuickInsertGifResult(
+            urls->preview, urls->preview_image, result->preview_size,
+            urls->full, result->full_size,
+            base::UTF8ToUTF16(result->content_description));
+      }));
 }
 
 std::string QuickInsertSearchController::GetEmojiName(std::string_view emoji) {

@@ -16,6 +16,7 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/quick_insert/quick_insert_rich_media.h"
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -52,17 +53,16 @@ struct HtmlAttr {
 };
 
 std::string ImageHtmlAttrsToStr(std::vector<HtmlAttr> attrs) {
-  std::vector<std::string> attrs_as_strings;
-  attrs_as_strings.reserve(attrs.size());
-  base::ranges::transform(
-      std::move(attrs), std::back_inserter(attrs_as_strings),
-      [](HtmlAttr attr) {
-        return base::StringPrintf(R"(%s="%s")", *attr.name, attr.value.c_str());
-      });
-
   return base::StringPrintf(
       R"(<img %s/>)",
-      base::JoinString(std::move(attrs_as_strings), " ").c_str());
+      base::JoinString(base::ToVector(attrs,
+                                      [](const HtmlAttr& attr) {
+                                        return base::StringPrintf(
+                                            R"(%s="%s")", *attr.name,
+                                            attr.value.c_str());
+                                      }),
+                       " ")
+          .c_str());
 }
 
 std::string BuildImageHtml(const QuickInsertImageMedia& image) {

@@ -23,6 +23,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -126,26 +127,24 @@ AppListControllerDelegate* GetEmptyAppListControllerDelegate() {
 std::vector<ash::QuickInsertSearchResult>
 CreateSearchResultsForRecentLocalImages(
     std::vector<QuickInsertFileSuggester::LocalFile> files) {
-  std::vector<ash::QuickInsertSearchResult> results;
-  results.reserve(files.size());
-  for (QuickInsertFileSuggester::LocalFile& file : files) {
-    results.push_back(ash::QuickInsertLocalFileResult(std::move(file.title),
-                                                      std::move(file.path)));
-  }
-  return results;
+  return base::ToVector(files,
+                        [](QuickInsertFileSuggester::LocalFile& file)
+                            -> ash::QuickInsertSearchResult {
+                          return ash::QuickInsertLocalFileResult(
+                              std::move(file.title), std::move(file.path));
+                        });
 }
 
 std::vector<ash::QuickInsertSearchResult>
 CreateSearchResultsForRecentDriveFiles(
     std::vector<QuickInsertFileSuggester::DriveFile> files) {
-  std::vector<ash::QuickInsertSearchResult> results;
-  results.reserve(files.size());
-  for (QuickInsertFileSuggester::DriveFile& file : files) {
-    results.push_back(ash::QuickInsertDriveFileResult(
-        std::move(file.id), std::move(file.title), std::move(file.url),
-        file.local_path));
-  }
-  return results;
+  return base::ToVector(files,
+                        [](QuickInsertFileSuggester::DriveFile& file)
+                            -> ash::QuickInsertSearchResult {
+                          return ash::QuickInsertDriveFileResult(
+                              std::move(file.id), std::move(file.title),
+                              std::move(file.url), file.local_path);
+                        });
 }
 
 std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(

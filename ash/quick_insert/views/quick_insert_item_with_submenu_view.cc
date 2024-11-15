@@ -15,6 +15,7 @@
 #include "ash/quick_insert/views/quick_insert_submenu_controller.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -123,21 +124,20 @@ void QuickInsertItemWithSubmenuView::ShowSubmenu() {
     return;
   }
 
-  std::vector<std::unique_ptr<QuickInsertListItemView>> items;
-  items.reserve(entries_.size());
-  for (const auto& [result, callback] : entries_) {
-    // There are no image item results in submenus, so can pass 0 for
-    // `available_width`.
-    auto item = QuickInsertSectionView::CreateItemFromResult(
-        result, /*preview_controller=*/nullptr, /*asset_fetcher=*/nullptr,
-        /*available_width=*/0,
-        QuickInsertSectionView::LocalFileResultStyle::kList, callback);
-    auto list_item = base::WrapUnique(
-        views::AsViewClass<QuickInsertListItemView>(item.release()));
-    CHECK(list_item);
-    items.push_back(std::move(list_item));
-  }
-  GetSubmenuController()->Show(this, std::move(items));
+  GetSubmenuController()->Show(
+      this, base::ToVector(entries_, [](const auto& entry) {
+        const auto& [result, callback] = entry;
+        // There are no image item results in submenus, so can pass 0 for
+        // `available_width`.
+        auto item = QuickInsertSectionView::CreateItemFromResult(
+            result, /*preview_controller=*/nullptr, /*asset_fetcher=*/nullptr,
+            /*available_width=*/0,
+            QuickInsertSectionView::LocalFileResultStyle::kList, callback);
+        auto list_item = base::WrapUnique(
+            views::AsViewClass<QuickInsertListItemView>(item.release()));
+        CHECK(list_item);
+        return list_item;
+      }));
 }
 
 void QuickInsertItemWithSubmenuView::OnMouseEntered(

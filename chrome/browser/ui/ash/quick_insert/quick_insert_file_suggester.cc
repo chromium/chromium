@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
+#include "base/containers/to_vector.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_title.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -154,13 +155,11 @@ void QuickInsertFileSuggester::GetRecentDriveFiles(
 void QuickInsertFileSuggester::OnGetRecentLocalImages(
     RecentLocalImagesCallback callback,
     const std::vector<ash::RecentFile>& recent_files) {
-  std::vector<LocalFile> files;
-  files.reserve(recent_files.size());
-  for (const ash::RecentFile& recent_file : recent_files) {
-    const base::FilePath& path = recent_file.url().path();
-    files.push_back({.title = app_list::GetFileTitle(path), .path = path});
-  }
-  std::move(callback).Run(std::move(files));
+  std::move(callback).Run(
+      base::ToVector(recent_files, [](const ash::RecentFile& recent_file) {
+        const base::FilePath& path = recent_file.url().path();
+        return LocalFile{.title = app_list::GetFileTitle(path), .path = path};
+      }));
 }
 
 void QuickInsertFileSuggester::OnGetRecentDriveFiles(
