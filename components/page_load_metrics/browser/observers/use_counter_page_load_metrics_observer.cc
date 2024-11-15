@@ -703,6 +703,7 @@ UseCounterMetricsRecorder::GetAnimatedCSSProperties2WebDXFeatureMap() {
           // Uncomment this once that's resolved, or replace this with something
           // else that matches the resolution of the investigation
           // {CSSSampleId::kFontPalette, WebDXFeature::kFontPaletteAnimation}
+          {CSSSampleId::kDisplay, WebDXFeature::kDisplayAnimation},
       }};
 
   return *kMap;
