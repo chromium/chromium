@@ -813,7 +813,6 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   // must be included on that backing SharedImage.
   DCHECK(resource_provider->GetSharedImageUsageFlags().Has(
       gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
-  DCHECK(resource_provider->IsOriginTopLeft());
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
@@ -893,7 +892,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
         break;
     }
     wgpu::CopyTextureForBrowserOptions options = {
-        .flipY = !resource_provider->IsOriginTopLeft(),
+        .flipY = dst_client_si->surface_origin() == kBottomLeft_GrSurfaceOrigin,
         .srcAlphaMode = srcAlphaMode,
         .dstAlphaMode = dstAlphaMode,
         .internalUsage = true,
