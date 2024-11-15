@@ -1205,25 +1205,6 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     params->value = new_info.value;
     params->selection =
         gfx::Range(new_info.selection_start, new_info.selection_end);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    {
-      // It is expected that the selection range is always bounded by
-      // the text content, but according to the logs in browser process
-      // sometimes it is not.
-      // LOG and dump stack traces in renderers temporarily for further
-      // investigation.
-      // TODO(crbug.com/1457178): Remove the strace when the root cause if
-      // identified and fixed.
-      gfx::Range text_range(0, params->value.length());
-      if (!params->selection.IsBoundedBy(text_range)) {
-        LOG(ERROR) << "selection range is not bounded by the text: "
-                   << "selection=" << params->selection.ToString()
-                   << "text=" << text_range.ToString();
-        base::debug::DumpWithoutCrashing();
-      }
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     if (new_info.composition_start != -1) {
       params->composition =
           gfx::Range(new_info.composition_start, new_info.composition_end);
