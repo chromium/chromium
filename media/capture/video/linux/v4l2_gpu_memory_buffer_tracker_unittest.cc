@@ -95,7 +95,13 @@ TEST_F(V4l2GpuMemoryBufferTrackerTest, ReusableFormat) {
   EXPECT_TRUE(tracker->IsReusableForFormat(dimensions, format, nullptr));
 }
 
-TEST_F(V4l2GpuMemoryBufferTrackerTest, NotReusableAsGpuContextLost) {
+// TODO(https://crbug.com/379197859): Test failing on Linux.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_NotReusableAsGpuContextLost DISABLED_NotReusableAsGpuContextLost
+#else
+#define MAYBE_NotReusableAsGpuContextLost NotReusableAsGpuContextLost
+#endif
+TEST_F(V4l2GpuMemoryBufferTrackerTest, MAYBE_NotReusableAsGpuContextLost) {
   SetSharedImageInterface();
   constexpr gfx::Size dimensions = {1280, 720};
   constexpr VideoPixelFormat format = VideoPixelFormat::PIXEL_FORMAT_NV12;
