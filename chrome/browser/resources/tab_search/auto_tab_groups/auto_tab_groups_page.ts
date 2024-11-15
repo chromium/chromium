@@ -134,6 +134,15 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     }
   }
 
+  override focus() {
+    if (this.showBackButton) {
+      const backButton = this.shadowRoot!.querySelector('cr-icon-button')!;
+      backButton.focus();
+    } else {
+      super.focus();
+    }
+  }
+
   private onVisible_() {
     // When the UI goes from not shown to shown, bypass any state change
     // animations.

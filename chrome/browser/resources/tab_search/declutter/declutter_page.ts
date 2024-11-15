@@ -106,6 +106,15 @@ export class DeclutterPageElement extends CrLitElement {
     this.maybeAddScrollListener_();
   }
 
+  override focus() {
+    if (this.showBackButton) {
+      const backButton = this.shadowRoot!.querySelector('cr-icon-button')!;
+      backButton.focus();
+    } else {
+      super.focus();
+    }
+  }
+
   logCtrValue(event: DeclutterCTREvent) {
     chrome.metricsPrivate.recordEnumerationValue(
         'Tab.Organization.DeclutterCTR', event,
