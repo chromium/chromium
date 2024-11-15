@@ -1528,4 +1528,169 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
   }
 }
 
+namespace {
+
+constexpr char kNumDataHostsRegisteredOnClientBounce5sMetricName[] =
+    "Conversions.NumDataHostsRegisteredOnClientBounce.5s";
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    NoUserActivationAndNavigatedWithoutUserGesture_ClientBounceMetricRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounce5sMetricName, 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    UserActivationAndNavigatedWithoutUserGesture_ClientBounceMetricNotRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  histograms.ExpectTotalCount(kNumDataHostsRegisteredOnClientBounce5sMetricName,
+                              0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    NoUserActivationAndNavigatedWithUserGesture_ClientBounceMetricNotRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(web_contents(), redirected_url));
+
+  histograms.ExpectTotalCount(kNumDataHostsRegisteredOnClientBounce5sMetricName,
+                              0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    NoUserActivationAndNavigatedByBrowser_ClientBounceMetricNotRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), redirected_url));
+
+  histograms.ExpectTotalCount(kNumDataHostsRegisteredOnClientBounce5sMetricName,
+                              0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    NoUserActivationAndNavigatedWithoutUserGestureAfterTimeout_ClientBounceMetricNotRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  base::RunLoop run_loop_timeout;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop_timeout.QuitClosure(), base::Seconds(2));
+  run_loop_timeout.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  histograms.ExpectTotalCount(
+      "Conversions.NumDataHostsRegisteredOnClientBounce.1s", 0);
+  // Not timed out yet for 5s and 10s.
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounce5sMetricName, 1, 1);
+  histograms.ExpectBucketCount(
+      "Conversions.NumDataHostsRegisteredOnClientBounce.10s", 1, 1);
+}
+
 }  // namespace content
