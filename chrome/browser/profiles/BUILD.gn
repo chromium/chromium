@@ -364,6 +364,10 @@ source_set("profiles_extra_parts_impl") {
   if (enterprise_data_controls) {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }
 
 source_set("unit_tests") {

@@ -408,6 +408,10 @@
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/exit_type_service_factory.h"
@@ -906,6 +910,13 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   GalleryWatchManager::EnsureFactoryBuilt();
+#endif
+#if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(features::kGlic)) {
+    GlicKeyedServiceFactory::GetInstance();
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+#if !BUILDFLAG(IS_ANDROID)
   GlobalErrorServiceFactory::GetInstance();
 #endif
   GoogleGroupsManagerFactory::GetInstance();
