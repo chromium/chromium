@@ -182,23 +182,6 @@ public class SearchActivity extends AsyncInitializationActivity
         int COUNT = 7;
     }
 
-    // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
-    // LINT.IfChange(HubSearchExitReason)
-    @IntDef({
-        HubSearchExitReason.CUSTOM_BACK_ARROW,
-        HubSearchExitReason.SYSTEM_BACKPRESS,
-        HubSearchExitReason.COUNT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface HubSearchExitReason {
-        int CUSTOM_BACK_ARROW = 0;
-        int SYSTEM_BACKPRESS = 1;
-        int COUNT = 2;
-    }
-
-    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:HubSearchExitReason)
-
     @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
 
     /** Notified about events happening inside a SearchActivity. */
@@ -553,12 +536,6 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     public boolean handleBackKeyPressed() {
         finish(TerminationReason.BACK_KEY_PRESSED, /* loadUrlParams= */ null);
-
-        if (mSearchBoxDataProvider.getPageClassification(false)
-                == PageClassification.ANDROID_HUB_VALUE) {
-            recordHubSearchExitReasonHistogram(HubSearchExitReason.SYSTEM_BACKPRESS);
-        }
-
         return true;
     }
 
@@ -710,16 +687,10 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator
                 .getStatusCoordinator()
                 .setOnStatusIconNavigateBackButtonPress(
-                        (View v) -> {
-                            finish(TerminationReason.BACK_KEY_PRESSED, /* loadUrlParams= */ null);
-                            recordHubSearchExitReasonHistogram(
-                                    HubSearchExitReason.CUSTOM_BACK_ARROW);
-                        });
-    }
-
-    private void recordHubSearchExitReasonHistogram(@HubSearchExitReason int reason) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.HubSearch.ExitReason", reason, HubSearchExitReason.COUNT);
+                        (View v) ->
+                                finish(
+                                        TerminationReason.BACK_KEY_PRESSED,
+                                        /* loadUrlParams= */ null));
     }
 
     private void setIncognitoColorScheme() {

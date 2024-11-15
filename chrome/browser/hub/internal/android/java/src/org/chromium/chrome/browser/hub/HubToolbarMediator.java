@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -46,28 +45,6 @@ import java.util.Objects;
 
 /** Logic for the toolbar of the Hub. */
 public class HubToolbarMediator {
-    // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
-    // LINT.IfChange(HubSearchEntrypoint)
-    @IntDef({
-        HubSearchEntrypoint.REGULAR_SEARCHBOX,
-        HubSearchEntrypoint.INCOGNITO_SEARCHBOX,
-        HubSearchEntrypoint.REGULAR_LOUPE,
-        HubSearchEntrypoint.INCOGNITO_LOUPE,
-        HubSearchEntrypoint.NUM_ENTRIES
-    })
-    public @interface HubSearchEntrypoint {
-        int REGULAR_SEARCHBOX = 0;
-        int INCOGNITO_SEARCHBOX = 1;
-        int REGULAR_LOUPE = 2;
-        int INCOGNITO_LOUPE = 3;
-
-        // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 4;
-    }
-
-    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:HubSearchEntrypoint)
-
     private static final int INVALID_PANE_SWITCHER_INDEX = -1;
 
     private final ComponentCallbacks mComponentCallbacks =
@@ -294,29 +271,5 @@ public class HubToolbarMediator {
                         .setIncognito(mPropertyModel.get(IS_INCOGNITO))
                         .setResolutionType(ResolutionType.OPEN_IN_CHROME)
                         .build());
-        recordHubSearchEntrypointHistogram();
-    }
-
-    private void recordHubSearchEntrypointHistogram() {
-        // Based on the ComponentCallback#onConfigurationChanged logic for hub search, it is implied
-        // that the search box and search loupe visibilities have opposite behaviors at any time.
-        boolean isSearchBox = mPropertyModel.get(SEARCH_BOX_VISIBLE);
-        boolean isIncognito = mPropertyModel.get(IS_INCOGNITO);
-        @HubSearchEntrypoint int action;
-
-        if (!isIncognito) {
-            action =
-                    isSearchBox
-                            ? HubSearchEntrypoint.REGULAR_SEARCHBOX
-                            : HubSearchEntrypoint.REGULAR_LOUPE;
-        } else {
-            action =
-                    isSearchBox
-                            ? HubSearchEntrypoint.INCOGNITO_SEARCHBOX
-                            : HubSearchEntrypoint.INCOGNITO_LOUPE;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.HubSearch.SearchBoxEntrypoint", action, HubSearchEntrypoint.NUM_ENTRIES);
     }
 }

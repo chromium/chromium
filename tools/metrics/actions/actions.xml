@@ -12422,14 +12422,6 @@ should be able to be added at any place in this file.
   <description>User triggered the hotword by saying 'Ok Google'.</description>
 </action>
 
-<action name="HubSearch.KeyboardEnterPressed">
-  <owner>wylieb@google.com</owner>
-  <owner>bjfong@google.com</owner>
-  <description>
-    The user clicked enter on the keyboard when using hub search.
-  </description>
-</action>
-
 <action name="HubSearchWidget.Query">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
