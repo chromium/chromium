@@ -122,7 +122,7 @@ public class AutofillProviderUMA {
         Provider.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface Provider {
+    public @interface Provider {
         int UNKNOWN = 0;
         int AWG = 1;
         int SAMSUNG_PASS = 2;
@@ -430,7 +430,14 @@ public class AutofillProviderUMA {
         mRecorder.onServerTypeAvailable(formData, afterSessionStarted);
     }
 
-    private static @Provider int getCurrentProvider(String packageName) {
+    /**
+     * This method is mapping package names of Autofill providers to the {@link Provider} enum which
+     * is used for logging metrics.
+     *
+     * @param packageName is the package name of an Autofill provider.
+     * @return {@link Provider} enum value corresponding to the package.
+     */
+    public static @Provider int getCurrentProvider(String packageName) {
         switch (packageName) {
             case AWG_PACKAGE_NAME:
                 return Provider.AWG;

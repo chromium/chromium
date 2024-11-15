@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.autofill.AutofillManager;
 import android.view.autofill.AutofillValue;
 
 import androidx.annotation.ColorInt;
@@ -65,6 +67,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDelegate;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.AutofillProvider;
+import org.chromium.components.autofill.AutofillProviderUMA;
 import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
 import org.chromium.components.autofill.AutofillSelectionMenuItemHelper;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -110,6 +113,8 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
             "Android.Tab.BackgroundColorChange.PreOptimization";
     private static final String BACKGROUND_COLOR_CHANGE_HISTOGRAM =
             "Android.Tab.BackgroundColorChange";
+    private static final String UMA_AUTOFILL_THIRD_PARTY_MODE_DISABLED_PROVIDER =
+            "Autofill.ThirdPartyModeDisabled.Provider";
 
     /**
      * A pref from //components/autofill/core/common/autofill_prefs.h which allows the use of
@@ -1816,11 +1821,11 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     /**
      * Initializes the {@link WebContents}. Completes the browser content components initialization
      * around a native WebContents pointer.
-     * <p>
-     * {@link #getNativePage()} will still return the {@link NativePage} if there is one.
-     * All initialization that needs to reoccur after a web contents swap should be added here.
-     * <p />
-     * NOTE: If you attempt to pass a native WebContents that does not have the same incognito
+     *
+     * <p>{@link #getNativePage()} will still return the {@link NativePage} if there is one. All
+     * initialization that needs to reoccur after a web contents swap should be added here.
+     *
+     * <p>NOTE: If you attempt to pass a native WebContents that does not have the same incognito
      * state as this tab this call will fail.
      *
      * @param webContents The WebContents object that will initialize all the browser components.
@@ -2106,6 +2111,7 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     private boolean prepareAutofillProvider(WebContents newWebContents) {
         assert isInitialized();
         if (!providesAutofillStructure()) {
+            maybeLogAutofillProviderDoesntUseVirtualStructureMetric();
             mAutofillProvider = null;
             return false; // Autofill provider can't be prepared.
         }
@@ -2123,6 +2129,42 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         }
         addAutofillItemsToSelectionActionMenu(newWebContents);
         return true;
+    }
+
+    private void maybeLogAutofillProviderDoesntUseVirtualStructureMetric() {
+        if (!ChromeFeatureList.isEnabled(
+                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
+            return;
+        }
+        AutofillManager manager =
+                ContextUtils.getApplicationContext().getSystemService(AutofillManager.class);
+        if (manager == null) {
+            return;
+        }
+        if (!manager.isAutofillSupported()) {
+            // If Android Autofill is not supported, the metric shouldn't be logged because it tells
+            // about cases when 3P mode could be used, but it isn't used.
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ComponentName componentName = null;
+            try {
+                componentName = manager.getAutofillServiceComponentName();
+            } catch (Exception e) {
+                // The exception is com.android.internal.util.SyncResultReceiver.TimeoutException,
+                // can't handle it because:
+                // - The exception isn't public in the Android API.
+                // - Different Android versions handle it differently.
+                // The generic Exception is used to catch various cases. (See: crbug.com/1186406)
+            }
+            if (componentName != null) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        UMA_AUTOFILL_THIRD_PARTY_MODE_DISABLED_PROVIDER,
+                        AutofillProviderUMA.getCurrentProvider(componentName.getPackageName()),
+                        AutofillProviderUMA.Provider.MAX_VALUE);
+            }
+        }
     }
 
     private void addAutofillItemsToSelectionActionMenu(WebContents webContents) {

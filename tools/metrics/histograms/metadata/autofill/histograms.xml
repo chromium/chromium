@@ -6016,6 +6016,20 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ThirdPartyModeDisabled.Provider"
+    enum="AutofillProviderPackageName" expires_after="2025-05-30">
+  <owner>friedrichh@chromium.org</owner>
+  <owner>izuzic@google.com</owner>
+  <summary>
+    Records the Autofill provider on the device for clients with active 3P
+    providers that don't use 3P mode and that could be using it because the
+    AutofillManager use isn't disabled on the device. It is recorded on every
+    tab creation. It's not possible to determine the name of the provider when
+    the Android API version is lower than 28, so the metric is only logged for
+    API versions equal to or higher than 28. It's recorded only on Android.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Timing.ParseFormUntilInteraction2" units="ms"
     expires_after="2025-04-13">
   <owner>schwering@google.com</owner>

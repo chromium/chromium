@@ -328,6 +328,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/password_manager/PasswordMigrationWarningExportFlowTest.java",
   "javatests/src/org/chromium/chrome/browser/password_manager/PasswordSavingIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/password_manager/TouchToFillMainFlowIntegrationTest.java",
+  "javatests/src/org/chromium/chrome/browser/password_manager/VirtualViewStructureInstrumentationTest.java",
   "javatests/src/org/chromium/chrome/browser/password_manager/settings/CredentialManagerIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/password_manager/settings/PasswordSettingsExportTest.java",
   "javatests/src/org/chromium/chrome/browser/password_manager/settings/PasswordSettingsSearchTest.java",
