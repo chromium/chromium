@@ -124,7 +124,7 @@ public class VoiceRecognitionHandlerUnitTest {
         var activity = Robolectric.buildActivity(Activity.class).setup().get();
 
         mProfileSupplier = new ObservableSupplierImpl<>();
-        mWindowAndroid = spy(new WindowAndroid(activity));
+        mWindowAndroid = spy(new WindowAndroid(activity, /* trackOcclusion= */ false));
         mHandler = spy(new VoiceRecognitionHandler(mDelegate, mProfileSupplier));
         mHandler.addObserver(mObserver);
 

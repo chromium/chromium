@@ -176,7 +176,8 @@ public class OverlayPanelManagerTest {
                                     mActivity,
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(mActivity),
-                                    mInsetObserver);
+                                    mInsetObserver,
+                                    /* trackOcclusion= */ false);
                         });
     }
 

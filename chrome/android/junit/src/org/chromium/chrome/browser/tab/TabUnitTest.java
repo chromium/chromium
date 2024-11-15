@@ -40,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -94,6 +95,7 @@ public class TabUnitTest {
 
         doReturn(mWeakReferenceActivity).when(mWindowAndroid).getActivity();
         doReturn(mWeakReferenceContext).when(mWindowAndroid).getContext();
+        doReturn(new ObservableSupplierImpl<>(false)).when(mWindowAndroid).getOcclusionSupplier();
         doReturn(mActivity).when(mWeakReferenceActivity).get();
         doReturn(mContext).when(mWeakReferenceContext).get();
         doReturn(mContext).when(mContext).getApplicationContext();

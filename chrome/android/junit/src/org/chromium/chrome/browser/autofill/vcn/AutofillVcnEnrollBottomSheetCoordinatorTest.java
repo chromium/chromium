@@ -81,7 +81,7 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
 
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         Activity activity = buildActivity(Activity.class).create().get();
-        mWindow = new WindowAndroid(activity);
+        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ false);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         setUpCreditCardWithCardArtUrl();
         mCoordinator =

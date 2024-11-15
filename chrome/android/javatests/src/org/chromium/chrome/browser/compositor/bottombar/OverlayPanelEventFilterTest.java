@@ -277,7 +277,8 @@ public class OverlayPanelEventFilterTest {
                                     mActivity,
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(mActivity),
-                                    mInsetObserver);
+                                    mInsetObserver,
+                                    /* trackOcclusion= */ false);
 
                     mPanel =
                             new MockOverlayPanel(

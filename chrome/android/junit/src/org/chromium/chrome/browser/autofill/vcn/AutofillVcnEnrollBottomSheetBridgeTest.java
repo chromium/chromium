@@ -104,7 +104,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         mJniMocker.mock(AutofillVcnEnrollBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mShadowActivity = shadowOf(activity);
-        mWindow = new WindowAndroid(activity);
+        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ false);
         when(mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
                         ISSUER_ICON_URL,
                         CardIconSpecs.create(mWindow.getContext().get(), ImageSize.SMALL)))
