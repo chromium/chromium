@@ -178,10 +178,13 @@ void LogSpdyAcceptChForOriginHistogram(bool value) {
 }
 
 void LogSessionCreationInitiatorToHistogram(
-    MultiplexedSessionCreationInitiator session_creation) {
-  base::UmaHistogramEnumeration(
-      "Net.SpdySession.GoogleSearch.SessionCreationInitiator",
-      session_creation);
+    MultiplexedSessionCreationInitiator session_creation,
+    bool is_used) {
+  std::string histogram_name =
+      base::StrCat({"Net.SpdySession.GoogleSearch.SessionCreationInitiator",
+                    is_used ? ".Used" : ".Unused"});
+
+  base::UmaHistogramEnumeration(histogram_name, session_creation);
 }
 
 base::Value::Dict NetLogSpdyHeadersSentParams(
@@ -2514,9 +2517,9 @@ void SpdySession::RecordHistograms() {
                               streams_abandoned_count_, 1, 300, 50);
   UMA_HISTOGRAM_BOOLEAN("Net.SpdySession.ServerSupportsWebSocket",
                         support_websocket_);
-  if (streams_initiated_count_ > 0 &&
-      IsGoogleHostWithAlpnH3(spdy_session_key_.host_port_pair().host())) {
-    LogSessionCreationInitiatorToHistogram(session_creation_initiator_);
+  if (IsGoogleHostWithAlpnH3(spdy_session_key_.host_port_pair().host())) {
+    LogSessionCreationInitiatorToHistogram(session_creation_initiator_,
+                                           streams_initiated_count_ > 0);
   }
 }
 
