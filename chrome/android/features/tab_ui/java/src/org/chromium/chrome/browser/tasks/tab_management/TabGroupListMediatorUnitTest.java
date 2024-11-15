@@ -10,8 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
@@ -105,6 +106,7 @@ public class TabGroupListMediatorUnitTest {
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
+    @Mock private TabRemover mTabRemover;
     @Mock private TabList mComprehensiveModel;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
@@ -147,6 +149,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(anyInt())).thenReturn(true);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
     }
@@ -469,18 +472,24 @@ public class TabGroupListMediatorUnitTest {
 
         createMediator();
 
+        // IN_CURRENT
         assertEquals(2, mModelList.size());
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(DELETE_RUNNABLE).run();
+        verify(mTabRemover).closeTabs(any(), anyBoolean());
+
+        // HIDDEN - Negative
+        PropertyModel model2 = mModelList.get(1).model;
+        model2.get(DELETE_RUNNABLE).run();
         verify(mActionConfirmationManager)
                 .processDeleteGroupAttempt(mActionConfirmationResultCallbackCaptor.capture());
         mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
-        verify(mTabGroupModelFilter).closeTabs(any());
+                .onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+        verify(mTabGroupSyncService, never()).removeGroup(SYNC_GROUP_ID2);
 
+        // HIDDEN - Positive
         reset(mActionConfirmationManager);
-        PropertyModel model2 = mModelList.get(1).model;
         model2.get(DELETE_RUNNABLE).run();
         verify(mActionConfirmationManager)
                 .processDeleteGroupAttempt(mActionConfirmationResultCallbackCaptor.capture());
@@ -488,33 +497,6 @@ public class TabGroupListMediatorUnitTest {
                 .getValue()
                 .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mTabGroupSyncService).removeGroup(SYNC_GROUP_ID2);
-    }
-
-    @Test
-    public void testDeleteRunnable_NoConfirmation() {
-        SavedTabGroup group1 = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
-        group1.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
-        group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
-
-        when(mTabGroupModelFilter.getRootIdFromStableId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID1))
-                .thenReturn(Arrays.asList(mTab1));
-        when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTab1.getRootId()).thenReturn(ROOT_ID1);
-        when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
-        when(mTab1.isClosing()).thenReturn(false);
-
-        createMediator();
-
-        PropertyModel model1 = mModelList.get(0).model;
-        model1.get(DELETE_RUNNABLE).run();
-        verify(mActionConfirmationManager)
-                .processDeleteGroupAttempt(mActionConfirmationResultCallbackCaptor.capture());
-        mActionConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
-        verify(mTabGroupSyncService, never()).removeGroup(anyString());
     }
 
     @Test
@@ -536,13 +518,9 @@ public class TabGroupListMediatorUnitTest {
 
         assertEquals(1, mModelList.size());
 
+        // IN_CURRENT_CLOSING
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(DELETE_RUNNABLE).run();
-        verify(mActionConfirmationManager)
-                .processDeleteGroupAttempt(mActionConfirmationResultCallbackCaptor.capture());
-        mActionConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mTabModel).commitTabClosure(ROOT_ID1);
         verify(mTabGroupSyncService).removeGroup(SYNC_GROUP_ID1);
     }
@@ -722,6 +700,6 @@ public class TabGroupListMediatorUnitTest {
 
         assertNotNull(model.get(DELETE_RUNNABLE));
         model.get(DELETE_RUNNABLE).run();
-        verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
+        verify(mTabRemover).closeTabs(any(), eq(true));
     }
 }

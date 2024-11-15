@@ -22,7 +22,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.isNotNull;
 import static org.mockito.Mockito.times;
@@ -30,7 +29,6 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.Intent;
 import android.graphics.Rect;
@@ -105,7 +103,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -148,7 +145,6 @@ public class SelectableTabListEditorTest {
 
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
 
     private TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
@@ -232,17 +228,6 @@ public class SelectableTabListEditorTest {
                     mRef = new WeakReference<>(mTabListEditorLayout);
                     mBookmarkModel = cta.getBookmarkModelForTesting();
                 });
-
-        // The inner most callback may check pref service in C++, needs to be on the UI thread.
-        Callback<Callback<Integer>> immediateContinue =
-                (Callback<Integer> callback) ->
-                        ThreadUtils.runOnUiThreadBlocking(
-                                () ->
-                                        callback.onResult(
-                                                ActionConfirmationResult.IMMEDIATE_CONTINUE));
-        doCallback(1, immediateContinue)
-                .when(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), any());
     }
 
     @After
@@ -364,8 +349,7 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
+                                    IconPosition.START));
                     showSelectionEditor(tabs, actions);
                 });
 
@@ -597,8 +581,7 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
+                                    IconPosition.START));
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
@@ -653,8 +636,7 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
+                                    IconPosition.START));
                     showSelectionEditor(tabs, actions);
                 });
 
@@ -686,8 +668,7 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
+                                    IconPosition.START));
 
                     showSelectionEditor(tabs, actions);
                 });
@@ -858,8 +839,7 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
+                                    IconPosition.START));
 
                     showSelectionEditor(tabs, actions);
                 });
@@ -1657,8 +1637,7 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
+                                    IconPosition.START));
 
                     showSelectionEditor(tabs, actions);
                 });
@@ -1692,8 +1671,7 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule.getActivity(),
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
+                                    IconPosition.START));
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),

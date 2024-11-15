@@ -162,8 +162,7 @@ public class TabListEditorManager {
                             mActivity,
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
-                            IconPosition.START,
-                            /* actionConfirmationManager= */ null));
+                            IconPosition.START));
             mTabListEditorActions.add(
                     TabListEditorGroupAction.createAction(
                             mActivity,

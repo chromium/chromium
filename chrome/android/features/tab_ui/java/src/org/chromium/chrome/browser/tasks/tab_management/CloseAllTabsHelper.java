@@ -23,10 +23,12 @@ public class CloseAllTabsHelper {
     /** Closes all tabs hiding tab groups. */
     public static void closeAllTabsHidingTabGroups(
             TabModelSelector tabModelSelector, TabCreator regularTabCreator) {
-        var filterProvider = tabModelSelector.getTabGroupModelFilterProvider();
-        filterProvider
-                .getTabGroupModelFilter(true)
-                .closeTabs(TabClosureParams.closeAllTabs().hideTabGroups(true).build());
+        tabModelSelector
+                .getModel(/* incognito= */ true)
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeAllTabs().hideTabGroups(true).build(),
+                        /* allowDialog= */ false);
 
         Runnable undoRunnable = () -> {};
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
@@ -41,13 +43,15 @@ public class CloseAllTabsHelper {
                                     tabModelSelector.getModel(/* incognito= */ false),
                                     previouslyArchivedTabIds);
         }
-        filterProvider
-                .getTabGroupModelFilter(false)
+        tabModelSelector
+                .getModel(/* incognito= */ false)
+                .getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeAllTabs()
                                 .hideTabGroups(true)
                                 .withUndoRunnable(undoRunnable)
-                                .build());
+                                .build(),
+                        /* allowDialog= */ false);
     }
 
     /**
@@ -69,8 +73,9 @@ public class CloseAllTabsHelper {
             boolean isIncognitoOnly) {
         if (isIncognitoOnly) {
             tabModelSelector
-                    .getModel(/* isIncognito= */ true)
-                    .closeTabs(TabClosureParams.closeAllTabs().build());
+                    .getModel(/* incognito= */ true)
+                    .getTabRemover()
+                    .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
         } else {
             closeAllTabsHidingTabGroups(tabModelSelector, regularTabCreator);
         }
