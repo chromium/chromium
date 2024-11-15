@@ -12,11 +12,15 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -26,7 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.PromoDialog.DialogParams;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -36,10 +40,16 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
-public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
+public class PromoDialogRenderTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
+
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -55,13 +65,22 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @AfterClass
+    public static void tearDownSuite() {
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
+    }
+
     private View getDialogLayout(DialogParams dialogParams) throws Exception {
-        Activity activity = getActivity();
         PromoDialog dialog =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PromoDialog testDialog =
-                                    new PromoDialog(activity) {
+                                    new PromoDialog(sActivity) {
                                         @Override
                                         protected DialogParams getDialogParams() {
                                             return dialogParams;
@@ -97,7 +116,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((ViewGroup) layout.getParent()).removeView(layout);
-                    getActivity().setContentView(layout);
+                    sActivity.setContentView(layout);
                 });
         mRenderTestRule.render(layout, "promo_dialog_basic");
     }
@@ -119,7 +138,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((ViewGroup) layout.getParent()).removeView(layout);
-                    getActivity().setContentView(layout);
+                    sActivity.setContentView(layout);
                 });
         mRenderTestRule.render(layout, "promo_dialog_basic_stack_button");
     }
@@ -139,7 +158,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((ViewGroup) layout.getParent()).removeView(layout);
-                    getActivity().setContentView(layout, new LayoutParams(1600, 1000));
+                    sActivity.setContentView(layout, new LayoutParams(1600, 1000));
                 });
 
         mRenderTestRule.render(layout, "promo_dialog_basic_landscape");
@@ -160,7 +179,7 @@ public class PromoDialogRenderTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ((ViewGroup) layout.getParent()).removeView(layout);
-                    getActivity().setContentView(layout, new LayoutParams(1600, 1000));
+                    sActivity.setContentView(layout, new LayoutParams(1600, 1000));
                 });
 
         mRenderTestRule.render(layout, "promo_dialog_basic_stack_button_landscape");

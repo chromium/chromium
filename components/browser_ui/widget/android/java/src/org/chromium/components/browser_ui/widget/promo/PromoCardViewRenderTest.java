@@ -15,11 +15,16 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -32,7 +37,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -42,10 +47,16 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
-public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
+public class PromoCardViewRenderTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
+
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -62,16 +73,23 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     private PromoCardCoordinator mPromoCardCoordinator;
     private PropertyModel mModel;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        Activity activity = getActivity();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @AfterClass
+    public static void tearDownSuite() {
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
+    }
+
+    @Before
+    public void setUp() throws Exception {
         mModel =
                 new PropertyModel.Builder(PromoCardProperties.ALL_KEYS)
                         .with(
                                 PromoCardProperties.IMAGE,
-                                activity,
+                                sActivity,
                                 R.drawable.test_logo_avatar_anonymous)
                         .with(PromoCardProperties.TITLE, "Title for Promo Card.")
                         .with(PromoCardProperties.DESCRIPTION, "Description for Promo Card.")
@@ -81,7 +99,7 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     }
 
     private void setPromoCard(@LayoutStyle int variance) {
-        Activity activity = getActivity();
+        Activity activity = sActivity;
 
         mPromoCardCoordinator =
                 PromoCardCoordinator.create(activity, mModel, "render-test", variance);
@@ -104,7 +122,7 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     @Feature({"RenderTest"})
     public void testLarge_Default() throws Exception {
         Drawable illustration =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_illustration);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_illustration);
         mModel.set(PromoCardProperties.IMAGE, illustration);
         setPromoCard(LayoutStyle.LARGE);
         mRenderTestRule.render(mPromoCardCoordinator.getView(), "promo_card_default");
@@ -115,7 +133,7 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     @Feature({"RenderTest"})
     public void testLarge_ButtonsWidth() throws Exception {
         Drawable illustration =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_illustration);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_illustration);
         mModel.set(PromoCardProperties.IMAGE, illustration);
         mModel.set(PromoCardProperties.BUTTONS_WIDTH, LayoutParams.WRAP_CONTENT);
         setPromoCard(LayoutStyle.LARGE);
@@ -138,7 +156,7 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     @Feature({"RenderTest"})
     public void testLarge_HideSecondaryButton() throws Exception {
         Drawable illustration =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_illustration);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_illustration);
         mModel.set(PromoCardProperties.IMAGE, illustration);
         mModel.set(PromoCardProperties.HAS_SECONDARY_BUTTON, false);
         setPromoCard(LayoutStyle.LARGE);
@@ -161,7 +179,7 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     @Feature({"RenderTest"})
     public void testLarge_ShowCloseButton() throws Exception {
         Drawable illustration =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_illustration);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_illustration);
         mModel.set(PromoCardProperties.IMAGE, illustration);
         mModel.set(PromoCardProperties.HAS_CLOSE_BUTTON, true);
         setPromoCard(LayoutStyle.LARGE);

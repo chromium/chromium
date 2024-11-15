@@ -24,7 +24,9 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,6 +34,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -39,7 +42,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
@@ -48,7 +51,7 @@ import java.util.List;
 
 /** Instrumentation tests for the Paint Preview player. */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
+public class PaintPreviewPlayerTest {
     private static final long TIMEOUT_MS = 5000;
 
     private static final String TEST_DIRECTORY_KEY = "test_dir";
@@ -60,6 +63,10 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
 
     private static final int TEST_PAGE_WIDTH = 1082;
     private static final int TEST_PAGE_HEIGHT = 5019;
+
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule public PaintPreviewTestRule mPaintPreviewTestRule = new PaintPreviewTestRule();
 
@@ -89,20 +96,19 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         }
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @Before
+    public void setUp() throws Exception {
+        mActivityTestRule.launchActivity(null);
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mLayout = new FrameLayout(getActivity());
-                    getActivity().setContentView(mLayout);
+                    mLayout = new FrameLayout(mActivityTestRule.getActivity());
+                    mActivityTestRule.getActivity().setContentView(mLayout);
                 });
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
-        super.tearDownTest();
+    @After
+    public void tearDown() throws Exception {
         CallbackHelper destroyed = new CallbackHelper();
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
@@ -245,7 +251,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     mPlayerManager =
                             new PlayerManager(
                                     new GURL("about:blank"),
-                                    getActivity(),
+                                    mActivityTestRule.getActivity(),
                                     service,
                                     TEST_DIRECTORY_KEY,
                                     new PlayerManager.Listener() {
@@ -360,18 +366,27 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
 
     private int statusBarHeight() {
         Rect visibleContentRect = new Rect();
-        getActivity().getWindow().getDecorView().getWindowVisibleDisplayFrame(visibleContentRect);
+        mActivityTestRule
+                .getActivity()
+                .getWindow()
+                .getDecorView()
+                .getWindowVisibleDisplayFrame(visibleContentRect);
         return visibleContentRect.top;
     }
 
     private int navigationBarHeight() {
         int navigationBarHeight = 100;
         int resourceId =
-                getActivity()
+                mActivityTestRule
+                        .getActivity()
                         .getResources()
                         .getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            navigationBarHeight = getActivity().getResources().getDimensionPixelSize(resourceId);
+            navigationBarHeight =
+                    mActivityTestRule
+                            .getActivity()
+                            .getResources()
+                            .getDimensionPixelSize(resourceId);
         }
         return navigationBarHeight;
     }
@@ -485,7 +500,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     mPlayerManager =
                             new PlayerManager(
                                     new GURL(TEST_URL),
-                                    getActivity(),
+                                    mActivityTestRule.getActivity(),
                                     service,
                                     TEST_DIRECTORY_KEY,
                                     new PlayerManager.Listener() {
