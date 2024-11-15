@@ -368,6 +368,7 @@ source_set("app_internal") {
 
   deps = [
     ":app",
+    ":app_lifetime_observer",
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
     ":change_profile_commands",
@@ -521,6 +522,11 @@ source_set("app_internal") {
 
   allow_circular_includes_from =
       [ "//ios/chrome/browser/shared/coordinator/scene" ]
+}
+
+source_set("app_lifetime_observer") {
+  sources = [ "app_lifetime_observer.h" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("task_names") {

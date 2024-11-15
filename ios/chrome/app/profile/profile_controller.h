@@ -7,13 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/app/app_lifetime_observer.h"
+
 @class AppState;
 @class MetricsMediator;
 @class ProfileState;
 
 // The controller for a single Profile, owned by MainController. Owns all
 // the top-level UI controllers for this Profile.
-@interface ProfileController : NSObject
+@interface ProfileController : NSObject <AppLifetimeObserver>
 
 // Contains information about the Profile state.
 @property(nonatomic, readonly) ProfileState* state;

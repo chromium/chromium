@@ -242,6 +242,31 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
   [self startUpAfterFirstWindowCreated];
 }
 
+#pragma mark AppLifetimeObserver
+
+- (void)applicationWillResignActive:(UIApplication*)application {
+  NOTREACHED();
+}
+
+- (void)applicationWillTerminate:(UIApplication*)application {
+  NOTREACHED();
+}
+
+- (void)applicationDidEnterBackground:(UIApplication*)application
+                         memoryHelper:(MemoryWarningHelper*)memoryHelper {
+  NOTREACHED();
+}
+
+- (void)applicationWillEnterForeground:(UIApplication*)application
+                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
+  NOTREACHED();
+}
+
+- (void)application:(UIApplication*)application
+    didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
+  NOTREACHED();
+}
+
 #pragma mark Private methods
 
 - (void)attachProfileAgents {

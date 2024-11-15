@@ -274,6 +274,14 @@ BOOL ApplicationIsInBackground() {
 
 - (void)applicationDidEnterBackground:(UIApplication*)application
                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
+  // Reset `startupHadExternalIntent` for all scenes in case external intents
+  // were triggered while the application was in the foreground.
+  for (SceneState* scene in self.connectedScenes) {
+    if (scene.startupHadExternalIntent) {
+      scene.startupHadExternalIntent = NO;
+    }
+  }
+
   // Exit the app if backgrounding the app while being in safe mode.
   if (_initStage == AppInitStage::kSafeMode) {
     exit(0);
@@ -494,6 +502,10 @@ BOOL ApplicationIsInBackground() {
 }
 
 - (void)willResignActive {
+  if (_initStage <= AppInitStage::kSafeMode) {
+    return;
+  }
+
   // Regardless of app state, if the user is able to background the app, reset
   // the failed startup count.
   crash_util::ResetFailedStartupAttemptCount();

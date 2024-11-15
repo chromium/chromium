@@ -405,6 +405,10 @@ void BeginMemoryExperimentationAfterDelay() {
   // Handler for the startup tasks, deferred or not.
   StartupTasks* _startupTasks;
 
+  // The set of "scene sessions" that needs to be discarded. See
+  // -application:didDiscardSceneSessions: for details.
+  NSSet<UISceneSession*>* _sceneSessionsToDiscard;
+
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 
@@ -463,8 +467,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)startUpBrowserBackgroundInitialization {
-  DCHECK(self.appState.initStage > AppInitStage::kSafeMode);
-
   NSBundle* baseBundle = base::apple::OuterBundle();
   base::apple::SetBaseBundleID(
       base::SysNSStringToUTF8([baseBundle bundleIdentifier]).c_str());
@@ -514,6 +516,13 @@ SEQUENCE_CHECKER(_sequenceChecker);
       ChromeWebUIIOSControllerFactory::GetInstance());
 
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
+
+  if (_sceneSessionsToDiscard) {
+    [_appState application:[UIApplication sharedApplication]
+        didDiscardSceneSessions:_sceneSessionsToDiscard];
+    _sceneSessionsToDiscard = nil;
+  }
+
   [self.appState queueTransitionToNextInitStage];
 }
 
@@ -661,6 +670,51 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // take care of forcing the orientation of the application until done with
   // the early UI initialisation.
   _scopedForceOrientation.reset();
+}
+
+#pragma mark - AppLifetimeObserver
+
+- (void)applicationWillResignActive:(UIApplication*)application {
+  [_appState willResignActive];
+}
+
+- (void)applicationWillTerminate:(UIApplication*)application {
+  [_appState applicationWillTerminate:application];
+}
+
+- (void)applicationDidEnterBackground:(UIApplication*)application
+                         memoryHelper:(MemoryWarningHelper*)memoryHelper {
+  [_appState applicationDidEnterBackground:application
+                              memoryHelper:memoryHelper];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication*)application
+                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
+  [_appState applicationWillEnterForeground:application
+                            metricsMediator:_metricsMediator
+                               memoryHelper:memoryHelper];
+}
+
+- (void)application:(UIApplication*)application
+    didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
+  // This method is invoked by iOS to inform the application that the sessions
+  // for "closed windows" are garbage collected and that any data associated
+  // with them by the application needs to be deleted.
+  //
+  // The documentation says that if the application is not running when the OS
+  // decides to discard the sessions, then it will call this method the next
+  // time the application starts up. As seen by crbug.com/1292641, this call
+  // happens before -[UIApplicationDelegate sceneWillConnect:] which means
+  // that it can happen before Chrome has properly initialized. In that case,
+  // record the list of sessions to discard and clean them once Chrome is
+  // initialized.
+  if (_appState.initStage <=
+      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
+    _sceneSessionsToDiscard = [sceneSessions copy];
+    return;
+  }
+
+  [_appState application:application didDiscardSceneSessions:sceneSessions];
 }
 
 #pragma mark - AppStateObserver

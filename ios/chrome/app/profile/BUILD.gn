@@ -47,6 +47,7 @@ source_set("profile_controller") {
     "//base",
     "//components/feature_engagement/public",
     "//ios/chrome/app",
+    "//ios/chrome/app:app_lifetime_observer",
     "//ios/chrome/app:task_names",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
