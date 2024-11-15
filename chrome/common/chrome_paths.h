@@ -140,6 +140,9 @@ enum {
   // Flag file indicating SRK ROCA vulnerability status.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
 
+  // File containing the device refresh_token.
+  FILE_CHROME_OS_DEVICE_REFRESH_TOKEN,
+
   // Base directory where user cryptohome mount point (named as hash of
   // username) resides.
   DIR_CHROMEOS_HOMEDIR_MOUNT,

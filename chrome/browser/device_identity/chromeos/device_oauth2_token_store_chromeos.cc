@@ -7,8 +7,14 @@
 #include <optional>
 #include <utility>
 
+#include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/logging.h"
+#include "base/path_service.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/settings/token_encryptor.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -16,7 +22,27 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
+namespace {
+
+std::string LoadRefreshTokenV3() {
+  std::string refresh_token;
+  base::FilePath path;
+  base::PathService::Get(chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN, &path);
+  if (!base::PathExists(path) ||
+      !base::ReadFileToString(path, &refresh_token)) {
+    refresh_token.clear();
+  }
+
+  return refresh_token;
+}
+
+}  // namespace
+
 namespace chromeos {
+
+BASE_FEATURE(kRefreshTokenV3Feature,
+             "RefreshTokenV3Feature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 DeviceOAuth2TokenStoreChromeOS::DeviceOAuth2TokenStoreChromeOS(
     PrefService* local_state)
@@ -39,14 +65,29 @@ void DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(
                                std::string());
   registry->RegisterStringPref(prefs::kDeviceRobotAnyApiRefreshTokenV2,
                                std::string());
+  registry->RegisterBooleanPref(prefs::kDeviceRefreshTokenAnyApiIsV3Used,
+                                false);
 }
 
 void DeviceOAuth2TokenStoreChromeOS::Init(InitCallback callback) {
   state_ = State::INITIALIZING;
-  // Pull in the system salt.
-  ash::SystemSaltGetter::Get()->GetSystemSalt(
-      base::BindOnce(&DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  if (!base::FeatureList::IsEnabled(kRefreshTokenV3Feature) ||
+      !local_state_->GetBoolean(prefs::kDeviceRefreshTokenAnyApiIsV3Used)) {
+    // Pull in the system salt.
+    ash::SystemSaltGetter::Get()->GetSystemSalt(
+        base::BindOnce(&DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    base::ThreadPool::CreateTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+        ->PostTaskAndReplyWithResult(
+            FROM_HERE, base::BindOnce(&LoadRefreshTokenV3),
+            base::BindOnce(
+                &DeviceOAuth2TokenStoreChromeOS::OnRefreshTokenLoadedV3,
+                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
 }
 
 CoreAccountId DeviceOAuth2TokenStoreChromeOS::GetAccountId() const {
@@ -72,11 +113,41 @@ void DeviceOAuth2TokenStoreChromeOS::SetAndSaveRefreshToken(
 
   token_save_callbacks_.push_back(std::move(callback));
   if (state_ == State::READY) {
+    // TODO(b/320682630): When the feature is removed, we need to make sure to
+    // remove the code that stores the token using the old methods, but also
+    // make sure the FlushTokenSaveCallbacks() is called.
+    if (base::FeatureList::IsEnabled(kRefreshTokenV3Feature)) {
+      StoreRefreshTokenV3();
+    }
     if (system_salt_.empty()) {
       FlushTokenSaveCallbacks(false);
     } else {
       EncryptAndSaveToken();
     }
+  }
+}
+
+void DeviceOAuth2TokenStoreChromeOS::OnRefreshTokenLoadedV3(
+    InitCallback callback,
+    const std::string& refresh_token) {
+  if (refresh_token.empty()) {
+    std::move(callback).Run(/*init_result=*/false,
+                            /*validation_required=*/false);
+    return;
+  }
+  refresh_token_ = refresh_token;
+  std::move(callback).Run(/*init_result=*/true, /*validation_required=*/true);
+}
+
+void DeviceOAuth2TokenStoreChromeOS::StoreRefreshTokenV3() {
+  base::FilePath path;
+  base::PathService::Get(chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN, &path);
+  bool success =
+      base::ImportantFileWriter::WriteFileAtomically(path, refresh_token_);
+  if (success) {
+    // The value true is meant to be just a flag, that means the version 3 of
+    // storage for refresh_token is used.
+    local_state_->SetBoolean(prefs::kDeviceRefreshTokenAnyApiIsV3Used, true);
   }
 }
 
@@ -174,6 +245,10 @@ void DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt(
 
   // If the token has been set meanwhile, write it to |local_state_|.
   if (!refresh_token_.empty()) {
+    if (base::FeatureList::IsEnabled(kRefreshTokenV3Feature)) {
+      StoreRefreshTokenV3();
+    }
+
     EncryptAndSaveToken();
     std::move(callback).Run(true, false);
     return;

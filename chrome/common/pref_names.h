@@ -2959,6 +2959,8 @@ inline constexpr char kDeviceRobotAnyApiRefreshTokenV1[] =
     "device_robot_refresh_token.any-api";
 inline constexpr char kDeviceRobotAnyApiRefreshTokenV2[] =
     "device_robot_refresh_token_v2.any-api";
+inline constexpr char kDeviceRefreshTokenAnyApiIsV3Used[] =
+    "device_refresh_token_is_v3_used.any-api";
 
 // Device requisition for enterprise enrollment.
 inline constexpr char kDeviceEnrollmentRequisition[] =

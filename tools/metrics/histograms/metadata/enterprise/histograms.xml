@@ -2946,6 +2946,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.RefreshTokenLoadResult" enum="Boolean"
+    expires_after="2025-04-29">
+  <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Chrome tries to load the refresh token at start. The result of that
+    operation is logged in this histogram, success corresponding to true.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
     expires_after="2025-04-13">
   <owner>bfranz@chromium.org</owner>

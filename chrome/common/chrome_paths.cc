@@ -77,6 +77,8 @@ const base::FilePath::CharType kChromeOSTPMFirmwareUpdateLocation[] =
     FILE_PATH_LITERAL("/run/tpm_firmware_update_location");
 const base::FilePath::CharType kChromeOSTPMFirmwareUpdateSRKVulnerableROCA[] =
     FILE_PATH_LITERAL("/run/tpm_firmware_update_srk_vulnerable_roca");
+const base::FilePath::CharType kDeviceRefreshTokenFilePath[] =
+    FILE_PATH_LITERAL("/home/chronos/device_refresh_token");
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
 const base::FilePath::CharType kChromeOSCryptohomeMountRoot[] =
     FILE_PATH_LITERAL("/home/user");
@@ -625,6 +627,9 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA:
       cur = base::FilePath(kChromeOSTPMFirmwareUpdateSRKVulnerableROCA);
+      break;
+    case chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN:
+      cur = base::FilePath(kDeviceRefreshTokenFilePath);
       break;
     case chrome::DIR_CHROMEOS_HOMEDIR_MOUNT:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)

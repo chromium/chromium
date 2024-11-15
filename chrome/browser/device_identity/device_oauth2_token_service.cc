@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
@@ -24,6 +25,10 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+const char kRefreshTokenInitMetric[] = "Enterprise.RefreshTokenLoadResult";
+}  // namespace
 
 struct DeviceOAuth2TokenService::PendingRequest {
   PendingRequest(
@@ -169,6 +174,7 @@ void DeviceOAuth2TokenService::OnNetworkError(int response_code) {
 
 void DeviceOAuth2TokenService::OnInitComplete(bool init_result,
                                               bool validation_required) {
+  base::UmaHistogramBoolean(kRefreshTokenInitMetric, init_result);
   if (!init_result) {
     state_ = STATE_NO_TOKEN;
     return;
