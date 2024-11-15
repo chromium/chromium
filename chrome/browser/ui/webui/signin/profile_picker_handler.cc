@@ -1027,6 +1027,7 @@ void ProfilePickerHandler::OnProfileHostedDomainChanged(
 void ProfilePickerHandler::OnProfileSupervisedUserIdChanged(
     const base::FilePath& profile_path) {
   MaybeUpdateGuestMode();
+  PushProfilesList();
 }
 
 void ProfilePickerHandler::DidFirstVisuallyNonEmptyPaint() {
