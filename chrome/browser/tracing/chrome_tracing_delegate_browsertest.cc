@@ -35,7 +35,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/pref_names.h"
-#include "components/variations/variations_params_manager.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
