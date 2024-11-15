@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_SKYVAULT_TEST_BASE_H_
-#define CHROME_BROWSER_ASH_POLICY_SKYVAULT_SKYVAULT_TEST_BASE_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_TEST_SKYVAULT_TEST_BASE_H_
+#define CHROME_BROWSER_ASH_POLICY_SKYVAULT_TEST_SKYVAULT_TEST_BASE_H_
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -164,4 +164,4 @@ class SkyvaultGoogleDriveTest
 
 }  // namespace policy::local_user_files
 
-#endif  // CHROME_BROWSER_ASH_POLICY_SKYVAULT_SKYVAULT_TEST_BASE_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_SKYVAULT_TEST_SKYVAULT_TEST_BASE_H_

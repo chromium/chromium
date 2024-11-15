@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/skyvault/skyvault_test_base.h"
+#include "chrome/browser/ash/policy/skyvault/test/skyvault_test_base.h"
 
 #include <string>
 
