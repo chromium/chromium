@@ -398,7 +398,7 @@
   }
 
   _launchScreenWindow = nil;
-  [self.sceneState.window makeKeyAndVisible];
+  [self.sceneState setRootViewControllerKeyAndVisible];
 }
 
 - (BOOL)isLaunchScreenDisplayed {

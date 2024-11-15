@@ -133,6 +133,9 @@
 - (void)setRootViewController:(UIViewController*)rootViewController
             makeKeyAndVisible:(BOOL)makeKeyAndVisible;
 
+// Shows and positions rootViewController in front of all others window.
+- (void)setRootViewControllerKeyAndVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_STATE_H_

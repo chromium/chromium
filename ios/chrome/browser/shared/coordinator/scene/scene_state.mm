@@ -108,6 +108,10 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   }
 }
 
+- (void)setRootViewControllerKeyAndVisible {
+  [self.window makeKeyAndVisible];
+}
+
 #pragma mark - Setters & Getters.
 
 - (UIWindow*)window {
