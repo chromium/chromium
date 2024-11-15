@@ -197,7 +197,14 @@ TEST_F(TracingObserverProtoTest,
   data_source_tester.EndTracing();
 }
 
-TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
+// crbug.com/379290393: consistent failures on linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AddChromeDumpToTraceIfEnabled \
+  DISABLED_AddChromeDumpToTraceIfEnabled
+#else
+#define MAYBE_AddChromeDumpToTraceIfEnabled AddChromeDumpToTraceIfEnabled
+#endif
+TEST_F(TracingObserverProtoTest, MAYBE_AddChromeDumpToTraceIfEnabled) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);
