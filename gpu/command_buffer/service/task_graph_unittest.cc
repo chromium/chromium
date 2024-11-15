@@ -182,6 +182,31 @@ class TaskGraphTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(TaskGraphTest, DestroySequenceReleasesSyncPoints) {
+  // Test that when a sequence is destroyed, all wait fences that are supposed
+  // to be released by the destroyed sequence will be unblocked. No validation
+  // is required.
+
+  CreateSequence(0);
+  CreateSequence(1);
+
+  CreateSyncToken(1, 0);  // declare sync_token 0 on seq 1
+
+  AddTask(0, 0, -1);  // task 0: seq 0, wait 0, no release
+
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(tasks_executed_.empty());
+
+  task_graph_->DestroySequence(GetSequenceId(1));
+  sequence_info_.erase(1);
+
+  RunAllPendingTasks();
+
+  std::vector<int> expected_task_order{0};
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+}
+
 TEST_F(TaskGraphTest, ValidationWaitWithoutRelease) {
   // Two tasks on the same sequence wait for unreleased fences.
   CreateSequence(0);

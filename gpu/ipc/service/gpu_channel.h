@@ -25,7 +25,6 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/isolation_key_provider.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
