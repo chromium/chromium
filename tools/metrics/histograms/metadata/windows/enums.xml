@@ -44,6 +44,7 @@ chromium-metrics-reviews@google.com.
     The hash of a lower case process name generated using metrics::HashName.
   </summary>
   <int value="-2031320757" label="naio.exe"/>
+  <int value="-1984598427" label="olk.exe"/>
   <int value="-1975402871" label="windbg.exe"/>
   <int value="-1883802758" label="chrome.exe"/>
   <int value="-1861811955" label="origin.exe"/>
@@ -82,11 +83,14 @@ chromium-metrics-reviews@google.com.
   <int value="1000072556" label="java.exe"/>
   <int value="1408608854" label="old_chrome.exe"/>
   <int value="1412988381" label="claunch.exe"/>
+  <int value="1482213424" label="slack.exe"/>
   <int value="1590408389" label="services.exe"/>
   <int value="1614875030" label="taskeng.exe"/>
   <int value="1630952668" label="line.exe"/>
   <int value="1641914182" label="winword.exe"/>
   <int value="1660748446" label="acad.exe"/>
+  <int value="1669114077" label="thunderbird.exe"/>
+  <int value="1761114345" label="powershell.exe"/>
   <int value="1775984853" label="spotify.exe"/>
   <int value="1896894115" label="filmora.exe"/>
   <int value="1914315258" label="cdb.exe"/>
