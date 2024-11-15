@@ -109,6 +109,8 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
   FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest, ExtractCachedData);
   FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
                            GetAfterExtractCachedDataFails);
+  FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
+                           FeaturePromoPreconditionList_ExtractCachedData);
 
   const Identifier identifier_;
   FeaturePromoResult::Failure failure_;
@@ -240,6 +242,9 @@ class FeaturePromoPreconditionList {
   // either the `failure()` and `identifier()` of the first that does not pass,
   // or `FeaturePromoResult::Success()` if all preconditions pass.
   CheckResult CheckPreconditions() const;
+
+  // Extracts cached data from all preconditions into `to_add_to`.
+  void ExtractCachedData(internal::PreconditionData::Collection& to_add_to);
 
  private:
   ListType preconditions_;

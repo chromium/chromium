@@ -285,4 +285,23 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList_AppendAll) {
             list.CheckPreconditions());
 }
 
+TEST(FeaturePromoPreconditionTest,
+     FeaturePromoPreconditionList_ExtractCachedData) {
+  auto precond1 = std::make_unique<CachingFeaturePromoPrecondition>(
+      kTestId, kPrecondFailure, kPrecondName, true);
+  auto precond2 = std::make_unique<CachingFeaturePromoPrecondition>(
+      kTestId2, kPrecondFailure2, kPrecondName2, true);
+  precond1->InitCache(kIntegerData);
+  precond2->InitCache(kStringData);
+  precond1->GetCachedData(kIntegerData) = 2;
+  precond2->GetCachedData(kStringData) = "3";
+
+  FeaturePromoPreconditionList list(std::move(precond1), std::move(precond2));
+  internal::PreconditionData::Collection coll;
+  list.ExtractCachedData(coll);
+
+  EXPECT_EQ(2, *internal::PreconditionData::Get(coll, kIntegerData));
+  EXPECT_EQ("3", *internal::PreconditionData::Get(coll, kStringData));
+}
+
 }  // namespace user_education

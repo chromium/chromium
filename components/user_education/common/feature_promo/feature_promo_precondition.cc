@@ -127,4 +127,11 @@ void FeaturePromoPreconditionList::AddPrecondition(
   preconditions_.emplace_back(std::move(precondition));
 }
 
+void FeaturePromoPreconditionList::ExtractCachedData(
+    internal::PreconditionData::Collection& to_add_to) {
+  for (auto& precondition : preconditions_) {
+    precondition->ExtractCachedData(to_add_to);
+  }
+}
+
 }  // namespace user_education
