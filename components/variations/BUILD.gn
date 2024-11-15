@@ -194,8 +194,6 @@ static_library("test_support") {
     "scoped_variations_ids_provider.h",
     "service/test_variations_service.cc",
     "service/test_variations_service.h",
-    "variations_params_manager.cc",
-    "variations_params_manager.h",
     "variations_test_utils.cc",
     "variations_test_utils.h",
   ]
