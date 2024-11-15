@@ -36,7 +36,7 @@ TaskAnnotator::ObserverForTesting* g_task_annotator_observer = nullptr;
 // The PendingTask currently in progress on each thread. Used to allow creating
 // a breadcrumb of program counters on the stack to help identify a task's
 // origin in crashes.
-constinit thread_local PendingTask* current_pending_task = nullptr;
+constinit thread_local const PendingTask* current_pending_task = nullptr;
 
 // Scoped IPC-related data (IPC hash and/or IPC interface name). IPC hash or
 // interface name can be known before the associated task object is created;
@@ -93,6 +93,12 @@ const PendingTask* TaskAnnotator::CurrentTaskForThread() {
   MSAN_UNPOISON(&current_pending_task, sizeof(PendingTask*));
 
   return current_pending_task;
+}
+
+void TaskAnnotator::SetCurrentTaskForThread(
+    PassKey<sequence_manager::internal::WorkQueue>,
+    const PendingTask* pending_task) {
+  current_pending_task = pending_task;
 }
 
 void TaskAnnotator::OnIPCReceived(const char* interface_name,
@@ -193,8 +199,8 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   base::debug::Alias(&task_time);
 
   {
-    const AutoReset<PendingTask*> resetter(&current_pending_task,
-                                           &pending_task);
+    const AutoReset<const PendingTask*> resetter(&current_pending_task,
+                                                 &pending_task);
 
     if (g_task_annotator_observer) {
       g_task_annotator_observer->BeforeRunTask(&pending_task);

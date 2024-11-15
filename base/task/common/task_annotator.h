@@ -15,8 +15,13 @@
 #include "base/pending_task.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/types/pass_key.h"
 
 namespace base {
+
+namespace sequence_manager::internal {
+class WorkQueue;
+}
 
 // Constant used to measure which long-running tasks should be traced.
 constexpr TimeDelta kMaxTaskDurationTimeDelta = Milliseconds(4);
@@ -43,6 +48,9 @@ class BASE_EXPORT TaskAnnotator {
   class LongTaskTracker;
 
   static const PendingTask* CurrentTaskForThread();
+  static void SetCurrentTaskForThread(
+      PassKey<sequence_manager::internal::WorkQueue>,
+      const PendingTask* pending_task);
 
   static void OnIPCReceived(const char* interface_name,
                             uint32_t (*method_info)(),
