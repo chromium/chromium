@@ -1534,7 +1534,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
 void ProfileManager::DoFinalInitLogging(Profile* profile) {
   TRACE_EVENT0("browser", "ProfileManager::DoFinalInitLogging");
-  base::UmaHistogramCounts100("Profile.NumberOfProfilesAtProfileCreation",
+  base::UmaHistogramCounts100("Profile.NumberOfProfilesAtProfileInit",
                               GetNumberOfProfiles());
 
   // Skip the rest of this function in tests as the extension service might be

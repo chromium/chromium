@@ -2369,15 +2369,12 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }
 
-// Tests that a new profile's entry in the profile attributes storage is setup
-// with the same values that are in the profile prefs.
 TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
   using base::Bucket;
   using base::BucketsAre;
 
   base::HistogramTester histogram_tester;
-  const std::string kHistogramName =
-      "Profile.NumberOfProfilesAtProfileCreation";
+  const std::string kHistogramName = "Profile.NumberOfProfilesAtProfileInit";
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath dest_path = temp_dir_.GetPath();
 

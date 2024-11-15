@@ -437,8 +437,8 @@ chromium-metrics-reviews@google.com.
   <owner>alexilin@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records the count of profiles every time a new profile is initialized,
-    including the newly initialized profile. Only recorded for on-disk profiles
+    Records the count of profiles every time a profile is initialized. The count
+    includes the newly initialized profile. Only recorded for on-disk profiles
     (Incognito and Guest are excluded, for example).
 
     The total histogram count can be used to estimate how many profiles were
