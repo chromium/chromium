@@ -4160,7 +4160,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
   Wil je <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3942420633017001071">Diagnose</translation>
 <translation id="3943582379552582368">&amp;Vorige</translation>
-<translation id="3943857333388298514">Plak</translation>
+<translation id="3943857333388298514">Plakken</translation>
 <translation id="3945513714196326460">Probeer een kortere naam</translation>
 <translation id="3948027458879361203">Hostnaam wijzigen</translation>
 <translation id="3948116654032448504">&amp;Afbeelding zoeken in <ph name="SEARCH_ENGINE" /></translation>
@@ -5295,7 +5295,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4806071198808203109">Video&amp;frame opslaan als...</translation>
 <translation id="4806457879608775995">Bekijk deze voorwaarden en beheer je gegevens</translation>
-<translation id="4807098396393229769">Naam op pas</translation>
+<translation id="4807098396393229769">Naam op kaart</translation>
 <translation id="4807122856660838973">Safe Browsing aanzetten</translation>
 <translation id="4807514039636325497">D-Bus-gegevens</translation>
 <translation id="4808525520374557629">Krijg meldingen met suggesties om gevonden prestatieproblemen op te lossen. <ph name="BEGIN_LINK" />Meer informatie over meldingen over prestatieproblemen<ph name="END_LINK" /></translation>
@@ -5680,7 +5680,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Opmerking bestaat uit meer dan 1000 tekens</translation>
 <translation id="5087249366037322692">Toegevoegd door een derde partij</translation>
-<translation id="5087580092889165836">Pas toevoegen</translation>
+<translation id="5087580092889165836">Kaart toevoegen</translation>
 <translation id="5087864757604726239">terug</translation>
 <translation id="5088427648965532275">Passpoint-provider</translation>
 <translation id="5088534251099454936">PKCS nr. 1 SHA-512 met RSA-versleuteling</translation>
@@ -5717,7 +5717,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> verwijderen</translation>
 <translation id="5111326646107464148">Groep openen in nieuw venster</translation>
 <translation id="5111646998522066203">Incognitomodus sluiten</translation>
-<translation id="5111692334209731439">&amp;Bladwijzermanager</translation>
+<translation id="5111692334209731439">&amp;Bookmarkmanager</translation>
 <translation id="5111794652433847656">Er zijn geen toegangscodes voor <ph name="APP_NAME" /> op dit apparaat</translation>
 <translation id="5112577000029535889">&amp;Hulpprogramma's voor ontwikkelaars</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 bestand verplaatst}other{{NUM_OF_FILES} bestanden verplaatst}}</translation>
@@ -8099,7 +8099,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6863496016067551393">Alle extensies toegestaan</translation>
 <translation id="686366188661646310">Wachtwoord verwijderen?</translation>
 <translation id="6863925886424789941">Het Colosseum</translation>
-<translation id="6865313869410766144">Formuliergegevens voor 'Automatisch invullen'</translation>
+<translation id="6865313869410766144">Formuliergegevens voor automatisch invullen</translation>
 <translation id="6865598234501509159">Pagina is niet in het <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">WebRTC-gebeurtenislogboeken (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Stil</translation>
@@ -9260,7 +9260,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7721258531237831532">Je organisatie vereist een profiel</translation>
 <translation id="7722040605881499779">Nodig voor update: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Resetten naar Chrome-standaard</translation>
-<translation id="7724603315864178912">Knip</translation>
+<translation id="7724603315864178912">Knippen</translation>
 <translation id="7726391492136714301">Meldingen en apps van je telefoon bekijken</translation>
 <translation id="7728465250249629478">Taal van apparaat wijzigen</translation>
 <translation id="7728570244950051353">Scherm vergrendelen vanuit slaapmodus</translation>
@@ -9823,7 +9823,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8110489095782891123">Contactenlijst downloaden...</translation>
 <translation id="8114925369073821854">Microfoonrechten voor <ph name="APP_NAME" /></translation>
 <translation id="8115139559594092084">Vanaf je Google Drive</translation>
-<translation id="8116972784401310538">&amp;Bladwijzerbeheer</translation>
+<translation id="8116972784401310538">&amp;Bookmarkmanager</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> onthoudt hoe je bent ingelogd en logt je automatisch in als dat mogelijk is. Als dit uitstaat, wordt je elke keer om bevestiging gevraagd.</translation>
 <translation id="8118331347066725040">Stuur feedback voor zoeken met Lens</translation>
 <translation id="8118362518458010043">Uitgezet door Chrome. Deze extensie kan onveilig zijn.</translation>
