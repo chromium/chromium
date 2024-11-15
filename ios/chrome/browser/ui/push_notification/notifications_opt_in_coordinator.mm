@@ -14,9 +14,11 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/push_notification/metrics.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
@@ -85,12 +87,9 @@
         }
       };
   // If there are 0 identities, kInstantSignin requires less taps.
-  ProfileIOS* profile = self.browser->GetProfile();
   AuthenticationOperation operation =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile)
-              ->HasIdentities()
-          ? AuthenticationOperation::kSigninOnly
-          : AuthenticationOperation::kInstantSignin;
+      [self hasIdentitiesOnDevice] ? AuthenticationOperation::kSigninOnly
+                                   : AuthenticationOperation::kInstantSignin;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
@@ -154,6 +153,18 @@
 }
 
 #pragma mark - Private
+
+- (bool)hasIdentitiesOnDevice {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    return !IdentityManagerFactory::GetForProfile(profile)
+                ->GetAccountsOnDevice()
+                .empty();
+  } else {
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile)
+        ->HasIdentities();
+  }
+}
 
 // Dismisses the base view controller.
 - (void)dismissViewController {
