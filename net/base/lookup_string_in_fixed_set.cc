@@ -25,27 +25,28 @@ namespace {
 // Returns true if an offset could be read; false otherwise.
 inline bool GetNextOffset(base::span<const uint8_t>* bytes,
                           base::span<const uint8_t>* offset_bytes) {
-  if (!bytes->size()) {
+  if (bytes->empty()) {
     return false;
   }
 
   size_t bytes_consumed;
-  switch (bytes->front() & 0x60) {
+  switch ((*bytes)[0] & 0x60) {
     case 0x60:  // Read three byte offset
-      *offset_bytes = offset_bytes->subspan(((bytes->front() & 0x1F) << 16) |
-                                            ((*bytes)[1] << 8) | (*bytes)[2]);
+      *offset_bytes = offset_bytes->subspan(static_cast<size_t>(
+          (((*bytes)[0] & 0x1F) << 16) | ((*bytes)[1] << 8) | (*bytes)[2]));
       bytes_consumed = 3;
       break;
     case 0x40:  // Read two byte offset
-      *offset_bytes =
-          offset_bytes->subspan(((bytes->front() & 0x1F) << 8) | (*bytes)[1]);
+      *offset_bytes = offset_bytes->subspan(
+          static_cast<size_t>((((*bytes)[0] & 0x1F) << 8) | (*bytes)[1]));
       bytes_consumed = 2;
       break;
     default:
-      *offset_bytes = offset_bytes->subspan(bytes->front() & 0x3F);
+      *offset_bytes =
+          offset_bytes->subspan(static_cast<size_t>((*bytes)[0] & 0x3F));
       bytes_consumed = 1;
   }
-  if ((bytes->front() & 0x80) != 0) {
+  if ((*bytes)[0] & 0x80) {
     *bytes = base::span<const uint8_t>();
   } else {
     *bytes = bytes->subspan(bytes_consumed);

@@ -24,6 +24,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -1205,7 +1206,9 @@ class SimpleGetRunner {
     int offset = read_buffer_->offset();
     read_buffer_->SetCapacity(offset + data.size());
     auto span = base::as_byte_span(data);
-    read_buffer_->everything().subspan(offset, span.size()).copy_from(span);
+    read_buffer_->everything()
+        .subspan(base::checked_cast<size_t>(offset), span.size())
+        .copy_from(span);
     read_buffer_->set_offset(offset + span.size());
   }
 

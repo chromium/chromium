@@ -315,7 +315,7 @@ int HttpStreamParser::ReadResponseHeaders(CompletionOnceCallback callback) {
   DCHECK(io_state_ == STATE_NONE || io_state_ == STATE_DONE);
   DCHECK(callback_.is_null());
   DCHECK(!callback.is_null());
-  DCHECK_EQ(0, read_buf_unused_offset_);
+  DCHECK_EQ(0u, read_buf_unused_offset_);
   DCHECK(SendRequestBuffersEmpty());
 
   // This function can be called with io_state_ == STATE_DONE if the
@@ -356,7 +356,7 @@ int HttpStreamParser::ReadResponseBody(IOBuffer* buf,
     return OK;
 
   user_read_buf_ = buf;
-  user_read_buf_len_ = buf_len;
+  user_read_buf_len_ = base::checked_cast<size_t>(buf_len);
   io_state_ = STATE_READ_BODY;
 
   int result = DoLoop(OK);
@@ -664,20 +664,23 @@ int HttpStreamParser::DoReadBody() {
   // There may be additional data after the end of the body waiting in
   // the socket, but in order to find out, we need to read as much as possible.
   // If there is additional data, discard it and close the connection later.
-  int64_t remaining_read_len = user_read_buf_len_;
-  int64_t remaining_body = 0;
+  uint64_t remaining_read_len = user_read_buf_len_;
+  uint64_t remaining_body = 0;
   if (truncate_to_content_length_enabled_ && !chunked_decoder_.get() &&
       response_body_length_ >= 0) {
-    remaining_body = response_body_length_ - response_body_read_;
+    remaining_body = base::checked_cast<uint64_t>(response_body_length_ -
+                                                  response_body_read_);
     remaining_read_len = std::min(remaining_read_len, remaining_body);
   }
 
   // There may be some data left over from reading the response headers.
   if (read_buf_->offset()) {
-    int64_t available = read_buf_->offset() - read_buf_unused_offset_;
+    const auto read_offset_s = base::checked_cast<size_t>(read_buf_->offset());
+    CHECK_GE(read_offset_s, read_buf_unused_offset_);
+    const size_t available = read_offset_s - read_buf_unused_offset_;
     if (available) {
-      CHECK_GT(available, 0);
-      int64_t bytes_from_buffer = std::min(available, remaining_read_len);
+      const auto bytes_from_buffer = static_cast<size_t>(
+          std::min(uint64_t{available}, remaining_read_len));
       user_read_buf_->span().copy_prefix_from(read_buf_->everything().subspan(
           read_buf_unused_offset_, bytes_from_buffer));
       read_buf_unused_offset_ += bytes_from_buffer;
@@ -693,10 +696,9 @@ int HttpStreamParser::DoReadBody() {
         read_buf_unused_offset_ = 0;
       }
       return bytes_from_buffer;
-    } else {
-      read_buf_->SetCapacity(0);
-      read_buf_unused_offset_ = 0;
     }
+    read_buf_->SetCapacity(0);
+    read_buf_unused_offset_ = 0;
   }
 
   // Check to see if we're done reading.
@@ -706,7 +708,8 @@ int HttpStreamParser::DoReadBody() {
   // DoReadBodyComplete will truncate the amount read if necessary whether the
   // read completes synchronously or asynchronously.
   DCHECK_EQ(0, read_buf_->offset());
-  return stream_socket_->Read(user_read_buf_.get(), user_read_buf_len_,
+  return stream_socket_->Read(user_read_buf_.get(),
+                              base::checked_cast<int>(user_read_buf_len_),
                               io_callback_);
 }
 
@@ -718,12 +721,13 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
       response_body_length_ >= 0) {
     // Calculate how much we should have been allowed to read to not go beyond
     // the Content-Length.
-    int64_t remaining_body = response_body_length_ - response_body_read_;
-    int64_t remaining_read_len =
-        std::min(static_cast<int64_t>(user_read_buf_len_), remaining_body);
-    if (result > remaining_read_len) {
+    const auto remaining_body = base::checked_cast<uint64_t>(
+        response_body_length_ - response_body_read_);
+    uint64_t remaining_read_len =
+        std::min(uint64_t{user_read_buf_len_}, remaining_body);
+    if (result > 0 && static_cast<uint64_t>(result) > remaining_read_len) {
       // Truncate to only what is in the body.
-      result = remaining_read_len;
+      result = base::checked_cast<int>(remaining_read_len);
       discarded_extra_data_ = true;
     }
   }
@@ -769,7 +773,7 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
   // Filter incoming data if appropriate.  FilterBuf may return an error.
   if (result > 0 && chunked_decoder_.get()) {
     result = chunked_decoder_->FilterBuf(
-        user_read_buf_->span().first(base::checked_cast<size_t>(result)));
+        user_read_buf_->span().first(static_cast<size_t>(result)));
     if (result == 0 && !chunked_decoder_->reached_eof()) {
       // Don't signal completion of the Read call yet or else it'll look like
       // we received end-of-file.  Wait for more data.
@@ -789,7 +793,10 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
     // in |read_buf_|.  But the part left over in |user_read_buf_| must have
     // come from the |read_buf_|, so there's room to put it back at the
     // start first.
-    int additional_save_amount = read_buf_->offset() - read_buf_unused_offset_;
+    const auto read_offset_s = base::checked_cast<size_t>(read_buf_->offset());
+    CHECK_GE(read_offset_s, read_buf_unused_offset_);
+    const size_t additional_save_amount =
+        read_offset_s - read_buf_unused_offset_;
     int save_amount = 0;
     if (chunked_decoder_.get()) {
       save_amount = chunked_decoder_->bytes_after_eof();
@@ -802,21 +809,24 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
       }
     }
 
-    CHECK_LE(save_amount + additional_save_amount, kMaxBufSize);
-    if (read_buf_->capacity() < save_amount + additional_save_amount) {
-      read_buf_->SetCapacity(save_amount + additional_save_amount);
+    const auto new_capacity =
+        base::checked_cast<int>(save_amount + additional_save_amount);
+    CHECK_LE(new_capacity, kMaxBufSize);
+    if (read_buf_->capacity() < new_capacity) {
+      read_buf_->SetCapacity(new_capacity);
     }
 
     if (save_amount) {
       received_bytes_ -= save_amount;
-      read_buf_->everything().copy_prefix_from(
-          user_read_buf_->span().subspan(result, save_amount));
+      read_buf_->everything().copy_prefix_from(user_read_buf_->span().subspan(
+          base::checked_cast<size_t>(result),
+          base::checked_cast<size_t>(save_amount)));
     }
     read_buf_->set_offset(save_amount);
     if (additional_save_amount) {
       read_buf_->span().copy_prefix_from(read_buf_->everything().subspan(
           read_buf_unused_offset_, additional_save_amount));
-      read_buf_->set_offset(save_amount + additional_save_amount);
+      read_buf_->set_offset(new_capacity);
     }
     read_buf_unused_offset_ = 0;
   } else {
@@ -829,7 +839,7 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
 }
 
 int HttpStreamParser::HandleReadHeaderResult(int result) {
-  DCHECK_EQ(0, read_buf_unused_offset_);
+  DCHECK_EQ(0u, read_buf_unused_offset_);
 
   if (result == 0)
     result = ERR_CONNECTION_CLOSED;
@@ -943,9 +953,11 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
     // If the body is zero length, the caller may not call ReadResponseBody,
     // which is where any extra data is copied to read_buf_, so we move the
     // data here.
+    const auto end_of_header_offset_s =
+        static_cast<size_t>(end_of_header_offset);
     if (response_body_length_ == 0) {
       base::span<uint8_t> extra_bytes =
-          read_buf_->span_before_offset().subspan(end_of_header_offset);
+          read_buf_->span_before_offset().subspan(end_of_header_offset_s);
       if (!extra_bytes.empty()) {
         read_buf_->everything().copy_prefix_from(extra_bytes);
       }
@@ -979,7 +991,7 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
     response_is_keep_alive_ = response_->headers->IsKeepAlive();
 
     // Note where the headers stop.
-    read_buf_unused_offset_ = end_of_header_offset;
+    read_buf_unused_offset_ = end_of_header_offset_s;
     // Now waiting for the body to be read.
   }
   return OK;
@@ -991,7 +1003,7 @@ void HttpStreamParser::RunConfirmHandshakeCallback(int rv) {
 
 int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
   DCHECK_GT(new_bytes, 0);
-  DCHECK_EQ(0, read_buf_unused_offset_);
+  DCHECK_EQ(0u, read_buf_unused_offset_);
   size_t end_offset = std::string::npos;
 
   // Look for the start of the status line, if it hasn't been found yet.
@@ -1030,7 +1042,7 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
 
 int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
   scoped_refptr<HttpResponseHeaders> headers;
-  DCHECK_EQ(0, read_buf_unused_offset_);
+  DCHECK_EQ(0u, read_buf_unused_offset_);
 
   if (response_header_start_offset_ != std::string::npos) {
     received_bytes_ += end_offset;
@@ -1166,7 +1178,8 @@ bool HttpStreamParser::CanFindEndOfResponse() const {
 }
 
 bool HttpStreamParser::IsMoreDataBuffered() const {
-  return read_buf_->offset() > read_buf_unused_offset_;
+  return read_buf_->offset() > 0 &&
+         static_cast<size_t>(read_buf_->offset()) > read_buf_unused_offset_;
 }
 
 bool HttpStreamParser::CanReuseConnection() const {

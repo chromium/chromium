@@ -262,7 +262,8 @@ void WebSocketConnection::OnReadComplete(int result)
     return;
   }
 
-  base::span<uint8_t> data_span = read_buffer_->span().subspan(0, result);
+  base::span<uint8_t> data_span =
+      read_buffer_->span().subspan(0, static_cast<size_t>(result));
 
   WebSocketFrameParser parser;
   std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
