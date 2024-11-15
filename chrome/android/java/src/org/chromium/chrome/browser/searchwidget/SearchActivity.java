@@ -108,6 +108,9 @@ public class SearchActivity extends AsyncInitializationActivity
             "QuickActionSearchWidget.LensQuery";
 
     @VisibleForTesting
+    /* package */ static final String USED_TEXT_FROM_HUB_WIDGET = "HubSearchWidget.Query";
+
+    @VisibleForTesting
     /* package */ static final String HISTOGRAM_LAUNCHED_WITH_QUERY =
             "Android.Omnibox.SearchActivity.LaunchedWithQuery";
 
@@ -772,6 +775,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
                         // Tracked by Custom Tabs.
                     case IntentOrigin.CUSTOM_TAB -> null;
+                    case IntentOrigin.HUB -> USED_TEXT_FROM_HUB_WIDGET;
                     default -> null;
                 };
 
@@ -831,6 +835,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
                         case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
                         case IntentOrigin.LAUNCHER -> ".Launcher";
+                        case IntentOrigin.HUB -> ".Hub";
                         default -> ".SearchWidget";
                     };
             RecordHistogram.recordEnumeratedHistogram(histogramName + suffix, sample, max);
