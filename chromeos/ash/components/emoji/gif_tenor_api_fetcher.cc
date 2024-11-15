@@ -275,8 +275,8 @@ GifTenorApiFetcher::GifTenorApiFetcher(
 GifTenorApiFetcher::~GifTenorApiFetcher() = default;
 
 void GifTenorApiFetcher::FetchCategories(
-    GetCategoriesCallback callback,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GetCategoriesCallback callback) {
   constexpr char kCategoriesApi[] = "/v2/categories";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       net::DefineNetworkTrafficAnnotation(
@@ -327,9 +327,9 @@ void GifTenorApiFetcher::FetchCategories(
 }
 
 void GifTenorApiFetcher::FetchFeaturedGifs(
-    TenorGifsApiCallback callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::optional<std::string>& pos) {
+    const std::optional<std::string>& pos,
+    TenorGifsApiCallback callback) {
   constexpr char kFeaturedApi[] = "/v2/featured";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       net::DefineNetworkTrafficAnnotation(
@@ -380,11 +380,11 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
 }
 
 void GifTenorApiFetcher::FetchGifSearch(
-    TenorGifsApiCallback callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& query,
     const std::optional<std::string>& pos,
-    std::optional<int> limit) {
+    std::optional<int> limit,
+    TenorGifsApiCallback callback) {
   GURL url = GetUrl(kSearchApi, pos);
   url = net::AppendQueryParameter(url, "q", query);
   if (limit.has_value()) {
@@ -402,11 +402,11 @@ void GifTenorApiFetcher::FetchGifSearch(
 }
 
 std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
-    TenorGifsApiCallback callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view query,
     const std::optional<std::string>& pos,
-    std::optional<int> limit) {
+    std::optional<int> limit,
+    TenorGifsApiCallback callback) {
   GURL url = GetUrl(kSearchApi, pos);
   url = net::AppendQueryParameter(url, "q", query);
   if (limit.has_value()) {
@@ -426,9 +426,9 @@ std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
 }
 
 void GifTenorApiFetcher::FetchGifsByIds(
-    GetGifsByIdsCallback callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::vector<std::string>& ids) {
+    const std::vector<std::string>& ids,
+    GetGifsByIdsCallback callback) {
   constexpr char kPostsApi[] = "/v2/posts";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       net::DefineNetworkTrafficAnnotation("chromeos_emoji_picker_posts_fetcher",

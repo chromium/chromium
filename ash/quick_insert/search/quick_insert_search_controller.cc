@@ -250,11 +250,11 @@ void QuickInsertSearchController::StartGifSearch(
     SearchGifsCallback callback) {
   // This will cancel the previous in-flight request if there is one.
   current_gif_fetcher_ = gif_tenor_api_fetcher_.FetchGifSearchCancellable(
+      url_loader_factory, base::UTF16ToUTF8(query), std::nullopt,
+      kMaxGifsToSearch,
       base::BindOnce(&QuickInsertSearchController::OnGifSearchResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::u16string(query)),
-      url_loader_factory, base::UTF16ToUTF8(query), std::nullopt,
-      kMaxGifsToSearch);
+                     std::u16string(query)));
   current_gif_search_query_ = query;
 }
 
