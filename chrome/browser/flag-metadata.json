@@ -9441,6 +9441,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "webxr-hand-anonymization",
+    "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "webxr-hand-input",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
     "expiry_milestone": 136

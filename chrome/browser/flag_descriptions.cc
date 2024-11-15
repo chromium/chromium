@@ -4045,6 +4045,18 @@ const char kWebXrRuntimeChoiceCardboard[] = "Cardboard";
 const char kWebXrRuntimeChoiceOpenXR[] = "OpenXR";
 const char kWebXrRuntimeChoiceOrientationSensors[] = "Orientation Sensors";
 
+const char kWebXrHandAnonymizationStrategyName[] =
+    "WebXr Hand Anonymization Strategy";
+const char kWebXrHandAnonymizationStrategyDescription[] =
+    "Force the browser to use a particular strategy for anonymizing hand data, "
+    "the default order has a hierarchy of strategies to try and if all of them "
+    "fail, then no data will be returned, while this choice does allow the "
+    "(not recommended) alternative of bypassing these algorithms all together.";
+
+const char kWebXrHandAnonymizationChoiceNone[] = "None (Not Recommended)";
+const char kWebXrHandAnonymizationChoiceRuntime[] = "Runtime Provided";
+const char kWebXrHandAnonymizationChoiceFallback[] = "Chrome Fallback";
+
 const char kWebXrIncubationsName[] = "WebXR Incubations";
 const char kWebXrIncubationsDescription[] =
     "Enables experimental features for WebXR.";

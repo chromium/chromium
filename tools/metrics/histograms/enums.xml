@@ -20259,6 +20259,7 @@ from previous Chrome versions.
   <int value="-7996532" label="ThrottleIntersectionObserverUMA:disabled"/>
   <int value="-7297564" label="AutofillCaretExtraction:disabled"/>
   <int value="-7008077" label="MediaPickerAdoption:enabled"/>
+  <int value="-6927869" label="webxr-hand-anonymization-strategy"/>
   <int value="-5492723" label="CCTIncognito:enabled"/>
   <int value="-5305648" label="OmniboxClosePopupWithEscape:enabled"/>
   <int value="-5052940" label="enable-simplified-fullscreen"/>

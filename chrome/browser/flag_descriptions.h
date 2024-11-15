@@ -2325,6 +2325,13 @@ extern const char kWebXrRuntimeChoiceCardboard[];
 extern const char kWebXrRuntimeChoiceOpenXR[];
 extern const char kWebXrRuntimeChoiceOrientationSensors[];
 
+extern const char kWebXrHandAnonymizationStrategyName[];
+extern const char kWebXrHandAnonymizationStrategyDescription[];
+
+extern const char kWebXrHandAnonymizationChoiceNone[];
+extern const char kWebXrHandAnonymizationChoiceRuntime[];
+extern const char kWebXrHandAnonymizationChoiceFallback[];
+
 extern const char kWebXrHandInputName[];
 extern const char kWebXrHandInputDescription[];
 

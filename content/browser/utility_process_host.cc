@@ -39,6 +39,7 @@
 #include "content/public/common/process_type.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "media/webrtc/webrtc_features.h"
@@ -81,6 +82,10 @@
 #include "media/capture/capture_switches.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/switches.h"
+#endif
 
 namespace content {
 
@@ -363,6 +368,9 @@ bool UtilityProcessHost::StartProcess() {
         switches::kWaveOutBuffers,
         switches::kWebXrForceRuntime,
         sandbox::policy::switches::kAddXrAppContainerCaps,
+#endif
+#if BUILDFLAG(ENABLE_VR)
+        device::switches::kWebXrHandAnonymizationStrategy,
 #endif
         network::switches::kIpAddressSpaceOverrides,
 #if BUILDFLAG(IS_CHROMEOS)
