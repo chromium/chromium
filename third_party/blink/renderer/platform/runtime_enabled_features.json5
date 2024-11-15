@@ -1671,8 +1671,7 @@
     },
     {
       name: "ElementCapture",
-      origin_trial_feature_name: "ElementCapture",
-      status: {"Android": "", "default": "experimental"},
+      status: {"Android": "", "default": "stable"},
     },
     {
       // TODO(crbug.fom/41492947) This is the "old" version of getInnerHTML()
