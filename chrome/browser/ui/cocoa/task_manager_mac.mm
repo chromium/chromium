@@ -692,11 +692,12 @@ namespace task_manager {
 ////////////////////////////////////////////////////////////////////////////////
 // TaskManagerMac implementation:
 
-TaskManagerMac::TaskManagerMac()
+TaskManagerMac::TaskManagerMac(StartAction start_action)
     : table_model_(this),
       window_controller_([[TaskManagerWindowController alloc]
           initWithTaskManagerMac:this
                       tableModel:&table_model_]) {
+  task_manager::RecordNewOpenEvent(start_action);
   table_model_.SetObserver(this);  // Hook up the ui::TableModelObserver.
   table_model_.RetrieveSavedColumnsSettingsAndUpdateTable();
 
@@ -710,6 +711,7 @@ TaskManagerMac* TaskManagerMac::instance_ = nullptr;
 
 TaskManagerMac::~TaskManagerMac() {
   table_model_.SetObserver(nullptr);
+  task_manager::RecordCloseEvent(start_time_, base::TimeTicks::Now());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -784,12 +786,12 @@ void TaskManagerMac::OnAppTerminating() {
 }
 
 // static
-TaskManagerTableModel* TaskManagerMac::Show() {
+TaskManagerTableModel* TaskManagerMac::Show(StartAction start_action) {
   if (instance_) {
     [instance_->window_controller_.window
         makeKeyAndOrderFront:instance_->window_controller_];
   } else {
-    instance_ = new TaskManagerMac();
+    instance_ = new TaskManagerMac(start_action);
   }
 
   return &instance_->table_model_;
@@ -806,10 +808,12 @@ void TaskManagerMac::Hide() {
 namespace chrome {
 
 // Declared in browser_dialogs.h.
-task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
+task_manager::TaskManagerTableModel* ShowTaskManager(
+    Browser* browser,
+    task_manager::StartAction start_action) {
   return base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
-             ? ShowTaskManagerViews(browser)
-             : task_manager::TaskManagerMac::Show();
+             ? ShowTaskManagerViews(browser, start_action)
+             : task_manager::TaskManagerMac::Show(start_action);
 }
 
 void HideTaskManager() {

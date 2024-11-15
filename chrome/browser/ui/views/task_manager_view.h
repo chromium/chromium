@@ -61,7 +61,9 @@ class TaskManagerView : public TableViewDelegate,
   static constexpr size_t kTaskManagerHeaderHeight = 32;
 
   // Shows the Task Manager window, or re-activates an existing one.
-  static task_manager::TaskManagerTableModel* Show(Browser* browser);
+  static task_manager::TaskManagerTableModel* Show(
+      Browser* browser,
+      StartAction start_action = StartAction::kOther);
 
   // Hides the Task Manager if it is showing.
   static void Hide();
@@ -127,7 +129,7 @@ class TaskManagerView : public TableViewDelegate,
 
   friend class TaskManagerViewTest;
 
-  TaskManagerView();
+  explicit TaskManagerView(StartAction start_action = StartAction::kOther);
 
   // Returns flags that describe how the TaskManagerView should be rendered.
   static TableConfigs GetTableConfigs();

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
+#include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -224,7 +225,10 @@ void ToggleDevToolsWindow(Browser* browser,
                           DevToolsOpenedByAction opened_by);
 bool CanOpenTaskManager();
 // Opens task manager UI. Note that |browser| can be nullptr as input.
-void OpenTaskManager(Browser* browser);
+// StartAction denotes which location the task manager UI was started from.
+void OpenTaskManager(
+    Browser* browser,
+    task_manager::StartAction start_action = task_manager::StartAction::kOther);
 void OpenFeedbackDialog(Browser* browser,
                         feedback::FeedbackSource source,
                         const std::string& description_template = std::string(),

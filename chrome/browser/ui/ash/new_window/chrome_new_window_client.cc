@@ -495,7 +495,7 @@ void ChromeNewWindowClient::ShowShortcutCustomizationApp() {
 }
 
 void ChromeNewWindowClient::ShowTaskManager() {
-  chrome::OpenTaskManager(nullptr);
+  chrome::OpenTaskManager(nullptr, task_manager::StartAction::kShortcut);
 }
 
 void ChromeNewWindowClient::OpenDiagnostics() {

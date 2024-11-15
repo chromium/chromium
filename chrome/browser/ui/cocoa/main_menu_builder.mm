@@ -450,7 +450,7 @@ NSMenuItem* BuildWindowMenu(NSApplication* nsapp,
                   .command_id(IDC_MANAGE_EXTENSIONS)
                   .remove_if(is_pwa),
               Item(IDS_TASK_MANAGER_MAC)
-                  .command_id(IDC_TASK_MANAGER)
+                  .command_id(IDC_TASK_MANAGER_MAIN_MENU)
                   .remove_if(is_pwa),
               Item().is_separator()
                   .remove_if(is_pwa),

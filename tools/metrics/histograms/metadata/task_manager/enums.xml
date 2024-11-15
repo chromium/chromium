@@ -28,13 +28,15 @@ chromium-metrics-reviews@google.com.
 
 <enum name="StartAction">
   <int value="0"
-      label="Started from any source. This is meant to be used as a debug
-             histogram, and should not be used for analysis."/>
+      label="(Obsolete) Started from any source. This is meant to be used as
+             a debug histogram, and should not be used for analysis. Removed
+             in Nov. 2024"/>
   <int value="1"
       label="Started from the browser's context menu when right clicking on
              the title bar"/>
   <int value="2" label="Started from More Tools in the browser's 3 dots menu"/>
   <int value="3" label="Started via a keyboard shortcut"/>
+  <int value="4" label="Started from the Main Menu bar (e.g. on macOS / KDE)."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/task_manager/task_manager_metrics_recorder.h:StartAction) -->

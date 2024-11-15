@@ -18,11 +18,12 @@ inline constexpr char kStartActionHistogram[] = "TaskManager.Opened";
 // Please keep in sync with "StartAction" (see lint).
 // LINT.IfChange(StartAction)
 enum class StartAction {
-  kAnyDebug = 0,
+  kOther = 0,
   kContextMenu = 1,
   kMoreTools = 2,
   kShortcut = 3,
-  kMaxValue = kShortcut,
+  kMainMenu = 4,
+  kMaxValue = kMainMenu,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/task_manager/enums.xml:StartAction)
 

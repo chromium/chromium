@@ -827,6 +827,18 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_TASK_MANAGER:
       OpenTaskManager(browser_);
       break;
+    case IDC_TASK_MANAGER_APP_MENU:
+      OpenTaskManager(browser_, task_manager::StartAction::kMoreTools);
+      break;
+    case IDC_TASK_MANAGER_SHORTCUT:
+      OpenTaskManager(browser_, task_manager::StartAction::kShortcut);
+      break;
+    case IDC_TASK_MANAGER_CONTEXT_MENU:
+      OpenTaskManager(browser_, task_manager::StartAction::kContextMenu);
+      break;
+    case IDC_TASK_MANAGER_MAIN_MENU:
+      OpenTaskManager(browser_, task_manager::StartAction::kMainMenu);
+      break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_TAKE_SCREENSHOT:
       TakeScreenshot();
@@ -1298,6 +1310,14 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_OPEN_FILE, CanOpenFile(browser_));
   UpdateCommandsForDevTools();
   command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER, CanOpenTaskManager());
+  command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER_APP_MENU,
+                                        CanOpenTaskManager());
+  command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER_SHORTCUT,
+                                        CanOpenTaskManager());
+  command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER_CONTEXT_MENU,
+                                        CanOpenTaskManager());
+  command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER_MAIN_MENU,
+                                        CanOpenTaskManager());
   command_updater_.UpdateCommandEnabled(IDC_PROFILE_MENU_IN_APP_MENU, true);
   command_updater_.UpdateCommandEnabled(
       IDC_SHOW_HISTORY, (!guest_session && !profile()->IsSystemProfile()));

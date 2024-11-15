@@ -1959,7 +1959,7 @@ bool CanOpenTaskManager() {
 #endif
 }
 
-void OpenTaskManager(Browser* browser) {
+void OpenTaskManager(Browser* browser, task_manager::StartAction start_action) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Open linux version of task manager UI if ash TaskManager
   // interface is in an old version.
@@ -1977,7 +1977,7 @@ void OpenTaskManager(Browser* browser) {
       ->ShowTaskManager();
 #elif !BUILDFLAG(IS_ANDROID)
   base::RecordAction(UserMetricsAction("TaskManager"));
-  chrome::ShowTaskManager(browser);
+  chrome::ShowTaskManager(browser, start_action);
 #else
   NOTREACHED();
 #endif

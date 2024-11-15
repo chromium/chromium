@@ -8,7 +8,12 @@
 
 namespace task_manager {
 
+// Records a new entry for the "TaskManager.Opened" UMA metric. If StartAction
+// is kOther, no event is recorded.
 void RecordNewOpenEvent(StartAction type) {
+  if (type == StartAction::kOther) {
+    return;
+  }
   UMA_HISTOGRAM_ENUMERATION(kStartActionHistogram, type);
 }
 

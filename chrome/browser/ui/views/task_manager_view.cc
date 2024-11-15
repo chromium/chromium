@@ -110,7 +110,9 @@ TaskManagerView::~TaskManagerView() {
 }
 
 // static
-task_manager::TaskManagerTableModel* TaskManagerView::Show(Browser* browser) {
+task_manager::TaskManagerTableModel* TaskManagerView::Show(
+    Browser* browser,
+    StartAction start_action) {
   if (g_task_manager_view) {
     // If there's a Task manager window open already, just activate it.
     g_task_manager_view->SelectTaskOfActiveTab(browser);
@@ -118,7 +120,7 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(Browser* browser) {
     return g_task_manager_view->table_model_.get();
   }
 
-  g_task_manager_view = new TaskManagerView();
+  g_task_manager_view = new TaskManagerView(start_action);
 
   // On Chrome OS, pressing Search-Esc when there are no open browser windows
   // will open the task manager on the root window for new windows.
@@ -341,11 +343,11 @@ void TaskManagerView::MenuClosed(ui::SimpleMenuModel* source) {
   menu_runner_.reset();
 }
 
-TaskManagerView::TaskManagerView()
+TaskManagerView::TaskManagerView(StartAction start_action)
     : tab_table_(nullptr),
       tab_table_parent_(nullptr),
       is_always_on_top_(false) {
-  task_manager::RecordNewOpenEvent(StartAction::kAnyDebug);
+  task_manager::RecordNewOpenEvent(start_action);
   set_use_custom_frame(false);
   SetHasWindowSizeControls(true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -673,8 +675,10 @@ namespace chrome {
 #if BUILDFLAG(IS_MAC)
 // These are used by the Mac versions of |ShowTaskManager| and |HideTaskManager|
 // if they decide to show the Views task manager instead of the Cocoa one.
-task_manager::TaskManagerTableModel* ShowTaskManagerViews(Browser* browser) {
-  return task_manager::TaskManagerView::Show(browser);
+task_manager::TaskManagerTableModel* ShowTaskManagerViews(
+    Browser* browser,
+    task_manager::StartAction start_action) {
+  return task_manager::TaskManagerView::Show(browser, start_action);
 }
 
 void HideTaskManagerViews() {

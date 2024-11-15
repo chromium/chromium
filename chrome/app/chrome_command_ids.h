@@ -268,6 +268,10 @@
 #define IDC_SHOW_GOOGLE_LENS_SHORTCUT   40282
 #define IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL 40283
 #define IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR 40284
+#define IDC_TASK_MANAGER_APP_MENU       40285
+#define IDC_TASK_MANAGER_SHORTCUT       40286
+#define IDC_TASK_MANAGER_CONTEXT_MENU   40287
+#define IDC_TASK_MANAGER_MAIN_MENU      40288
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.
