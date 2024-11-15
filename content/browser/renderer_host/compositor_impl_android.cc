@@ -282,11 +282,12 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
   root_window_ = root_window;
   root_window_->SetLayer(root_layer ? root_layer : cc::slim::Layer::Create());
   root_window_->GetLayer()->SetBounds(size_);
-  root_window->AttachCompositor(this);
   if (!host_) {
     CreateLayerTreeHost();
     resource_manager_.Init(host_->GetUIResourceManager());
   }
+  // Attach compositor after `LayerTreeHost` has been created.
+  root_window->AttachCompositor(this);
   OnUpdateOverlayTransform();
   host_->SetRoot(root_window_->GetLayer());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),

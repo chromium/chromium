@@ -1747,9 +1747,15 @@ void CheckSurfaceRangeRemovedAfterCopy(viz::SurfaceRange range,
   // The surface range is removed first when the browser receives the result
   // of the copy request. Then the result callback (including this function) is
   // run.
-  ASSERT_FALSE(compositor->GetLayerTreeForTesting()
-                   ->GetSurfaceRangesForTesting()
-                   .contains(range));
+  auto iter =
+      compositor->GetLayerTreeForTesting()->GetSurfaceRangesForTesting().find(
+          range);
+  ASSERT_NE(
+      iter,
+      compositor->GetLayerTreeForTesting()->GetSurfaceRangesForTesting().end());
+  // In DelegatedFrameHostAndroid we keep an extra ref for visible surfaces to
+  // make sure tab capture works, so this should be 1, not 0.
+  EXPECT_EQ(iter->second, 1);
   std::move(resume_test).Run();
 }
 
@@ -1799,9 +1805,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
       gfx::Rect(), gfx::Size(),
       base::BindOnce(&CheckSurfaceRangeRemovedAfterCopy, range_for_copy,
                      compositor, run_loop.QuitClosure()));
+
+  // In DelegatedFrameHostAndroid we keep an extra ref for visible
+  // surfaces to make sure tab capture works.
   EXPECT_THAT(
       compositor->GetLayerTreeForTesting()->GetSurfaceRangesForTesting(),
-      testing::UnorderedElementsAre(std::make_pair(range_for_copy, 1),
+      testing::UnorderedElementsAre(std::make_pair(range_for_copy, 2),
                                     std::make_pair(range_for_mainframe, 1)));
   run_loop.Run(FROM_HERE);
 }

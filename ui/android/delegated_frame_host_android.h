@@ -210,6 +210,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
       blink::mojom::RecordContentToVisibleTimeRequestPtr
           content_to_visible_time_request);
 
+  void UpdateCaptureKeepAlive();
+  void ReleaseCaptureKeepAlive();
+
   const viz::FrameSinkId frame_sink_id_;
 
   raw_ptr<ViewAndroid> view_;
@@ -254,6 +257,13 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   blink::ContentToVisibleTimeReporter content_to_visible_time_recorder_;
 
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
+
+  // If the tab is backgrounded (not visible in the UI), then make sure that the
+  // surface is kept alive. This is required for e.g. capture of surfaces during
+  // tab sharing to work. We do this for tabs visible in the UI as well, which
+  // is redundant, but shouldn't hurt anything.
+  ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
+      capture_keep_alive_callback_;
 
   // Speculative RenderWidgetHostViews can start with a FrameSinkId owned by the
   // currently committed RenderWidgetHostView. Ownership is transferred when the

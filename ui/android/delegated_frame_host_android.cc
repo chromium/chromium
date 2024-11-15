@@ -372,11 +372,17 @@ void DelegatedFrameHostAndroid::AttachToCompositor(
                 /*has_saved_frames=*/true,
                 std::move(content_to_visible_time_request_)));
   }
+  // If we are visible and embedded, then update the surface keep alive for
+  // the newly attached compositor.
+  if (frame_evictor_->visible()) {
+    UpdateCaptureKeepAlive();
+  }
 }
 
 void DelegatedFrameHostAndroid::DetachFromCompositor() {
   if (!registered_parent_compositor_)
     return;
+  ReleaseCaptureKeepAlive();
   registered_parent_compositor_->RemoveFrameSubmissionObserver(client_);
   registered_parent_compositor_->RemoveChildFrameSink(frame_sink_id_);
   registered_parent_compositor_ = nullptr;
@@ -394,6 +400,7 @@ bool DelegatedFrameHostAndroid::HasSavedFrame() const {
 void DelegatedFrameHostAndroid::WasHidden() {
   CancelSuccessfulPresentationTimeRequest();
   frame_evictor_->SetVisible(false);
+  ReleaseCaptureKeepAlive();
 }
 
 void DelegatedFrameHostAndroid::WasShown(
@@ -515,6 +522,10 @@ void DelegatedFrameHostAndroid::EmbedSurface(
     content_layer_->SetSurfaceId(new_primary_surface_id, deadline_policy);
     content_layer_->SetBounds(new_size_in_pixels);
   }
+
+  // If DFHA is shown, make sure that the surface is kept alive. This is
+  // required for e.g. tab sharing capture to work.
+  UpdateCaptureKeepAlive();
 }
 
 void DelegatedFrameHostAndroid::RequestSuccessfulPresentationTimeForNextFrame(
@@ -636,6 +647,27 @@ void DelegatedFrameHostAndroid::
       ->PostRequestSuccessfulPresentationTimeForNextFrame(
           content_to_visible_time_recorder_.TabWasShown(
               /*has_saved_frames=*/true, std::move(request)));
+}
+
+void DelegatedFrameHostAndroid::UpdateCaptureKeepAlive() {
+  if (!registered_parent_compositor_) {
+    return;
+  }
+  if (capture_keep_alive_callback_) {
+    std::move(capture_keep_alive_callback_).Run();
+  }
+  auto surface_id = GetCurrentSurfaceId();
+  if (surface_id.is_valid()) {
+    capture_keep_alive_callback_ =
+        registered_parent_compositor_->TakeScopedKeepSurfaceAliveCallback(
+            surface_id);
+  }
+}
+
+void DelegatedFrameHostAndroid::ReleaseCaptureKeepAlive() {
+  if (capture_keep_alive_callback_) {
+    std::move(capture_keep_alive_callback_).Run();
+  }
 }
 
 }  // namespace ui
