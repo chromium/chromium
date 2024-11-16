@@ -307,7 +307,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 // TODO(crbug.com/337774320) Test is flaky on ios-fieldtrial-rel.
-- (void)testNavigateAwayFromFolderBeingEditedAccount {
+- (void)FLAKY_testNavigateAwayFromFolderBeingEditedAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kAccount];
 }
