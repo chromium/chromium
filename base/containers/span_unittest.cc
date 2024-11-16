@@ -161,8 +161,8 @@ TEST(SpanTest, DefaultConstructor) {
   EXPECT_EQ(0u, dynamic_span.size());
 
   constexpr span<int, 0> static_span;
-  static_assert(nullptr == static_span.data(), "");
-  static_assert(0u == static_span.size(), "");
+  static_assert(nullptr == static_span.data());
+  static_assert(0u == static_span.size());
 }
 
 TEST(SpanTest, ConstructFromDataAndSize) {
@@ -368,24 +368,24 @@ TEST(SpanTest, ConstructFromConstexprArray) {
   static constexpr int kArray[] = {5, 4, 3, 2, 1};
 
   constexpr span<const int> dynamic_span(kArray);
-  static_assert(kArray == dynamic_span.data(), "");
-  static_assert(std::size(kArray) == dynamic_span.size(), "");
+  static_assert(kArray == dynamic_span.data());
+  static_assert(std::size(kArray) == dynamic_span.size());
 
-  static_assert(kArray[0] == dynamic_span[0], "");
-  static_assert(kArray[1] == dynamic_span[1], "");
-  static_assert(kArray[2] == dynamic_span[2], "");
-  static_assert(kArray[3] == dynamic_span[3], "");
-  static_assert(kArray[4] == dynamic_span[4], "");
+  static_assert(kArray[0] == dynamic_span[0]);
+  static_assert(kArray[1] == dynamic_span[1]);
+  static_assert(kArray[2] == dynamic_span[2]);
+  static_assert(kArray[3] == dynamic_span[3]);
+  static_assert(kArray[4] == dynamic_span[4]);
 
   constexpr span<const int, std::size(kArray)> static_span(kArray);
-  static_assert(kArray == static_span.data(), "");
-  static_assert(std::size(kArray) == static_span.size(), "");
+  static_assert(kArray == static_span.data());
+  static_assert(std::size(kArray) == static_span.size());
 
-  static_assert(kArray[0] == static_span[0], "");
-  static_assert(kArray[1] == static_span[1], "");
-  static_assert(kArray[2] == static_span[2], "");
-  static_assert(kArray[3] == static_span[3], "");
-  static_assert(kArray[4] == static_span[4], "");
+  static_assert(kArray[0] == static_span[0]);
+  static_assert(kArray[1] == static_span[1]);
+  static_assert(kArray[2] == static_span[2]);
+  static_assert(kArray[3] == static_span[3]);
+  static_assert(kArray[4] == static_span[4]);
 }
 
 TEST(SpanTest, ConstructFromArray) {
@@ -960,36 +960,36 @@ TEST(SpanTest, TemplatedFirst) {
 
   {
     constexpr auto subspan = span.first<0>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(0u == subspan.size(), "");
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(span.data() == subspan.data());
+    static_assert(0u == subspan.size());
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.first<1>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(1u == subspan.size(), "");
-    static_assert(1u == decltype(subspan)::extent, "");
-    static_assert(1 == subspan[0], "");
+    static_assert(span.data() == subspan.data());
+    static_assert(1u == subspan.size());
+    static_assert(1u == decltype(subspan)::extent);
+    static_assert(1 == subspan[0]);
   }
 
   {
     constexpr auto subspan = span.first<2>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(2u == subspan.size(), "");
-    static_assert(2u == decltype(subspan)::extent, "");
-    static_assert(1 == subspan[0], "");
-    static_assert(2 == subspan[1], "");
+    static_assert(span.data() == subspan.data());
+    static_assert(2u == subspan.size());
+    static_assert(2u == decltype(subspan)::extent);
+    static_assert(1 == subspan[0]);
+    static_assert(2 == subspan[1]);
   }
 
   {
     constexpr auto subspan = span.first<3>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(3u == subspan.size(), "");
-    static_assert(3u == decltype(subspan)::extent, "");
-    static_assert(1 == subspan[0], "");
-    static_assert(2 == subspan[1], "");
-    static_assert(3 == subspan[2], "");
+    static_assert(span.data() == subspan.data());
+    static_assert(3u == subspan.size());
+    static_assert(3u == decltype(subspan)::extent);
+    static_assert(1 == subspan[0]);
+    static_assert(2 == subspan[1]);
+    static_assert(3 == subspan[2]);
   }
 }
 
@@ -1000,38 +1000,38 @@ TEST(SpanTest, TemplatedLast) {
   {
     constexpr auto subspan = span.last<0>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 3) == subspan.data(), "");
-    static_assert(0u == subspan.size(), "");
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 3) == subspan.data());
+    static_assert(0u == subspan.size());
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.last<1>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data(), "");
-    static_assert(1u == subspan.size(), "");
-    static_assert(1u == decltype(subspan)::extent, "");
-    static_assert(3 == subspan[0], "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data());
+    static_assert(1u == subspan.size());
+    static_assert(1u == decltype(subspan)::extent);
+    static_assert(3 == subspan[0]);
   }
 
   {
     constexpr auto subspan = span.last<2>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data(), "");
-    static_assert(2u == subspan.size(), "");
-    static_assert(2u == decltype(subspan)::extent, "");
-    static_assert(2 == subspan[0], "");
-    static_assert(3 == subspan[1], "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
+    static_assert(2u == subspan.size());
+    static_assert(2u == decltype(subspan)::extent);
+    static_assert(2 == subspan[0]);
+    static_assert(3 == subspan[1]);
   }
 
   {
     constexpr auto subspan = span.last<3>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(3u == subspan.size(), "");
-    static_assert(3u == decltype(subspan)::extent, "");
-    static_assert(1 == subspan[0], "");
-    static_assert(2 == subspan[1], "");
-    static_assert(3 == subspan[2], "");
+    static_assert(span.data() == subspan.data());
+    static_assert(3u == subspan.size());
+    static_assert(3u == decltype(subspan)::extent);
+    static_assert(1 == subspan[0]);
+    static_assert(2 == subspan[1]);
+    static_assert(3 == subspan[2]);
   }
 }
 
@@ -1041,117 +1041,117 @@ TEST(SpanTest, TemplatedSubspan) {
 
   {
     constexpr auto subspan = span.subspan<0>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(3u == subspan.size(), "");
-    static_assert(3u == decltype(subspan)::extent, "");
-    static_assert(1 == subspan[0], "");
-    static_assert(2 == subspan[1], "");
-    static_assert(3 == subspan[2], "");
+    static_assert(span.data() == subspan.data());
+    static_assert(3u == subspan.size());
+    static_assert(3u == decltype(subspan)::extent);
+    static_assert(1 == subspan[0]);
+    static_assert(2 == subspan[1]);
+    static_assert(3 == subspan[2]);
   }
 
   {
     constexpr auto subspan = span.subspan<1>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data(), "");
-    static_assert(2u == subspan.size(), "");
-    static_assert(2u == decltype(subspan)::extent, "");
-    static_assert(2 == subspan[0], "");
-    static_assert(3 == subspan[1], "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
+    static_assert(2u == subspan.size());
+    static_assert(2u == decltype(subspan)::extent);
+    static_assert(2 == subspan[0]);
+    static_assert(3 == subspan[1]);
   }
 
   {
     constexpr auto subspan = span.subspan<2>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data(), "");
-    static_assert(1u == subspan.size(), "");
-    static_assert(1u == decltype(subspan)::extent, "");
-    static_assert(3 == subspan[0], "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data());
+    static_assert(1u == subspan.size());
+    static_assert(1u == decltype(subspan)::extent);
+    static_assert(3 == subspan[0]);
   }
 
   {
     constexpr auto subspan = span.subspan<3>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 3) == subspan.data(), "");
-    static_assert(0u == subspan.size(), "");
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 3) == subspan.data());
+    static_assert(0u == subspan.size());
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.subspan<0, 0>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(0u == subspan.size(), "");
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(span.data() == subspan.data());
+    static_assert(0u == subspan.size());
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.subspan<1, 0>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data(), "");
-    static_assert(0u == subspan.size(), "");
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
+    static_assert(0u == subspan.size());
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.subspan<2, 0>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data(), "");
-    static_assert(0u == subspan.size(), "");
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data());
+    static_assert(0u == subspan.size());
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.subspan<0, 1>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(1u == subspan.size(), "");
-    static_assert(1u == decltype(subspan)::extent, "");
-    static_assert(1 == subspan[0], "");
+    static_assert(span.data() == subspan.data());
+    static_assert(1u == subspan.size());
+    static_assert(1u == decltype(subspan)::extent);
+    static_assert(1 == subspan[0]);
   }
 
   {
     constexpr auto subspan = span.subspan<1, 1>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data(), "");
-    static_assert(1u == subspan.size(), "");
-    static_assert(1u == decltype(subspan)::extent, "");
-    static_assert(2 == subspan[0], "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
+    static_assert(1u == subspan.size());
+    static_assert(1u == decltype(subspan)::extent);
+    static_assert(2 == subspan[0]);
   }
 
   {
     constexpr auto subspan = span.subspan<2, 1>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data(), "");
-    static_assert(1u == subspan.size(), "");
-    static_assert(1u == decltype(subspan)::extent, "");
-    static_assert(3 == subspan[0], "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data());
+    static_assert(1u == subspan.size());
+    static_assert(1u == decltype(subspan)::extent);
+    static_assert(3 == subspan[0]);
   }
 
   {
     constexpr auto subspan = span.subspan<0, 2>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(2u == subspan.size(), "");
-    static_assert(2u == decltype(subspan)::extent, "");
-    static_assert(1 == subspan[0], "");
-    static_assert(2 == subspan[1], "");
+    static_assert(span.data() == subspan.data());
+    static_assert(2u == subspan.size());
+    static_assert(2u == decltype(subspan)::extent);
+    static_assert(1 == subspan[0]);
+    static_assert(2 == subspan[1]);
   }
 
   {
     constexpr auto subspan = span.subspan<1, 2>();
     // SAFETY: static_assert() doesn't execute code at runtime.
-    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data(), "");
-    static_assert(2u == subspan.size(), "");
-    static_assert(2u == decltype(subspan)::extent, "");
-    static_assert(2 == subspan[0], "");
-    static_assert(3 == subspan[1], "");
+    static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
+    static_assert(2u == subspan.size());
+    static_assert(2u == decltype(subspan)::extent);
+    static_assert(2 == subspan[0]);
+    static_assert(3 == subspan[1]);
   }
 
   {
     constexpr auto subspan = span.subspan<0, 3>();
-    static_assert(span.data() == subspan.data(), "");
-    static_assert(3u == subspan.size(), "");
-    static_assert(3u == decltype(subspan)::extent, "");
-    static_assert(1 == subspan[0], "");
-    static_assert(2 == subspan[1], "");
-    static_assert(3 == subspan[2], "");
+    static_assert(span.data() == subspan.data());
+    static_assert(3u == subspan.size());
+    static_assert(3u == decltype(subspan)::extent);
+    static_assert(1 == subspan[0]);
+    static_assert(2 == subspan[1]);
+    static_assert(3 == subspan[2]);
   }
 }
 
@@ -1180,14 +1180,14 @@ TEST(SpanTest, TemplatedFirstOnDynamicSpan) {
     auto subspan = span.first<0>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     auto subspan = span.first<1>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent, "");
+    static_assert(1u == decltype(subspan)::extent);
     EXPECT_EQ(1, subspan[0]);
   }
 
@@ -1195,7 +1195,7 @@ TEST(SpanTest, TemplatedFirstOnDynamicSpan) {
     auto subspan = span.first<2>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent, "");
+    static_assert(2u == decltype(subspan)::extent);
     EXPECT_EQ(1, subspan[0]);
     EXPECT_EQ(2, subspan[1]);
   }
@@ -1204,7 +1204,7 @@ TEST(SpanTest, TemplatedFirstOnDynamicSpan) {
     auto subspan = span.first<3>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(3u, subspan.size());
-    static_assert(3u == decltype(subspan)::extent, "");
+    static_assert(3u == decltype(subspan)::extent);
     EXPECT_EQ(1, subspan[0]);
     EXPECT_EQ(2, subspan[1]);
     EXPECT_EQ(3, subspan[2]);
@@ -1222,7 +1222,7 @@ TEST(SpanTest, TemplatedLastOnDynamicSpan) {
     // per standards.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 3), subspan.data());
     EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
@@ -1231,7 +1231,7 @@ TEST(SpanTest, TemplatedLastOnDynamicSpan) {
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
     EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent, "");
+    static_assert(1u == decltype(subspan)::extent);
     EXPECT_EQ(3, subspan[0]);
   }
 
@@ -1241,7 +1241,7 @@ TEST(SpanTest, TemplatedLastOnDynamicSpan) {
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
     EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent, "");
+    static_assert(2u == decltype(subspan)::extent);
     EXPECT_EQ(2, subspan[0]);
     EXPECT_EQ(3, subspan[1]);
   }
@@ -1250,7 +1250,7 @@ TEST(SpanTest, TemplatedLastOnDynamicSpan) {
     auto subspan = span.last<3>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(3u, subspan.size());
-    static_assert(3u == decltype(subspan)::extent, "");
+    static_assert(3u == decltype(subspan)::extent);
     EXPECT_EQ(1, subspan[0]);
     EXPECT_EQ(2, subspan[1]);
     EXPECT_EQ(3, subspan[2]);
@@ -1264,7 +1264,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
   {
     auto subspan = span.subspan<0>();
     EXPECT_EQ(span.data(), subspan.data());
-    static_assert(3u == decltype(subspan)::extent, "");
+    static_assert(3u == decltype(subspan)::extent);
     EXPECT_EQ(3u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
     EXPECT_EQ(2, subspan[1]);
@@ -1277,7 +1277,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
     EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent, "");
+    static_assert(2u == decltype(subspan)::extent);
     EXPECT_EQ(2, subspan[0]);
     EXPECT_EQ(3, subspan[1]);
   }
@@ -1288,7 +1288,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
     EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent, "");
+    static_assert(1u == decltype(subspan)::extent);
     EXPECT_EQ(3, subspan[0]);
   }
 
@@ -1299,14 +1299,14 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // C++ specification.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 3), subspan.data());
     EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     auto subspan = span.subspan<0, 0>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
@@ -1315,7 +1315,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
     EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
@@ -1324,14 +1324,14 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
     EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent, "");
+    static_assert(0u == decltype(subspan)::extent);
   }
 
   {
     auto subspan = span.subspan<0, 1>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent, "");
+    static_assert(1u == decltype(subspan)::extent);
     EXPECT_EQ(1, subspan[0]);
   }
 
@@ -1341,7 +1341,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
     EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent, "");
+    static_assert(1u == decltype(subspan)::extent);
     EXPECT_EQ(2, subspan[0]);
   }
 
@@ -1351,7 +1351,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
     EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent, "");
+    static_assert(1u == decltype(subspan)::extent);
     EXPECT_EQ(3, subspan[0]);
   }
 
@@ -1359,7 +1359,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     auto subspan = span.subspan<0, 2>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent, "");
+    static_assert(2u == decltype(subspan)::extent);
     EXPECT_EQ(1, subspan[0]);
     EXPECT_EQ(2, subspan[1]);
   }
@@ -1370,7 +1370,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
     EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent, "");
+    static_assert(2u == decltype(subspan)::extent);
     EXPECT_EQ(2, subspan[0]);
     EXPECT_EQ(3, subspan[1]);
   }
@@ -1379,7 +1379,7 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     auto subspan = span.subspan<0, 3>();
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(3u, subspan.size());
-    static_assert(3u == decltype(subspan)::extent, "");
+    static_assert(3u == decltype(subspan)::extent);
     EXPECT_EQ(1, subspan[0]);
     EXPECT_EQ(2, subspan[1]);
     EXPECT_EQ(3, subspan[2]);
@@ -1687,13 +1687,13 @@ TEST(SpanTest, ConstexprIterator) {
   static constexpr int kArray[] = {1, 6, 1, 8, 0};
   constexpr span<const int> span(kArray);
 
-  static_assert(ranges::equal(kArray, span), "");
-  static_assert(1 == span.begin()[0], "");
-  static_assert(1 == *(span.begin() += 0), "");
-  static_assert(6 == *(span.begin() += 1), "");
+  static_assert(ranges::equal(kArray, span));
+  static_assert(1 == span.begin()[0]);
+  static_assert(1 == *(span.begin() += 0));
+  static_assert(6 == *(span.begin() += 1));
 
-  static_assert(1 == *((span.begin() + 1) -= 1), "");
-  static_assert(6 == *((span.begin() + 1) -= 0), "");
+  static_assert(1 == *((span.begin() + 1) -= 1));
+  static_assert(6 == *((span.begin() + 1) -= 0));
 
   static_assert(0 + span.begin() == span.begin() + 0);
   static_assert(1 + span.begin() == span.begin() + 1);
@@ -1943,7 +1943,7 @@ TEST(SpanTest, MakeSpanFromDataAndSize) {
   auto made_span = UNSAFE_BUFFERS(make_span(vector.data(), vector.size()));
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent, "");
+  static_assert(decltype(made_span)::extent == dynamic_extent);
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
 }
@@ -1962,7 +1962,7 @@ TEST(SpanTest, MakeSpanFromPointerPair) {
       UNSAFE_BUFFERS(make_span(vector.data(), vector.data() + vector.size()));
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent, "");
+  static_assert(decltype(made_span)::extent == dynamic_extent);
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
 }
@@ -1973,7 +1973,7 @@ TEST(SpanTest, MakeSpanFromConstexprArray) {
   constexpr auto made_span = make_span(kArray);
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == 5, "");
+  static_assert(decltype(made_span)::extent == 5);
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
 }
@@ -1984,7 +1984,7 @@ TEST(SpanTest, MakeSpanFromStdArray) {
   auto made_span = make_span(kArray);
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == 5, "");
+  static_assert(decltype(made_span)::extent == 5);
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
 }
@@ -1995,7 +1995,7 @@ TEST(SpanTest, MakeSpanFromConstContainer) {
   auto made_span = make_span(vector);
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent, "");
+  static_assert(decltype(made_span)::extent == dynamic_extent);
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
 }
@@ -2006,7 +2006,7 @@ TEST(SpanTest, MakeSpanFromContainer) {
   auto made_span = make_span(vector);
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent, "");
+  static_assert(decltype(made_span)::extent == dynamic_extent);
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
 }
