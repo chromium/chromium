@@ -5501,33 +5501,6 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.WebUi.DocumentLoadedInMainFrameTime{ExtensionWebUiPageType}"
-    units="ms" expires_after="2021-12-01">
-  <owner>dpapad@chromium.org</owner>
-  <owner>dbeam@chromium.org</owner>
-  <summary>
-    The amount of time between starting the provisional load and fully loading
-    the document in the main frame of the chrome://extensions page. This
-    corresponds to the WebContentsObserver::DocumentLoadedInFrame method.
-    {ExtensionWebUiPageType}
-  </summary>
-</histogram>
-
-<histogram
-    name="Extensions.WebUi.LoadCompletedInMainFrame{ExtensionWebUiPageType}"
-    units="ms" expires_after="2021-12-01">
-  <owner>dpapad@chromium.org</owner>
-  <owner>dbeam@chromium.org</owner>
-  <summary>
-    The amount of time between starting the provisional load and having
-    completed the onload handler in the main frame of the chrome://extensions
-    page. This corresponds to the
-    WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame method.
-    {ExtensionWebUiPageType}
-  </summary>
-</histogram>
-
-<histogram
     name="Extensions.{ExtensionSource}ForceInstalledFailureManifestInvalidErrorDetail2"
     enum="ManifestInvalidError" expires_after="never">
 <!-- expires-never: Monitoring outcomes of admin installed extensions -->

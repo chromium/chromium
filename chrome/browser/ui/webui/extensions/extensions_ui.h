@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_UI_H_
 
-#include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
@@ -50,8 +49,6 @@ class ExtensionsUI : public content::WebUIController {
 
   // Tracks whether developer mode is enabled.
   BooleanPrefMember in_dev_mode_;
-
-  WebuiLoadTimer webui_load_timer_;
 };
 
 }  // namespace extensions
