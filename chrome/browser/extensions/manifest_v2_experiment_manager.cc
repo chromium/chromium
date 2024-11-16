@@ -105,7 +105,7 @@ class ManifestV2ExperimentManagerFactory : public ProfileKeyedServiceFactory {
 
  private:
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
@@ -131,9 +131,10 @@ ManifestV2ExperimentManagerFactory::GetForBrowserContext(
       GetServiceForBrowserContext(browser_context, /*create=*/true));
 }
 
-KeyedService* ManifestV2ExperimentManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ManifestV2ExperimentManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ManifestV2ExperimentManager(context);
+  return std::make_unique<ManifestV2ExperimentManager>(context);
 }
 
 bool ManifestV2ExperimentManagerFactory::ServiceIsCreatedWithBrowserContext()

@@ -46,7 +46,7 @@ class AccountExtensionTrackerFactory : public ProfileKeyedServiceFactory {
 
  private:
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
@@ -70,9 +70,11 @@ AccountExtensionTracker* AccountExtensionTrackerFactory::GetForBrowserContext(
       GetServiceForBrowserContext(browser_context, /*create=*/true));
 }
 
-KeyedService* AccountExtensionTrackerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AccountExtensionTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AccountExtensionTracker(Profile::FromBrowserContext(context));
+  return std::make_unique<AccountExtensionTracker>(
+      Profile::FromBrowserContext(context));
 }
 
 bool AccountExtensionTrackerFactory::ServiceIsCreatedWithBrowserContext()
