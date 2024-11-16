@@ -357,6 +357,9 @@
   <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT" desc="The link displayed on the last row in the Omnibox as IPH informing them their info is sent to Google.">
     Learn more
   </message>
+  <message name="IDS_ACC_OMNIBOX_IPH_LINK_SELECTED" desc="Announcement when an IPH Chrome Tip link is selected." translateable="false">
+    Chrome Tip link, press Enter to open <ph name="IPH_LINK_FOCUSED_LINK_TEXT">$1<ex>Learn more</ex></ph>
+  </message>
 
   <message name="IDS_OMNIBOX_HISTORY_SCOPE_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH encouraging users to try the @history scope.">
     Type @history to search your browsing history
