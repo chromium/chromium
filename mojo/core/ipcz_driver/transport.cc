@@ -575,11 +575,7 @@ bool Transport::GetSerializedDimensions(Transport& transmitter,
                                         size_t& num_bytes,
                                         size_t& num_handles) {
   num_bytes = sizeof(TransportHeader);
-#if BUILDFLAG(IS_WIN)
   num_handles = ShouldSerializeProcessHandle(transmitter) ? 2 : 1;
-#else
-  num_handles = 1;
-#endif
   return true;
 }
 
@@ -593,19 +589,17 @@ bool Transport::Serialize(Transport& transmitter,
   header.is_peer_trusted = is_peer_trusted();
   header.is_trusted_by_peer = is_trusted_by_peer();
 
-#if BUILDFLAG(IS_WIN)
   if (ShouldSerializeProcessHandle(transmitter)) {
     DCHECK_EQ(handles.size(), 2u);
     DCHECK(remote_process_.IsValid());
     DCHECK(!remote_process_.is_current());
+#if BUILDFLAG(IS_WIN)
     handles[1] = PlatformHandle(
         base::win::ScopedHandle(remote_process_.Duplicate().Release()));
+#endif
   } else {
     DCHECK_EQ(handles.size(), 1u);
   }
-#else
-  DCHECK_EQ(handles.size(), 1u);
-#endif
 
   CHECK(inactive_endpoint_.is_valid());
   handles[0] = inactive_endpoint_.TakePlatformHandle();
