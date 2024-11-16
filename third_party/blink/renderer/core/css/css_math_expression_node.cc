@@ -3771,6 +3771,7 @@ class CSSMathExpressionNodeParser {
     if (RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
       if (CSSMathExpressionNode* calc_size =
               ParseCalcSize(function_id, stream, state)) {
+        context_.Count(WebFeature::kCSSCalcSizeFunction);
         return calc_size;
       }
     }

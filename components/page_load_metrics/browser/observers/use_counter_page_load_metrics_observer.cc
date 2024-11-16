@@ -562,6 +562,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kV8Animation_Constructor, WebDXFeature::kWebAnimations},
           {WebFeature::kCSSAtRuleViewTransition,
            WebDXFeature::kCrossDocumentViewTransition},
+          {WebFeature::kCSSCalcSizeFunction, WebDXFeature::kCalcSize},
       }};
 
   return *kMap;
@@ -689,6 +690,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kViewTimeline, WebDXFeature::kScrollDrivenAnimations},
           {CSSSampleId::kViewTimelineName,
            WebDXFeature::kScrollDrivenAnimations},
+          {CSSSampleId::kInterpolateSize, WebDXFeature::kInterpolateSize},
       }};
 
   return *kMap;
