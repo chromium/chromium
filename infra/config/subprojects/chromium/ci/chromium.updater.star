@@ -411,8 +411,8 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
-        short_name = "11 arm64",
+        category = "debug|mac|arm64",
+        short_name = "11",
     ),
 )
 
@@ -443,8 +443,8 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
-        short_name = "11 arm64",
+        category = "release|mac|arm64",
+        short_name = "11",
     ),
 )
 
@@ -475,7 +475,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
+        category = "debug|mac|x64",
         short_name = "11",
     ),
 )
@@ -507,7 +507,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
+        category = "release|mac|x64",
         short_name = "11",
     ),
 )
@@ -539,8 +539,8 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
-        short_name = "12 arm64",
+        category = "release|mac|arm64",
+        short_name = "12",
     ),
 )
 
@@ -571,7 +571,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
+        category = "debug|mac|x64",
         short_name = "12 asan",
     ),
 )
@@ -603,8 +603,8 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
-        short_name = "13 arm64",
+        category = "debug|mac|arm64",
+        short_name = "13",
     ),
 )
 
@@ -635,9 +635,43 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
+        category = "release|mac|x64",
         short_name = "13",
     ),
+)
+
+ci.thin_tester(
+    name = "mac15-arm64-updater-tester-rel",
+    description_html = "Test updater release binary on macOS 15 ARM64.",
+    triggered_by = ["mac-updater-builder-arm64-rel"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "updater_gtests_mac",
+        ],
+        mixins = [
+            "mac_15_arm64",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "release|mac|arm64",
+        short_name = "15",
+    ),
+    contact_team_email = "omaha@google.com",
 )
 
 ci.builder(
