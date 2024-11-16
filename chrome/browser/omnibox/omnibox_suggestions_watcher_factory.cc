@@ -28,9 +28,10 @@ OmniboxSuggestionsWatcherFactory::OmniboxSuggestionsWatcherFactory()
 
 OmniboxSuggestionsWatcherFactory::~OmniboxSuggestionsWatcherFactory() = default;
 
-KeyedService* OmniboxSuggestionsWatcherFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OmniboxSuggestionsWatcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new OmniboxSuggestionsWatcher();
+  return std::make_unique<OmniboxSuggestionsWatcher>();
 }
 
 content::BrowserContext*

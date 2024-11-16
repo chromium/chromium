@@ -29,9 +29,10 @@ AutocompleteControllerEmitterFactory::AutocompleteControllerEmitterFactory()
 AutocompleteControllerEmitterFactory::~AutocompleteControllerEmitterFactory() =
     default;
 
-KeyedService* AutocompleteControllerEmitterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutocompleteControllerEmitterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AutocompleteControllerEmitter();
+  return std::make_unique<AutocompleteControllerEmitter>();
 }
 
 content::BrowserContext*

@@ -26,9 +26,10 @@ OmniboxInputWatcherFactory::OmniboxInputWatcherFactory()
 
 OmniboxInputWatcherFactory::~OmniboxInputWatcherFactory() = default;
 
-KeyedService* OmniboxInputWatcherFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OmniboxInputWatcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new OmniboxInputWatcher();
+  return std::make_unique<OmniboxInputWatcher>();
 }
 
 content::BrowserContext* OmniboxInputWatcherFactory::GetBrowserContextToUse(
