@@ -256,8 +256,9 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     @SmallTest
-    public void testCalculateShowLocationOnTop() {
-        int[] location = mToolbarLongPressMenuHandler.calculateShowLocation(true, mBasicListMenu);
+    public void testCalculateShowLocationOnTop_notRtl() {
+        int[] location =
+                mToolbarLongPressMenuHandler.calculateShowLocation(true, false, mBasicListMenu);
         assertEquals(
                 URLBAR_LEFT
                         - mActivity
@@ -272,14 +273,51 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     @SmallTest
-    public void testCalculateShowLocationOnBottom() {
-        int[] location = mToolbarLongPressMenuHandler.calculateShowLocation(false, mBasicListMenu);
+    public void testCalculateShowLocationOnBottom_notRtl() {
+        int[] location =
+                mToolbarLongPressMenuHandler.calculateShowLocation(false, false, mBasicListMenu);
         assertEquals(
                 URLBAR_LEFT
                         - mActivity
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
                         - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
+                location[0]);
+        assertEquals(URLBAR_TOP - LONG_PRESS_MENU_HEIGHT, location[1]);
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateShowLocationOnTop_rtl() {
+        int[] location =
+                mToolbarLongPressMenuHandler.calculateShowLocation(true, true, mBasicListMenu);
+        assertEquals(
+                URLBAR_RIGHT
+                        - LONG_PRESS_MENU_WIDTH
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
+                location[0]);
+        assertEquals(URLBAR_BOTTOM, location[1]);
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateShowLocationOnBottom_rtl() {
+        int[] location =
+                mToolbarLongPressMenuHandler.calculateShowLocation(false, true, mBasicListMenu);
+        assertEquals(
+                URLBAR_RIGHT
+                        - LONG_PRESS_MENU_WIDTH
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
+                        + mActivity
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
                 location[0]);

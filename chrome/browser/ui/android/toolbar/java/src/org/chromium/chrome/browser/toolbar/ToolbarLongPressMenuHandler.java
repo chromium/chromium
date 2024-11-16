@@ -46,6 +46,7 @@ public class ToolbarLongPressMenuHandler {
     }
 
     private PopupWindow mPopupMenu;
+    private final int mAppMenuShadowLength;
     private final int mEdgeToTextDistance;
     private final int mUrlBarMargin;
     @NonNull private final Context mContext;
@@ -87,6 +88,8 @@ public class ToolbarLongPressMenuHandler {
         }
 
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        mAppMenuShadowLength =
+                context.getResources().getDimensionPixelSize(R.dimen.app_menu_shadow_length);
 
         // Long press menu layout
         // +----------------------------------+
@@ -105,7 +108,7 @@ public class ToolbarLongPressMenuHandler {
         // ^         ^
         // mEdgeToTextDistance
         mEdgeToTextDistance =
-                context.getResources().getDimensionPixelSize(R.dimen.app_menu_shadow_length)
+                mAppMenuShadowLength
                         + context.getResources()
                                 .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
         mUrlBarMargin =
@@ -141,12 +144,15 @@ public class ToolbarLongPressMenuHandler {
         mPopupMenu = UiWidgetFactory.getInstance().createPopupWindow(view.getContext());
         mPopupMenu.setFocusable(true);
         mPopupMenu.setOutsideTouchable(true);
-        mPopupMenu.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        mPopupMenu.setWidth(listMenu.getMaxItemWidth() + mAppMenuShadowLength * 2);
         mPopupMenu.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupMenu.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mPopupMenu.setContentView(menuListView);
 
-        int[] location = calculateShowLocation(onTop, listMenu);
+        boolean isRtl =
+                mContext.getResources().getConfiguration().getLayoutDirection()
+                        == View.LAYOUT_DIRECTION_RTL;
+        int[] location = calculateShowLocation(onTop, isRtl, listMenu);
         mPopupMenu.showAtLocation(view, Gravity.NO_GRAVITY, location[0], location[1]);
     }
 
@@ -189,22 +195,28 @@ public class ToolbarLongPressMenuHandler {
     }
 
     @VisibleForTesting
-    int[] calculateShowLocation(boolean onTop, BasicListMenu listMenu) {
+    int[] calculateShowLocation(boolean onTop, boolean isRtl, BasicListMenu listMenu) {
         ViewRectProvider viewRectProvider = mUrlBarViewRectProviderSupplier.get();
         viewRectProvider.setIncludePadding(true);
         viewRectProvider.setMarginPx(0, mUrlBarMargin, 0, mUrlBarMargin);
         Rect urlBarRect = viewRectProvider.getRect();
 
+        int[] menuDimensions = listMenu.getMenuDimensions();
+        int menuWidth = menuDimensions[0];
+        int menuHeight = menuDimensions[1];
         // The menu text should be vertically aligned with the text in the URL bar.
-        int x = urlBarRect.left - mEdgeToTextDistance;
+        int x =
+                isRtl
+                        ? urlBarRect.right - menuWidth + mEdgeToTextDistance
+                        : urlBarRect.left - mEdgeToTextDistance;
         int y;
         if (onTop) {
             // The long press menu will appear below the toolbar.
             y = urlBarRect.bottom;
         } else {
             // The long press menu will appear above the toolbar.
-            int[] menuDimensions = listMenu.getMenuDimensions();
-            y = urlBarRect.top - menuDimensions[1];
+
+            y = urlBarRect.top - menuHeight;
         }
         return new int[] {x, y};
     }
