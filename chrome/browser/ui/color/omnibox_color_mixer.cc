@@ -140,6 +140,11 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
 // custom theme).
 void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
                                       const ui::ColorProviderKey& key) {
+  // Fallbacks for colors set in `ApplyGM3OmniboxTextColor()`:
+  mixer[kColorOmniboxResultsTextAnswer] = {ui::kColorSysOnSurfacePrimary};
+
+  // Fallbacks for colors set in `ApplyCR2023OmniboxExpandedStateColors()`:
+
   // Action chip hover & select colors for hovered suggestion rows (e.g. via
   // mouse cursor).
   mixer[kColorOmniboxResultsButtonInkDropRowHovered] = {ui::SetAlpha(
