@@ -65,6 +65,8 @@ class FormFetchBatcher {
   std::vector<FormFetchCompletion> fetch_requests_;
   // Period of time between the batches.
   base::TimeDelta batch_period_;
+  // True if a batch was scheduled, so no further scheduling is required.
+  bool batch_scheduled_ = false;
 
   base::WeakPtrFactory<FormFetchBatcher> weak_factory_{this};
 };

@@ -279,6 +279,57 @@ TEST_F(FormFetchBatcherTest, Batch_PushAndRun) {
       /*expected_bucket_count=*/1);
 }
 
+// Tests that the new requests that are added while completing the current
+// batch of requests are pushed for later into the next batch. This test also
+// ensures that doing that doesn't cause memory issues like what we've seen in
+// http://crbug.com/379087890.
+TEST_F(FormFetchBatcherTest, Batch_Completion_NewRequests) {
+  // Schedule an initial batch with request #1 in it (r1).
+
+  // Completion tracker, true when the request is completed.
+  bool r1_completed = false;
+  bool r2_completed = false;
+
+  // Push request and run request #1 (r1). This request upon completion will
+  // immediately push another request.
+  {
+    batcher_.PushRequest(base::BindOnce(
+        [](autofill::FormFetchBatcher* batcher,
+           FormFetchCompletion other_completion, bool* r1_completed,
+           std::optional<std::vector<autofill::FormData>> result) {
+          *r1_completed = true;
+          batcher->PushRequest(std::move(other_completion));
+        },
+        &batcher_, base::BindOnce(&FormFetchCompletionCallback, &r2_completed),
+        &r1_completed));
+  }
+  task_environment_.FastForwardBy(kBatchPeriodMs + base::Milliseconds(50));
+  EXPECT_TRUE(r1_completed);
+  r1_completed = false;
+
+  // Verify that that request pushed by request #1 was enqueued for the next
+  // batch.
+  ASSERT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Advance time enough to trigger the following batch.
+  task_environment_.FastForwardBy(kBatchPeriodMs + base::Milliseconds(50));
+
+  ASSERT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Verify that the batch of requests was completed by the batcher.
+  EXPECT_TRUE(r2_completed);
+
+  // As request #1 was already completed, it should not had been part of the
+  // second batch.
+  EXPECT_FALSE(r1_completed);
+
+  // Verify that each batch was recorded.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.iOS.FormExtraction.ForScan.BatchSize",
+      /*sample=*/1,
+      /*expected_bucket_count=*/2);
+}
+
 // Tests fetch filtered requests.
 TEST_F(FormFetchBatcherTest, Filtered) {
   // Hold the fetched forms for each request.
