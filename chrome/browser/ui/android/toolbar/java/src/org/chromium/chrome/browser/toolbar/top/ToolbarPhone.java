@@ -120,7 +120,10 @@ public class ToolbarPhone extends ToolbarLayout
     // Finch params and default values for code cleanup.
     private static final String PARAM_REMOVE_REDUNDANT_ANIM_CALL =
             "remove_redundant_ntpupdate_in_lbvisualupdate";
-    public static final boolean PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL = false;
+    private static final boolean PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL = true;
+    private static final String PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR =
+            "remove_gts_layout_location_bar";
+    private static final boolean PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR_DEFAULT_VAL = true;
 
     @ViewDebug.ExportedProperty(
             category = "chrome",
@@ -1887,10 +1890,15 @@ public class ToolbarPhone extends ToolbarLayout
             if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
                 mUrlFocusLayoutAnimator.end();
                 mUrlFocusLayoutAnimator = null;
-                // After finishing the animation, force a re-layout of the location bar,
-                // so that the final translation position is correct (since onMeasure updates
-                // won't happen in tab switcher mode). crbug.com/518795.
-                layoutLocationBar(getMeasuredWidth());
+                if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
+                        PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR,
+                        PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR_DEFAULT_VAL)) {
+                    // After finishing the animation, force a re-layout of the location bar,
+                    // so that the final translation position is correct (since onMeasure updates
+                    // won't happen in tab switcher mode). crbug.com/518795.
+                    layoutLocationBar(getMeasuredWidth());
+                }
             }
 
             updateViewsForTabSwitcherMode();
