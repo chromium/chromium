@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.ColorDrawable;
@@ -22,11 +23,16 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -35,13 +41,19 @@ import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Tests for {@link StatusIndicatorViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
+public class StatusIndicatorViewBinderTest {
     private static final String STATUS_TEXT = "Offline";
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     private ViewResourceFrameLayout mContainer;
     private TextViewWithCompoundDrawables mStatusTextView;
@@ -50,14 +62,17 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(R.layout.status_indicator_container);
-                    mContainer = getActivity().findViewById(R.id.status_indicator);
+                    sActivity.setContentView(R.layout.status_indicator_container);
+                    mContainer = sActivity.findViewById(R.id.status_indicator);
                     mStatusTextView = mContainer.findViewById(R.id.status_text);
 
                     mSceneLayer = new MockStatusIndicatorSceneLayer();
@@ -79,10 +94,9 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
                 });
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
-        super.tearDownTest();
     }
 
     @Test
@@ -96,9 +110,9 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
 
         Drawable drawable =
                 ResourcesCompat.getDrawable(
-                        getActivity().getResources(),
+                        sActivity.getResources(),
                         R.drawable.ic_error_white_24dp_filled,
-                        getActivity().getTheme());
+                        sActivity.getTheme());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -146,8 +160,8 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testColorAndTint() {
-        int bgColor = SemanticColorUtils.getDefaultBgColor(getActivity());
-        int textColor = SemanticColorUtils.getDefaultTextColor(getActivity());
+        int bgColor = SemanticColorUtils.getDefaultBgColor(sActivity);
+        int textColor = SemanticColorUtils.getDefaultTextColor(sActivity);
         assertEquals(
                 "Wrong initial background color.",
                 bgColor,
@@ -156,9 +170,9 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
 
         Drawable drawable =
                 ResourcesCompat.getDrawable(
-                        getActivity().getResources(),
+                        sActivity.getResources(),
                         R.drawable.ic_error_white_24dp_filled,
-                        getActivity().getTheme());
+                        sActivity.getTheme());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

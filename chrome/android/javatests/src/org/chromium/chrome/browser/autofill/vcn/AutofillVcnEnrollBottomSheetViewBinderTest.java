@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -22,10 +23,14 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -42,7 +47,7 @@ import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
@@ -57,8 +62,13 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
-public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTestActivityTestCase
-        implements LinkOpener {
+public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpener {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private PropertyModel.Builder mModelBuilder;
     private PropertyModel mModel;
     private AutofillVcnEnrollBottomSheetView mView;
@@ -88,13 +98,16 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         }
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() throws Exception {
         mModelBuilder = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS);
-        mView = new AutofillVcnEnrollBottomSheetView(getActivity());
-        ThreadUtils.runOnUiThreadBlocking(() -> getActivity().setContentView(mView.mContentView));
+        mView = new AutofillVcnEnrollBottomSheetView(sActivity);
+        ThreadUtils.runOnUiThreadBlocking(() -> sActivity.setContentView(mView.mContentView));
         bind(mModelBuilder);
     }
 

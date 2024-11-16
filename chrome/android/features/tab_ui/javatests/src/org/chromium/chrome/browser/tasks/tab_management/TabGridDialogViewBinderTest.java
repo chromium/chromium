@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.FORCE_LIST_TAB
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 
+import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -50,6 +51,8 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +61,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -73,7 +77,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
@@ -84,8 +88,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DisableFeatures(DATA_SHARING)
 @Batch(Batch.PER_CLASS)
-public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
+public class TabGridDialogViewBinderTest {
     private static final int CONTENT_TOP_MARGIN = 56;
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -112,21 +122,26 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
 
     private Integer mBindingToken;
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
     @Before
     public void setUp() throws Exception {
         mBindingToken = 5;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    FrameLayout parentView = new FrameLayout(getActivity());
-                    getActivity().setContentView(parentView);
+                    FrameLayout parentView = new FrameLayout(sActivity);
+                    sActivity.setContentView(parentView);
                     mContentView =
                             (TabListRecyclerView)
-                                    LayoutInflater.from(getActivity())
+                                    LayoutInflater.from(sActivity)
                                             .inflate(
                                                     R.layout.tab_list_recycler_view_layout,
                                                     parentView,
                                                     false);
-                    mLayoutManager = spy(new GridLayoutManager(getActivity(), 2));
+                    mLayoutManager = spy(new GridLayoutManager(sActivity, 2));
                     mContentView.setLayoutManager(mLayoutManager);
                     boolean isDataSharingEnabled = ChromeFeatureList.isEnabled(DATA_SHARING);
                     @LayoutRes
@@ -136,9 +151,9 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                                     : R.layout.tab_grid_dialog_toolbar;
                     mToolbarView =
                             (TabGridDialogToolbarView)
-                                    LayoutInflater.from(getActivity())
+                                    LayoutInflater.from(sActivity)
                                             .inflate(toolbar_res_id, mContentView, false);
-                    LayoutInflater.from(getActivity())
+                    LayoutInflater.from(sActivity)
                             .inflate(R.layout.tab_grid_dialog_layout, parentView, true);
                     mTabGridDialogView = parentView.findViewById(R.id.dialog_parent_view);
 
@@ -166,7 +181,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                         assertNull(mImageTilesContainer);
                     }
                     mScrimCoordinator =
-                            new ScrimCoordinator(getActivity(), null, parentView, Color.RED);
+                            new ScrimCoordinator(sActivity, null, parentView, Color.RED);
                     mTabGridDialogView.setupScrimCoordinator(mScrimCoordinator);
 
                     mModel =
@@ -272,7 +287,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetPrimaryColor() {
-        int color = ContextCompat.getColor(getActivity(), R.color.baseline_primary_80);
+        int color = ContextCompat.getColor(sActivity, R.color.baseline_primary_80);
 
         mModel.set(TabGridDialogProperties.PRIMARY_COLOR, color);
 
@@ -284,7 +299,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetTint() {
-        ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(getActivity(), true);
+        ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(sActivity, true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             assertNotEquals(tint, mBackButton.getImageTintList());
             assertNotEquals(tint, mNewTabButton.getImageTintList());
@@ -368,8 +383,8 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                 mTabGridDialogView.getShowDialogAnimationForTesting().getChildAnimations().size());
 
         // Create a placeholder source view to setup the dialog animation.
-        ViewGroup sourceViewParent = new FrameLayout(getActivity());
-        View sourceView = new View(getActivity());
+        ViewGroup sourceViewParent = new FrameLayout(sActivity);
+        View sourceView = new View(sActivity);
         sourceViewParent.addView(sourceView);
 
         // When set with a specific animation source view, the show animation contains 6 child
@@ -405,7 +420,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetDialogBackgroundColor() {
         int incognitoColor =
                 ContextCompat.getColor(
-                        getActivity(), R.color.incognito_tab_grid_dialog_background_color);
+                        sActivity, R.color.incognito_tab_grid_dialog_background_color);
 
         mModel.set(TabGridDialogProperties.DIALOG_BACKGROUND_COLOR, incognitoColor);
 
@@ -418,7 +433,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetUngroupbarBackgroundColor() {
         int incognitoColor =
                 ContextCompat.getColor(
-                        getActivity(), R.color.incognito_tab_grid_dialog_background_color);
+                        sActivity, R.color.incognito_tab_grid_dialog_background_color);
 
         mModel.set(TabGridDialogProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR, incognitoColor);
 
@@ -431,8 +446,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetUngroupbarHoveredBackgroundColor() {
         int incognitoColor =
                 ContextCompat.getColor(
-                        getActivity(),
-                        R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color);
+                        sActivity, R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color);
 
         mModel.set(
                 TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR,
@@ -448,7 +462,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetUngroupbarTextColor() {
         int incognitoColor =
                 ContextCompat.getColor(
-                        getActivity(), R.color.incognito_tab_grid_dialog_ungroup_bar_text_color);
+                        sActivity, R.color.incognito_tab_grid_dialog_ungroup_bar_text_color);
 
         mModel.set(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR, incognitoColor);
 
@@ -461,7 +475,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetUngroupbarHoveredTextColor() {
         int incognitoColor =
                 ContextCompat.getColor(
-                        getActivity(),
+                        sActivity,
                         R.color.incognito_tab_grid_dialog_ungroup_bar_text_hovered_color);
 
         mModel.set(TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR, incognitoColor);
@@ -621,7 +635,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetInitialScrollIndex_Linear() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
+                    mLinearLayoutManager = spy(new LinearLayoutManager(sActivity));
                     mContentView.setLayoutManager(mLinearLayoutManager);
                 });
         mContentView.layout(0, 0, 100, 500);
@@ -659,8 +673,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
         GradientDrawable drawable = (GradientDrawable) mColorIcon.getBackground();
         assertEquals(
                 ColorStateList.valueOf(
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                getActivity(), color, false)),
+                        ColorPickerUtils.getTabGroupColorPickerItemColor(sActivity, color, false)),
                 drawable.getColor());
     }
 
@@ -686,7 +699,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     @EnableFeatures(FORCE_LIST_TAB_SWITCHER)
     public void testSetAnimationBackgroundColor() {
-        int color = ContextCompat.getColor(getActivity(), R.color.baseline_primary_80);
+        int color = ContextCompat.getColor(sActivity, R.color.baseline_primary_80);
 
         View cardView = mTabGridDialogView.findViewById(R.id.card_view);
         cardView.setBackground(mCardViewBackground);

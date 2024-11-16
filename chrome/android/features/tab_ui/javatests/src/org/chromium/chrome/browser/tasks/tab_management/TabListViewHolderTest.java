@@ -25,6 +25,7 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 
+import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -46,9 +47,11 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
-import com.google.protobuf.ByteString;
-
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -60,6 +63,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -106,7 +110,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -121,8 +125,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING)
 @Batch(Batch.UNIT_TESTS)
-public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
-
+public class TabListViewHolderTest {
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final String EXPECTED_PRICE_STRING = "$287";
@@ -142,10 +145,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                     .setBuyableProduct(BUYABLE_PRODUCT)
                     .setProductUpdate(PRODUCT_PRICE_UPDATE)
                     .build();
-    private static final Any ANY_PRICE_TRACKING_DATA =
-            Any.newBuilder()
-                    .setValue(ByteString.copyFrom(PRICE_TRACKING_DATA.toByteArray()))
-                    .build();
 
     private static ProductPrice createProductPrice(long amountMicros, String currencyCode) {
         return ProductPrice.newBuilder()
@@ -155,11 +154,12 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     }
 
     private static final String USD_CURRENCY_SYMBOL = "$";
-    private static final String EXPECTED_PRICE = "$5.00";
-    private static final String EXPECTED_PREVIOUS_PRICE = "$10";
-    private static final String EXPECTED_CONTENT_DESCRIPTION =
-            "The price of this item recently dropped from $10 to $5.00";
-    private static final GURL TEST_GURL = new GURL("https://www.google.com");
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     private ViewGroup mTabGridView;
     private PropertyModel mGridModel;
@@ -243,46 +243,50 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     private AtomicInteger mCreateGroupTabId = new AtomicInteger();
     private boolean mShouldReturnBitmap;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        sActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         // Note: MockitoRule does not work here due to timing issues with
         // BlankUiTestActivityTestCase.
         MockitoAnnotations.initMocks(this);
 
-        ViewGroup view = new LinearLayout(getActivity());
+        ViewGroup view = new LinearLayout(sActivity);
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(view, params);
+                    sActivity.setContentView(view, params);
 
                     mTabGridView =
                             (ViewGroup)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_grid_card_item, null);
                     mTabStripView =
                             (ViewGroup)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_strip_item, null);
                     mSelectableTabGridView =
                             (ViewGroup)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_grid_card_item, null);
                     mSelectableTabListView =
                             (ViewGroup)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_list_card_item, null);
                     mTabListView =
                             (ViewGroup)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_list_card_item, null);
 
@@ -661,7 +665,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         boolean isSelected = false;
         mGridModel.set(TabProperties.IS_SELECTED, isSelected);
         ColorStateList unselectedColorStateList =
-                TabUiThemeProvider.getActionButtonTintList(getActivity(), isIncognito, isSelected);
+                TabUiThemeProvider.getActionButtonTintList(sActivity, isIncognito, isSelected);
 
         Assert.assertEquals(
                 unselectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
@@ -671,7 +675,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         isSelected = true;
         mGridModel.set(TabProperties.IS_SELECTED, isSelected);
         ColorStateList selectedColorStateList =
-                TabUiThemeProvider.getActionButtonTintList(getActivity(), isIncognito, isSelected);
+                TabUiThemeProvider.getActionButtonTintList(sActivity, isIncognito, isSelected);
         // The listActionButton does not highlight so use unselected always.
         Assert.assertEquals(
                 selectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
@@ -1026,7 +1030,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         TabGroupColorViewProvider provider =
                 new TabGroupColorViewProvider(
-                        getActivity(),
+                        sActivity,
                         new Token(1L, 2L),
                         /* isIncognito= */ false,
                         TabGroupColorId.BLUE,
@@ -1067,7 +1071,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         TabGroupColorViewProvider provider =
                 new TabGroupColorViewProvider(
-                        getActivity(),
+                        sActivity,
                         new Token(1L, 2L),
                         /* isIncognito= */ false,
                         TabGroupColorId.BLUE,
@@ -1219,14 +1223,13 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                         any(OptimizationGuideCallback.class));
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStripMcp.destroy();
                     mGridMcp.destroy();
                     mSelectableMcp.destroy();
                 });
-        super.tearDownTest();
     }
 }

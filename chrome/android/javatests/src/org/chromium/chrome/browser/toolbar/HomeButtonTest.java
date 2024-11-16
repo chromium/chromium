@@ -10,12 +10,16 @@ import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -36,16 +41,22 @@ import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Test related to {@link HomeButton}. TODO: Add more test when features related has update. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class HomeButtonTest extends BlankUiTestActivityTestCase {
+public class HomeButtonTest {
     private static final String ASSERT_MSG_MENU_IS_CREATED =
             "ContextMenu is not created after long press.";
     private static final String ASSERT_MSG_MENU_SIZE =
             "ContextMenu has a different size than test setting.";
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
@@ -54,10 +65,13 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private int mIdHomeButton;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         // Set the default test status for homepage button tests.
@@ -66,11 +80,11 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    FrameLayout content = new FrameLayout(getActivity());
-                    getActivity().setContentView(content);
+                    FrameLayout content = new FrameLayout(sActivity);
+                    sActivity.setContentView(content);
 
                     mIdHomeButton = View.generateViewId();
-                    HomeButton homeButton = new HomeButton(getActivity(), null);
+                    HomeButton homeButton = new HomeButton(sActivity, null);
                     // For a view created in a test, we can make the view not important for
                     // accessibility to prevent failures from AccessibilityChecks. Do not do this
                     // for views outside tests.
@@ -81,7 +95,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
                     homeButton.setId(mIdHomeButton);
                     mHomeButtonCoordinator =
                             new HomeButtonCoordinator(
-                                    getActivity(),
+                                    sActivity,
                                     homeButton,
                                     HomepageManager.getInstance()::onMenuClick,
                                     () -> false);
@@ -102,6 +116,6 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
 
         // Test click on context menu item
         onView(withText(R.string.options_homepage_edit_title)).perform(click());
-        Mockito.verify(mSettingsNavigation).startSettings(getActivity(), HomepageSettings.class);
+        Mockito.verify(mSettingsNavigation).startSettings(sActivity, HomepageSettings.class);
     }
 }

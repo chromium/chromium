@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertEquals;
 
+import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,10 +19,14 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.collect.ImmutableList;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
@@ -31,7 +36,7 @@ import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.LoadingView;
 
 import java.util.LinkedList;
@@ -40,8 +45,14 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link AutofillSaveCardBottomSheetViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivityTestCase {
+public class AutofillSaveCardBottomSheetViewBinderTest {
     @DrawableRes private static final int TEST_DRAWABLE_RES = R.drawable.arrow_up;
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     private PropertyModel.Builder mModelBuilder;
     private PropertyModel mModel;
@@ -71,13 +82,16 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         private final CallbackHelper mOnHideHelper = new CallbackHelper();
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() throws Exception {
         mModelBuilder = new PropertyModel.Builder(AutofillSaveCardBottomSheetProperties.ALL_KEYS);
-        mView = new AutofillSaveCardBottomSheetView(getActivity());
-        ThreadUtils.runOnUiThreadBlocking(() -> getActivity().setContentView(mView.mContentView));
+        mView = new AutofillSaveCardBottomSheetView(sActivity);
+        ThreadUtils.runOnUiThreadBlocking(() -> sActivity.setContentView(mView.mContentView));
         bind(mModelBuilder);
     }
 

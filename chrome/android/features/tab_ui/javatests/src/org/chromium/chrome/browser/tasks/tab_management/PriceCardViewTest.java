@@ -6,21 +6,28 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -32,7 +39,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -43,10 +50,17 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-public class PriceCardViewTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class PriceCardViewTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -62,22 +76,25 @@ public class PriceCardViewTest extends BlankUiTestActivityTestCase {
 
     private PriceCardView mPriceCardView;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() throws Exception {
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup view = new FrameLayout(getActivity());
-                    getActivity().setContentView(view, params);
+                    ViewGroup view = new FrameLayout(sActivity);
+                    sActivity.setContentView(view, params);
 
                     ViewGroup tabView =
                             (ViewGroup)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_grid_card_item, view, false);
                     ((TabGridView) tabView).setTabActionState(TabActionState.CLOSABLE);
@@ -88,10 +105,9 @@ public class PriceCardViewTest extends BlankUiTestActivityTestCase {
                 });
     }
 
-    @Override
+    @After
     public void tearDownTest() throws Exception {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
-        super.tearDownTest();
     }
 
     @Test

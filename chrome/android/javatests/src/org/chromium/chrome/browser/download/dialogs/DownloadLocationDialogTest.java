@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import androidx.annotation.StringRes;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DirectoryOption;
@@ -49,7 +51,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,11 +60,14 @@ import java.util.Map;
 /** Test focus on verifying UI elements in the download location dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
+public class DownloadLocationDialogTest {
     private static final long TOTAL_BYTES = 1024L;
     private static final String SUGGESTED_PATH = "download.png";
     private static final String PRIMARY_STORAGE_PATH = "/sdcard";
     private static final String SECONDARY_STORAGE_PATH = "/android/Download";
+
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private DownloadLocationDialogController mController;
     @Mock private Profile mProfileMock;
@@ -75,9 +80,8 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
     private ModalDialogManager mModalDialogManager;
     private DownloadLocationDialogCoordinator mDialogCoordinator;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @Before
+    public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(any())).thenReturn(mPrefService);
@@ -89,7 +93,9 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
         when(mIncognitoProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
         when(mIncognitoProfileMock.isOffTheRecord()).thenReturn(true);
 
-        mAppModalPresenter = new AppModalPresenter(getActivity());
+        mActivityTestRule.launchActivity(null);
+
+        mAppModalPresenter = new AppModalPresenter(mActivityTestRule.getActivity());
         mModalDialogManager =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -143,7 +149,7 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialogCoordinator.showDialog(
-                            getActivity(),
+                            mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             totalBytes,
                             dialogType,
@@ -153,7 +159,7 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
     }
 
     private void assertTitle(@StringRes int titleId) {
-        onView(withText(getActivity().getString(titleId)))
+        onView(withText(mActivityTestRule.getActivity().getString(titleId)))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
     }
@@ -188,7 +194,8 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
     public void testDefaultLocationDialog() throws Exception {
         showDialog(TOTAL_BYTES, DownloadLocationDialogType.DEFAULT, SUGGESTED_PATH, mProfileMock);
         assertTitle(R.string.download_location_dialog_title);
-        assertSubtitle(DownloadUtils.getStringForBytes(getActivity(), TOTAL_BYTES));
+        assertSubtitle(
+                DownloadUtils.getStringForBytes(mActivityTestRule.getActivity(), TOTAL_BYTES));
         assertIncognitoWarningShown(false);
         assertDontShowAgainCheckbox(true);
     }
@@ -202,7 +209,8 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
                 SUGGESTED_PATH,
                 mIncognitoProfileMock);
         assertTitle(R.string.download_location_dialog_title);
-        assertSubtitle(DownloadUtils.getStringForBytes(getActivity(), TOTAL_BYTES));
+        assertSubtitle(
+                DownloadUtils.getStringForBytes(mActivityTestRule.getActivity(), TOTAL_BYTES));
         assertIncognitoWarningShown(true);
         assertDontShowAgainCheckbox(null);
     }
@@ -213,7 +221,8 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
         setDownloadPromptStatus(DownloadPromptStatus.SHOW_PREFERENCE);
         showDialog(TOTAL_BYTES, DownloadLocationDialogType.DEFAULT, SUGGESTED_PATH, mProfileMock);
         assertTitle(R.string.download_location_dialog_title);
-        assertSubtitle(DownloadUtils.getStringForBytes(getActivity(), TOTAL_BYTES));
+        assertSubtitle(
+                DownloadUtils.getStringForBytes(mActivityTestRule.getActivity(), TOTAL_BYTES));
         assertIncognitoWarningShown(false);
         assertDontShowAgainCheckbox(false);
     }
@@ -228,7 +237,8 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
                 mProfileMock);
         assertTitle(R.string.download_location_not_enough_space);
         assertSubtitle(
-                getActivity()
+                mActivityTestRule
+                        .getActivity()
                         .getResources()
                         .getString(R.string.download_location_download_to_default_folder));
         assertIncognitoWarningShown(false);
@@ -245,7 +255,8 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
                 mProfileMock);
         assertTitle(R.string.download_location_no_sd_card);
         assertSubtitle(
-                getActivity()
+                mActivityTestRule
+                        .getActivity()
                         .getResources()
                         .getString(R.string.download_location_download_to_default_folder));
         assertIncognitoWarningShown(false);
@@ -262,7 +273,10 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
                 mProfileMock);
         assertTitle(R.string.download_location_rename_file);
         assertSubtitle(
-                getActivity().getResources().getString(R.string.download_location_name_too_long));
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.download_location_name_too_long));
         assertIncognitoWarningShown(false);
         assertDontShowAgainCheckbox(null);
     }
@@ -277,7 +291,10 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
                 mProfileMock);
         assertTitle(R.string.download_location_download_again);
         assertSubtitle(
-                getActivity().getResources().getString(R.string.download_location_name_exists));
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.download_location_name_exists));
         assertIncognitoWarningShown(false);
         assertDontShowAgainCheckbox(true);
     }
@@ -292,7 +309,10 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
                 mIncognitoProfileMock);
         assertTitle(R.string.download_location_download_again);
         assertSubtitle(
-                getActivity().getResources().getString(R.string.download_location_name_exists));
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.download_location_name_exists));
         assertIncognitoWarningShown(true);
         assertDontShowAgainCheckbox(null);
     }
@@ -305,7 +325,8 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
         setDownloadPromptStatus(DownloadPromptStatus.SHOW_PREFERENCE);
         showDialog(TOTAL_BYTES, DownloadLocationDialogType.DEFAULT, SUGGESTED_PATH, mProfileMock);
         assertTitle(R.string.download_location_dialog_title_confirm_download);
-        assertSubtitle(DownloadUtils.getStringForBytes(getActivity(), TOTAL_BYTES));
+        assertSubtitle(
+                DownloadUtils.getStringForBytes(mActivityTestRule.getActivity(), TOTAL_BYTES));
         assertIncognitoWarningShown(false);
         assertDontShowAgainCheckbox(null);
     }

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
+import android.app.Activity;
 import android.os.Build;
 import android.view.View;
 
@@ -26,12 +27,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -39,12 +44,17 @@ import org.chromium.chrome.test.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link TabListRecyclerView} and {@link TabListContainerViewBinder} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase {
+public class TabListContainerViewBinderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private PropertyModel mContainerModel;
     private PropertyModelChangeProcessor mMCP;
     private TabListRecyclerView mRecyclerView;
@@ -52,17 +62,16 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Spy private LinearLayoutManager mLinearLayoutManager;
 
     @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        BlankUiTestActivity.setTestLayout(R.layout.tab_list_recycler_view_layout);
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-
+    @Before
+    public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mRecyclerView = getActivity().findViewById(R.id.tab_list_recycler_view);
+                    sActivity.setContentView(R.layout.tab_list_recycler_view_layout);
+                    mRecyclerView = sActivity.findViewById(R.id.tab_list_recycler_view);
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -77,16 +86,15 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
                 });
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
-        super.tearDownTest();
     }
 
     private void setUpGridLayoutManager() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mGridLayoutManager = spy(new GridLayoutManager(getActivity(), 2));
+                    mGridLayoutManager = spy(new GridLayoutManager(sActivity, 2));
                     mRecyclerView.setLayoutManager(mGridLayoutManager);
                 });
     }
@@ -94,7 +102,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     private void setUpLinearLayoutManager() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
+                    mLinearLayoutManager = spy(new LinearLayoutManager(sActivity));
                     mRecyclerView.setLayoutManager(mLinearLayoutManager);
                 });
     }
