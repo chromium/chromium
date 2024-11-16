@@ -316,7 +316,7 @@ void CommandLine::InitFromArgv(const StringVector& argv) {
   begin_args_ = 1;
   SetProgram(argv.empty() ? FilePath() : FilePath(argv[0]));
   if (!argv.empty()) {
-    AppendSwitchesAndArguments(make_span(argv).subspan(1));
+    AppendSwitchesAndArguments(span(argv).subspan<1>());
   }
 }
 
@@ -508,7 +508,7 @@ void CommandLine::AppendArguments(const CommandLine& other,
   if (include_program)
     SetProgram(other.GetProgram());
   if (!other.argv().empty()) {
-    AppendSwitchesAndArguments(make_span(other.argv()).subspan(1));
+    AppendSwitchesAndArguments(span(other.argv()).subspan<1>());
   }
 }
 

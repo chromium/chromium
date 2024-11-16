@@ -39,7 +39,7 @@ class StackTracer {
     span<const void* const> addresses = st.addresses();
     // make sure a valid array of stack frames is returned
     ASSERT_FALSE(addresses.empty());
-    EXPECT_TRUE(addresses[0]);
+    EXPECT_NE(nullptr, addresses[0]);
     // make sure the test generates the intended count of stack frames
     EXPECT_EQ(trace_count_, addresses.size());
   }

@@ -32,6 +32,7 @@
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Pointwise;
 
 namespace base {
@@ -956,23 +957,23 @@ TEST(SpanTest, TemplatedFirst) {
   {
     constexpr auto subspan = span.first<0>();
     static_assert(span.data() == subspan.data());
-    static_assert(0u == subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == subspan.size());
+    static_assert(0 == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.first<1>();
     static_assert(span.data() == subspan.data());
-    static_assert(1u == subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
+    static_assert(1 == subspan.size());
+    static_assert(1 == decltype(subspan)::extent);
     static_assert(1 == subspan[0]);
   }
 
   {
     constexpr auto subspan = span.first<2>();
     static_assert(span.data() == subspan.data());
-    static_assert(2u == subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
+    static_assert(2 == subspan.size());
+    static_assert(2 == decltype(subspan)::extent);
     static_assert(1 == subspan[0]);
     static_assert(2 == subspan[1]);
   }
@@ -980,8 +981,8 @@ TEST(SpanTest, TemplatedFirst) {
   {
     constexpr auto subspan = span.first<3>();
     static_assert(span.data() == subspan.data());
-    static_assert(3u == subspan.size());
-    static_assert(3u == decltype(subspan)::extent);
+    static_assert(3 == subspan.size());
+    static_assert(3 == decltype(subspan)::extent);
     static_assert(1 == subspan[0]);
     static_assert(2 == subspan[1]);
     static_assert(3 == subspan[2]);
@@ -996,16 +997,16 @@ TEST(SpanTest, TemplatedLast) {
     constexpr auto subspan = span.last<0>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 3) == subspan.data());
-    static_assert(0u == subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == subspan.size());
+    static_assert(0 == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.last<1>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data());
-    static_assert(1u == subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
+    static_assert(1 == subspan.size());
+    static_assert(1 == decltype(subspan)::extent);
     static_assert(3 == subspan[0]);
   }
 
@@ -1013,8 +1014,8 @@ TEST(SpanTest, TemplatedLast) {
     constexpr auto subspan = span.last<2>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
-    static_assert(2u == subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
+    static_assert(2 == subspan.size());
+    static_assert(2 == decltype(subspan)::extent);
     static_assert(2 == subspan[0]);
     static_assert(3 == subspan[1]);
   }
@@ -1022,8 +1023,8 @@ TEST(SpanTest, TemplatedLast) {
   {
     constexpr auto subspan = span.last<3>();
     static_assert(span.data() == subspan.data());
-    static_assert(3u == subspan.size());
-    static_assert(3u == decltype(subspan)::extent);
+    static_assert(3 == subspan.size());
+    static_assert(3 == decltype(subspan)::extent);
     static_assert(1 == subspan[0]);
     static_assert(2 == subspan[1]);
     static_assert(3 == subspan[2]);
@@ -1037,8 +1038,8 @@ TEST(SpanTest, TemplatedSubspan) {
   {
     constexpr auto subspan = span.subspan<0>();
     static_assert(span.data() == subspan.data());
-    static_assert(3u == subspan.size());
-    static_assert(3u == decltype(subspan)::extent);
+    static_assert(3 == subspan.size());
+    static_assert(3 == decltype(subspan)::extent);
     static_assert(1 == subspan[0]);
     static_assert(2 == subspan[1]);
     static_assert(3 == subspan[2]);
@@ -1048,8 +1049,8 @@ TEST(SpanTest, TemplatedSubspan) {
     constexpr auto subspan = span.subspan<1>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
-    static_assert(2u == subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
+    static_assert(2 == subspan.size());
+    static_assert(2 == decltype(subspan)::extent);
     static_assert(2 == subspan[0]);
     static_assert(3 == subspan[1]);
   }
@@ -1058,8 +1059,8 @@ TEST(SpanTest, TemplatedSubspan) {
     constexpr auto subspan = span.subspan<2>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data());
-    static_assert(1u == subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
+    static_assert(1 == subspan.size());
+    static_assert(1 == decltype(subspan)::extent);
     static_assert(3 == subspan[0]);
   }
 
@@ -1067,38 +1068,38 @@ TEST(SpanTest, TemplatedSubspan) {
     constexpr auto subspan = span.subspan<3>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 3) == subspan.data());
-    static_assert(0u == subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == subspan.size());
+    static_assert(0 == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.subspan<0, 0>();
     static_assert(span.data() == subspan.data());
-    static_assert(0u == subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == subspan.size());
+    static_assert(0 == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.subspan<1, 0>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
-    static_assert(0u == subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == subspan.size());
+    static_assert(0 == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.subspan<2, 0>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data());
-    static_assert(0u == subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == subspan.size());
+    static_assert(0 == decltype(subspan)::extent);
   }
 
   {
     constexpr auto subspan = span.subspan<0, 1>();
     static_assert(span.data() == subspan.data());
-    static_assert(1u == subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
+    static_assert(1 == subspan.size());
+    static_assert(1 == decltype(subspan)::extent);
     static_assert(1 == subspan[0]);
   }
 
@@ -1106,8 +1107,8 @@ TEST(SpanTest, TemplatedSubspan) {
     constexpr auto subspan = span.subspan<1, 1>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
-    static_assert(1u == subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
+    static_assert(1 == subspan.size());
+    static_assert(1 == decltype(subspan)::extent);
     static_assert(2 == subspan[0]);
   }
 
@@ -1115,16 +1116,16 @@ TEST(SpanTest, TemplatedSubspan) {
     constexpr auto subspan = span.subspan<2, 1>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 2) == subspan.data());
-    static_assert(1u == subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
+    static_assert(1 == subspan.size());
+    static_assert(1 == decltype(subspan)::extent);
     static_assert(3 == subspan[0]);
   }
 
   {
     constexpr auto subspan = span.subspan<0, 2>();
     static_assert(span.data() == subspan.data());
-    static_assert(2u == subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
+    static_assert(2 == subspan.size());
+    static_assert(2 == decltype(subspan)::extent);
     static_assert(1 == subspan[0]);
     static_assert(2 == subspan[1]);
   }
@@ -1133,8 +1134,8 @@ TEST(SpanTest, TemplatedSubspan) {
     constexpr auto subspan = span.subspan<1, 2>();
     // SAFETY: static_assert() doesn't execute code at runtime.
     static_assert(UNSAFE_BUFFERS(span.data() + 1) == subspan.data());
-    static_assert(2u == subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
+    static_assert(2 == subspan.size());
+    static_assert(2 == decltype(subspan)::extent);
     static_assert(2 == subspan[0]);
     static_assert(3 == subspan[1]);
   }
@@ -1142,8 +1143,8 @@ TEST(SpanTest, TemplatedSubspan) {
   {
     constexpr auto subspan = span.subspan<0, 3>();
     static_assert(span.data() == subspan.data());
-    static_assert(3u == subspan.size());
-    static_assert(3u == decltype(subspan)::extent);
+    static_assert(3 == subspan.size());
+    static_assert(3 == decltype(subspan)::extent);
     static_assert(1 == subspan[0]);
     static_assert(2 == subspan[1]);
     static_assert(3 == subspan[2]);
@@ -1174,35 +1175,29 @@ TEST(SpanTest, TemplatedFirstOnDynamicSpan) {
   {
     auto subspan = span.first<0>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
     auto subspan = span.first<1>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
-    EXPECT_EQ(1, subspan[0]);
+    static_assert(1 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(1));
   }
 
   {
     auto subspan = span.first<2>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
+    static_assert(2 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(1, 2));
   }
 
   {
     auto subspan = span.first<3>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(3u, subspan.size());
-    static_assert(3u == decltype(subspan)::extent);
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
-    EXPECT_EQ(3, subspan[2]);
+    static_assert(3 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 }
 
@@ -1216,8 +1211,8 @@ TEST(SpanTest, TemplatedLastOnDynamicSpan) {
     // `span.data() + 3` points to one byte beyond the object as allowed
     // per standards.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 3), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
@@ -1225,9 +1220,8 @@ TEST(SpanTest, TemplatedLastOnDynamicSpan) {
     // `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
-    EXPECT_EQ(3, subspan[0]);
+    static_assert(1 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(3));
   }
 
   {
@@ -1235,20 +1229,15 @@ TEST(SpanTest, TemplatedLastOnDynamicSpan) {
     // `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
-    EXPECT_EQ(2, subspan[0]);
-    EXPECT_EQ(3, subspan[1]);
+    static_assert(2 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(2, 3));
   }
 
   {
     auto subspan = span.last<3>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(3u, subspan.size());
-    static_assert(3u == decltype(subspan)::extent);
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
-    EXPECT_EQ(3, subspan[2]);
+    static_assert(3 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 }
 
@@ -1259,11 +1248,8 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
   {
     auto subspan = span.subspan<0>();
     EXPECT_EQ(span.data(), subspan.data());
-    static_assert(3u == decltype(subspan)::extent);
-    EXPECT_EQ(3u, subspan.size());
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
-    EXPECT_EQ(3, subspan[2]);
+    static_assert(3 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 
   {
@@ -1271,10 +1257,8 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
-    EXPECT_EQ(2, subspan[0]);
-    EXPECT_EQ(3, subspan[1]);
+    static_assert(2 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(2, 3));
   }
 
   {
@@ -1282,9 +1266,8 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
-    EXPECT_EQ(3, subspan[0]);
+    static_assert(1 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(3));
   }
 
   {
@@ -1293,15 +1276,15 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 3` points to one byte beyond the object as permitted by
     // C++ specification.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 3), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
     auto subspan = span.subspan<0, 0>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
@@ -1309,8 +1292,8 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
@@ -1318,16 +1301,15 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
-    static_assert(0u == decltype(subspan)::extent);
+    static_assert(0 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
     auto subspan = span.subspan<0, 1>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
-    EXPECT_EQ(1, subspan[0]);
+    static_assert(1 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(1));
   }
 
   {
@@ -1335,9 +1317,8 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
-    EXPECT_EQ(2, subspan[0]);
+    static_assert(1 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(2));
   }
 
   {
@@ -1345,18 +1326,15 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    static_assert(1u == decltype(subspan)::extent);
-    EXPECT_EQ(3, subspan[0]);
+    static_assert(1 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(3));
   }
 
   {
     auto subspan = span.subspan<0, 2>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
+    static_assert(2 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(1, 2));
   }
 
   {
@@ -1364,20 +1342,15 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    static_assert(2u == decltype(subspan)::extent);
-    EXPECT_EQ(2, subspan[0]);
-    EXPECT_EQ(3, subspan[1]);
+    static_assert(2 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(2, 3));
   }
 
   {
     auto subspan = span.subspan<0, 3>();
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(3u, subspan.size());
-    static_assert(3u == decltype(subspan)::extent);
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
-    EXPECT_EQ(3, subspan[2]);
+    static_assert(3 == decltype(subspan)::extent);
+    EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 }
 
@@ -1388,31 +1361,25 @@ TEST(SpanTest, First) {
   {
     auto subspan = span.first(0u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
     auto subspan = span.first(1u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    EXPECT_EQ(1, subspan[0]);
+    EXPECT_THAT(subspan, ElementsAre(1));
   }
 
   {
     auto subspan = span.first(2u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
+    EXPECT_THAT(subspan, ElementsAre(1, 2));
   }
 
   {
     auto subspan = span.first(3u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(3u, subspan.size());
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
-    EXPECT_EQ(3, subspan[2]);
+    EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 }
 
@@ -1426,7 +1393,7 @@ TEST(SpanTest, Last) {
     // `span.data() + 3` points to one byte beyond the object, as permitted by
     // C++ specification.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 3), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
@@ -1434,8 +1401,7 @@ TEST(SpanTest, Last) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    EXPECT_EQ(3, subspan[0]);
+    EXPECT_THAT(subspan, ElementsAre(3));
   }
 
   {
@@ -1443,18 +1409,13 @@ TEST(SpanTest, Last) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    EXPECT_EQ(2, subspan[0]);
-    EXPECT_EQ(3, subspan[1]);
+    EXPECT_THAT(subspan, ElementsAre(2, 3));
   }
 
   {
     auto subspan = span.last(3u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(3u, subspan.size());
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
-    EXPECT_EQ(3, subspan[2]);
+    EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 }
 
@@ -1463,114 +1424,98 @@ TEST(SpanTest, Subspan) {
   span<int> span(array);
 
   {
-    auto subspan = span.subspan(0);
+    auto subspan = span.subspan(0u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(3u, subspan.size());
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
-    EXPECT_EQ(3, subspan[2]);
+    EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 
   {
-    auto subspan = span.subspan(1);
+    auto subspan = span.subspan(1u);
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    EXPECT_EQ(2, subspan[0]);
-    EXPECT_EQ(3, subspan[1]);
+    EXPECT_THAT(subspan, ElementsAre(2, 3));
   }
 
   {
-    auto subspan = span.subspan(2);
+    auto subspan = span.subspan(2u);
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    EXPECT_EQ(3, subspan[0]);
+    EXPECT_THAT(subspan, ElementsAre(3));
   }
 
   {
-    auto subspan = span.subspan(3);
+    auto subspan = span.subspan(3u);
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 3` points to one byte beyond the object, as permitted by
     // C++ specification.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 3), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
-    auto subspan = span.subspan(0, 0);
+    auto subspan = span.subspan(0u, 0u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
-    auto subspan = span.subspan(1, 0);
+    auto subspan = span.subspan(1u, 0u);
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
-    auto subspan = span.subspan(2, 0);
+    auto subspan = span.subspan(2u, 0u);
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    EXPECT_EQ(0u, subspan.size());
+    EXPECT_THAT(subspan, IsEmpty());
   }
 
   {
-    auto subspan = span.subspan(0, 1);
+    auto subspan = span.subspan(0u, 1u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    EXPECT_EQ(1, subspan[0]);
+    EXPECT_THAT(subspan, ElementsAre(1));
   }
 
   {
-    auto subspan = span.subspan(1, 1);
+    auto subspan = span.subspan(1u, 1u);
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    EXPECT_EQ(2, subspan[0]);
+    EXPECT_THAT(subspan, ElementsAre(2));
   }
 
   {
-    auto subspan = span.subspan(2, 1);
+    auto subspan = span.subspan(2u, 1u);
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    EXPECT_EQ(1u, subspan.size());
-    EXPECT_EQ(3, subspan[0]);
+    EXPECT_THAT(subspan, ElementsAre(3));
   }
 
   {
-    auto subspan = span.subspan(0, 2);
+    auto subspan = span.subspan(0u, 2u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
+    EXPECT_THAT(subspan, ElementsAre(1, 2));
   }
 
   {
-    auto subspan = span.subspan(1, 2);
+    auto subspan = span.subspan(1u, 2u);
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    EXPECT_EQ(2u, subspan.size());
-    EXPECT_EQ(2, subspan[0]);
-    EXPECT_EQ(3, subspan[1]);
+    EXPECT_THAT(subspan, ElementsAre(2, 3));
   }
 
   {
-    auto subspan = span.subspan(0, 3);
+    auto subspan = span.subspan(0u, 3u);
     EXPECT_EQ(span.data(), subspan.data());
-    EXPECT_EQ(span.size(), subspan.size());
-    EXPECT_EQ(1, subspan[0]);
-    EXPECT_EQ(2, subspan[1]);
-    EXPECT_EQ(3, subspan[2]);
+    EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 }
 
@@ -2083,20 +2028,20 @@ TEST(SpanTest, OutOfBoundsDeath) {
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.first(1u), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.last(1u), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.back(), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.subspan(1), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.subspan(1u), "");
 
   static constexpr int kArray[] = {0, 1, 2};
   constexpr span<const int> kNonEmptyDynamicSpan(kArray);
   EXPECT_EQ(3U, kNonEmptyDynamicSpan.size());
   ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan[4], "");
-  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(10), "");
-  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(1, 7), "");
+  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(10u), "");
+  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(1u, 7u), "");
 
   size_t minus_one = static_cast<size_t>(-1);
   ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(minus_one), "");
   ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(minus_one, minus_one),
                             "");
-  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(minus_one, 1), "");
+  ASSERT_DEATH_IF_SUPPORTED(kNonEmptyDynamicSpan.subspan(minus_one, 1u), "");
 
   // Span's iterators should be checked. To confirm the crashes come from the
   // iterator checks and not stray memory accesses, we create spans that are

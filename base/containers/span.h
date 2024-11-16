@@ -1764,15 +1764,7 @@ concept StringViewCanStreamToCharStream = requires(std::ostream& s) {
 template <class T, size_t N>
 constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
   l << "[";
-  if constexpr (!SpanConvertsToStringView<T>) {
-    if (!r.empty()) {
-      l << ToString(r.front());
-      for (const T& e : r.subspan(1u)) {
-        l << ", ";
-        l << ToString(e);
-      }
-    }
-  } else {
+  if constexpr (SpanConvertsToStringView<T>) {
     // Note: Since we don't always have that header included, we can't branch on
     // whether streaming is available, as it would create UB if different parts
     // of the TU see a different answer. So we just try catch it with an assert.
@@ -1789,6 +1781,14 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
     l << '\"';
     l << as_string_view(r);
     l << '\"';
+  } else if constexpr (N != 0) {
+    if (!r.empty()) {
+      l << ToString(r.front());
+      for (const T& e : r.template subspan<1>()) {
+        l << ", ";
+        l << ToString(e);
+      }
+    }
   }
   l << "]";
   return l;

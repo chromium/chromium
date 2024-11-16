@@ -71,7 +71,7 @@ TEST_F(StackTraceTest, OutputToStream) {
         // BUILDFLAG(IS_FUCHSIA))
 
   ASSERT_GT(addresses.size(), 5u) << "Too few frames found.";
-  ASSERT_TRUE(addresses[0]);
+  ASSERT_NE(nullptr, addresses[0]);
 
   if (!StackTrace::WillSymbolizeToStreamForTesting())
     return;
