@@ -38,7 +38,7 @@ std::string ExtractURLFromURLFileContents(std::string_view file_contents) {
   // Search for the [InternetShortcut] section by discarding lines one by one
   // until either the section is found or there are no lines left.
   while (!lines.empty() && lines.front() != kInternetShortcut) {
-    lines = lines.subspan(1);
+    lines = lines.subspan<1>();
   }
 
   // At this point, either the section was found or there are no lines left. If
@@ -48,7 +48,7 @@ std::string ExtractURLFromURLFileContents(std::string_view file_contents) {
   }
 
   // This is now the [InternetShortcut] section. Discard that section header.
-  lines = lines.subspan(1);
+  lines = lines.subspan<1>();
 
   // At this point, examine the lines.
   while (!lines.empty()) {
@@ -69,7 +69,7 @@ std::string ExtractURLFromURLFileContents(std::string_view file_contents) {
     }
 
     // Otherwise, this isn't a useful line; discard it and move on.
-    lines = lines.subspan(1);
+    lines = lines.subspan<1>();
   }
 
   // If control has reached here, the file was searched and it contains no URL.

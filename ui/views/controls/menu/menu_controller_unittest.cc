@@ -2285,9 +2285,9 @@ TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   menu_controller()->set_use_ash_system_ui_layout(true);
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const std::vector<MenuItemView*> menu_items = submenu->GetMenuItems();
-  base::ranges::for_each(
-      base::make_span(menu_items).subspan(1),
-      [&](auto* item) { menu_item()->RemoveMenuItem(item); });
+  base::ranges::for_each(base::span(menu_items).subspan<1>(), [&](auto* item) {
+    menu_item()->RemoveMenuItem(item);
+  });
   MenuItemView* const sub_item = submenu->GetMenuItemAt(0);
   sub_item->AppendMenuItem(11, u"Subitem.One");
 

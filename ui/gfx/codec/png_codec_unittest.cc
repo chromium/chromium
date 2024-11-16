@@ -822,7 +822,7 @@ TEST_P(PNGCodecTest, DecodeCorrupted) {
 
   // Try decompressing a truncated version.
   output = PNGCodec::Decode(
-      base::span(compressed.value()).subspan(0, compressed.value().size() / 2),
+      base::span(compressed.value()).first(compressed.value().size() / 2),
       PNGCodec::FORMAT_RGBA);
   ASSERT_FALSE(output);
 

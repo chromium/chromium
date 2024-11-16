@@ -2704,8 +2704,8 @@ class DCompPresenterDelegatedInkSkiaGoldTest
   }
   void ScheduleInkTrail(const gfx::RectF& presentation_area,
                         const SkColor& color,
-                        const float diameter,
-                        base::span<gfx::DelegatedInkPoint const> const points) {
+                        float diameter,
+                        base::span<const gfx::DelegatedInkPoint> points) {
     DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
     // Metadata timestamp and point should match the first DelegatedInkPoint.
     gfx::DelegatedInkMetadata metadata(points[0].point(), diameter, color,
