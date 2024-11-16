@@ -67,14 +67,14 @@ double ScoreComponent(const google::protobuf::Map<std::string, float>& weights,
 
 RankerModelStatus ValidateModel(const RankerModel& model) {
   if (model.proto().model_case() != RankerModelProto::kTranslate)
-    return RankerModelStatus::VALIDATION_FAILED;
+    return RankerModelStatus::kValidationFailed;
 
   if (model.proto().translate().model_revision_case() !=
       TranslateRankerModel::kTranslateLogisticRegressionModel) {
-    return RankerModelStatus::INCOMPATIBLE;
+    return RankerModelStatus::kIncompatible;
   }
 
-  return RankerModelStatus::OK;
+  return RankerModelStatus::kOk;
 }
 
 }  // namespace
