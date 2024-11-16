@@ -86,4 +86,13 @@ public class MessageUtils {
             return message.attribution.triggeringUser;
         }
     }
+
+    /** Returns the url of the tab or null. */
+    public static String extractTabUrl(@Nullable InstantMessage message) {
+        return message == null
+                        || message.attribution == null
+                        || message.attribution.tabMetadata == null
+                ? null
+                : message.attribution.tabMetadata.lastKnownUrl;
+    }
 }

@@ -155,8 +155,10 @@ if (is_android) {
       "//components/browser_ui/notifications/android:java",
       "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
+      "//components/embedder_support/android:util_java",
       "//components/messages/android:java",
       "//components/saved_tab_groups/public:java",
+      "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -206,6 +208,7 @@ if (is_android) {
       "//components/collaboration/public:java",
       "//components/data_sharing:test_support_java",
       "//components/data_sharing/public:public_java",
+      "//components/embedder_support/android:util_java",
       "//components/messages/android:factory_java",
       "//components/messages/android:java",
       "//components/messages/android:manager_java",
@@ -219,6 +222,7 @@ if (is_android) {
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_junit_test_support",
       "//url:url_java",
     ]
   }

@@ -92,6 +92,7 @@ class TabModel {
     // - "+" button in the bottom tab strip
     // - "+" button in the tab grid dialog
     // - "New tab in group" option in the tab strip group context menu
+    // - "Reopen" action in shared tab group messages.
     FROM_TAB_GROUP_UI,
     // Open from the long press context menu item 'Open in new tab in group'.
     // Will not be brought to the foreground.

@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +28,7 @@ import static org.chromium.components.messages.PrimaryActionClickBehavior.DISMIS
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -34,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -47,7 +51,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
 import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
@@ -58,16 +65,20 @@ import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 
 /** Unit tests for {@link InstantMessageDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -90,10 +101,14 @@ public class InstantMessageDelegateImplUnitTest {
     @Mock private ManagedMessageDispatcher mManagedMessageDispatcher;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
+    @Mock private TabCreator mTabCreator;
     @Mock private Callback<Boolean> mSuccessCallback;
     @Mock private DataSharingNotificationManager mDataSharingNotificationManager;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private Bitmap mAvatarBitmap;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
@@ -122,6 +137,8 @@ public class InstantMessageDelegateImplUnitTest {
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         mDelegate = new InstantMessageDelegateImpl(mProfile);
         mDelegate.attachWindow(
@@ -135,6 +152,7 @@ public class InstantMessageDelegateImplUnitTest {
         MessageAttribution attribution = new MessageAttribution();
         attribution.tabMetadata = new TabMessageMetadata();
         attribution.tabMetadata.lastKnownTitle = TAB_TITLE;
+        attribution.tabMetadata.lastKnownUrl = JUnitTestGURLs.URL_1.getSpec();
         attribution.tabGroupMetadata = new TabGroupMessageMetadata();
         attribution.tabGroupMetadata.lastKnownTitle = TAB_GROUP_TITLE;
         attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
@@ -181,6 +199,34 @@ public class InstantMessageDelegateImplUnitTest {
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);
+
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(anyInt()))
+                .thenReturn(Arrays.asList(mTab1, mTab2));
+        assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
+        ArgumentMatcher<LoadUrlParams> matcher =
+                (LoadUrlParams params) ->
+                        TextUtils.equals(params.getUrl(), JUnitTestGURLs.URL_1.getSpec());
+        verify(mTabCreator)
+                .createNewTab(argThat(matcher), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(mTab2));
+    }
+
+    @Test
+    public void testTabRemoved_NullUrl() {
+        InstantMessage message = newInstantMessage(CollaborationEvent.TAB_REMOVED);
+        message.attribution.tabMetadata.lastKnownUrl = null;
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(anyInt()))
+                .thenReturn(Arrays.asList(mTab1, mTab2));
+        assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
+        ArgumentMatcher<LoadUrlParams> matcher =
+                (LoadUrlParams params) -> TextUtils.equals(params.getUrl(), UrlConstants.NTP_URL);
+        verify(mTabCreator)
+                .createNewTab(argThat(matcher), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(mTab2));
     }
 
     @Test
