@@ -40,11 +40,11 @@ IbanManagerFactory::IbanManagerFactory()
 
 IbanManagerFactory::~IbanManagerFactory() = default;
 
-KeyedService* IbanManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+IbanManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  IbanManager* service = new IbanManager(
+  return std::make_unique<IbanManager>(
       PersonalDataManagerFactory::GetForBrowserContext(context));
-  return service;
 }
 
 }  // namespace autofill
