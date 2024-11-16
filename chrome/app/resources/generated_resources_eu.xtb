@@ -2052,7 +2052,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2436385001956947090">Kopiatu esteka</translation>
 <translation id="2437561292559037753">Datuak partekatzea</translation>
 <translation id="2438853563451647815">Ez dago konektatuta inprimagailura</translation>
-<translation id="2439152382014731627">Berrezarri <ph name="DEVICE_TYPE" /> gailuko pasahitza</translation>
+<translation id="2439152382014731627">Berrezarri <ph name="DEVICE_TYPE" /> gailuaren pasahitza</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> kargatzen</translation>
 <translation id="2440036226025529014">Erabili aurpegiaren eta begien mugimendua kurtsorea eta teklatua kontrolatzeko</translation>
 <translation id="2440604414813129000">Ikusi &amp;iturburua</translation>
@@ -3202,7 +3202,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3275778913554317645">Ireki leiho gisa</translation>
 <translation id="3277214528693754078">Nabigatu testu-kurtsorearekin (testu-kurtsorearen bidez arakatzeko eginbidea)</translation>
 <translation id="3277594800340743211">Itzal handia</translation>
-<translation id="3277784185056747463">Gailuko pasahitza edo Google-ko kontuko pasahitza</translation>
+<translation id="3277784185056747463">Gailuaren pasahitza edo Google-ko kontuko pasahitza</translation>
 <translation id="3278001907972365362">Google-ko kontuak zure arreta behar du</translation>
 <translation id="3279092821516760512">Zure inguruan daudenean, hautatu dituzun kontaktuek edukia parteka dezakete zurekin. Transferentziak ez dira abiaraziko onartzen dituzun arte.</translation>
 <translation id="3279230909244266691">Baliteke prozesuak minutu batzuk behar izatea. Makina birtuala abiarazten.</translation>
@@ -6414,7 +6414,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5625225435499354052">Editatu Google Pay-n</translation>
 <translation id="5626134646977739690">Izena:</translation>
 <translation id="5627832140542566187">Pantailaren orientazioa</translation>
-<translation id="5628434207686266338">Ezarri gailuko pasahitza</translation>
+<translation id="5628434207686266338">Ezarri gailuaren pasahitza</translation>
 <translation id="562935524653278697">Laster-marken, historiaren, pasahitzen eta bestelako ezarpen batzuen sinkronizazioa desgaitu du administratzaileak.</translation>
 <translation id="5631017369956619646">PUZren erabilera</translation>
 <translation id="5631063405154130767">Ez da aurkitu talderik</translation>
