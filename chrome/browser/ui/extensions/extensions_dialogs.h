@@ -45,6 +45,9 @@ namespace extensions {
 
 class Extension;
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogOkButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
+
 void ShowConstrainedDeviceChooserDialog(
     content::WebContents* web_contents,
     std::unique_ptr<permissions::ChooserController> controller);
@@ -122,8 +125,6 @@ enum class ExtensionInstalledBlockedByParentDialogAction {
   kAdd,     // The user attempted to add the extension.
   kEnable,  // The user attempted to enable the extension.
 };
-
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
 
 // Displays a dialog to notify the user that the extension installation is
 // blocked by a parent

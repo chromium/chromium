@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
@@ -27,6 +29,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
+#include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
@@ -539,6 +542,13 @@ class ExtensionsMenuMainPageViewInteractiveTest
     return (iter == menu_items.end()) ? nullptr : *iter;
   }
 
+ protected:
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTestT<
+        extensions::ExtensionBrowserTest>::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -910,4 +920,61 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
                 },
                 false))));
+}
+
+// Tests that triggering the reload page dialog from the extension menu (by
+// revoking site access for an extension) closes the extension menu and pops out
+// the extension action on the toolbar.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       ReloadPageDialog) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  constexpr char kExtensionMenuItemToggle[] = "extension_menu_item_toggle";
+
+  // Load an extension that injects a script.
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(
+      R"({
+           "name": "Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "content_scripts": [{
+             "matches": ["*://*/*"],
+             "js": ["script.js"]
+           }]
+         })");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
+                          "console.log('injected!');");
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ChromeTestExtensionLoader(browser()->profile())
+          .LoadExtension(extension_dir.UnpackedPath());
+
+  RunTestSequence(
+      // Navigate to a site where the extension's script will be injected.
+      InstrumentTab(kTab),
+      NavigateWebContents(
+          kTab, embedded_test_server()->GetURL("example.com", "/title1.html")),
+
+      // Verify extension is not visible on the toolbar.
+      EnsureNotPresent(kToolbarActionViewElementId),
+
+      OpenExtensionsMenu(),
+
+      // Revoke site access for the extension by toggling the extension off.
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<views::ToggleButton>(
+          kExtensionMenuItemViewElementId, kExtensionMenuItemToggle),
+      PressButton(kExtensionMenuItemToggle),
+
+      // Verify this causes the extension menu to close, extension's action to
+      // pop out on the toolbar and the reload page dialog to appear.
+      WaitForHide(kExtensionsMenuMainPageElementId),
+      WaitForShow(kToolbarActionViewElementId),
+      // Note: We cannot add an element identifier to the dialog when it's built
+      // using DialogModel::Builder. Thus, we check for its existence by
+      // checking the visibility of one of its elements.
+      WaitForShow(extensions::kReloadPageDialogOkButtonElementId));
 }
