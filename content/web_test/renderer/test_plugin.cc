@@ -231,7 +231,7 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
     gl_ = context_provider->ContextGL();
     context_provider_ =
         base::MakeRefCounted<ContextProviderRef>(std::move(context_provider));
-  } else if (blink::features::IsCanvasSharedBitmapConversionEnabled()) {
+  } else {
     scoped_refptr<gpu::GpuChannelHost> gpu_channel =
         blink::Platform::Current()->EstablishGpuChannelSync();
     if (!gpu_channel) {

@@ -534,7 +534,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       scoped_refptr<gpu::ClientSharedImage>* client_si,
       viz::ReleaseCallback* out_release_callback);
   bool FinishPrepareTransferableResourceSoftware(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback);
 
@@ -557,8 +556,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   void ClearCcLayer();
 
-  RegisteredBitmap CreateOrRecycleBitmap(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar);
+  RegisteredBitmap CreateOrRecycleBitmap();
 
   // Updates the current size of the buffer, ensuring that
   // s_currentResourceUsePixels is updated.

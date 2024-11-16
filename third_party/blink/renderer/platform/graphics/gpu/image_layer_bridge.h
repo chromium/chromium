@@ -74,10 +74,8 @@ class PLATFORM_EXPORT ImageLayerBridge
   // Returns a SharedMemory bitmap of |size|. Tries to recycle returned bitmaps
   // first and allocates a new bitmap if necessary. Note this will delete
   // recycled bitmaps that are the wrong size.
-  RegisteredBitmap CreateOrRecycleBitmap(
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
-      cc::SharedBitmapIdRegistrar* bitmap_registrar);
+  RegisteredBitmap CreateOrRecycleBitmap(const gfx::Size& size,
+                                         viz::SharedImageFormat format);
 
   void ResourceReleasedGpu(scoped_refptr<StaticBitmapImage>,
                            const gpu::SyncToken&,

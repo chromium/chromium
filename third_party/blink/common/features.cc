@@ -459,10 +459,6 @@ BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,
              "Canvas2DHibernationReleaseTransferMemory",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCanvasSharedBitmapToSharedImage,
-             "CanvasSharedBitmapToSharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to capture the source location of JavaScript execution, which is one
 // of the renderer eviction reasons for Back/Forward Cache.
 BASE_FEATURE(kCaptureJSExecutionLocation,
@@ -2948,11 +2944,6 @@ bool IsKeepAliveURLLoaderServiceEnabled() {
 bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
   return base::FeatureList::IsEnabled(blink::features::kLinkPreview) &&
          type == blink::features::kLinkPreviewTriggerType.Get();
-}
-
-bool IsCanvasSharedBitmapConversionEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kCanvasSharedBitmapToSharedImage);
 }
 
 // DO NOT ADD NEW FEATURES HERE.

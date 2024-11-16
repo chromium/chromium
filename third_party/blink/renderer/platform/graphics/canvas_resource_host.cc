@@ -282,9 +282,8 @@ bool CanvasResourceHost::IsResourceValid() {
     return true;
   }
 
-  if (!features::IsCanvasSharedBitmapConversionEnabled() ||
-      (resource_provider_ &&
-       resource_provider_->GetType() == CanvasResourceProvider::kBitmap)) {
+  if (resource_provider_ &&
+      resource_provider_->GetType() == CanvasResourceProvider::kBitmap) {
     if (preferred_2d_raster_mode_ == RasterModeHint::kPreferCPU) {
       return true;
     }

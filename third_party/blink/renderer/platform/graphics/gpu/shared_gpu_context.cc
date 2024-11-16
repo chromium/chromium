@@ -206,12 +206,6 @@ static void CreateGpuChannelOnMainThread(
 }
 
 void SharedGpuContext::CreateSharedImageInterfaceProviderIfNeeded() {
-  // If the feature is not enabled, |shared_image_interface_provider_| is always
-  // nullptr.
-  if (!features::IsCanvasSharedBitmapConversionEnabled()) {
-    return;
-  }
-
   // Use the current |shared_image_interface_provider_|.
   if (shared_image_interface_provider_ &&
       shared_image_interface_provider_->SharedImageInterface()) {

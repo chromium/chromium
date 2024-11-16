@@ -242,9 +242,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernation);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kCanvas2DHibernationReleaseTransferMemory);
 
-// Enable the Shared Bitmap to Shared Image conversion for Canvas.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasSharedBitmapToSharedImage);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCaptureJSExecutionLocation);
 
 // If enabled, the HTMLDocumentParser will only check its budget after parsing a
@@ -1893,8 +1890,6 @@ BLINK_COMMON_EXPORT bool IsKeepAliveURLLoaderServiceEnabled();
 // Returns true if Link Preview and the given trigger type is enabled.
 BLINK_COMMON_EXPORT bool IsLinkPreviewTriggerTypeEnabled(
     LinkPreviewTriggerType type);
-
-BLINK_COMMON_EXPORT bool IsCanvasSharedBitmapConversionEnabled();
 
 // DO NOT ADD NEW FEATURES HERE.
 //

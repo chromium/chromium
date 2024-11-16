@@ -12,7 +12,6 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -29,7 +28,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -270,43 +268,21 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
                      sk_alpha_type,
                      std::move(sk_color_space)),
       size_(size) {
-  if (features::IsCanvasSharedBitmapConversionEnabled()) {
-    if (!shared_image_interface_provider) {
-      return;
-    }
-    auto* shared_image_interface =
-        shared_image_interface_provider->SharedImageInterface();
-    if (!shared_image_interface) {
-      return;
-    }
-
-    auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-        {viz::SinglePlaneFormat::kBGRA_8888, Size(), gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "CanvasResourceSharedBitmap"});
-    shared_image_ = std::move(shared_image_mapping.shared_image);
-    shared_mapping_ = std::move(shared_image_mapping.mapping);
-    sync_token_ = shared_image_interface->GenVerifiedSyncToken();
-  } else {
-    // Software compositing lazily uses RGBA_8888 as the resource format
-    // everywhere but the content is expected to be rendered in N32 format.
-    base::MappedReadOnlyRegion shm =
-        viz::bitmap_allocation::AllocateSharedBitmap(
-            Size(), viz::SinglePlaneFormat::kRGBA_8888);
-
-    if (!shm.IsValid()) {
-      return;
-    }
-
-    shared_mapping_ = std::move(shm.mapping);
-    shared_bitmap_id_ = viz::SharedBitmap::GenerateId();
-
-    CanvasResourceDispatcher* resource_dispatcher =
-        Provider() ? Provider()->ResourceDispatcher() : nullptr;
-    if (resource_dispatcher) {
-      resource_dispatcher->DidAllocateSharedBitmap(std::move(shm.region),
-                                                   shared_bitmap_id_);
-    }
+  if (!shared_image_interface_provider) {
+    return;
   }
+  auto* shared_image_interface =
+      shared_image_interface_provider->SharedImageInterface();
+  if (!shared_image_interface) {
+    return;
+  }
+
+  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+      {viz::SinglePlaneFormat::kBGRA_8888, Size(), gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "CanvasResourceSharedBitmap"});
+  shared_image_ = std::move(shared_image_mapping.shared_image);
+  shared_mapping_ = std::move(shared_image_mapping.mapping);
+  sync_token_ = shared_image_interface->GenVerifiedSyncToken();
 }
 
 CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
@@ -320,12 +296,6 @@ CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
 
   if (Provider()) {
     Provider()->OnDestroyResource();
-  }
-
-  CanvasResourceDispatcher* resource_dispatcher =
-      Provider() ? Provider()->ResourceDispatcher() : nullptr;
-  if (resource_dispatcher && !shared_bitmap_id_.IsZero()) {
-    resource_dispatcher->DidDeleteSharedBitmap(shared_bitmap_id_);
   }
 }
 
@@ -383,7 +353,7 @@ bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
   TRACE_EVENT0(
       "blink",
       "CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource");
-  if (shared_bitmap_id_.IsZero() && !shared_image_) {
+  if (!shared_image_) {
     return false;
   }
 
@@ -391,16 +361,9 @@ bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
   // the resource type and completely ignores the format set on the
   // TransferableResource. Clients are expected to render in N32 format but use
   // RGBA as the tagged format on resources.
-  if (shared_image_) {
-    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        shared_image_, sync_token_, Size(), viz::SinglePlaneFormat::kBGRA_8888,
-        viz::TransferableResource::ResourceSource::kCanvas);
-  } else {
-    *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
-        shared_bitmap_id_, gpu::SyncToken(), Size(),
-        viz::SinglePlaneFormat::kRGBA_8888,
-        viz::TransferableResource::ResourceSource::kCanvas);
-  }
+  *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
+      shared_image_, sync_token_, Size(), viz::SinglePlaneFormat::kBGRA_8888,
+      viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
 
