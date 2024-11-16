@@ -271,13 +271,13 @@ TEST_F(TelemetryLoggerTest, UploadCombinesPreviousEvents) {
         TestEvent(3, 1, "more event happened after failed upload.")};
 
     logger->Log(events[0]);
-    server->ExpectRequest(SerializeEvents(base::span(events).subspan(0, 1)),
+    server->ExpectRequest(SerializeEvents(base::span(events).first<1>()),
                           std::make_pair(net::HTTP_INTERNAL_SERVER_ERROR, ""));
     logger->Flush(base::DoNothing());
     WaitForExpectedRequests(server);
 
     logger->Log(events[1]);
-    server->ExpectRequest(SerializeEvents(base::span(events).subspan(0, 2)),
+    server->ExpectRequest(SerializeEvents(base::span(events).first<2>()),
                           std::make_pair(net::HTTP_INTERNAL_SERVER_ERROR, ""));
     logger->Flush(base::DoNothing());
     WaitForExpectedRequests(server);

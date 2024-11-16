@@ -206,7 +206,7 @@ HRESULT ValidateData(const base::Process& process,
       return S_OK;
     case ProtectionLevel::PROTECTION_PATH_VALIDATION_OLD:
     case ProtectionLevel::PROTECTION_PATH_VALIDATION:
-      return ValidatePath(process, validation_data.subspan(1));
+      return ValidatePath(process, validation_data.subspan<1>());
     case ProtectionLevel::PROTECTION_MAX:
       return E_INVALIDARG;
   }

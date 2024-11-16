@@ -217,7 +217,7 @@ TEST(AboutFlagsTest, VariationIdsAreValid) {
 TEST(AboutFlagsTest, ScopedFeatureEntriesRestoresFeatureEntries) {
   const base::span<const flags_ui::FeatureEntry> old_entries =
       testing::GetFeatureEntries();
-  EXPECT_GT(old_entries.size(), 0U);
+  EXPECT_FALSE(old_entries.empty());
   const char* first_feature_name = old_entries[0].internal_name;
   {
     static BASE_FEATURE(kTestFeature1, "FeatureName1",

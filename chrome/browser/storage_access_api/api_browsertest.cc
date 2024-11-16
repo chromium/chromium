@@ -2746,14 +2746,14 @@ class StorageAccessAPIAutograntsWithFedCMBrowserTest
   void NavigateToPageWithPermissionsPolicyIframes(
       std::initializer_list<const std::string_view> hosts_list) {
     base::span hosts(hosts_list);
-    ASSERT_GT(hosts.size(), 0U);
+    ASSERT_FALSE(hosts.empty());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), https_server().GetURL(
                        hosts[0], base::StrCat({
                                      "/cross_site_iframe_factory.html?",
                                      hosts[0],
                                      "(",
-                                     MakeNonRootFrameNodes(hosts.subspan(1)),
+                                     MakeNonRootFrameNodes(hosts.subspan<1>()),
                                      ")",
                                  }))));
   }

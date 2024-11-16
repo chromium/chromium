@@ -2509,7 +2509,7 @@ class EnclaveManager::StateMachine {
     // The vault handle in the wrapped PIN doesn't include the first byte,
     // which is the type of the vault entry.
     map.emplace(5, base::as_byte_span(vault->vault_parameters().vault_handle())
-                       .subspan(1));
+                       .subspan<1>());
     const std::vector<uint8_t> cbor_bytes =
         cbor::Writer::Write(cbor::Value(std::move(map))).value();
     return VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes));
