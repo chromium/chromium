@@ -103,7 +103,8 @@ ExtensionPlatformKeysServiceFactory::~ExtensionPlatformKeysServiceFactory() =
 std::unique_ptr<KeyedService>
 ExtensionPlatformKeysServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  auto service = std::make_unique<ExtensionPlatformKeysService>(context);
+  std::unique_ptr<ExtensionPlatformKeysService> service =
+      std::make_unique<ExtensionPlatformKeysService>(context);
 
   service->SetSelectDelegate(std::make_unique<DefaultSelectDelegate>());
   return service;
