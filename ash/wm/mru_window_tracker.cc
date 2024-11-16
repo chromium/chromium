@@ -6,9 +6,9 @@
 
 #include <vector>
 
+#include "ash/focus/ash_focus_rules.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "ash/wm/ash_focus_rules.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"

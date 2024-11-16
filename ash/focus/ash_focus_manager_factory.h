@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCELERATORS_ASH_FOCUS_MANAGER_FACTORY_H_
-#define ASH_ACCELERATORS_ASH_FOCUS_MANAGER_FACTORY_H_
+#ifndef ASH_FOCUS_ASH_FOCUS_MANAGER_FACTORY_H_
+#define ASH_FOCUS_ASH_FOCUS_MANAGER_FACTORY_H_
 
 #include "ash/focus/arrow_key_traversal_controller.h"
 #include "ui/views/focus/focus_manager_factory.h"
@@ -30,4 +30,4 @@ class AshFocusManagerFactory : public views::FocusManagerFactory {
 
 }  // namespace ash
 
-#endif  // ASH_ACCELERATORS_ASH_FOCUS_MANAGER_FACTORY_H_
+#endif  // ASH_FOCUS_ASH_FOCUS_MANAGER_FACTORY_H_

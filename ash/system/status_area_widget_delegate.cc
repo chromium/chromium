@@ -4,7 +4,7 @@
 
 #include "ash/system/status_area_widget_delegate.h"
 
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen.h"

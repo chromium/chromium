@@ -7,7 +7,7 @@
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/ash_export.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/session/session_types.h"
 

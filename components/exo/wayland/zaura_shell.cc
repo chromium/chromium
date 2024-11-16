@@ -16,7 +16,7 @@
 
 #include "ash/display/display_util.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/ash_focus_rules.h"
+#include "ash/focus/ash_focus_rules.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -31,16 +31,18 @@ namespace {
 bool BelongsToContainerWithEqualOrGreaterId(const aura::Window* window,
                                             int container_id) {
   for (; window; window = window->parent()) {
-    if (window->GetId() >= container_id)
+    if (window->GetId() >= container_id) {
       return true;
+    }
   }
   return false;
 }
 
 bool BelongsToContainerWithId(const aura::Window* window, int container_id) {
   for (; window; window = window->parent()) {
-    if (window->GetId() == container_id)
+    if (window->GetId() == container_id) {
       return true;
+    }
   }
   return false;
 }
@@ -66,8 +68,9 @@ AshFocusRules::~AshFocusRules() = default;
 bool AshFocusRules::IsToplevelWindow(const aura::Window* window) const {
   DCHECK(window);
   // The window must be in a valid hierarchy.
-  if (!window->GetRootWindow() || !window->parent())
+  if (!window->GetRootWindow() || !window->parent()) {
     return false;
+  }
 
   // The window must exist within a container that supports activation.
   // The window cannot be blocked by a modal transient.
@@ -85,17 +88,20 @@ bool AshFocusRules::IsWindowConsideredVisibleForActivation(
   Shell* shell = Shell::Get();
   // If the |window| doesn't belong to the current active user and also doesn't
   // show for the current active user, then it should not be activated.
-  if (!shell->shell_delegate()->CanShowWindowForUser(window))
+  if (!shell->shell_delegate()->CanShowWindowForUser(window)) {
     return false;
+  }
 
-  if (window->IsVisible())
+  if (window->IsVisible()) {
     return true;
+  }
 
   const WindowState* window_state = WindowState::Get(window);
   // Minimized windows are hidden in their minimized state, but they can always
   // be activated.
-  if (window_state->IsMinimized())
+  if (window_state->IsMinimized()) {
     return true;
+  }
 
   if (window_state->IsFloated()) {
     auto* float_controller = shell->float_controller();
@@ -112,8 +118,9 @@ bool AshFocusRules::IsWindowConsideredVisibleForActivation(
     }
   }
 
-  if (!window->TargetVisibility())
+  if (!window->TargetVisibility()) {
     return false;
+  }
 
   const aura::Window* const parent = window->parent();
   return desks_util::IsDeskContainer(parent) ||
@@ -122,20 +129,24 @@ bool AshFocusRules::IsWindowConsideredVisibleForActivation(
 
 bool AshFocusRules::CanActivateWindow(const aura::Window* window) const {
   // Clearing activation is always permissible.
-  if (!window)
+  if (!window) {
     return true;
+  }
 
-  if (!WindowRestoreController::CanActivateRestoredWindow(window))
+  if (!WindowRestoreController::CanActivateRestoredWindow(window)) {
     return false;
+  }
 
   // Special case during Full Restore that prevents the app list from being
   // activated during tablet mode if the topmost window of any root window is a
   // Full Restore'd window. See http://crbug/1202923.
-  if (!WindowRestoreController::CanActivateAppList(window))
+  if (!WindowRestoreController::CanActivateAppList(window)) {
     return false;
+  }
 
-  if (!BaseFocusRules::CanActivateWindow(window))
+  if (!BaseFocusRules::CanActivateWindow(window)) {
     return false;
+  }
 
   // Special case to allow the login shelf to be activatable when the OOBE
   // modal is visible. See http://crbug/871184
@@ -147,16 +158,18 @@ bool AshFocusRules::CanActivateWindow(const aura::Window* window) const {
   }
 
   int modal_container_id = Shell::GetOpenSystemModalWindowContainerId();
-  if (modal_container_id >= 0)
+  if (modal_container_id >= 0) {
     return BelongsToContainerWithEqualOrGreaterId(window, modal_container_id);
+  }
 
   return true;
 }
 
 bool AshFocusRules::CanFocusWindow(const aura::Window* window,
                                    const ui::Event* event) const {
-  if (!window)
+  if (!window) {
     return true;
+  }
 
   if (event && (event->IsMouseEvent() || event->IsGestureEvent()) &&
       !window->GetProperty(aura::client::kActivateOnPointerKey)) {
@@ -204,8 +217,9 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
   // container, then all behind.
   int starting_container_index = 0;
   aura::Window* root = starting_window->GetRootWindow();
-  if (!root)
+  if (!root) {
     root = Shell::GetRootWindowForNewWindows();
+  }
   const int container_count = activatable_container_ids_.size();
   for (int i = 0; i < container_count; i++) {
     aura::Window* container =
@@ -217,11 +231,13 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
   }
 
   aura::Window* window = nullptr;
-  for (int i = starting_container_index; !window && i < container_count; i++)
+  for (int i = starting_container_index; !window && i < container_count; i++) {
     window = GetTopmostWindowToActivateForContainerIndex(i, ignore, root);
+  }
   if (!window && starting_container_index > 0) {
-    for (int i = starting_container_index - 1; !window && i >= 0; i--)
+    for (int i = starting_container_index - 1; !window && i >= 0; i--) {
       window = GetTopmostWindowToActivateForContainerIndex(i, ignore, root);
+    }
   }
   if (window) {
     DCHECK(!window->GetProperty(kIgnoreWindowActivationKey));
@@ -239,8 +255,9 @@ aura::Window* AshFocusRules::GetTopmostWindowToActivateForContainerIndex(
   const int container_id = activatable_container_ids_[index];
   // Inactive desk containers should be ignored, since windows in them should
   // never be returned as a next activatable window.
-  if (IsInactiveDeskContainerId(container_id))
+  if (IsInactiveDeskContainerId(container_id)) {
     return nullptr;
+  }
   aura::Window* window = nullptr;
   aura::Window::Windows containers =
       GetContainersForAllRootWindows(container_id, priority_root);
@@ -249,8 +266,9 @@ aura::Window* AshFocusRules::GetTopmostWindowToActivateForContainerIndex(
   // `priority_root` first.
   for (aura::Window* container : containers) {
     window = GetTopmostWindowToActivateInContainer(container, ignore);
-    if (window)
+    if (window) {
       return window;
+    }
   }
   return window;
 }

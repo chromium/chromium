@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_ASH_FOCUS_RULES_H_
-#define ASH_WM_ASH_FOCUS_RULES_H_
+#ifndef ASH_FOCUS_ASH_FOCUS_RULES_H_
+#define ASH_FOCUS_ASH_FOCUS_RULES_H_
 
 #include <vector>
 
@@ -47,4 +47,4 @@ class ASH_EXPORT AshFocusRules : public ::wm::BaseFocusRules {
 
 }  // namespace ash
 
-#endif  // ASH_WM_ASH_FOCUS_RULES_H_
+#endif  // ASH_FOCUS_ASH_FOCUS_RULES_H_

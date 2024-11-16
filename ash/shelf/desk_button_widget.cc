@@ -4,7 +4,7 @@
 
 #include "ash/shelf/desk_button_widget.h"
 
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/screen_util.h"
