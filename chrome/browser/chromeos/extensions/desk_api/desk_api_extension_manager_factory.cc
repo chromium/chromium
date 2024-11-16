@@ -41,13 +41,14 @@ DeskApiExtensionManagerFactory::DeskApiExtensionManagerFactory()
 
 DeskApiExtensionManagerFactory::~DeskApiExtensionManagerFactory() = default;
 
-KeyedService* DeskApiExtensionManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DeskApiExtensionManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* const profile = Profile::FromBrowserContext(context);
   auto* const component_loader = ::extensions::ExtensionSystem::Get(profile)
                                      ->extension_service()
                                      ->component_loader();
-  return new DeskApiExtensionManager(
+  return std::make_unique<DeskApiExtensionManager>(
       component_loader, profile,
       std::make_unique<DeskApiExtensionManager::Delegate>());
 }
