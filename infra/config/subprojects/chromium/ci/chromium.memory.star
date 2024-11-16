@@ -1105,6 +1105,11 @@ ci.builder(
                     shards = 12,
                 ),
             ),
+            "headless_shell_wpt_tests": targets.mixin(
+                args = [
+                    "-j6",
+                ],
+            ),
         },
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1238,6 +1243,11 @@ ci.builder(
                     io_timeout_sec = 3600,
                     shards = 12,
                 ),
+            ),
+            "headless_shell_wpt_tests": targets.mixin(
+                args = [
+                    "-j6",
+                ],
             ),
         },
     ),
