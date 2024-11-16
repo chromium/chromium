@@ -141,20 +141,20 @@ std::optional<PredictionModelOverrides::Entry> ParseEntry(
   if (override_parts.size() != 2 && override_parts.size() != 3) {
     // Input is malformed. Should be either
     // <target>:<path>:<base64_metadata> or <target>:<path>
-    DLOG(ERROR) << "Invalid string format provided to the Model Override";
+    LOG(ERROR) << "Invalid string format provided to the Model Override";
     return std::nullopt;
   }
 
   proto::OptimizationTarget target;
   if (!proto::OptimizationTarget_Parse(override_parts[0], &target)) {
     // Optimization target is invalid.
-    DLOG(ERROR) << "Invalid optimization target provided to the Model Override";
+    LOG(ERROR) << "Invalid optimization target provided to the Model Override";
     return std::nullopt;
   }
 
   auto path = StringToFilePath(override_parts[1]);
   if (!path || !path->IsAbsolute()) {
-    DLOG(ERROR) << "Provided model file path must be absolute "
+    LOG(ERROR) << "Provided model file path must be absolute "
                 << path.value_or(base::FilePath()).value();
     return std::nullopt;
   }
@@ -165,12 +165,12 @@ std::optional<PredictionModelOverrides::Entry> ParseEntry(
 
   std::string binary_pb;
   if (!base::Base64Decode(override_parts[2], &binary_pb)) {
-    DLOG(ERROR) << "Invalid base64 encoding of the Model Override";
+    LOG(ERROR) << "Invalid base64 encoding of the Model Override";
     return std::nullopt;
   }
   proto::Any metadata;
   if (!metadata.ParseFromString(binary_pb)) {
-    DLOG(ERROR) << "Invalid model metadata provided to the Model Override";
+    LOG(ERROR) << "Invalid model metadata provided to the Model Override";
     return std::nullopt;
   }
   return PredictionModelOverrides::Entry(target, *path, std::move(metadata));
