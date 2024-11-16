@@ -4,10 +4,10 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createPageAvailabilityForTesting, IronCollapseElement, IronSelectorElement, OsSettingsMenuElement, Router, routes, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, IronCollapseElement, OsSettingsMenuElement, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 /** @fileoverview Runs tests for the OS settings menu. */
@@ -80,72 +80,6 @@ suite('<os-settings-menu>', () => {
     settingsMenu.advancedOpened = false;
     flush();
     assertNotEquals(openIcon, ironIconElement.icon);
-  });
-
-  test('Advanced menu expands on navigating to an advanced setting', () => {
-    assertFalse(settingsMenu.advancedOpened);
-    Router.getInstance().navigateTo(routes.OS_RESET);
-    assertFalse(settingsMenu.advancedOpened);
-
-    // If there are search params and the current route is a descendant of
-    // the Advanced route, then ensure that the advanced menu expands.
-    const params = new URLSearchParams('search=test');
-    Router.getInstance().navigateTo(routes.OS_RESET, params);
-    flush();
-    assertTrue(settingsMenu.advancedOpened);
-  });
-});
-
-suite('<os-settings-menu> reset', () => {
-  let settingsMenu: OsSettingsMenuElement;
-
-  setup(() => {
-    Router.getInstance().navigateTo(routes.OS_RESET);
-    settingsMenu = document.createElement('os-settings-menu');
-    settingsMenu.pageAvailability = createPageAvailabilityForTesting();
-    document.body.appendChild(settingsMenu);
-    flush();
-  });
-
-  teardown(() => {
-    settingsMenu.remove();
-    Router.getInstance().resetRouteForTesting();
-  });
-
-  test('openResetSection', () => {
-    const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
-        '#advancedSubmenu');
-    assertTrue(!!submenu);
-    const path = submenu.selected;
-    assertEquals('/osReset', path);
-  });
-
-  test('navigateToAnotherSection', () => {
-    const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
-        '#advancedSubmenu');
-    assertTrue(!!submenu);
-    let path = submenu.selected;
-    assertEquals('/osReset', path);
-
-    Router.getInstance().navigateTo(routes.BLUETOOTH);
-    flush();
-
-    path = submenu.selected;
-    assertEquals('/bluetooth', path);
-  });
-
-  test('navigateToBasic', () => {
-    const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
-        '#advancedSubmenu');
-    assertTrue(!!submenu);
-    const path = submenu.selected;
-    assertEquals('/osReset', path);
-
-    Router.getInstance().navigateTo(routes.BASIC);
-    flush();
-
-    // BASIC has no sub page selected.
-    assertEquals('', submenu.selected);
   });
 });
 
@@ -246,10 +180,6 @@ suite('<os-settings-menu> menu item visibility', () => {
     {
       sectionName: 'kCrostini',
       path: `/${routesMojom.CROSTINI_SECTION_PATH}`,
-    },
-    {
-      sectionName: 'kReset',
-      path: `/${routesMojom.RESET_SECTION_PATH}`,
     },
   ];
 

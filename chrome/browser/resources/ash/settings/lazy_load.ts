@@ -17,7 +17,6 @@ import './os_about_page/os_about_page.js';
 import './os_files_page/os_files_page.js';
 import './os_languages_page/os_languages_section.js';
 import './os_printing_page/os_printing_page.js';
-import './os_reset_page/os_reset_page.js';
 /** Subpages */
 import './date_time_page/timezone_subpage.js';
 import './device_page/customize_mouse_buttons_subpage.js';
@@ -356,7 +355,6 @@ export {SecureDnsInputElement} from './os_privacy_page/secure_dns_input.js';
 export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpage.js';
 export {OsSettingsPowerwashDialogElement} from './os_reset_page/os_powerwash_dialog.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
-export {OsSettingsResetPageElement} from './os_reset_page/os_reset_page.js';
 export {OsSettingsSanitizeDialogElement} from './os_reset_page/os_sanitize_dialog.js';
 export {ResetSettingsCardElement} from './os_reset_page/reset_settings_card.js';
 export {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';

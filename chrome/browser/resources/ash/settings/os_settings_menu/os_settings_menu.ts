@@ -610,12 +610,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         icon: 'os-settings:developer-tags',
         label: this.i18n('crostiniPageTitle'),
       },
-      {
-        section: Section.kReset,
-        path: `/${routesMojom.RESET_SECTION_PATH}`,
-        icon: 'os-settings:restore',
-        label: this.i18n('resetPageTitle'),
-      },
     ];
 
     return advancedMenuItems.filter(

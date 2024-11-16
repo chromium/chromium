@@ -15,7 +15,6 @@ const ADVANCED_SECTION_PAGES = [
   'os-settings-files-page',
   'os-settings-languages-section',
   'os-settings-printing-page',
-  'os-settings-reset-page',
 ];
 
 let lazyLoadPromise: Promise<CustomElementConstructor[]>|null = null;

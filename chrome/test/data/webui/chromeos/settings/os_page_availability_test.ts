@@ -60,13 +60,6 @@ suite('Page availability', () => {
       const isAvailable = pageAvailability[Section.kKerberos];
       assertFalse(isAvailable);
     });
-
-    test('kReset page is not available when allowPowerwash=false', () => {
-      loadTimeData.overrideValues({allowPowerwash: false});
-      const pageAvailability = initializePageAvailability();
-      const isAvailable = pageAvailability[Section.kReset];
-      assertFalse(isAvailable);
-    });
   });
 
   suite('For guest user', () => {
@@ -99,12 +92,6 @@ suite('Page availability', () => {
       loadTimeData.overrideValues({isKerberosEnabled: false});
       const pageAvailability = initializePageAvailability();
       const isAvailable = pageAvailability[Section.kKerberos];
-      assertFalse(isAvailable);
-    });
-
-    test('kReset page is never available in guest mode', () => {
-      const pageAvailability = initializePageAvailability();
-      const isAvailable = pageAvailability[Section.kReset];
       assertFalse(isAvailable);
     });
   });

@@ -21,10 +21,7 @@ import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
 import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.js';
 
 suite('<reset-settings-card>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const route =
-      isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.OS_RESET;
+  const route = routes.SYSTEM_PREFERENCES;
 
   let resetSettingsCard: ResetSettingsCardElement;
   let resetPageBrowserProxy: TestOsResetBrowserProxy;

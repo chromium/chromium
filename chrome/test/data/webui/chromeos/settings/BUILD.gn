@@ -351,7 +351,6 @@ build_webui_tests("build") {
     "os_privacy_page/test_peripheral_data_access_browser_proxy.ts",
     "os_privacy_page/test_privacy_hub_browser_proxy.ts",
 
-    "os_reset_page/os_reset_page_test.ts",
     "os_reset_page/reset_settings_card_test.ts",
     "os_reset_page/test_os_reset_browser_proxy.ts",
 

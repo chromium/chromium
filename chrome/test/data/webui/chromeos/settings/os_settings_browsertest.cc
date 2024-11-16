@@ -1489,10 +1489,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSmartPrivacySubpage) {
   RunSettingsTest("os_privacy_page/smart_privacy_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsResetPage) {
-  RunSettingsTest("os_reset_page/os_reset_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeEnabled,
                        OsResetPageResetSettingsCardWithSanitize) {
   RunSettingsTest("os_reset_page/reset_settings_card_test.js");

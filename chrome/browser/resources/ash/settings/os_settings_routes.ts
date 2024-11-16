@@ -13,7 +13,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
+import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /**
@@ -219,7 +219,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_LANGUAGES_LANGUAGES: Route;
   OS_PRINTING: Route;
   OS_PRIVACY: Route;
-  OS_RESET: Route;
   OS_SEARCH: Route;
   OS_SYNC: Route;
   OS_PEOPLE: Route;
@@ -704,12 +703,6 @@ export function createRoutes(): OsSettingsRoutes {
       r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
           r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
           Subpage.kAppLanguages);
-    }
-
-    // Reset section.
-    if (isPowerwashAllowed()) {
-      r.OS_RESET = createSection(
-          r.ADVANCED, routesMojom.RESET_SECTION_PATH, Section.kReset);
     }
 
     // Search and Assistant section.

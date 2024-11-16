@@ -54,7 +54,6 @@ export function createPageAvailability(): OsPageAvailability {
     [Section.kFiles]: !!routes.FILES,
     [Section.kLanguagesAndInput]: !!routes.OS_LANGUAGES,
     [Section.kPrinting]: !!routes.OS_PRINTING,
-    [Section.kReset]: !!routes.OS_RESET,
     [Section.kSearchAndAssistant]: !!routes.OS_SEARCH,
   };
 }

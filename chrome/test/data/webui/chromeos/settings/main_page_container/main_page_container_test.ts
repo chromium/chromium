@@ -197,10 +197,6 @@ suite('<main-page-container>', () => {
           pageName: 'kCrostini',
           elementName: 'settings-crostini-page',
         },
-        {
-          pageName: 'kReset',
-          elementName: 'os-settings-reset-page',
-        },
 
         // About page
         {

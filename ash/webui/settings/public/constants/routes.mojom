@@ -26,7 +26,8 @@ enum Section {
   kFiles = 13,
   kPrinting = 14,
   kAccessibility = 15,
-  kReset = 16,
+  // Deprecated, do not reuse. http://crbug/370836853
+  // kReset = 16,
   kAboutChromeOs = 17,
   kKerberos = 18,
   kSystemPreferences = 19,
