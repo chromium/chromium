@@ -449,6 +449,7 @@
 <translation id="1296911687402551044">বেছে নেওয়া ট্যাব পিন করুন</translation>
 <translation id="1297175357211070620">গন্তব্য</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />-এর জন্য মতামত জানান</translation>
+<translation id="129808599775632797">&amp;সংশোধন</translation>
 <translation id="130097046531636712">এটি ব্যাকগ্রাউন্ড অ্যাক্টিভিটি এবং স্মুথ স্ক্রলিংয়ের মতো কিছু ভিজ্যুয়াল এফেক্টের ব্যবহার সীমিত করে ব্যাটারি সাশ্রয় করে</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" />-এর কাছে নিচে উল্লেখ করা ফাইলগুলি এডিট করার অনুমতি আছে</translation>
 <translation id="130174306655812048">“Ok Google, এটি কোন গান?” বলে দেখুন</translation>
@@ -466,6 +467,7 @@
 <translation id="131112695174432497">পছন্দমতো বিজ্ঞাপন সাজানোর বিষয়টিকে প্রভাবিত করে এমন ডেটা মুছে দেওয়া হয়</translation>
 <translation id="1311294419381837540">আপনি একটি ট্যাব কাস্ট করছেন। আপনি যেকোনও সময় কাস্টিং পজ অথবা বন্ধ করতে পারবেন।</translation>
 <translation id="131188242279372879">Chrome-এ উন্নত সুরক্ষা সহ কন্টেন্ট ডাউনলোড করতে, উন্নত সুরক্ষা মোড সম্পর্কে জানুন</translation>
+<translation id="1312721752506309252">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="1312811472299082263">Ansible প্লেবুক বা Crostini ব্যাক-আপ ফাইল থেকে তৈরি করুন</translation>
 <translation id="13130607084115184">সেভ করা পাসওয়ার্ড এখানে দেখা যাবে। এই ডিভাইসে <ph name="BRAND" />-এ পাসওয়ার্ড ইমপোর্ট করতে, <ph name="BEGIN_LINK" /> একটি CSV ফাইল বেছে নিন।<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> সরানো হয়েছে</translation>
@@ -1781,6 +1783,7 @@
 <translation id="2214018885812055163">শেয়ার করা ফোল্ডার</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;১টি লাইন দেখানো হয়নি&gt;}one{&lt;<ph name="NUMBER_OF_LINES" />টি লাইন দেখানো হয়নি&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />টি লাইন দেখানো হয়নি&gt;}}</translation>
 <translation id="2215070081105889450">অডিও শেয়ার করতে, পরিবর্তে ট্যাব বা স্ক্রিন শেয়ার করুন</translation>
+<translation id="2217208085547223783">ট্রাস্ট স্টেট</translation>
 <translation id="2218019600945559112">মাউস ও টাচপ্যাড</translation>
 <translation id="2218515861914035131">সাধারণ টেক্সট হিসেবে আটকে দিন</translation>
 <translation id="221872881068107022">উল্টো দিকে স্ক্রোল</translation>
@@ -2515,6 +2518,7 @@
 <translation id="2722547199758472013">আইডি: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">অতিথি প্রোফাইল খুলুন</translation>
 <translation id="2723819893410108315">সিট্রন</translation>
+<translation id="2724822892847436256">সীমাবদ্ধতা</translation>
 <translation id="2724841811573117416">WebRTC লগগুলি</translation>
 <translation id="272488616838512378">ইউনিট কনর্ভাসন</translation>
 <translation id="2725200716980197196">নেটওয়ার্ক সংযোগ পুনঃস্থাপিত হয়েছে</translation>
@@ -3475,6 +3479,7 @@
 <translation id="3421835120203732951">নতুন প্রোফাইল যোগ করুন</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />-এ ফলাফল খুঁজে পাওয়া গেছে</translation>
 <translation id="3423226218833787854">এই AI ফিচার সম্পর্কে আরও জানুন</translation>
+<translation id="3423275441470187644">ট্রাস্ট</translation>
 <translation id="3423463006624419153">আপনার '<ph name="PHONE_NAME_1" />' এবং '<ph name="PHONE_NAME_2" />' এ:</translation>
 <translation id="3423858849633684918">দয়া করে <ph name="PRODUCT_NAME" />-কে পুনঃলঞ্চ করুন</translation>
 <translation id="3424969259347320884">ট্যাবটি ক্র্যাশ হওয়ার সময় আপনি কি করছিলেন তা বর্ণনা করুন</translation>
@@ -4604,6 +4609,7 @@
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4195814663415092787">আপনি যেখানে ছেডেছেন সেখান থেকে চালিয়ে যান</translation>
 <translation id="4198268995694216131">অতিরিক্ত সাইট</translation>
+<translation id="4198420883535766848">তালিকা থেকে ট্যাব সরান</translation>
 <translation id="4200609364258658652">ভিডিও ফ্রেম কপি করুন</translation>
 <translation id="4200689466366162458">কাস্টম শব্দগুলি</translation>
 <translation id="4200983522494130825">নতুন &amp;ট্যাব</translation>
@@ -5167,6 +5173,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ট্যাব গ্রুপ মুছবেন?}one{ট্যাব গ্রুপ মুছবেন?}other{ট্যাব গ্রুপ মুছবেন?}}</translation>
 <translation id="4608500690299898628">&amp;সন্ধান করুন...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> এ সমস্যা হয়েছে</translation>
+<translation id="4610493438923139095">অবিশ্বস্ত</translation>
 <translation id="4610637590575890427">আপনি <ph name="SITE" />-এ যাওয়ার কথা বলছেন কি?</translation>
 <translation id="4611114513649582138">ডেটা সংযোগ উপলভ্য নেই৷</translation>
 <translation id="4611759022973144129">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করার জন্য এই পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
@@ -5192,6 +5199,7 @@
 <translation id="4627442949885028695">অন্য ডিভাইস থেকে চালিয়ে যান</translation>
 <translation id="4628762811416793313">Linux কন্টেনার সেট-আপ সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> প্রোফাইল খুলুন</translation>
+<translation id="4629803160911640220">ট্রাস্ট করা হয়েছে</translation>
 <translation id="4631955550884380853">স্পষ্ট ভয়েস</translation>
 <translation id="4632655012900268062">কার্ড কাস্টমাইজ করুন</translation>
 <translation id="4633003931260532286">এক্সটেনশানের ন্যূনতম <ph name="IMPORT_VERSION" /> ভার্সনের <ph name="IMPORT_NAME" /> প্রয়োজন, কিন্তু শুধুমাত্র <ph name="INSTALLED_VERSION" /> ভার্সন ইনস্টল করা আছে</translation>
@@ -6849,6 +6857,7 @@
 <translation id="5842497610951477805">ব্লুটুথ সক্ষম</translation>
 <translation id="5844284118433003733">আপনি সাইন-ইন করলে, এই ডেটা আপনাকে Google পরিষেবা জু়ড়ে সুরক্ষিত রাখতে Google অ্যাকাউন্টে লিঙ্ক করা হয়, যেমন কোনও সুরক্ষা সম্পর্কিত ঘটনার পর Gmail-এ নিরাপত্তা বাড়ানো।</translation>
 <translation id="5844574845205796324">নতুন কন্টেন্ট চেক করে দেখতে সাজেস্ট করুন</translation>
+<translation id="5844685625984052392">ইঙ্গিত</translation>
 <translation id="5846200638699387931">রিলেশন সিন্ট্যাক্সে সমস্যা হয়েছে: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">কোনও শ্যাডো নেই</translation>
 <translation id="5846504156837627898">সাইট সংক্রান্ত অনুমতি ম্যানেজ করুন</translation>

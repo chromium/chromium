@@ -447,6 +447,7 @@
 <translation id="1296911687402551044">ଚୟନ କରାଯାଇଥିବା ଟାବ୍‌କୁ ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="1297175357211070620">ଲକ୍ଷ୍ୟସ୍ଥଳ</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> ପାଇଁ ମତାମତ ପଠାନ୍ତୁ</translation>
+<translation id="129808599775632797">&amp;ପରିବର୍ତ୍ତନ</translation>
 <translation id="130097046531636712">ଏହା ପୃଷ୍ଠପଟର କାର୍ଯ୍ୟକଳାପ ଏବଂ ସ୍ମୁଥ ସ୍କ୍ରୋଲିଂ ପରି ଭିଜୁଆଲ ଇଫେକ୍ଟଗୁଡ଼ିକୁ ସୀମିତ କରି ବେଟେରୀ ପାୱାରକୁ ବଢ଼ାଏ</translation>
 <translation id="1301135395320604080">ନିମ୍ନୋକ୍ତ ଫାଇଲ୍‌ଗୁଡ଼ିକୁ <ph name="ORIGIN" /> ଏଡିଟ୍ କରିପାରିବ</translation>
 <translation id="130174306655812048">“Hey Google, ଏହା କେଉଁ ଗୀତ?” ବୋଲି କହି ଦେଖନ୍ତୁ</translation>
@@ -464,6 +465,7 @@
 <translation id="131112695174432497">ବିଜ୍ଞାପନ ପର୍ସନାଲାଇଜେସନକୁ ପ୍ରଭାବିତ କରୁଥିବା ଡାଟାକୁ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="1311294419381837540">ଆପଣ ଏକ ଟାବକୁ କାଷ୍ଟ କରୁଛନ୍ତି। ଆପଣ ଯେ କୌଣସି ସମୟରେ କାଷ୍ଟିଂକୁ ବିରତ କିମ୍ବା ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="131188242279372879">ଡାଉନଲୋଡଗୁଡ଼ିକ ପାଇଁ Chromeର ସର୍ବୋଚ୍ଚ ଲେଭେଲର ସୁରକ୍ଷା ପାଇବାକୁ ଉନ୍ନତ ସୁରକ୍ଷା ଡିସ୍କଭର କରନ୍ତୁ</translation>
+<translation id="1312721752506309252">ଉନ୍ନତ ସୁରକ୍ଷା ଚାଲୁ ଅଛି</translation>
 <translation id="1312811472299082263">ଏକ Ansible Playbook କିମ୍ବା ଏକ Crostini ବେକଅପ ଫାଇଲରୁ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="13130607084115184">ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ। ଏହି ଡିଭାଇସରେ <ph name="BRAND" />କୁ ପାସୱାର୍ଡଗୁଡ଼ିକ ଇମ୍ପୋର୍ଟ କରିବା ପାଇଁ <ph name="BEGIN_LINK" /> ଏକ CSV ଫାଇଲ ଚୟନ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />କୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
@@ -1765,6 +1767,7 @@
 <translation id="2214018885812055163">ସେୟାର୍ ହୋଇଥିବା ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1ଟି ପଂକ୍ତି ଦର୍ଶାଯାଇନାହିଁ&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />ଟି ପଂକ୍ତି ଦର୍ଶାଯାଇନାହିଁ&gt;}}</translation>
 <translation id="2215070081105889450">ଅଡିଓ ସେୟାର କରିବାକୁ, ଏହା ପରିବର୍ତ୍ତ ଏକ ଟାବ କିମ୍ବା ସ୍କ୍ରିନ ସେୟାର କରନ୍ତୁ</translation>
+<translation id="2217208085547223783">ବିଶ୍ୱସନୀୟତାର ସ୍ଥିତି</translation>
 <translation id="2218019600945559112">ମାଉସ୍ ଏବଂ ଟଚ୍‌ପ୍ୟାଡ୍</translation>
 <translation id="2218515861914035131">ସାଦା ଟେକ୍ସଟ୍ ଭାବରେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="221872881068107022">ରିଭର୍ସ ସ୍କ୍ରୋଲିଂ</translation>
@@ -2497,6 +2500,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">ଅତିଥି ପ୍ରୋଫାଇଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="2723819893410108315">ସିଟ୍ରନ</translation>
+<translation id="2724822892847436256">କନଷ୍ଟ୍ରେଣ୍ଟ</translation>
 <translation id="2724841811573117416">WebRTC ଲଗ୍</translation>
 <translation id="272488616838512378">ୟୁନିଟ୍ ରୂପାନ୍ତର</translation>
 <translation id="2725200716980197196">ନେଟ୍‍ୱାର୍କ ସଂଯୋଗ ପୁନଃସ୍ଥାପନ ହୋଇଛି</translation>
@@ -3457,6 +3461,7 @@
 <translation id="3421835120203732951">ନୂଆ ପ୍ରୋଫାଇଲ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />ରେ ଫଳାଫଳ ମିଳିଛି</translation>
 <translation id="3423226218833787854">ଏହି AI ଫିଚର ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="3423275441470187644">ବିଶ୍ୱସନୀୟତା</translation>
 <translation id="3423463006624419153">ଆପଣଙ୍କର '<ph name="PHONE_NAME_1" />' ଏବଂ '<ph name="PHONE_NAME_2" />'ରେ:</translation>
 <translation id="3423858849633684918">ଦୟାକରି <ph name="PRODUCT_NAME" /> ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3424969259347320884">ଯେତେବେଳେ ଟାବ୍ କ୍ରାସ୍ ହୋ‍ଇଥିଲା ଆପଣ କ’ଣ କରୁଥିଲେ ତାହା ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
@@ -4585,6 +4590,7 @@
 <translation id="4195643157523330669">ନୂତନ ଟ୍ୟାବରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4195814663415092787">ଆପଣ ଯେଉଁଠାରୁ ଛାଡ଼ିଥିଲେ ସେହିଠାରୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="4198268995694216131">ଅତିରିକ୍ତ ସାଇଟ</translation>
+<translation id="4198420883535766848">ତାଲିକାରୁ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="4200609364258658652">କପି&amp; ଭିଡିଓ ଫ୍ରେମ</translation>
 <translation id="4200689466366162458">କଷ୍ଟମ୍ ଶଦ୍ଦ</translation>
 <translation id="4200983522494130825">ନୂତନ &amp;ଟ୍ୟାବ୍</translation>
@@ -5148,6 +5154,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ଟାବ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}other{ଟାବ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}}</translation>
 <translation id="4608500690299898628">&amp;ଖୋଜନ୍ତୁ...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />ରେ କିଛି ତ୍ରୁଟି ଦେଖାଦେ‍ଇଛି</translation>
+<translation id="4610493438923139095">ଅବିଶ୍ୱସ୍ତ</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> କୁ ଯିବା ଲାଗି ଆପଣ ବୁଝନ୍ତି କି?</translation>
 <translation id="4611114513649582138">ଡାଟା ସଂଯୋଗ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="4611759022973144129">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ସାଇନ ଇନ କରିବାକୁ ଆପଣ ଏହି ପାସୱାର୍ଡ ବ୍ୟବହାର କରିପାରିବେ।</translation>
@@ -5173,6 +5180,7 @@
 <translation id="4627442949885028695">ଅନ୍ୟ ଏକ ଡିଭାଇସ୍‍ରୁ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="4628762811416793313">Linux କଣ୍ଟେନର୍ ସେଟ୍‍ଅପ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> ପ୍ରୋଫାଇଲ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="4629803160911640220">ବିଶ୍ଵସ୍ତ</translation>
 <translation id="4631955550884380853">ଫୋକସ କରାଯାଇଥିବା ଭଏସ</translation>
 <translation id="4632655012900268062">କାର୍ଡଗୁଡ଼ିକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="4633003931260532286">ଏକ ନ୍ୟୁନତମ ସଂସ୍କରଣ "<ph name="IMPORT_VERSION" />" ସହିତ ଏକ୍ସଟେନ୍‍ସନ୍‍ "<ph name="IMPORT_NAME" />" ଆବଶ୍ୟକ କରିଥାଏ, କିନ୍ତୁ କେବଳ "<ph name="INSTALLED_VERSION" />" ସଂସ୍କରଣ ଇନ୍‌ଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
@@ -6826,6 +6834,7 @@
 <translation id="5842497610951477805">ବ୍ଲୁଟୁଥ୍‌ ସକ୍ଷମ ଅଛି</translation>
 <translation id="5844284118433003733">ଆପଣ ସାଇନ ଇନ ଥିବା ବେଳେ, ଏକ ସୁରକ୍ଷା ଘଟଣା ପରେ Gmailରେ ସୁରକ୍ଷା ବ୍ୟବସ୍ଥାକୁ ବଢ଼ାଇବା ପରି ଏହି ଡାଟା ଆପଣଙ୍କୁ ସମଗ୍ର Google ସେବାରେ ସୁରକ୍ଷା ଦେବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଲିଙ୍କ ହୋଇଥାଏ।</translation>
 <translation id="5844574845205796324">ଏକ୍ସପ୍ଲୋର୍ କରିବାକୁ ନୂଆ ବିଷୟବସ୍ତୁର ପ୍ରସ୍ତାବ ଦିଅନ୍ତୁ</translation>
+<translation id="5844685625984052392">ହିଣ୍ଟ</translation>
 <translation id="5846200638699387931">ରିଲେସନ୍ ସିଣ୍ଟାକ୍ସର ତ୍ରୁଟି: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">କୌଣସି ଛାଇ ନାହିଁ</translation>
 <translation id="5846504156837627898">ସାଇଟ ଅନୁମତିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>

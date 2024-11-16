@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">ရွေးထားသောတဘ်ကို ပင်ထိုးရန်</translation>
 <translation id="1297175357211070620">ခရီးဆုံး</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> အတွက် အကြံပြုချက် ပို့ရန်</translation>
+<translation id="129808599775632797">ပြုပြင် ပြောင်းလဲမှုများ</translation>
 <translation id="130097046531636712">၎င်းသည် နောက်ခံလုပ်ဆောင်ချက်နှင့် ချောမွေ့စွာ လှိမ့်ခြင်းကဲ့သို့ ဖန်တီးပြသချက်အား ကန့်သတ်ခြင်းဖြင့် ဘက်ထရီသက်တမ်းကို တိုးစေသည်</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> က အောက်ပါဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="130174306655812048">“Ok Google, what song is this?” ဟု မေးကြည့်ပါ</translation>
@@ -465,6 +466,7 @@
 <translation id="131112695174432497">ကြော်ငြာ စိတ်ကြိုက်သတ်မှတ်ခြင်းပေါ် သက်ရောက်မှုရှိသည့် ဒေတာကို ဖျက်လိုက်သည်</translation>
 <translation id="1311294419381837540">တဘ်တစ်ခုကို သင်ကာစ်လုပ်နေသည်။ ကာစ်လုပ်ခြင်းကို အချိန်မရွေး ခဏရပ်နိုင်သည် (သို့) ရပ်နိုင်သည်။</translation>
 <translation id="131188242279372879">ဒေါင်းလုဒ်များအတွက် Chrome ၏ အမြင့်ဆုံးလုံခြုံရေးအဆင့်ကို ရယူရန်အတွက် အဆင့်မြင့်ကာကွယ်မှုအကြောင်း လေ့လာရန်</translation>
+<translation id="1312721752506309252">အဆင့်မြှင့်ထားသော ကာကွယ်မှု ဖွင့်ထားသည်</translation>
 <translation id="1312811472299082263">Ansible Playbook (သို့) Crostini အရန်ဖိုင်မှ ပြုလုပ်ရန်</translation>
 <translation id="13130607084115184">သိမ်းထားသည့် စကားဝှက်များ ဤနေရာတွင် ပြမည်။ ဤစက်ရှိ <ph name="BRAND" /> သို့ စကားဝှက်များ ထည့်သွင်းရန် <ph name="BEGIN_LINK" />CSV ဖိုင် ရွေးပါ။<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" />၊ <ph name="PERMISSION_3" /> တို့ကို ဖယ်ရှားလိုက်သည်</translation>
@@ -1778,6 +1780,7 @@
 <translation id="2214018885812055163">မျှဝေထားသော ဖိုင်တွဲများ</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;စာကြောင်း ၁ ကြောင်းကို ပြမထားပါ&gt;}other{&lt;စာကြောင်း <ph name="NUMBER_OF_LINES" /> ကြောင်းကို ပြမထားပါ&gt;}}</translation>
 <translation id="2215070081105889450">အသံမျှဝေရန် တဘ် (သို့) ဖန်သားပြင်ကို မျှဝေပါ</translation>
+<translation id="2217208085547223783">ယုံကြည်ရမှု အခြေအနေ</translation>
 <translation id="2218019600945559112">မောက်စ်နှင့် ထိတွေ့ညွှန်ကြားခြင်းကိရိယာ</translation>
 <translation id="2218515861914035131">ရိုးရိုးစာသားအဖြစ် ကူးယူရန်</translation>
 <translation id="221872881068107022">ပြောင်းပြန် လှိမ့်ခြင်း</translation>
@@ -2512,6 +2515,7 @@
 <translation id="2722547199758472013">ID- <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">ဧည့်သည်ပရိုဖိုင် ဖွင့်ရန်</translation>
 <translation id="2723819893410108315">ရှောက်ချို</translation>
+<translation id="2724822892847436256">ကန့်သတ်ချက်များ</translation>
 <translation id="2724841811573117416">WebRTC မှတ်တမ်းများ</translation>
 <translation id="272488616838512378">ယူနစ်ပြောင်းလဲခြင်း</translation>
 <translation id="2725200716980197196">ကွန်ရက်ချိတ်ဆက်မှု ပြန်လည်သိုလှောင်ပြီး</translation>
@@ -3473,6 +3477,7 @@
 <translation id="3421835120203732951">ပရိုဖိုင်အသစ် ထည့်ရန်</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> တွင် ရလဒ်များတွေ့သည်</translation>
 <translation id="3423226218833787854">ဤ AI တူးလ်အကြောင်း ပိုမိုလေ့လာရန်</translation>
+<translation id="3423275441470187644">ယုံကြည်ရမှု</translation>
 <translation id="3423463006624419153">သင်၏ '<ph name="PHONE_NAME_1" />' နှင့် '<ph name="PHONE_NAME_2" />' ပေါ်တွင်−</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" /> ကိုကျေးဇူးပြု၍ ပြန်လည်စတင်ပါ</translation>
 <translation id="3424969259347320884">တဘ်ရပ်တန့်သွားသည့်အချိန်၌ သင်ပြုလုပ်နေခဲ့သည့်အရာများကို ဖော်ပြပါ</translation>
@@ -4601,6 +4606,7 @@
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="4195814663415092787">သင်ချန်ထားသည့်နေရာမှ ဆက်မည်</translation>
 <translation id="4198268995694216131">နောက်ထပ် ဝဘ်ဆိုက်များ</translation>
+<translation id="4198420883535766848">တဘ်ကို စာရင်းမှဖယ်ရှားရန်</translation>
 <translation id="4200609364258658652">ဗီဒီယိုဖရိမ် မိတ္တူကူးရန်</translation>
 <translation id="4200689466366162458">မိမိကိုယ်ပိုင်စကားလုံး</translation>
 <translation id="4200983522494130825">တဘ် &amp; အသစ်</translation>
@@ -5164,6 +5170,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{တဘ်အုပ်စုကို ဖျက်မလား။}other{တဘ်အုပ်စုများကို ဖျက်မလား။}}</translation>
 <translation id="4608500690299898628">&amp;ရှာရန်...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> တွင် အမှားအယွင်းတစ်ခု ရှိနေသည်</translation>
+<translation id="4610493438923139095">မယုံကြည်ရပါ</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> သို့သွားရောက်ရန် သင်ဆိုလိုပါသလား?</translation>
 <translation id="4611114513649582138">ဒေတာချိတ်ဆက်မှု ရနိုင်ပါသည်</translation>
 <translation id="4611759022973144129">သင့် <ph name="DEVICE_TYPE" /> သို့လက်မှတ်ထိုးဝင်ရန် ဤစကားဝှက်သုံးနိုင်သည်။</translation>
@@ -5189,6 +5196,7 @@
 <translation id="4627442949885028695">အခြားစက်ပစ္စည်းမှ ဆက်လုပ်ပါ</translation>
 <translation id="4628762811416793313">Linux ကွန်တိန်နာ စနစ်ထည့်သွင်းခြင်း ပြီးမြောက်မှုမရှိပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> ပရိုဖိုင် ဖွင့်ရန်</translation>
+<translation id="4629803160911640220">ယုံကြည်ရသည်</translation>
 <translation id="4631955550884380853">ပြတ်သားသော အသံ</translation>
 <translation id="4632655012900268062">ကတ်များ စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="4633003931260532286">နောက်ဆက်တွဲသည် အနိမ့်ဆုံးဗားရှင်း "<ph name="IMPORT_VERSION" />" ရှိသည့် "<ph name="IMPORT_NAME" />" ကို လိုအပ်သော်လည်း ဗားရှင်း "<ph name="INSTALLED_VERSION" />" ကိုသာ ထည့်သွင်းထားသည်</translation>
@@ -6846,6 +6854,7 @@
 <translation id="5842497610951477805">ဘလူးတုသ်ကို ဖွင့်ရန်</translation>
 <translation id="5844284118433003733">သင်လက်မှတ်ထိုးဝင်သောအခါ လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ်တစ်ခု ဖြစ်ပေါ်ပြီးနောက် Gmail တွင် ကာကွယ်မှု တိုးမြှင့်ခြင်းကဲ့သို့ Google ဝန်ဆောင်မှုများတွင် သင့်ကို ကာကွယ်ပေးရန် ဤဒေတာကို သင့် Google Account တွင် လင့်ခ်ချိတ်ပါသည်။</translation>
 <translation id="5844574845205796324">စူးစမ်းလေ့လာရန်အတွက် အကြောင်းအရာအသစ် အကြံပြုရန်</translation>
+<translation id="5844685625984052392">ယုံကြည်ရနိုင်ဖွယ်ရှိသည်</translation>
 <translation id="5846200638699387931">ဆက်နွယ်မှု ဝါကျဖွဲ့စည်းပုံ အမှားအယွင်း- <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">အရိပ်မပါ</translation>
 <translation id="5846504156837627898">ဝဘ်ဆိုက်ခွင့်ပြုချက်များ စီမံရန်</translation>

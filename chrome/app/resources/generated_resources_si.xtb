@@ -449,6 +449,7 @@
 <translation id="1296911687402551044">තේරූ පටිත්ත අමුණන්න</translation>
 <translation id="1297175357211070620">ගමනාන්තය</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> සඳහා ප්‍රතිපෝෂණය යවන්න</translation>
+<translation id="129808599775632797">&amp;වෙනස් කිරීම්</translation>
 <translation id="130097046531636712">මෙය පසුබිම් ක්‍රියාකාරකම් සහ සුමට අනුචලනය වැනි දෘශ්‍ය ප්‍රයෝග සීමා කිරීමෙන් බැටරි බලය දිගු කරයි</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> හට පහත ගොනු සංස්කරණ කළ හැක</translation>
 <translation id="130174306655812048">“Hey Google, මේ ගීතය කුමක් ද?” උත්සාහ කරන්න</translation>
@@ -466,6 +467,7 @@
 <translation id="131112695174432497">දැන්වීම් පෞද්ගලීකරණයට බලපාන දත්ත මකා දමනු ලැබේ</translation>
 <translation id="1311294419381837540">ඔබ පටිත්ත විකාශය කරයි. ඔබට ඕනෑම වේලාවක විකාශනය විරාම කිරීම හෝ නැවැත්විය හැක.</translation>
 <translation id="131188242279372879">බා ගැනීම් සඳහා Chrome හි ඉහළමට මට්ටමේ ආරක්‍ෂාව ලබා ගැනීමට දියුණු කළ ආරක්‍ෂාව සොයා ගන්න</translation>
+<translation id="1312721752506309252">වැඩිදියුණු කළ ආරක්ෂාව ක්‍රියාත්මකයි</translation>
 <translation id="1312811472299082263">Ansible අත්පොතකින් හෝ Crostini උපස්ථ ගොනුවකින් තනන්න</translation>
 <translation id="13130607084115184">සුරැකි මුරපද මෙහි දිස් වනු ඇත. මෙම උපාංගයෙහි <ph name="BRAND" /> වෙත මුරපද ආයාත කිරීම සඳහා, <ph name="BEGIN_LINK" />CSV ගොනුවක් තෝරන්න.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ඉවත් කර ඇත</translation>
@@ -1769,6 +1771,7 @@
 <translation id="2214018885812055163">ෆෝල්ඩර බෙදා ගන්න</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;පේළි 1ක් පෙන්වා නැත&gt;}one{&lt;පේළි <ph name="NUMBER_OF_LINES" />ක් පෙන්වා නැත&gt;}other{&lt;පේළි <ph name="NUMBER_OF_LINES" />ක් පෙන්වා නැත&gt;}}</translation>
 <translation id="2215070081105889450">ශ්‍රව්‍ය බෙදා ගැනීම සඳහා, ඒ වෙනුවට පටිත්තක් හෝ තිරයක් බෙදා ගන්න</translation>
+<translation id="2217208085547223783">සත්‍ය තත්ත්වය</translation>
 <translation id="2218019600945559112">මූසිකය සහ ස්පර්ශ පුවරුව</translation>
 <translation id="2218515861914035131">සරල පෙළ ලෙස අලවන්න</translation>
 <translation id="221872881068107022">ආපස්සට අනුචලනය</translation>
@@ -2503,6 +2506,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">අමුත්තන්ගේ පැතිකඩ විවෘත කරන්න</translation>
 <translation id="2723819893410108315">සිට්‍රන්</translation>
+<translation id="2724822892847436256">සීමා කිරීම්</translation>
 <translation id="2724841811573117416">WebRTC වාර්ථා</translation>
 <translation id="272488616838512378">ඒකක පරිවර්තනය</translation>
 <translation id="2725200716980197196">ජාල සම්බන්ධතාවය ප්‍රතිසාධනය කෙරිණි</translation>
@@ -3461,6 +3465,7 @@
 <translation id="3421835120203732951">නව පැතිකඩ එක් කරන්න</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> තුළ ප්‍රතිඵල හමුවිය</translation>
 <translation id="3423226218833787854">මෙම AI විශේෂාංගය ගැන තව දැන ගන්න</translation>
+<translation id="3423275441470187644">අරමුදල</translation>
 <translation id="3423463006624419153">ඔබේ '<ph name="PHONE_NAME_1" />' සහ '<ph name="PHONE_NAME_2" />' මත:</translation>
 <translation id="3423858849633684918">නැවත <ph name="PRODUCT_NAME" /> දියත් කරන්න</translation>
 <translation id="3424969259347320884">පටිත්ත බිඳ වැටුණු විට ඔබ කළ දේ විස්තර කරන්න</translation>
@@ -4591,6 +4596,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4195643157523330669">නව ටැබයක විවෘත කරන්න</translation>
 <translation id="4195814663415092787">ඔබ ඉතිරි කළ තැනින් දිගටම කරගෙන යන්න</translation>
 <translation id="4198268995694216131">අතිරේක අඩවි</translation>
+<translation id="4198420883535766848">ලැයිස්තුවෙන් පටිත්ත ඉවත් කරන්න</translation>
 <translation id="4200609364258658652">වීඩියෝ රාමුව පිටපත් කරන්න</translation>
 <translation id="4200689466366162458">අභිමත වචන</translation>
 <translation id="4200983522494130825">නව ටැබය</translation>
@@ -5154,6 +5160,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{පටිති සමූහය මකන්න ද?}one{පටිති සමූහ මකන්න ද?}other{පටිති සමූහ මකන්න ද?}}</translation>
 <translation id="4608500690299898628">සොයන්න... (&amp;F)</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> දෝෂයකට මුහුණ දී ඇත</translation>
+<translation id="4610493438923139095">අවිශ්වාසයි</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> වෙත යෑමට ඔබ අදහස් කලාද?</translation>
 <translation id="4611114513649582138">දත්ත සබැඳුම ලබා ගත හැකිය</translation>
 <translation id="4611759022973144129">ඔබේ <ph name="DEVICE_TYPE" /> වෙත පුරනය වීමට ඔබට මෙම මුරපදය භාවිතා කළ හැක.</translation>
@@ -5179,6 +5186,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4627442949885028695">වෙනත් උපාංගයකින් කරගෙන යන්න</translation>
 <translation id="4628762811416793313">Linux බහාලුම සැකසීම සම්පූර්ණ නොවිය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> පැතිකඩ විවෘත කරන්න</translation>
+<translation id="4629803160911640220">විශ්වාසවන්තයි</translation>
 <translation id="4631955550884380853">අවධානය යොමු කළ කටහඬ</translation>
 <translation id="4632655012900268062">කාඩ්පත් අභිරුචිකරණය කරන්න</translation>
 <translation id="4633003931260532286">දිගුවට "<ph name="IMPORT_NAME" />" හි අවම "<ph name="IMPORT_VERSION" />" අනුවාදයක් අවශ්‍යයි, නමුත් ස්ථාපිතව ඇත්තේ "<ph name="INSTALLED_VERSION" />" පමණි</translation>
@@ -6835,6 +6843,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5842497610951477805">බ්ලූටූත් සබල</translation>
 <translation id="5844284118433003733">ඔබ පුරනය වී ඇති විට, මෙම දත්ත Google සේවා හරහා ඔබව ආරක්ෂා කිරීමට ඔබේ Google ගිණුම වෙත සම්බන්ධ කරනු ලැබේ, උදාහරණයක් ලෙස ආරක්ෂක සිදුවීමකින් පසුව Gmail තුළ ආරක්ෂාව වැඩි කිරීම.</translation>
 <translation id="5844574845205796324">ගවේශනය කිරීමට නව අන්තර්ගතයන් යෝජනා කරන්න</translation>
+<translation id="5844685625984052392">ඉඟිය</translation>
 <translation id="5846200638699387931">බන්ධන කාරක රීති දෝෂය: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">සෙවනැල්ලක් නැත</translation>
 <translation id="5846504156837627898">අඩවි අවසර කළමනාකරණය කරන්න</translation>

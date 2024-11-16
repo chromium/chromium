@@ -449,6 +449,7 @@
 <translation id="1296911687402551044">ਚੁਣੀ ਗਈ ਟੈਬ ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="1297175357211070620">ਨਿਯਤ ਥਾਂ</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> ਲਈ ਵਿਚਾਰ ਭੇਜੋ</translation>
+<translation id="129808599775632797">&amp;ਸੋਧਾਂ</translation>
 <translation id="130097046531636712">ਇਹ ਨਿਰਵਿਘਨ ਸਕ੍ਰੋਲ ਕਰਨ ਵਰਗੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸਰਗਰਮੀ ਅਤੇ ਦ੍ਰਿਸ਼ਟੀਗਤ ਪ੍ਰਭਾਵਾਂ ਨੂੰ ਸੀਮਤ ਕਰ ਕੇ ਬੈਟਰੀ ਪਾਵਰ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> ਸਾਈਟ ਅੱਗੇ ਦਿੱਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="130174306655812048">“Ok Google, ਇਹ ਕਿਹੜਾ ਗੀਤ ਹੈ?” ਬੋਲ ਕੇ ਦੇਖੋ</translation>
@@ -466,6 +467,7 @@
 <translation id="131112695174432497">ਵਿਗਿਆਪਨ ਵਿਅਕਤੀਗਤਕਰਨ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰਨ ਵਾਲਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1311294419381837540">ਤੁਸੀਂ ਟੈਬ ਨੂੰ ਕਾਸਟ ਕਰ ਰਹੇ ਹੋ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਕਾਸਟ ਕਰਨਾ ਰੋਕ ਸਕਦੇ ਜਾਂ ਉਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="131188242279372879">Chrome ਦੀ ਸਭ ਤੋਂ ਉੱਚ ਪੱਧਰ ਦੀ ਸੁਰੱਖਿਆ ਅਤੇ ਡਾਊਨਲੋਡ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਲੱਭੋ</translation>
+<translation id="1312721752506309252">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="1312811472299082263">ਕਿਸੇ Ansible ਪਲੇਬੁੱਕ ਜਾਂ Crostini ਬੈਕਅੱਪ ਫ਼ਾਈਲ ਤੋਂ ਬਣਾਓ</translation>
 <translation id="13130607084115184">ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ। ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="BRAND" /> ਵਿੱਚ ਪਾਸਵਰਡ ਆਯਾਤ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" /> CSV ਫ਼ਾਈਲ ਚੁਣੋ।<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ਨੂੰ ਹਟਾਇਆ ਗਿਆ</translation>
@@ -1781,6 +1783,7 @@
 <translation id="2214018885812055163">ਸਾਂਝੇ ਕੀਤੇ ਫੋਲਡਰ</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ਲਾਈਨ ਨਹੀਂ ਦਿਖਾਈ ਗਈ&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ਲਾਈਨ ਨਹੀਂ ਦਿਖਾਈ ਗਈ&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ਲਾਈਨਾਂ ਨਹੀਂ ਦਿਖਾਈਆਂ ਗਈਆਂ&gt;}}</translation>
 <translation id="2215070081105889450">ਆਡੀਓ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਇਸਦੀ ਬਜਾਏ ਕਿਸੇ ਟੈਬ ਜਾਂ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="2217208085547223783">ਭਰੋਸੇ ਦੀ ਸਥਿਤੀ</translation>
 <translation id="2218019600945559112">ਮਾਊਸ ਅਤੇ ਟੱਚਪੈਡ</translation>
 <translation id="2218515861914035131">ਸਰਲ ਲਿਖਤ ਵਜੋਂ ਪੇਸਟ ਕਰੋ</translation>
 <translation id="221872881068107022">ਉਲਟਾ ਸਕ੍ਰੌਲ ਕਰੋ</translation>
@@ -2515,6 +2518,7 @@
 <translation id="2722547199758472013">ਆਈਡੀ: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">ਮਹਿਮਾਨ ਪ੍ਰੋਫਾਈਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="2723819893410108315">ਸਿਟਰਨ</translation>
+<translation id="2724822892847436256">ਪਾਬੰਦੀਆਂ</translation>
 <translation id="2724841811573117416">WebRTC ਲੌਗਸ</translation>
 <translation id="272488616838512378">ਇਕਾਈ ਰੂਪਾਂਤਰਨ</translation>
 <translation id="2725200716980197196">ਨੈੱਟਵਰਕ ਕਨੈਕਟੀਵਿਟੀ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
@@ -3476,6 +3480,7 @@
 <translation id="3421835120203732951">ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> ਵਿੱਚ ਨਤੀਜੇ ਮਿਲੇ</translation>
 <translation id="3423226218833787854">ਇਸ AI ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
+<translation id="3423275441470187644">ਭਰੋਸਾ</translation>
 <translation id="3423463006624419153">ਆਪਣੇ '<ph name="PHONE_NAME_1" />' ਅਤੇ '<ph name="PHONE_NAME_2" />' 'ਤੇ:</translation>
 <translation id="3423858849633684918">ਕਿਰਪਾ ਕਰਕੇ <ph name="PRODUCT_NAME" /> ਨੂੰ ਰੀਲੌਂਚ ਕਰੋ</translation>
 <translation id="3424969259347320884">ਟੈਬ ਕ੍ਰੈਸ਼ ਹੋਣ ਸਮੇਂ ਤੁਹਾਡੇ ਦੁਆਰਾ ਕੀਤੇ ਜਾ ਰਹੇ ਕੰਮਾਂ ਦਾ ਵਰਣਨ ਕਰੋ</translation>
@@ -4605,6 +4610,7 @@
 <translation id="4195643157523330669">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4195814663415092787">ਜਾਰੀ ਰੱਖ ਜਿੱਥੇ ਤੁਸੀਂ ਬੰਦ ਛੱਡਿਆ ਸੀ</translation>
 <translation id="4198268995694216131">ਵਧੀਕ ਸਾਈਟਾਂ</translation>
+<translation id="4198420883535766848">ਸੂਚੀ ਵਿੱਚੋਂ ਟੈਬ ਹਟਾਓ</translation>
 <translation id="4200609364258658652">ਵੀਡੀਓ ਫ੍ਰੇਮ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="4200689466366162458">ਵਿਉਂਤਬੱਧ ਸ਼ਬਦ</translation>
 <translation id="4200983522494130825">ਨਵੀਂ &amp;ਟੈਬ</translation>
@@ -5168,6 +5174,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}one{ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}other{ਕੀ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}}</translation>
 <translation id="4608500690299898628">&amp;ਲੱਭੋ...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ਵਿੱਚ ਕੋਈ ਗੜਬੜ ਹੋਈ</translation>
+<translation id="4610493438923139095">ਗੈਰ-ਭਰੋਸੇਯੋਗ</translation>
 <translation id="4610637590575890427">ਕੀ ਤੁਸੀਂ <ph name="SITE" /> ਤੇ ਜਾਣਾ ਸੀ?</translation>
 <translation id="4611114513649582138">ਡਾਟਾ ਕਨੈਕਸ਼ਨ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="4611759022973144129">ਤੁਸੀਂ ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਵਰਤ ਸਕਦੇ ਹੋ।</translation>
@@ -5193,6 +5200,7 @@
 <translation id="4627442949885028695">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="4628762811416793313">Linux ਕੰਟੇਨਰ ਦਾ ਸੈੱਟਅੱਪ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> ਪ੍ਰੋਫਾਈਲ ਖੋਲ੍ਹੋ</translation>
+<translation id="4629803160911640220">ਭਰੋਸੇਯੋਗ</translation>
 <translation id="4631955550884380853">ਸਾਫ਼ ਅਵਾਜ਼ ਦੀ ਸੁਵਿਧਾ</translation>
 <translation id="4632655012900268062">ਕਾਰਡਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="4633003931260532286">ਐਕਸਟੈਂਸ਼ਨ ਲਈ "<ph name="IMPORT_NAME" />" ਨੂੰ ਨਿਊਨਤਮ "<ph name="IMPORT_VERSION" />" ਵਰਜਨ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ, ਪਰ ਸਿਰਫ਼ "<ph name="INSTALLED_VERSION" />" ਵਰਜਨ ਹੀ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
@@ -6848,6 +6856,7 @@
 <translation id="5842497610951477805">ਬਲੂਟੁੱਥ ਚਾਲੂ</translation>
 <translation id="5844284118433003733">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਇਹ ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਨਾਲ ਲਿੰਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਜੋ ਤੁਹਾਨੂੰ ਸਾਰੀਆਂ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾ ਸਕੇ, ਉਦਾਹਰਨ ਲਈ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਘਟਨਾ ਤੋਂ ਬਾਅਦ Gmail ਵਿੱਚ ਸੁਰੱਖਿਆ ਵਧਾਉਣਾ।</translation>
 <translation id="5844574845205796324">ਪੜਚੋਲ ਕਰਨ ਲਈ ਨਵੀਂ ਸਮੱਗਰੀ ਦਾ ਸੁਝਾਅ ਦਿਓ</translation>
+<translation id="5844685625984052392">ਸੰਕੇਤ</translation>
 <translation id="5846200638699387931">ਰਿਲੇਸ਼ਨ ਦੇ ਸਿਨਟੈਕਸ ਵਿੱਚ ਗੜਬੜ: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">ਕੋਈ ਸ਼ੈਡੋ ਨਹੀਂ</translation>
 <translation id="5846504156837627898">ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>

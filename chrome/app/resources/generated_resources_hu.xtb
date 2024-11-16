@@ -466,6 +466,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="131112695174432497">A hirdetések személyre szabását befolyásoló adatok törlődnek</translation>
 <translation id="1311294419381837540">Folyamatban van egy lap átküldése. Az átküldést bármikor szüneteltetheti vagy leállíthatja.</translation>
 <translation id="131188242279372879">Fedezze fel a Speciális védelmet, amely a Chrome legmagasabb szintű védelmét nyújtja a letöltésekhez</translation>
+<translation id="1312721752506309252">A Speciális védelem be van kapcsolva</translation>
 <translation id="1312811472299082263">Létrehozás Ansible Playbook-fájlból vagy Crostini biztonsági másolatból</translation>
 <translation id="13130607084115184">Itt jelennek majd meg a mentett jelszavak. Ha jelszavakat szeretne importálni a <ph name="BRAND" /> szolgáltatásba ezen az eszközön, <ph name="BEGIN_LINK" />válassza ki a kívánt CSV-fájlt<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Eltávolított engedélyek: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" /></translation>

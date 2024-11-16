@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">Seçili Sekmeyi Sabitle</translation>
 <translation id="1297175357211070620">Hedef</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> için geri bildirim gönderin</translation>
+<translation id="129808599775632797">&amp;Değişiklikler</translation>
 <translation id="130097046531636712">Bu ayar, arka plan etkinliğini ve yumuşak kaydırma gibi görsel efektleri sınırlandırarak pil gücünü artırır</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> sitesi şu dosyaları düzenleyebilir:</translation>
 <translation id="130174306655812048">"Ok Google, bu hangi şarkı?" diye sormayı deneyin.</translation>
@@ -465,6 +466,7 @@
 <translation id="131112695174432497">Reklam kişiselleştirmeyi etkileyen veriler silinir</translation>
 <translation id="1311294419381837540">Bir sekme yayınlıyorsunuz. İstediğiniz zaman yayını duraklatabilir veya durdurabilirsiniz.</translation>
 <translation id="131188242279372879">İndirme işlemlerinde Chrome'un en yüksek güvenlik düzeyinden yararlanmak için gelişmiş korumayı keşfedin</translation>
+<translation id="1312721752506309252">Gelişmiş Koruma açık</translation>
 <translation id="1312811472299082263">Ansible başucu kitabı veya Crostini yedekleme dosyasından oluşturun</translation>
 <translation id="13130607084115184">Kayıtlı şifreleriniz burada görünür. Şifreleri bu cihazdaki <ph name="BRAND" /> hizmetine aktarmak için <ph name="BEGIN_LINK" />bir CSV dosyası seçin.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">Kaldırılan izinler: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /></translation>
@@ -1769,6 +1771,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2214018885812055163">Paylaşılan klasörler</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 satır gösterilmiyor&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> satır gösterilmiyor&gt;}}</translation>
 <translation id="2215070081105889450">Ses paylaşmak için bunun yerine bir sekme veya ekran paylaşın</translation>
+<translation id="2217208085547223783">Güvenilirlik Durumu</translation>
 <translation id="2218019600945559112">Fare ve dokunmatik alan</translation>
 <translation id="2218515861914035131">Düz metin olarak yapıştır</translation>
 <translation id="221872881068107022">Ters kaydırma</translation>
@@ -2499,6 +2502,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2722547199758472013">Kimlik: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">"Misafir profili"ni aç</translation>
 <translation id="2723819893410108315">Limon rengi</translation>
+<translation id="2724822892847436256">Sınırlamalar</translation>
 <translation id="2724841811573117416">WebRTC günlükleri</translation>
 <translation id="272488616838512378">Birim Dönüştürme</translation>
 <translation id="2725200716980197196">Ağ bağlantısı geri yüklendi</translation>
@@ -3457,6 +3461,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3421835120203732951">Yeni Profil Ekle</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> klasöründe sonuç bulundu</translation>
 <translation id="3423226218833787854">Bu yapay zeka özelliği hakkında daha fazla bilgi</translation>
+<translation id="3423275441470187644">Güvenilirlik</translation>
 <translation id="3423463006624419153">"<ph name="PHONE_NAME_1" />" ve "<ph name="PHONE_NAME_2" />" telefonlarınızda:</translation>
 <translation id="3423858849633684918">Lütfen <ph name="PRODUCT_NAME" /> uygulamasını yeniden başlatın</translation>
 <translation id="3424969259347320884">Sekme Kilitlendiği Sırada Ne Yaptığınızı Açıklayın</translation>
@@ -4586,6 +4591,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
 <translation id="4195814663415092787">Kaldığım yerden devam et</translation>
 <translation id="4198268995694216131">Ek siteler</translation>
+<translation id="4198420883535766848">Sekmeyi listeden kaldır</translation>
 <translation id="4200609364258658652">Video karesini kop&amp;yala</translation>
 <translation id="4200689466366162458">Özel kelimeler</translation>
 <translation id="4200983522494130825">Y&amp;eni sekme</translation>
@@ -5149,6 +5155,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Sekme grubu silinsin mi?}other{Sekme grupları silinsin mi?}}</translation>
 <translation id="4608500690299898628">&amp;Bul...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> eklentisi bir hatayla karşılaştı</translation>
+<translation id="4610493438923139095">Güvenilir değil</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> sitesine mi gitmek istediniz?</translation>
 <translation id="4611114513649582138">Veri bağlantısı mevcut</translation>
 <translation id="4611759022973144129">Bu şifreyi <ph name="DEVICE_TYPE" /> cihazınızda oturum açmak için kullanabilirsiniz.</translation>
@@ -5174,6 +5181,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4627442949885028695">Başka bir cihazdan devam edin</translation>
 <translation id="4628762811416793313">Linux kapsayıcısı kurulumu tamamlanmadı. Lütfen tekrar deneyin.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> profilini açın</translation>
+<translation id="4629803160911640220">Güvenilir</translation>
 <translation id="4631955550884380853">Odaklanmış ses</translation>
 <translation id="4632655012900268062">Kartları özelleştir</translation>
 <translation id="4633003931260532286">Uzantı en az "<ph name="IMPORT_NAME" />" "<ph name="IMPORT_VERSION" />" sürümünü gerektiriyor ancak sadece "<ph name="INSTALLED_VERSION" />" sürümü yüklü</translation>
@@ -6830,6 +6838,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5842497610951477805">Bluetooth etkin</translation>
 <translation id="5844284118433003733">Oturum açtığınızda bu veriler, Google hizmetlerinde korunmanızı sağlamak için Google Hesabınıza bağlanır. Örneğin, bir güvenlik olayından sonra Gmail'deki koruma artırılır.</translation>
 <translation id="5844574845205796324">Keşfetmek için yeni içerik öner</translation>
+<translation id="5844685625984052392">İpucu</translation>
 <translation id="5846200638699387931">İlişki söz dizimi hatası: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Gölge yok</translation>
 <translation id="5846504156837627898">Site İzinlerini Yönet</translation>

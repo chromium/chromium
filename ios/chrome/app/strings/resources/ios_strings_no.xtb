@@ -781,6 +781,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4645575059429386691">Administreres av foreldrene dine</translation>
 <translation id="4647758699119474035">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Feil med Google-kontoen. Åpne kontomenyen.</translation>
 <translation id="4650125387981512669">Fortsett som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Skjul etter 1 minutt}other{Skjul etter {count} minutter}}</translation>
 <translation id="4652817563047461855">Sørg for at passordene dine er trygge, finn ut om de har vært utsatt for sikkerhetsbrudd, og få råd om å beskytte deg på nettet. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Lagre</translation>
 <translation id="4668929960204016307">,</translation>

@@ -448,6 +448,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1296911687402551044">Fijar la pestaña seleccionada</translation>
 <translation id="1297175357211070620">Destino</translation>
 <translation id="129770436432446029">Enviar comentarios acerca de <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modificaciones</translation>
 <translation id="130097046531636712">Esta función limita la actividad en segundo plano y los efectos visuales, como el desplazamiento suave, para extender la duración de la batería.</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> puede editar los siguientes archivos</translation>
 <translation id="130174306655812048">Prueba decir "Hey Google, ¿qué canción es esta?".</translation>
@@ -465,6 +466,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios</translation>
 <translation id="1311294419381837540">Estás transmitiendo una pestaña. Puedes pausar o detener la transmisión en cualquier momento.</translation>
 <translation id="131188242279372879">Descubre la protección mejorada para obtener el nivel más alto de seguridad de Chrome para las descargas</translation>
+<translation id="1312721752506309252">Se activó la protección mejorada</translation>
 <translation id="1312811472299082263">Crear a partir de un archivo de copia de seguridad de Crostini o de playbook de Ansible</translation>
 <translation id="13130607084115184">Las contraseñas guardadas aparecerán aquí. Para importar contraseñas al <ph name="BRAND" /> en este dispositivo, <ph name="BEGIN_LINK" />selecciona un archivo CSV.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">Se quitaron <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -1767,6 +1769,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2214018885812055163">Carpetas compartidas</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;No se muestra una línea&gt;}other{&lt;No se muestran <ph name="NUMBER_OF_LINES" /> líneas&gt;}}</translation>
 <translation id="2215070081105889450">Para compartir audio, comparte una pestaña o pantalla</translation>
+<translation id="2217208085547223783">Estado de confianza</translation>
 <translation id="2218019600945559112">Mouse y panel táctil</translation>
 <translation id="2218515861914035131">Pegar como texto simple</translation>
 <translation id="221872881068107022">Invertir desplazamiento</translation>
@@ -2498,6 +2501,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Abrir el perfil de invitado</translation>
 <translation id="2723819893410108315">Mostaza</translation>
+<translation id="2724822892847436256">Restricciones</translation>
 <translation id="2724841811573117416">Registros de WebRTC</translation>
 <translation id="272488616838512378">Conversión de unidades</translation>
 <translation id="2725200716980197196">Conexión de red restaurada</translation>
@@ -3458,6 +3462,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3421835120203732951">Agregar nuevo perfil</translation>
 <translation id="3423111258700187173">Resultados encontrados en <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Más información sobre esta función basada en IA</translation>
+<translation id="3423275441470187644">Confianza</translation>
 <translation id="3423463006624419153">En tu "<ph name="PHONE_NAME_1" />" y "<ph name="PHONE_NAME_2" />"</translation>
 <translation id="3423858849633684918">Se debe reiniciar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Describir lo que estabas haciendo cuando se bloqueó la pestaña</translation>
@@ -4587,6 +4592,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4195814663415092787">Continuar la sesión desde donde la dejaste</translation>
 <translation id="4198268995694216131">Sitios adicionales</translation>
+<translation id="4198420883535766848">Quitar la pestaña de la lista</translation>
 <translation id="4200609364258658652">Copia&amp;r fotograma</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
 <translation id="4200983522494130825">Nueva pes&amp;taña</translation>
@@ -5150,6 +5156,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{¿Quieres borrar el grupo de pestañas?}other{¿Quieres borrar los grupos de pestañas?}}</translation>
 <translation id="4608500690299898628">&amp;Buscar</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> detectó un error</translation>
+<translation id="4610493438923139095">No confiable</translation>
 <translation id="4610637590575890427">¿Tal vez quieres ir a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Conexión de datos disponible</translation>
 <translation id="4611759022973144129">Puedes usar esta contraseña para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
@@ -5175,6 +5182,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4627442949885028695">Cómo continuar desde otro dispositivo</translation>
 <translation id="4628762811416793313">No se completó la configuración del contenedor de Linux. Vuelve a intentarlo.</translation>
 <translation id="4629521233550547305">Abrir el perfil de <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Confiable</translation>
 <translation id="4631955550884380853">Voz enfocada</translation>
 <translation id="4632655012900268062">Personalizar tarjetas</translation>
 <translation id="4633003931260532286">La extensión requiere "<ph name="IMPORT_NAME" />" con la versión "<ph name="IMPORT_VERSION" />" como mínimo, pero solo está instalada la versión "<ph name="INSTALLED_VERSION" />"</translation>
@@ -6831,6 +6839,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5842497610951477805">Activación de Bluetooth</translation>
 <translation id="5844284118433003733">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>
 <translation id="5844574845205796324">Sugerir nuevo contenido para explorar</translation>
+<translation id="5844685625984052392">Sugerencia</translation>
 <translation id="5846200638699387931">Error de sintaxis relacional: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Sin sombra</translation>
 <translation id="5846504156837627898">Administrar los permisos de sitios</translation>

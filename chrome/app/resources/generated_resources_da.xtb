@@ -449,6 +449,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1296911687402551044">Fastgør den valgte fane</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Send feedback om <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Ændringer</translation>
 <translation id="130097046531636712">Dette forlænger batteriets levetid ved at begrænse baggrundsaktivitet og visuelle effekter såsom jævn rulning</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan redigere følgende filer</translation>
 <translation id="130174306655812048">Prøv at sige "Hey Google, hvad hedder den her sang?"</translation>
@@ -466,6 +467,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="131112695174432497">Data, der påvirker personlig tilpasning af annoncer, slettes</translation>
 <translation id="1311294419381837540">Du er ved at caste en fane. Du kan til enhver tid sætte din casting på pause eller stoppe den.</translation>
 <translation id="131188242279372879">Prøv forbedret beskyttelse for at få Chromes højeste sikkerhedsniveau for downloads</translation>
+<translation id="1312721752506309252">Forbedret beskyttelse er aktiveret</translation>
 <translation id="1312811472299082263">Opret via en Ansible Playbook eller en Crostini-backupfil</translation>
 <translation id="13130607084115184">Dine gemte adgangskoder vises her. <ph name="BEGIN_LINK" />Vælg en CSV-fil<ph name="END_LINK" /> for at importere adgangskoder til <ph name="BRAND" /> på denne enhed.</translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /> blev fjernet</translation>
@@ -1781,6 +1783,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2214018885812055163">Delte mapper</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linje vises ikke&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linje vise ikke&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linjer vises ikke&gt;}}</translation>
 <translation id="2215070081105889450">Hvis du vil dele lyd, skal du dele en fane eller skærm i stedet</translation>
+<translation id="2217208085547223783">Tilstand af pålidelighed</translation>
 <translation id="2218019600945559112">Mus og touchplade</translation>
 <translation id="2218515861914035131">Indsæt som almindelig tekst</translation>
 <translation id="221872881068107022">Omvendt rulning</translation>
@@ -2515,6 +2518,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2722547199758472013">Id: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Åbn gæsteprofil</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Begrænsninger</translation>
 <translation id="2724841811573117416">WebRTC-logfiler</translation>
 <translation id="272488616838512378">Enhedsomregning</translation>
 <translation id="2725200716980197196">Forbindelsen til netværket er genoprettet</translation>
@@ -3475,6 +3479,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3421835120203732951">Tilføj ny profil</translation>
 <translation id="3423111258700187173">Der blev fundet resultater i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Få flere oplysninger om denne AI-funktion</translation>
+<translation id="3423275441470187644">Pålidelighed</translation>
 <translation id="3423463006624419153">På din "<ph name="PHONE_NAME_1" />" og "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Genstart <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Beskriv, hvad du foretog dig, da fanen gik ned</translation>
@@ -4604,6 +4609,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4195814663415092787">Fortsæt, hvor du slap</translation>
 <translation id="4198268995694216131">Yderligere websites</translation>
+<translation id="4198420883535766848">Fjern fanen fra listen</translation>
 <translation id="4200609364258658652">Kopiér videoramme</translation>
 <translation id="4200689466366162458">Tilpassede ord</translation>
 <translation id="4200983522494130825">Ny &amp;fane</translation>
@@ -5167,6 +5173,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vil du slette fanegruppen?}one{Vil du slette fanegruppen?}other{Vil du slette fanegrupperne?}}</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
 <translation id="4610162781778310380">Der opstod en fejl i <ph name="PLUGIN_NAME" /></translation>
+<translation id="4610493438923139095">Upålidelig</translation>
 <translation id="4610637590575890427">Ville du gå til <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Tilgængelig dataforbindelse</translation>
 <translation id="4611759022973144129">Du kan bruge denne adgangskode til at logge ind på din <ph name="DEVICE_TYPE" />.</translation>
@@ -5192,6 +5199,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4627442949885028695">Fortsæt fra en anden enhed</translation>
 <translation id="4628762811416793313">Konfigurationen af Linux-containeren blev ikke fuldført. Prøv igen.</translation>
 <translation id="4629521233550547305">Åbn profilen <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Pålidelig</translation>
 <translation id="4631955550884380853">Fokuseret stemme</translation>
 <translation id="4632655012900268062">Tilpas kort</translation>
 <translation id="4633003931260532286">Udvidelsen skal bruge "<ph name="IMPORT_NAME" />" med minimumversionen "<ph name="IMPORT_VERSION" />", men kun versionen "<ph name="INSTALLED_VERSION" />" er installeret</translation>
@@ -6848,6 +6856,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5842497610951477805">Aktivering af Bluetooth</translation>
 <translation id="5844284118433003733">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="5844574845205796324">Foreslå nyt indhold til mig</translation>
+<translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Fejl i relationens syntaks: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Ingen skygge</translation>
 <translation id="5846504156837627898">Administrer websitetilladelser</translation>

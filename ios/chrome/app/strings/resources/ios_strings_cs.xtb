@@ -781,6 +781,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
 <translation id="4647758699119474035">Jste přihlášeni jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Chyba účtu Google. Otevřít nabídku účtů.</translation>
 <translation id="4650125387981512669">Pokračovat jako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Skrýt po 1 minutě}few{Skrýt po {count} minutách}many{Skrýt po {count} minuty}other{Skrýt po {count} minutách}}</translation>
 <translation id="4652817563047461855">Ujistěte se, že jsou vaše hesla v bezpečí, ověřte si, zda nebyla prolomena, a nechte si poradit, jak se na internetu chránit. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Uložit</translation>
 <translation id="4668929960204016307">,</translation>

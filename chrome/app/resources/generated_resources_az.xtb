@@ -446,6 +446,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1296911687402551044">Seçilmiş tabı sancın</translation>
 <translation id="1297175357211070620">Təyinat yeri</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> üçün rəy göndər</translation>
+<translation id="129808599775632797">&amp;Dəyişikliklər</translation>
 <translation id="130097046531636712">Arxa fon fəaliyyətini və rahat sürüşdürmə kimi vizual effektləri məhdudlaşdırmaqla batareya enerjisini artırır.</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> aşağıdakı faylları redaktə edə bilər</translation>
 <translation id="130174306655812048">"Okay Google, bu hansı mahnıdır?" deyin</translation>
@@ -463,6 +464,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="131112695174432497">Reklamın fərdiləşdirilməsinə təsir edən data silinir</translation>
 <translation id="1311294419381837540">Tab yayımlayırsınız. İstənilən vaxt yayımı durdura, yaxud dayandıra bilərsiniz.</translation>
 <translation id="131188242279372879">Chrome-un endirmələr üzrə ən yüksək güvənlik səviyyəsini əldə etmək üçün təkmil qorumanı kəşf edin</translation>
+<translation id="1312721752506309252">Qabaqcıl qoruma aktivdir</translation>
 <translation id="1312811472299082263">Ansible Təlimat Kitabçası və ya Crostini yedək faylından yaradın</translation>
 <translation id="13130607084115184">Saxlanmış parollar burada görünəcək. Bu cihazda parolları <ph name="BRAND" /> bölməsinə import etmək üçün <ph name="BEGIN_LINK" /> CSV faylı seçin.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> silinib</translation>
@@ -1766,6 +1768,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2214018885812055163">Paylaşılmış qovluqlar</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 sətir göstərilmir&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> sətir görünmür&gt;}}</translation>
 <translation id="2215070081105889450">Audio paylaşmaq üçün tab və ya ekran paylaşın</translation>
+<translation id="2217208085547223783">Güvən statusu</translation>
 <translation id="2218019600945559112">Maus və taçped</translation>
 <translation id="2218515861914035131">Tam mətn olaraq yerləşdirin</translation>
 <translation id="221872881068107022">Tərs skrolinq</translation>
@@ -2500,6 +2503,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Açıq Qonaq profili</translation>
 <translation id="2723819893410108315">Sitron</translation>
+<translation id="2724822892847436256">Məhdudiyyətlər</translation>
 <translation id="2724841811573117416">WebRTC loqlar</translation>
 <translation id="272488616838512378">Vahidin çevrilməsi</translation>
 <translation id="2725200716980197196">Şəbəkə bağlantısı bərpa edildi</translation>
@@ -3460,6 +3464,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3421835120203732951">Yeni profil əlavə edin</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> qovluğunda tapılan nəticələr</translation>
 <translation id="3423226218833787854">Bu Sİ funksiyası haqqında ətraflı məlumat</translation>
+<translation id="3423275441470187644">Güvən</translation>
 <translation id="3423463006624419153">"<ph name="PHONE_NAME_1" />" və "<ph name="PHONE_NAME_2" />" telefonlarınızda</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" /> məhsulunu yenidən işə salın</translation>
 <translation id="3424969259347320884">Tabda Xəta Baş Verdiyi Zaman Nə Etdiyinizi Təsvir Edin</translation>
@@ -4587,6 +4592,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4195814663415092787">Qaldığınız yerdən davam edin</translation>
 <translation id="4198268995694216131">Əlavə saytlar</translation>
+<translation id="4198420883535766848">Tabı siyahıdan çıxarın</translation>
 <translation id="4200609364258658652">Videoçərçivəni kopyalayın</translation>
 <translation id="4200689466366162458">Fərdi sözlər</translation>
 <translation id="4200983522494130825">Yeni panel</translation>
@@ -5150,6 +5156,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Tab qrupu silinsin?}other{Tab qrupları silinsin?}}</translation>
 <translation id="4608500690299898628">Tapın...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ilə bağlı xəta oldu</translation>
+<translation id="4610493438923139095">Etibarsız</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> saytına keçməyi nəzərdə tuturdunuz?</translation>
 <translation id="4611114513649582138">Data bağlantısı əlçatandır</translation>
 <translation id="4611759022973144129">Bu parol ilə <ph name="DEVICE_TYPE" /> cihazına daxil ola bilərsiniz.</translation>
@@ -5175,6 +5182,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4627442949885028695">Başqa cihazdan davam edin</translation>
 <translation id="4628762811416793313">Linux konteynerinin quraşdırılması tamamlanmadı. Yenidən cəhd edin.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> profilini açın</translation>
+<translation id="4629803160911640220">Güvənli</translation>
 <translation id="4631955550884380853">Fokuslanmış səs</translation>
 <translation id="4632655012900268062">Kartları fərdiləşdirin</translation>
 <translation id="4633003931260532286">Artırma minimum "<ph name="IMPORT_VERSION" />" versiyalı <ph name="IMPORT_NAME" /> tələb edir, lakin yalnız "<ph name="INSTALLED_VERSION" />" versiyası quraşdırılıb</translation>
@@ -6831,6 +6839,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5842497610951477805">Bluetooth'un aktiv edilməsi</translation>
 <translation id="5844284118433003733">Daxil olduqda sizi Google xidmətlərində qorumaq üçün bu data Google Hesabı ilə əlaqələndirilir. Məsələn, təhlükəsizlik insidentindən sonra Gmail-də qoruma artırılır.</translation>
 <translation id="5844574845205796324">Araşdırmaq üçün yeni məzmun təklif edin</translation>
+<translation id="5844685625984052392">İpucu</translation>
 <translation id="5846200638699387931">Əlaqə sintaksis xətası: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Kölgə yoxdur</translation>
 <translation id="5846504156837627898">Sayt İcazələrini idarə edin</translation>

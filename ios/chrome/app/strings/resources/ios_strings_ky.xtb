@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">Ата-энеңиз башкарат</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> катары кирдиңиз. <ph name="USER_EMAIL" />. Google аккаунтундагы ката. Аккаунт менюсун ачуу.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> катары улантуу</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 мүнөттөн кийин жашыруу}other{{count} мүнөттөн кийин жашыруу}}</translation>
 <translation id="4652817563047461855">Сырсөздөр коопсуз экенин жана уурдалбаганын текшерип, Интернеттеги шылуундуктан коргонуңуз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Сактоо</translation>
 <translation id="4668929960204016307">,</translation>

@@ -450,6 +450,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1296911687402551044">Piespraust atlasīto cilni</translation>
 <translation id="1297175357211070620">Printeris</translation>
 <translation id="129770436432446029">Sūtīt atsauksmes par eksperimentu “<ph name="EXPERIMENT_NAME" />”</translation>
+<translation id="129808599775632797">&amp;Modifikācijas</translation>
 <translation id="130097046531636712">Tādējādi tiek paildzināts akumulatora darbības ilgums, ierobežojot darbības fonā un vizuālos efektus, piemēram, vienmērīgu ritināšanu.</translation>
 <translation id="1301135395320604080">Vietne <ph name="ORIGIN" /> var rediģēt tālāk norādītos failus.</translation>
 <translation id="130174306655812048">Izmēģiniet šādu jautājumu: “Hey Google, what song is this?” (Ok Google, kas šī ir par dziesmu?)</translation>
@@ -467,6 +468,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="131112695174432497">Tiek dzēsti dati, kas ietekmē reklāmu personalizēšanu</translation>
 <translation id="1311294419381837540">Jūs apraidāt cilni. Jebkurā brīdī varat apturēt vai pārtraukt apraidi.</translation>
 <translation id="131188242279372879">Izmantojiet uzlabotu aizsardzību, kas nodrošina augstākā līmeņa drošību lejupielādēm pārlūkā Chrome</translation>
+<translation id="1312721752506309252">Uzlabota aizsardzība ir ieslēgta</translation>
 <translation id="1312811472299082263">Izveidot no Ansible skriptārija vai Crostini dublējuma faila</translation>
 <translation id="13130607084115184">Šeit tiks rādītas saglabātās paroles. Lai šajā ierīcē importētu paroles pakalpojumā <ph name="BRAND" />, <ph name="BEGIN_LINK" />atlasiet CSV failu<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Tika atsauktas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -1772,6 +1774,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2214018885812055163">Kopīgotās mapes</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 rinda netiek rādīta&gt;}zero{&lt;<ph name="NUMBER_OF_LINES" /> rindas netiek rādītas&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> rinda netiek rādīta&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> rindas netiek rādītas&gt;}}</translation>
 <translation id="2215070081105889450">Lai kopīgotu audio, kopīgojiet cilni vai ekrānu</translation>
+<translation id="2217208085547223783">Uzticamības statuss</translation>
 <translation id="2218019600945559112">Pele un skārienpaliktnis</translation>
 <translation id="2218515861914035131">Ielīmēt kā vienkāršu tekstu</translation>
 <translation id="221872881068107022">Ritināšana atpakaļgaitā</translation>
@@ -2503,6 +2506,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Atvērt viesa profilu</translation>
 <translation id="2723819893410108315">Citrons</translation>
+<translation id="2724822892847436256">Ierobežojumi</translation>
 <translation id="2724841811573117416">WebRTC žurnāli</translation>
 <translation id="272488616838512378">Izteikšana citās mērvienībās</translation>
 <translation id="2725200716980197196">Tīkla savienojums atjaunots</translation>
@@ -3461,6 +3465,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3421835120203732951">Pievienot jaunu profilu</translation>
 <translation id="3423111258700187173">Rezultāti atrasti mapē <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Uzzināt vairāk par šo MI funkciju</translation>
+<translation id="3423275441470187644">Uzticamība</translation>
 <translation id="3423463006624419153">Jūsu tālruņos “<ph name="PHONE_NAME_1" />” un “<ph name="PHONE_NAME_2" />”:</translation>
 <translation id="3423858849633684918">Restartējiet <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Norādiet, ko darījāt, kad cilne avarēja</translation>
@@ -4590,6 +4595,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4195814663415092787">Atsākt darbu no vietas, kur to beidzu</translation>
 <translation id="4198268995694216131">Citas vietnes</translation>
+<translation id="4198420883535766848">Noņemt cilni no saraksta</translation>
 <translation id="4200609364258658652">Kop&amp;ēt video kadru</translation>
 <translation id="4200689466366162458">Pielāgotie vārdi</translation>
 <translation id="4200983522494130825">Jauna cilne</translation>
@@ -5153,6 +5159,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vai dzēst ciļņu grupu?}zero{Vai dzēst ciļņu grupas?}one{Vai dzēst ciļņu grupas?}other{Vai dzēst ciļņu grupas?}}</translation>
 <translation id="4608500690299898628">&amp;Atrast...</translation>
 <translation id="4610162781778310380">Spraudnī <ph name="PLUGIN_NAME" /> radās kļūda.</translation>
+<translation id="4610493438923139095">Neuzticams</translation>
 <translation id="4610637590575890427">Vai jūs vēlējāties doties uz <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Ir pieejams datu savienojums</translation>
 <translation id="4611759022973144129">Varat izmantot šo paroli, lai pierakstītos savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
@@ -5178,6 +5185,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4627442949885028695">Turpiniet citā ierīcē</translation>
 <translation id="4628762811416793313">Linux konteinera iestatīšana netika pabeigta. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="4629521233550547305">Atvērt profilu “<ph name="PROFILE_NAME" />”</translation>
+<translation id="4629803160911640220">Uzticams</translation>
 <translation id="4631955550884380853">Koncentrēta balss</translation>
 <translation id="4632655012900268062">Pielāgot kartītes</translation>
 <translation id="4633003931260532286">Paplašinājumam ir nepieciešama “<ph name="IMPORT_NAME" />” versija <ph name="IMPORT_VERSION" /> (vismaz), taču ir instalēta tikai versija <ph name="INSTALLED_VERSION" />.</translation>
@@ -6831,6 +6839,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5842497610951477805">Bluetooth iespējošana</translation>
 <translation id="5844284118433003733">Kad esat pierakstījies, šie dati tiek saistīti ar jūsu Google kontu, lai aizsargātu jūs dažādos Google pakalpojumos, piemēram, palielinot aizsardzību pakalpojumā Gmail pēc drošības incidenta.</translation>
 <translation id="5844574845205796324">Ieteikt jaunu saturu atklāšanai</translation>
+<translation id="5844685625984052392">Norāde</translation>
 <translation id="5846200638699387931">Saistību sintakses kļūda: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Bez ēnas</translation>
 <translation id="5846504156837627898">Pārvaldīt vietņu atļaujas</translation>

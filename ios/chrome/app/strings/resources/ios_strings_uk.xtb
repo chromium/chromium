@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">Керується одним із батьків</translation>
 <translation id="4647758699119474035">Ви ввійшли як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Помилка облікового запису Google. Відкрити меню облікового запису.</translation>
 <translation id="4650125387981512669">Продовжити як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Приховувати через 1 хвилину}one{Приховувати через {count} хвилину}few{Приховувати через {count} хвилини}many{Приховувати через {count} хвилин}other{Приховувати через {count} хвилини}}</translation>
 <translation id="4652817563047461855">Переконайтеся, що ваші паролі надійні й не були викрадені, а також отримайте пораду, як захистити себе в Інтернеті. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Зберегти</translation>
 <translation id="4668929960204016307">,</translation>

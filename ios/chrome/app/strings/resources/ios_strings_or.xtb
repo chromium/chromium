@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">ଆପଣଙ୍କର ଅଭିବାବକଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। <ph name="USER_EMAIL" />। Google ଆକାଉଣ୍ଟରେ ତ୍ରୁଟି। ଆକାଉଣ୍ଟ ମେନୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ଭାବେ ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 ମିନିଟ ପରେ ଲୁଚାନ୍ତୁ}other{{count} ମିନିଟ ପରେ ଲୁଚାନ୍ତୁ}}</translation>
 <translation id="4652817563047461855">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ସୁରକ୍ଷିତ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ, ସେଗୁଡ଼ିକ ଚୋରି ହୋଇଯାଇଛି ନା ନାହିଁ ତାହା ଜାଣନ୍ତୁ ଏବଂ ଅନଲାଇନରେ ନିଜକୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ପରାମର୍ଶ ପାଆନ୍ତୁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">ସେଭ କରନ୍ତୁ</translation>
 <translation id="4668929960204016307">,</translation>

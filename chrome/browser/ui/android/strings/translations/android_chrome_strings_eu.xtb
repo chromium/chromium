@@ -127,6 +127,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="1513858653616922153">Ezabatu pasahitza</translation>
 <translation id="1521774566618522728">Aktibo gaur</translation>
 <translation id="153446405401665083">Chrome-ren bertsio berri bat erabilgarri dago</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 laster-marka gailu honetan soilik gorde da. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}other{# laster-marka gailu honetan soilik gorde dira. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
 Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Google-ko kontua kudeatzeko, sakatu "Kudeatu kontua" botoia</translation>
@@ -142,6 +143,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1598163867407640634">Erabili <ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="160275202205869636">Aktibatuta badago, datuak Google-ko kontuan erabiltzen eta gordetzen dira. Desaktibatuta badago, datuak gailu honetan soilik gordetzen dira.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Kendu hautatutako elementua}other{Kendu hautatutako # elementuak}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 laster-marka eta beste elementu batzuk gailu honetan soilik gorde dira. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}other{# laster-marka eta beste elementu batzuk gailu honetan soilik gorde dira. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
 <translation id="164269334534774161">Orri honen konexiorik gabeko kopia ikusten ari zara (kopiaren data: <ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">Historia</translation>

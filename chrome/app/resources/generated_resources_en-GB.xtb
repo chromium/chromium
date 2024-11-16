@@ -448,6 +448,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1296911687402551044">Pin Selected Tab</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Send feedback for <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modifications</translation>
 <translation id="130097046531636712">This extends battery power by limiting background activity and visual effects like smooth scrolling</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> can edit the following files</translation>
 <translation id="130174306655812048">Try “Hey Google, what song is this?”</translation>
@@ -465,6 +466,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="131112695174432497">Data that affects Ad Personalisation is deleted</translation>
 <translation id="1311294419381837540">You are casting a tab. You can pause or stop casting at any time.</translation>
 <translation id="131188242279372879">Discover enhanced protection to get Chrome's highest level of security for downloads</translation>
+<translation id="1312721752506309252">Enhanced protection is on</translation>
 <translation id="1312811472299082263">Create from an Ansible playbook or a Crostini backup file</translation>
 <translation id="13130607084115184">Saved passwords will appear here. To import passwords to <ph name="BRAND" /> on this device, <ph name="BEGIN_LINK" /> select a CSV file.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">Removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -1780,6 +1782,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2214018885812055163">Shared folders</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 line not shown&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lines not shown&gt;}}</translation>
 <translation id="2215070081105889450">To share audio, share a tab or screen instead</translation>
+<translation id="2217208085547223783">Trust state</translation>
 <translation id="2218019600945559112">Mouse and touchpad</translation>
 <translation id="2218515861914035131">Paste as plain text</translation>
 <translation id="221872881068107022">Reverse scrolling</translation>
@@ -2514,6 +2517,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Open guest profile</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Constraints</translation>
 <translation id="2724841811573117416">WebRTC logs</translation>
 <translation id="272488616838512378">Unit conversion</translation>
 <translation id="2725200716980197196">Network connectivity restored</translation>
@@ -3474,6 +3478,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3421835120203732951">Add new profile</translation>
 <translation id="3423111258700187173">Results found in <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Learn more about this AI feature</translation>
+<translation id="3423275441470187644">Trust</translation>
 <translation id="3423463006624419153">On your '<ph name="PHONE_NAME_1" />' and '<ph name="PHONE_NAME_2" />':</translation>
 <translation id="3423858849633684918">Please Relaunch <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Describe What you Were Doing When the Tab Crashed</translation>
@@ -4603,6 +4608,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4195814663415092787">Continue where you left off</translation>
 <translation id="4198268995694216131">Additional sites</translation>
+<translation id="4198420883535766848">Remove tab from list</translation>
 <translation id="4200609364258658652">Copy video frame</translation>
 <translation id="4200689466366162458">Customised words</translation>
 <translation id="4200983522494130825">New &amp;tab</translation>
@@ -5166,6 +5172,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Delete tab group?}other{Delete tab groups?}}</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> has encountered an error</translation>
+<translation id="4610493438923139095">Distrusted</translation>
 <translation id="4610637590575890427">Did you mean to go to <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Data connection available</translation>
 <translation id="4611759022973144129">You can use this password to sign in to your <ph name="DEVICE_TYPE" />.</translation>
@@ -5191,6 +5198,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4627442949885028695">Continue from another device</translation>
 <translation id="4628762811416793313">The Linux container setup did not complete. Please try again.</translation>
 <translation id="4629521233550547305">Open <ph name="PROFILE_NAME" /> profile</translation>
+<translation id="4629803160911640220">Trusted</translation>
 <translation id="4631955550884380853">Focused voice</translation>
 <translation id="4632655012900268062">Customise cards</translation>
 <translation id="4633003931260532286">Extension requires '<ph name="IMPORT_NAME" />' with a minimum version '<ph name="IMPORT_VERSION" />', but only version '<ph name="INSTALLED_VERSION" />' is installed</translation>
@@ -6847,6 +6855,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
 <translation id="5844574845205796324">Suggest new content to explore</translation>
+<translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">No shadow</translation>
 <translation id="5846504156837627898">Manage site permissions</translation>

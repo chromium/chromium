@@ -448,6 +448,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1296911687402551044">Kinnita valitud vaheleht</translation>
 <translation id="1297175357211070620">Sihtkoht</translation>
 <translation id="129770436432446029">Funktsiooni <ph name="EXPERIMENT_NAME" /> kohta tagasiside saatmine</translation>
+<translation id="129808599775632797">&amp;Muudatused</translation>
 <translation id="130097046531636712">See pikendab aku tööiga, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> saab muuta järgmisi faile</translation>
 <translation id="130174306655812048">Proovige küsida „Ok Google, mis laul see on?“</translation>
@@ -465,6 +466,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="131112695174432497">Andmed, mis mõjutavad reklaamide isikupärastamist, kustutatakse</translation>
 <translation id="1311294419381837540">Olete vahekaarti üle kandmas. Saate ülekandmise igal ajal peatada või lõpetada.</translation>
 <translation id="131188242279372879">Avastage täiustatud kaitse Chrome'i kõrgeima taseme turvalisuse saavutamiseks allalaadimiste puhul</translation>
+<translation id="1312721752506309252">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="1312811472299082263">Loomine Ansible Playbooki või Crostini varundusfailist</translation>
 <translation id="13130607084115184">Salvestatud paroolid kuvatakse siin. Selles seadmes paroolide teenusesse <ph name="BRAND" /> importimiseks<ph name="BEGIN_LINK" /> valige CSV-fail<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Eemaldati <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -1771,6 +1773,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2214018885812055163">Jagatud kaustad</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Ei näidata 1 rida&gt;}other{&lt;Ei näidata <ph name="NUMBER_OF_LINES" /> rida&gt;}}</translation>
 <translation id="2215070081105889450">Heli jagamiseks jagage selle asemel vahekaarti või ekraani</translation>
+<translation id="2217208085547223783">Usaldusväärsuse olek</translation>
 <translation id="2218019600945559112">Hiir ja puuteplaat</translation>
 <translation id="2218515861914035131">Kleebib lihttekstina</translation>
 <translation id="221872881068107022">Tagurpidi kerimine</translation>
@@ -2505,6 +2508,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Ava külalise profiil</translation>
 <translation id="2723819893410108315">Sidrun</translation>
+<translation id="2724822892847436256">Piirangud</translation>
 <translation id="2724841811573117416">WebRTC logid</translation>
 <translation id="272488616838512378">Ühikute teisendamine</translation>
 <translation id="2725200716980197196">Võrguühendus on taastatud</translation>
@@ -3465,6 +3469,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3421835120203732951">Lisa uus profiil</translation>
 <translation id="3423111258700187173">Kaustast <ph name="FOLDER_TITLE" /> leitud tulemused</translation>
 <translation id="3423226218833787854">Lisateave selle AI-funktsiooni kohta</translation>
+<translation id="3423275441470187644">Usaldusväärsus</translation>
 <translation id="3423463006624419153">Teie seadmetes <ph name="PHONE_NAME_1" /> ja <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Taaskäivitage rakendus <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Kirjeldage, mida te vahelehe kokkujooksmise ajal tegite</translation>
@@ -4594,6 +4599,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4195814663415092787">Jätka sealt, kus pooleli jäin</translation>
 <translation id="4198268995694216131">Täiendavad saidid</translation>
+<translation id="4198420883535766848">Eemaldage loendist vahekaart</translation>
 <translation id="4200609364258658652">K&amp;opeeri videokaader</translation>
 <translation id="4200689466366162458">Kohandatud sõnad</translation>
 <translation id="4200983522494130825">Uus &amp;vaheleht</translation>
@@ -5157,6 +5163,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Kas kustutada vahelehegrupp?}other{Kas kustutada vahelehegrupid?}}</translation>
 <translation id="4608500690299898628">&amp;Otsi...</translation>
 <translation id="4610162781778310380">Pistikprogrammis <ph name="PLUGIN_NAME" /> ilmnes viga</translation>
+<translation id="4610493438923139095">Ebausaldusväärne</translation>
 <translation id="4610637590575890427">Kas soovisite minna aadressile <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Andmesideühendus on saadaval</translation>
 <translation id="4611759022973144129">Kasutage oma seadmesse <ph name="DEVICE_TYPE" /> sisselogimiseks seda parooli.</translation>
@@ -5182,6 +5189,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4627442949885028695">Jätkake sealt, kus muus seadmes pooleli jäite</translation>
 <translation id="4628762811416793313">Linuxi konteineri seadistus ei jõudnud lõpule. Proovige uuesti.</translation>
 <translation id="4629521233550547305">Ava profiil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Usaldusväärne</translation>
 <translation id="4631955550884380853">Keskendunud hääl</translation>
 <translation id="4632655012900268062">Kohanda kaarte</translation>
 <translation id="4633003931260532286">Laiendus nõuab üksust „<ph name="IMPORT_NAME" />” minimaalse versiooniga „<ph name="IMPORT_VERSION" />”, kuid installitud on ainult versioon „<ph name="INSTALLED_VERSION" />”</translation>
@@ -6838,6 +6846,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5842497610951477805">Bluetoothi lubamine</translation>
 <translation id="5844284118433003733">Kui olete sisse logitud, lingitakse need andmed teie Google'i kontoga, et teid Google'i teenustest kaitsta. Näiteks suurendades pärast turvaintsidenti Gmailis kaitset.</translation>
 <translation id="5844574845205796324">Soovita avastamiseks uut sisu</translation>
+<translation id="5844685625984052392">Vihje</translation>
 <translation id="5846200638699387931">Seosesüntaksi viga: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Ilma varjuta</translation>
 <translation id="5846504156837627898">Saidi lubade haldamine</translation>

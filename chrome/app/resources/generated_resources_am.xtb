@@ -449,6 +449,7 @@
 <translation id="1296911687402551044">የተመረጠውን ትር ሰካ</translation>
 <translation id="1297175357211070620">መዳረሻ</translation>
 <translation id="129770436432446029">ለ<ph name="EXPERIMENT_NAME" /> ግብረመልስ ይላኩ</translation>
+<translation id="129808599775632797">እና ማስተካከያዎች</translation>
 <translation id="130097046531636712">ይህ እንደ ለስላሳ ሽብለላ ያሉ የዳራ እንቅስቃሴ እና ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ያራዝማል</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> የሚከተሉትን ፋይሎች ማርትዕ ይችላል</translation>
 <translation id="130174306655812048">«Hey Google፣ ይህ ዘፈን ምንድን ነው?» ለማለት ይሞክሩ</translation>
@@ -466,6 +467,7 @@
 <translation id="131112695174432497">ማስታወቂያን ግላዊነት ማላበስ ላይ ተጽዕኖ የሚያሳድር ውሂብ ተሰርዟል</translation>
 <translation id="1311294419381837540">እርስዎ አንድ ትር cast እያደረጉ ነው። በማንኛውም ጊዜ cast ማድረግን ባለበት ማቆም ወይም ማቆም ይችላሉ።</translation>
 <translation id="131188242279372879">ለውርዶች ከፍተኛውን የChrome ደህንነት ደረጃ ለማግኘት የላቀ ጥበቃን ያግኙ</translation>
+<translation id="1312721752506309252">የተሻሻለ ጥበቃ በርቷል</translation>
 <translation id="1312811472299082263">ከAnsible የመመሪያ ደብተር ወይም ከCrostini ምትኬ ፋይል ይፍጠሩ</translation>
 <translation id="13130607084115184">የተቀመጡ የይለፍ ቃላት እዚህ ይታያሉ። በዚህ መሣሪያ ላይ የይለፍ ቃላትን ወደ <ph name="BRAND" /> ለማስመጣት <ph name="BEGIN_LINK" />አንድ CSV ፋይል ይምረጡ።<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ <ph name="PERMISSION_3" /> ተወግደዋል</translation>
@@ -1778,6 +1780,7 @@
 <translation id="2214018885812055163">የተጋሩ አቃፊዎች</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 መስመር አይታይም&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> መስመሮች አይታዩም&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> መስመሮች አይታዩም&gt;}}</translation>
 <translation id="2215070081105889450">ኦዲዮን ለማጋራት በምትኩ አንድን ትር ወይም ማያ ገጽ ያጋሩ</translation>
+<translation id="2217208085547223783">የእምነት ሁኔታ</translation>
 <translation id="2218019600945559112">መዳፊት እና መዳሰሻ</translation>
 <translation id="2218515861914035131">እንደ ስነጣ አልባ ጽሁፍ ለጥፍ</translation>
 <translation id="221872881068107022">በተቃራኒው ሸብልል</translation>
@@ -2510,6 +2513,7 @@
 <translation id="2722547199758472013">መታወቂያ፦ <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">የእንግዳ መገለጫን ይክፈቱ</translation>
 <translation id="2723819893410108315">ፈዛዛ ቢጫ</translation>
+<translation id="2724822892847436256">ገደቦች</translation>
 <translation id="2724841811573117416">የWebRTC ምዝግብ ማስታወሻዎች</translation>
 <translation id="272488616838512378">የአሃድ ልወጣ</translation>
 <translation id="2725200716980197196">የአውታረ መረብ ግንኙነት ወደነበረበት ተመልሷል</translation>
@@ -3470,6 +3474,7 @@
 <translation id="3421835120203732951">አዲስ መገለጫ አክል</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> ውስጥ የተገኙ ውጤቶች</translation>
 <translation id="3423226218833787854">ስለዚህ ሰው ሠራሽ አስተውሎት ባህሪ የበለጠ ይረዱ</translation>
+<translation id="3423275441470187644">እምነት</translation>
 <translation id="3423463006624419153">በእርስዎ «<ph name="PHONE_NAME_1" />» እና «<ph name="PHONE_NAME_2" />» ላይ፦</translation>
 <translation id="3423858849633684918">እባክዎ <ph name="PRODUCT_NAME" />ን ዳግም ያስጀምሩት</translation>
 <translation id="3424969259347320884">ትሩ ሲሰናከል ምን እየሰሩ እንደነበር ያብራሩ</translation>
@@ -4597,6 +4602,7 @@
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4195814663415092787">ካቆምክበት ቀጥል</translation>
 <translation id="4198268995694216131">ተጨማሪ ጣቢያዎች</translation>
+<translation id="4198420883535766848">ትርን ከዝርዝር ላይ አስወግድ</translation>
 <translation id="4200609364258658652">የቪዲዮ ፍሬም ቅ&amp;ዳ</translation>
 <translation id="4200689466366162458">ብጁ ቃላት</translation>
 <translation id="4200983522494130825">አዲስ ትር</translation>
@@ -5160,6 +5166,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{የትር ቡድን ይሰረዝ?}one{የትር ቡድን ይሰረዝ?}other{የትር ቡድኖች ይሰረዙ?}}</translation>
 <translation id="4608500690299898628">&amp;አግኝ…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> አንድ ስህተት አጋጥሞታል</translation>
+<translation id="4610493438923139095">ያልታመነ</translation>
 <translation id="4610637590575890427"><ph name="SITE" />ን ማለትዎ ይሆን?</translation>
 <translation id="4611114513649582138">የውሂብ ግንኙነት ይገኛል</translation>
 <translation id="4611759022973144129">ይህን የይለፍ ቃል ወደ የእርስዎ <ph name="DEVICE_TYPE" /> በመለያ ለመግባት መጠቀም ይችላሉ።</translation>
@@ -5185,6 +5192,7 @@
 <translation id="4627442949885028695">ከሌላ መሣሪያ ላይ ቀጥል</translation>
 <translation id="4628762811416793313">የLinux መያዣው ውቅረት አልተጠናቀቀም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> መገለጫን ክፈት</translation>
+<translation id="4629803160911640220">የታመነ</translation>
 <translation id="4631955550884380853">ትኩረት የተደረገ ድምፅ</translation>
 <translation id="4632655012900268062">ካርዶችን ያብጁ</translation>
 <translation id="4633003931260532286">ቅጥያው ቢያንስ የ«<ph name="IMPORT_VERSION" />» ስሪት የሆነ «<ph name="IMPORT_NAME" />» ያስፈልገዋል፣ ነገር ግን «<ph name="INSTALLED_VERSION" />» ስሪት ብቻ ነው የተጫነው</translation>
@@ -6841,6 +6849,7 @@
 <translation id="5842497610951477805">ብሉቱዝን አንቃ</translation>
 <translation id="5844284118433003733">በመለያዎ ሲገቡ ይህ ውሂብ በመላው የGoogle አገልግሎቶች ላይ እርስዎን ለመጠበቅ ከGoogle መለያዎ ጋር ይገናኛል፣ ለምሳሌ ከደህንነት ክስተት በኋላ Gmail ውስጥ ጥበቃን መጨመር።</translation>
 <translation id="5844574845205796324">አዲስ የሚታሰስ ይዘትን ጠቁም</translation>
+<translation id="5844685625984052392">ፍንጭ</translation>
 <translation id="5846200638699387931">የዝምድና አጻጻፍ ስህተት፦ <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">ምንም ጥላ የለም</translation>
 <translation id="5846504156837627898">የጣቢያ ፈቃዶችን አስተዳድር</translation>

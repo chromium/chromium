@@ -449,6 +449,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1296911687402551044">Épingler l'onglet sélectionné</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Envoyer des commentaires sur <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modifications</translation>
 <translation id="130097046531636712">Cela prolonge l'autonomie de la batterie en limitant l'activité en arrière-plan et les effets visuels, comme le défilement fluide</translation>
 <translation id="1301135395320604080">Le site <ph name="ORIGIN" /> peut modifier les fichiers suivants</translation>
 <translation id="130174306655812048">Dis "Hey Google, quelle est cette chanson ?"</translation>
@@ -466,6 +467,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="131112695174432497">Les données qui influent sur la personnalisation des annonces seront supprimées</translation>
 <translation id="1311294419381837540">Vous castez un onglet. Vous pouvez suspendre ou arrêter la diffusion à tout moment.</translation>
 <translation id="131188242279372879">Découvrir la protection renforcée pour bénéficier du plus haut niveau de sécurité de Chrome pour les téléchargements</translation>
+<translation id="1312721752506309252">La protection renforcée est activée</translation>
 <translation id="1312811472299082263">Créer à partir d'un playbook Ansible ou d'un fichier de sauvegarde Crostini</translation>
 <translation id="13130607084115184">Les mots de passe enregistrés seront affichés ici. Pour importer des mots de passe dans le <ph name="BRAND" /> sur cet appareil, <ph name="BEGIN_LINK" />sélectionnez un fichier CSV<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="PERMISSION_3" /> supprimées</translation>
@@ -1771,6 +1773,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2214018885812055163">Dossiers partagés</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ligne non affichée&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ligne non affichée&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lignes non affichées&gt;}}</translation>
 <translation id="2215070081105889450">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
+<translation id="2217208085547223783">État d'approbation</translation>
 <translation id="2218019600945559112">Souris et pavé tactile</translation>
 <translation id="2218515861914035131">Coller en texte brut</translation>
 <translation id="221872881068107022">Inverser le défilement</translation>
@@ -2502,6 +2505,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2722547199758472013">ID : <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Ouvrir le profil invité</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Contraintes</translation>
 <translation id="2724841811573117416">Journaux WebRTC</translation>
 <translation id="272488616838512378">Conversion d'unités</translation>
 <translation id="2725200716980197196">La connectivité du réseau a été rétablie</translation>
@@ -3460,6 +3464,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3421835120203732951">Ajouter un profil</translation>
 <translation id="3423111258700187173">Résultats trouvés dans <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">En savoir plus sur cette fonctionnalité d'IA</translation>
+<translation id="3423275441470187644">Approbation</translation>
 <translation id="3423463006624419153">Sur votre <ph name="PHONE_NAME_1" /> et votre <ph name="PHONE_NAME_2" /> :</translation>
 <translation id="3423858849633684918">Veuillez relancer <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3424969259347320884">Décrivez ce que vous faisiez lorsque l'onglet a planté</translation>
@@ -4589,6 +4594,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4195814663415092787">Reprendre où vous avez arrêté</translation>
 <translation id="4198268995694216131">Autres sites</translation>
+<translation id="4198420883535766848">Supprimer l'onglet de la liste</translation>
 <translation id="4200609364258658652">Cop&amp;ier l'image vidéo</translation>
 <translation id="4200689466366162458">Mots personnalisés</translation>
 <translation id="4200983522494130825">Nouvel ongle&amp;t</translation>
@@ -5152,6 +5158,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Supprimer le groupe d'onglets ?}one{Supprimer le groupe d'onglets ?}other{Supprimer les groupes d'onglets ?}}</translation>
 <translation id="4608500690299898628">&amp;Rechercher...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> a rencontré une erreur</translation>
+<translation id="4610493438923139095">Non approuvé</translation>
 <translation id="4610637590575890427">Vouliez-vous accéder à <ph name="SITE" /> ?</translation>
 <translation id="4611114513649582138">Connexion de données disponible</translation>
 <translation id="4611759022973144129">Vous pouvez utiliser ce mot de passe pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
@@ -5177,6 +5184,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4627442949885028695">Continuer sur un autre appareil</translation>
 <translation id="4628762811416793313">Impossible de configurer le conteneur Linux. Veuillez réessayer.</translation>
 <translation id="4629521233550547305">Ouvrir le profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Approuvé</translation>
 <translation id="4631955550884380853">Voix concentrée</translation>
 <translation id="4632655012900268062">Personnaliser les fiches</translation>
 <translation id="4633003931260532286">L'extension nécessite au minimum la version <ph name="IMPORT_VERSION" /> de <ph name="IMPORT_NAME" />, mais la version installée est la <ph name="INSTALLED_VERSION" /></translation>
@@ -6832,6 +6840,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5842497610951477805">Activation du Bluetooth</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
 <translation id="5844574845205796324">Suggérer un nouveau contenu à explorer</translation>
+<translation id="5844685625984052392">Indice</translation>
 <translation id="5846200638699387931">Erreur de syntaxe dans la relation : <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Sans ombre</translation>
 <translation id="5846504156837627898">Gérer les autorisations des sites</translation>

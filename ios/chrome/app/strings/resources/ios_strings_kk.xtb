@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">Ата-ана басқарады</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> аккаунтымен кірдіңіз. <ph name="USER_EMAIL" />. Google аккаунтының қатесі. Аккаунт мәзірін ашыңыз.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ретінде жалғастыру</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 минуттан кейін жасыру}other{{count} минуттан кейін жасыру}}</translation>
 <translation id="4652817563047461855">Құпия сөздеріңіз қауіпсіз екеніне көз жеткізіңіз, олардың ұрланған-ұрланбағанын біліңіз және өзіңізді онлайн қорғауға көмектесетін кеңес алыңыз. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Сақтау</translation>
 <translation id="4668929960204016307">,</translation>

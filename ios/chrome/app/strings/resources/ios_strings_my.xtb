@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">သင့်မိဘမှ စီမံသည်</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။ <ph name="USER_EMAIL" />။ Google Account အမှား။ အကောင့်မီနူး ဖွင့်ပါ။</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
+<translation id="4651927776207937667">{count,plural, =1{၁ မိနစ်အကြာတွင် ဖျောက်ရန်}other{{count} မိနစ်အကြာတွင် ဖျောက်ရန်}}</translation>
 <translation id="4652817563047461855">သင့်စကားဝှက်များကို လုံခြုံကြောင်း သေချာစေပြီး ၎င်းတို့ကျိုးပေါက်ထားခြင်း ရှိ၊ မရှိ ရှာဖွေကာ အွန်လိုင်းတွင် သင့်ကိုယ်သင် ကာကွယ်နိုင်ရန်အတွက် အကြံပြုချက်ရယူပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">သိမ်းရန်</translation>
 <translation id="4668929960204016307">,</translation>

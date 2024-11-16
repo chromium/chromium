@@ -127,6 +127,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1521774566618522728">Active today</translation>
 <translation id="153446405401665083">New version of Chrome is available</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">To manage your Google Account, tap the 'Manage account' button</translation>
@@ -142,6 +143,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1598163867407640634">Use <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">When on, use and save data in your Google Account. When off, data is saved only to this device.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">You are viewing an offline copy of this page from <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>

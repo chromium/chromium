@@ -448,6 +448,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1296911687402551044">Fäst vald flik</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Skicka feedback om <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Ändringar</translation>
 <translation id="130097046531636712">Detta förlänger batteritiden genom att begränsa bakgrundsaktiviteter och visuella effekter, t.ex. jämn scrollning</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> har redigeringsbehörighet till följande filer</translation>
 <translation id="130174306655812048">Testa att säga ”Hey Google, vad är det här för låt?”</translation>
@@ -465,6 +466,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="131112695174432497">Data som påverkar annonsanpassning raderas</translation>
 <translation id="1311294419381837540">Du castar en flik. Du kan pausa eller sluta casta när du vill.</translation>
 <translation id="131188242279372879">Upptäck utökat skydd och få Chromes bästa säkerhet för nedladdningar</translation>
+<translation id="1312721752506309252">Förbättrat skydd är aktiverat</translation>
 <translation id="1312811472299082263">Skapa från en säkerhetskopia av Ansible Playbook eller Crostini</translation>
 <translation id="13130607084115184">Sparade lösenord visas här. <ph name="BEGIN_LINK" />Välj en CSV-fil<ph name="END_LINK" /> för att importera lösenord till <ph name="BRAND" /> på den här enheten.</translation>
 <translation id="1313264149528821971">Borttagna behörigheter: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" /></translation>
@@ -1780,6 +1782,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2214018885812055163">Delade mappar</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 rad visas inte&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> rader visas inte&gt;}}</translation>
 <translation id="2215070081105889450">Dela en flik eller skärm i stället om du vill dela ljud</translation>
+<translation id="2217208085547223783">Förtroendestatus</translation>
 <translation id="2218019600945559112">Mus och styrplatta</translation>
 <translation id="2218515861914035131">Klistra in som oformaterad text</translation>
 <translation id="221872881068107022">Omvänd rullning</translation>
@@ -2514,6 +2517,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2722547199758472013">Id: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Öppna gästprofil</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Begränsningar</translation>
 <translation id="2724841811573117416">WebRTC-loggar</translation>
 <translation id="272488616838512378">Enhetskonvertering</translation>
 <translation id="2725200716980197196">Nätverksanslutning har återställts</translation>
@@ -3474,6 +3478,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3421835120203732951">Lägg till en ny profil</translation>
 <translation id="3423111258700187173">Resultat hittades på <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Läs mer om den här AI-funktionen</translation>
+<translation id="3423275441470187644">Pålitlighet</translation>
 <translation id="3423463006624419153">Gör så här på din <ph name="PHONE_NAME_1" /> och <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Starta om <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Beskriv vad du höll på med när fliken kraschade</translation>
@@ -4603,6 +4608,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4195814663415092787">Fortsätt där du slutade</translation>
 <translation id="4198268995694216131">Ytterligare webbplatser</translation>
+<translation id="4198420883535766848">Ta bort flik från listan</translation>
 <translation id="4200609364258658652">Kopiera videobildrutan</translation>
 <translation id="4200689466366162458">Anpassade ord</translation>
 <translation id="4200983522494130825">Ny &amp;flik</translation>
@@ -5166,6 +5172,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vill du radera flikgruppen?}other{Vill du radera flikgrupperna?}}</translation>
 <translation id="4608500690299898628">&amp;Sök...</translation>
 <translation id="4610162781778310380">Ett fel har uppstått i <ph name="PLUGIN_NAME" /></translation>
+<translation id="4610493438923139095">Inte betrodd</translation>
 <translation id="4610637590575890427">Ville du besöka <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Dataanslutningar är tillgängliga</translation>
 <translation id="4611759022973144129">Du kan logga in på din <ph name="DEVICE_TYPE" /> med det här lösenordet.</translation>
@@ -5191,6 +5198,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4627442949885028695">Fortsätta på en annan enhet</translation>
 <translation id="4628762811416793313">Det gick inte att slutföra konfigureringen av Linux-behållaren. Försök igen.</translation>
 <translation id="4629521233550547305">Öppna profilen <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Betrodd</translation>
 <translation id="4631955550884380853">Fokuserad röst</translation>
 <translation id="4632655012900268062">Anpassa kort</translation>
 <translation id="4633003931260532286">Tillägget kräver <ph name="IMPORT_NAME" /> med minst version <ph name="IMPORT_VERSION" />, men endast version <ph name="INSTALLED_VERSION" /> är installerad</translation>
@@ -6847,6 +6855,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5842497610951477805">Aktivera Bluetooth</translation>
 <translation id="5844284118433003733">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>
 <translation id="5844574845205796324">Föreslå nytt innehåll att utforska</translation>
+<translation id="5844685625984052392">Ledtråd</translation>
 <translation id="5846200638699387931">Syntaxfel i relation: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Ingen skugga</translation>
 <translation id="5846504156837627898">Hantera webbplatsbehörigheter</translation>

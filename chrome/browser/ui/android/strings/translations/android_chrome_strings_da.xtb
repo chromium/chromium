@@ -127,6 +127,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1513858653616922153">Slet adgangskoden</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="153446405401665083">En ny version af Chrome er tilgængelig</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bogmærke gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# bogmærke gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# bogmærker gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Tryk på knappen "Administrer konto" for at administrere din Google-konto</translation>
@@ -142,6 +143,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1598163867407640634">Brug <ph name="SITE_ETLD_PLUS_ONE" /> hos <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Når denne indstilling er aktiveret, kan du bruge og gemme data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}one{Fjern # valgt element}other{Fjern # valgte elementer}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bogmærke og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# bogmærke og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# bogmærker og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="164269334534774161">Du ser en offlinekopi af denne side fra <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>

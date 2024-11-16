@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">Таңдалған қойындыны бекіту</translation>
 <translation id="1297175357211070620">Межелі орын</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> туралы пікір жіберіңіз.</translation>
+<translation id="129808599775632797">&amp;Өзгерістер</translation>
 <translation id="130097046531636712">Ол фондық әрекеттерді және біркелкі айналдыру сияқты визуалды әсерлерді шектеу арқылы батареяның жұмысын ұзартады.</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> мына файлдарды өңдей алады.</translation>
 <translation id="130174306655812048">"Ok Google, мынау қандай ән?" деп сұрап көріңіз.</translation>
@@ -465,6 +466,7 @@
 <translation id="131112695174432497">Жарнаманы жекелендіруге әсер ететін деректер жойылады</translation>
 <translation id="1311294419381837540">Сіз қойындыны трансляциялап жатырсыз. Трансляцияны кез келген уақытта кідіртуге немесе тоқтатуға болады.</translation>
 <translation id="131188242279372879">Chrome-ның жүктеп алуға арналған ең жоғары деңгейлі қауіпсіздігіне ие болу үшін күшейтілген қорғаныспен танысыңыз</translation>
+<translation id="1312721752506309252">Күшейтілген қорғаныс қосулы.</translation>
 <translation id="1312811472299082263">Ansible Playbook немесе Crostini сақтық көшірме файлынан жасау</translation>
 <translation id="13130607084115184">Сақталған құпия сөздер мына жерде пайда болады. Осы құрылғыда құпия сөздерді <ph name="BRAND" /> қолданбасына импорттау үшін <ph name="BEGIN_LINK" /> CSV файлын таңдаңыз.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> өшірілді</translation>
@@ -1767,6 +1769,7 @@
 <translation id="2214018885812055163">Бөлісілген қалталар</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 жол көрсетілмей тұр&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> жол көрсетілмей тұр&gt;}}</translation>
 <translation id="2215070081105889450">Аудионы бөлісу үшін оның орнына қойындыны немесе экранды бөлісіңіз</translation>
+<translation id="2217208085547223783">Сенім күйі</translation>
 <translation id="2218019600945559112">Тінтуір мен сенсорлық тақта</translation>
 <translation id="2218515861914035131">Қарапайым мәтін ретінде қою</translation>
 <translation id="221872881068107022">Кері айналдыру</translation>
@@ -2498,6 +2501,7 @@
 <translation id="2722547199758472013">Идентификатор: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Қонақ профилін ашу</translation>
 <translation id="2723819893410108315">Лимон түсті</translation>
+<translation id="2724822892847436256">Шектеулер</translation>
 <translation id="2724841811573117416">WebRTC журналдары</translation>
 <translation id="272488616838512378">Өлшем бірліктерін ауыстыру</translation>
 <translation id="2725200716980197196">Желілік байланыс қалпына келтірілді</translation>
@@ -3456,6 +3460,7 @@
 <translation id="3421835120203732951">Жаңа профиль қосу</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> қалтасынан нәтижелер табылды</translation>
 <translation id="3423226218833787854">Бұл AI функциясы туралы толық ақпарат</translation>
+<translation id="3423275441470187644">Сенім</translation>
 <translation id="3423463006624419153">"<ph name="PHONE_NAME_1" />" және "<ph name="PHONE_NAME_2" />" телефондарында:</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" /> қайта іске қосыңыз</translation>
 <translation id="3424969259347320884">Қойынды бұзылған кезде не істеп жатқаныңызды баяндаңыз</translation>
@@ -4585,6 +4590,7 @@
 <translation id="4195643157523330669">Жаңа қойындыда ашу</translation>
 <translation id="4195814663415092787">Тоқтаған жерден жалғастыру</translation>
 <translation id="4198268995694216131">Қосымша сайттар</translation>
+<translation id="4198420883535766848">Қойындыны тізімнен өшіру</translation>
 <translation id="4200609364258658652">Бейнекадрды көшіру</translation>
 <translation id="4200689466366162458">Арнаулы сөздер</translation>
 <translation id="4200983522494130825">Жаңа &amp;қойынды</translation>
@@ -5148,6 +5154,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Қойындылар тобын жою қажет пе?}other{Қойындылар топтарын жою қажет пе?}}</translation>
 <translation id="4608500690299898628">&amp;Табу…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> плагинінде қате шықты</translation>
+<translation id="4610493438923139095">Сенімсіз</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> сайтына өту керек пе?</translation>
 <translation id="4611114513649582138">Деректер байланысы қолжетімді</translation>
 <translation id="4611759022973144129">Бұл құпия сөзбен <ph name="DEVICE_TYPE" /> құрылғысына кіре аласыз.</translation>
@@ -5173,6 +5180,7 @@
 <translation id="4627442949885028695">Басқа құрылғыдан жалғастыру</translation>
 <translation id="4628762811416793313">Linux контейнерін реттеу аяқталмады. Әрекетті қайталаңыз.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> профилін ашу</translation>
+<translation id="4629803160911640220">Сенімді</translation>
 <translation id="4631955550884380853">Дауысты айқындау</translation>
 <translation id="4632655012900268062">Карталарды реттеу</translation>
 <translation id="4633003931260532286">Кеңейтім кемінде "<ph name="IMPORT_VERSION" />" нұсқалы "<ph name="IMPORT_NAME" />" интерфейсін қажет етеді, бірақ тек "<ph name="INSTALLED_VERSION" />" нұсқасы орнатылған</translation>
@@ -6825,6 +6833,7 @@
 <translation id="5842497610951477805">Bluetooth қосу</translation>
 <translation id="5844284118433003733">Аккаунтқа кірген кезде, осы деректер сізді Google қызметтерінде қорғау, мысалы, қауіпсіздікке қатысты оқиғадан кейін Gmail қызметінде қорғанысты жақсарту үшін Google аккаунтыңызбен байланыстырылады.</translation>
 <translation id="5844574845205796324">Жаңа контент ұсыну</translation>
+<translation id="5844685625984052392">Тұспал</translation>
 <translation id="5846200638699387931">Қатынас синтаксисінің қатесі: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Көлеңкесіз</translation>
 <translation id="5846504156837627898">Сайт рұқсаттарын басқару</translation>

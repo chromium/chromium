@@ -139,6 +139,7 @@
 <translation id="1604959087182679653">Ezkutatu transkripzioa</translation>
 <translation id="160633243685262989">Aurrebista-irudia</translation>
 <translation id="1611649489706141841">aurrera</translation>
+<translation id="1615144046047995187">Ezin da deskargatu. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datu-erabilera</translation>
 <translation id="1618566998877964907">Erabili gai bat</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
@@ -589,6 +590,7 @@
 <translation id="3885327323343477505">Aldatu pantaila-babeslea</translation>
 <translation id="3889914174935857450">Berrezartzeko data</translation>
 <translation id="3897092660631435901">Menua</translation>
+<translation id="3902271751020176019">Transkripzioaren hizkuntza</translation>
 <translation id="391412459402535266">Ezin da probatu gailua. Probak egiteko, aldatu ordenagailu eramangarriaren modura.</translation>
 <translation id="3916998944874125962">atera pantaila-argazkia</translation>
 <translation id="3923184630988645767">Datu-erabilera</translation>
@@ -945,6 +947,7 @@
 <translation id="5606865426897221650">Fitxa</translation>
 <translation id="5613201299517339763">Amaitu egin da saioa</translation>
 <translation id="5620281292257375798">Barnekoa soilik</translation>
+<translation id="5628106863521633649">Erabilgarri dauden hizkuntzak</translation>
 <translation id="5630438231335788050">bauhaus-a</translation>
 <translation id="5631759159893697722">laburpena</translation>
 <translation id="5655283760733841251">Teklatuaren distira igotzeko tekla</translation>
@@ -1270,6 +1273,7 @@
 <translation id="710028965487274708">Baimena emateko prozesuak huts egin du</translation>
 <translation id="7101959270679078188">Eguneratzen jarraitzeko, desblokeatu <ph name="DEVICE_NAME" /></translation>
 <translation id="7103252855940681301"><ph name="INDEX" />/<ph name="COUNT" /> gailua (<ph name="NAME" />).</translation>
+<translation id="7103793063702494489">Hautatutako hizkuntza</translation>
 <translation id="7107255225945990211">Aukeratu <ph name="PRODUCT_NAME" /> produktuko artelan esklusiboak</translation>
 <translation id="7108668606237948702">"sartu" tekla</translation>
 <translation id="7117228822971127758">Saiatu berriro geroago</translation>

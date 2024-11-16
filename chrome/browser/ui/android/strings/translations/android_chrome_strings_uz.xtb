@@ -127,6 +127,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1513858653616922153">Parolni o‘chirish</translation>
 <translation id="1521774566618522728">Bugun onlayn edi</translation>
 <translation id="153446405401665083">Chromening yangi versiyasi chiqdi</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 ta bukmark faqat shu qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}other{# ta bukmark faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}}</translation>
 <translation id="1544084554881119930">Toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Google hisobingizni boshqarish uchun “Hisobni boshqarish” tugmasini bosing</translation>
@@ -142,6 +143,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan <ph name="SITE_ETLD_PLUS_ONE" /> ishlatish</translation>
 <translation id="160275202205869636">Yoniq boʻlsa, maʼlumotlar Google hisobida saqlanadi va ishlatiladi Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Tanlangan 1 ta elementni olib tashlash}other{Tanlangan # ta elementni olib tashlash}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 ta bukmark va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}other{# ta bukmark va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}}</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="164269334534774161">Ushbu sahifaning <ph name="CREATION_TIME" /> sanasida saqlangan oflayn nusxasini ko‘ryapsiz.</translation>
 <translation id="1644574205037202324">Tarix</translation>

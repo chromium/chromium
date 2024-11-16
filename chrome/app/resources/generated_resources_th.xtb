@@ -466,6 +466,7 @@
 <translation id="131112695174432497">ระบบจะลบข้อมูลที่มีผลต่อการปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="1311294419381837540">กำลังแคสต์แท็บ คุณหยุดชั่วคราวหรือหยุดการแคสต์ได้ทุกเมื่อ</translation>
 <translation id="131188242279372879">สำรวจการปกป้องที่ดียิ่งขึ้นเพื่อรับการรักษาความปลอดภัยระดับสูงสุดสำหรับการดาวน์โหลดของ Chrome</translation>
+<translation id="1312721752506309252">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="1312811472299082263">สร้างจากไฟล์ข้อมูลสำรองของ Ansible Playbook หรือ Crostini</translation>
 <translation id="13130607084115184">รหัสผ่านที่บันทึกไว้จะแสดงที่นี่ หากต้องการนำเข้ารหัสผ่านไปยัง<ph name="BRAND" /> ในอุปกรณ์นี้ ให้<ph name="BEGIN_LINK" />เลือกไฟล์ CSV<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และ<ph name="PERMISSION_3" />ออกแล้ว</translation>

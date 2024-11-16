@@ -127,6 +127,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="1513858653616922153">Borrar contraseña</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="153446405401665083">Hay una nueva versión de Chrome disponible</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 favorito se guarda solo en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" />.}other{# favoritos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">No se encriptarán las formas de pago ni las direcciones. No se sincronizará el historial de navegación de Chrome.
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para administrar tu Cuenta de Google, presiona el botón "Administrar cuenta"</translation>
@@ -142,6 +143,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Si activas esta opción, usa y guarda datos en tu Cuenta de Google. Si desactivas esta opción, los datos se guardan solo en este dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 favorito y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" />.}other{# favoritos y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás viendo una copia sin conexión de esta página del <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>

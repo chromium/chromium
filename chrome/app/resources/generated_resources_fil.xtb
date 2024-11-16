@@ -449,6 +449,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1296911687402551044">I-pin ang Napiling Tab</translation>
 <translation id="1297175357211070620">Destinasyon</translation>
 <translation id="129770436432446029">Magpadala ng feedback para sa <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Mga Pagbabago</translation>
 <translation id="130097046531636712">Pinapatagal nito ang baterya sa pamamagitan ng paglilimita sa aktibidad sa background at mga visual effect tulad ng maayos na pag-scroll</translation>
 <translation id="1301135395320604080">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga sumusunod na file</translation>
 <translation id="130174306655812048">Subukan ang “Ok Google, anong kanta ito?”</translation>
@@ -466,6 +467,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="131112695174432497">Dine-delete ang data na nakakaapekto sa pag-personalize ng ad</translation>
 <translation id="1311294419381837540">Nagka-cast ka ng tab. Puwede mong i-pause o ihinto ang pag-cast sa anumang oras.</translation>
 <translation id="131188242279372879">Alamin ang pinaigting na proteksyon para makuha ang pinakamataas na level ng seguridad ng Chrome para sa mga pag-download</translation>
+<translation id="1312721752506309252">Naka-on ang pinaigting na proteksyon</translation>
 <translation id="1312811472299082263">Gumawa mula sa isang Ansible Playbook o Crostini na backup file</translation>
 <translation id="13130607084115184">Lalabas dito ang mga naka-save na password. Para mag-import ng mga password sa <ph name="BRAND" /> sa device na ito, <ph name="BEGIN_LINK" /> pumili ng CSV file.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">Inalis ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -1781,6 +1783,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2214018885812055163">Mga nakabahaging folder</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linya ang hindi ipinapakita&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linya ang hindi ipinapakita&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> (na) linya ang hindi ipinapakita&gt;}}</translation>
 <translation id="2215070081105889450">Para i-share ang audio, mag-share na lang ng tab o screen</translation>
+<translation id="2217208085547223783">Status ng Tiwala</translation>
 <translation id="2218019600945559112">Mouse at touchpad</translation>
 <translation id="2218515861914035131">I-paste bilang plain text</translation>
 <translation id="221872881068107022">Reverse na pag-scroll</translation>
@@ -2515,6 +2518,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Buksan ang profile ng Bisita</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Mga Limitasyon</translation>
 <translation id="2724841811573117416">Mga log ng WebRTC</translation>
 <translation id="272488616838512378">Pag-convert ng Unit</translation>
 <translation id="2725200716980197196">Naipanumbalik ang connectivity ng network</translation>
@@ -3475,6 +3479,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3421835120203732951">Magdagdag ng Bagong Profile</translation>
 <translation id="3423111258700187173">Nakita ang mga resulta sa <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Matuto pa tungkol sa feature ng AI na ito</translation>
+<translation id="3423275441470187644">Tiwala</translation>
 <translation id="3423463006624419153">Sa iyong '<ph name="PHONE_NAME_1" />' at '<ph name="PHONE_NAME_2" />':</translation>
 <translation id="3423858849633684918">Pakilunsad Muli ang <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Ilarawan Ang Ginagawa Mo Noong Nag-crash Ang Tab</translation>
@@ -4604,6 +4609,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
 <translation id="4195814663415092787">Magpatuloy kung saan ka tumigil</translation>
 <translation id="4198268995694216131">Mga karagdagang site</translation>
+<translation id="4198420883535766848">Alisin ang tab sa listahan</translation>
 <translation id="4200609364258658652">Kop&amp;yahin ang video frame</translation>
 <translation id="4200689466366162458">Mga custom na salita</translation>
 <translation id="4200983522494130825">Bagong &amp;tab</translation>
@@ -5167,6 +5173,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{I-delete ang grupo ng tab?}one{I-delete ang mga grupo ng tab?}other{I-delete ang mga grupo ng tab?}}</translation>
 <translation id="4608500690299898628">&amp;Hanapin...</translation>
 <translation id="4610162781778310380">Nagkaroon ng error ang <ph name="PLUGIN_NAME" /></translation>
+<translation id="4610493438923139095">Hindi Pinagkakatiwalaan</translation>
 <translation id="4610637590575890427">Ibig mo bang sabihin ay pumunta sa <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Available ang koneksyon sa data</translation>
 <translation id="4611759022973144129">Puwede mong gamitin ang password na ito para mag-sign in sa iyong <ph name="DEVICE_TYPE" />.</translation>
@@ -5192,6 +5199,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4627442949885028695">Magpatuloy mula sa ibang device</translation>
 <translation id="4628762811416793313">Hindi natapos ang pag-set up sa Linux container. Pakisubukang muli.</translation>
 <translation id="4629521233550547305">Buksan ang profile na <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Pinagkakatiwalaan</translation>
 <translation id="4631955550884380853">Naka-focus na boses</translation>
 <translation id="4632655012900268062">I-customize ang mga card</translation>
 <translation id="4633003931260532286">Kinakailangan ng extension ang "<ph name="IMPORT_NAME" />" na may minimum na bersyon na "<ph name="IMPORT_VERSION" />," ngunit ang bersyon na "<ph name="INSTALLED_VERSION" />" lang ang naka-install</translation>
@@ -6848,6 +6856,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5842497610951477805">I-enable ang Bluetooth</translation>
 <translation id="5844284118433003733">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
 <translation id="5844574845205796324">Magmungkahi ng bagong content na ie-explore</translation>
+<translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Error sa syntax sa kaugnayan: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Walang shadow</translation>
 <translation id="5846504156837627898">Pamahalaan ang Mga Pahintulot ng Site</translation>

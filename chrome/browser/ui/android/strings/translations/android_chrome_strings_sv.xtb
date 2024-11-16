@@ -127,6 +127,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1513858653616922153">Radera lösenord</translation>
 <translation id="1521774566618522728">Aktiv idag</translation>
 <translation id="153446405401665083">En ny version av Chrome är tillgänglig</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bokmärke sparas endast på den här enheten. Om du vill använda det på dina andra enheter kan du spara det i Google-kontot <ph name="ACCOUNT_EMAIL" />.}other{# bokmärken sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Tryck på knappen Hantera kontot om du vill hantera ditt Google-konto</translation>
@@ -142,6 +143,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1598163867407640634">Använd <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Använd och spara data i Google-kontot när inställningen är aktiverad. När inställningen är inaktiverad sparas data endast på den här enheten.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ta bort 1 markerat objekt}other{Ta bort # markerade objekt}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bokmärke och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}other{# bokmärken och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Säker webbsökning</translation>
 <translation id="164269334534774161">Det som visas är en offlinekopia av den här sidan från <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>

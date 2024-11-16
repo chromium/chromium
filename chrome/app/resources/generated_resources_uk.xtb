@@ -451,6 +451,7 @@
 <translation id="1296911687402551044">Закріпити вибрану вкладку</translation>
 <translation id="1297175357211070620">Місце призначення</translation>
 <translation id="129770436432446029">Надішліть відгук про експеримент "<ph name="EXPERIMENT_NAME" />"</translation>
+<translation id="129808599775632797">&amp;Зміни</translation>
 <translation id="130097046531636712">Подовжує час роботи акумулятора, обмежуючи фонову активність і візуальні ефекти, як-от плавне прокручування</translation>
 <translation id="1301135395320604080">Сайт <ph name="ORIGIN" /> може змінювати вказані нижче файли</translation>
 <translation id="130174306655812048">Спробуйте запитати "Ok Google, що це за пісня?"</translation>
@@ -468,6 +469,7 @@
 <translation id="131112695174432497">Дані, що впливають на персоналізацію реклами, видалено</translation>
 <translation id="1311294419381837540">Ви транслюєте вкладку. Трансляцію можна будь-коли призупинити або припинити.</translation>
 <translation id="131188242279372879">Відкрийте для себе покращений захист, щоб вебпереглядач Chrome був максимально безпечним для завантажень</translation>
+<translation id="1312721752506309252">Покращений захист увімкнено</translation>
 <translation id="1312811472299082263">Додайте посібник Ansible або файл резервної копії Crostini</translation>
 <translation id="13130607084115184">Тут відображатимуться збережені паролі. Щоб імпортувати паролі в <ph name="BRAND" /> на цьому пристрої, <ph name="BEGIN_LINK" />виберіть файл CSV<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Дозволи "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" та "<ph name="PERMISSION_3" />" скасовано</translation>
@@ -1783,6 +1785,7 @@
 <translation id="2214018885812055163">Спільні папки</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Не показано 1 рядок&gt;}one{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядок&gt;}few{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядки&gt;}many{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядків&gt;}other{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядка&gt;}}</translation>
 <translation id="2215070081105889450">Щоб надати доступ до аудіо, поділіться вкладкою або екраном</translation>
+<translation id="2217208085547223783">Статус надійності</translation>
 <translation id="2218019600945559112">Миша й сенсорна панель</translation>
 <translation id="2218515861914035131">Вставити як звичайний текст</translation>
 <translation id="221872881068107022">Зворотне прокручування</translation>
@@ -2517,6 +2520,7 @@
 <translation id="2722547199758472013">Ідентифікатор: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Відкрити профіль гостя</translation>
 <translation id="2723819893410108315">Цитрон</translation>
+<translation id="2724822892847436256">Обмеження</translation>
 <translation id="2724841811573117416">Журнали WebRTC</translation>
 <translation id="272488616838512378">Конвертування одиниць</translation>
 <translation id="2725200716980197196">З’єднання з мережею відновлено</translation>
@@ -3477,6 +3481,7 @@
 <translation id="3421835120203732951">Додати новий профіль</translation>
 <translation id="3423111258700187173">Результати знайдено в папці "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423226218833787854">Докладніше про цю функцію на основі ШІ</translation>
+<translation id="3423275441470187644">Надійність</translation>
 <translation id="3423463006624419153">На телефонах <ph name="PHONE_NAME_1" /> і <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Перезапустіть <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Опишіть, що ви робили, коли вкладка аварійно завершила роботу</translation>
@@ -4606,6 +4611,7 @@
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4195814663415092787">Продовжити з місця зупинки</translation>
 <translation id="4198268995694216131">Інші сайти</translation>
+<translation id="4198420883535766848">Вилучити вкладку зі списку</translation>
 <translation id="4200609364258658652">Копіюват&amp;и кадр відео</translation>
 <translation id="4200689466366162458">Спеціальні слова</translation>
 <translation id="4200983522494130825">Нова &amp;вкладка</translation>
@@ -5169,6 +5175,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Видалити групу вкладок?}one{Видалити групи вкладок?}few{Видалити групи вкладок?}many{Видалити групи вкладок?}other{Видалити групи вкладок?}}</translation>
 <translation id="4608500690299898628">&amp;Знайти...</translation>
 <translation id="4610162781778310380">У плагіні <ph name="PLUGIN_NAME" /> сталася помилка</translation>
+<translation id="4610493438923139095">Ненадійний</translation>
 <translation id="4610637590575890427">Ви мали на увазі перейти до <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Доступне передавання даних</translation>
 <translation id="4611759022973144129">За допомогою цього пароля ви можете входити на пристрої <ph name="DEVICE_TYPE" />.</translation>
@@ -5194,6 +5201,7 @@
 <translation id="4627442949885028695">Продовжити на іншому пристрої</translation>
 <translation id="4628762811416793313">Налаштування контейнера Linux не завершено. Повторіть спробу.</translation>
 <translation id="4629521233550547305">Відкрити профіль "<ph name="PROFILE_NAME" />"</translation>
+<translation id="4629803160911640220">Надійний</translation>
 <translation id="4631955550884380853">Сфокусований голос</translation>
 <translation id="4632655012900268062">Налаштувати картки</translation>
 <translation id="4633003931260532286"><ph name="IMPORT_NAME" /> з мінімальною версією <ph name="IMPORT_VERSION" /> – це обов’язковий компонент для роботи розширення, але встановлено версію <ph name="INSTALLED_VERSION" /></translation>
@@ -6846,6 +6854,7 @@
 <translation id="5842497610951477805">Увімкнути Bluetooth</translation>
 <translation id="5844284118433003733">Якщо ви ввійшли у свій обліковий запис Google, ці дані зв’язуються з ним. Завдяки цьому ми можемо захищати вас у всіх сервісах Google, наприклад підвищити захист у Gmail після інциденту безпеки.</translation>
 <translation id="5844574845205796324">Пропонувати новий контент</translation>
+<translation id="5844685625984052392">Сумнівний</translation>
 <translation id="5846200638699387931">Синтаксична помилка у відношенні: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Без тіні</translation>
 <translation id="5846504156837627898">Керувати дозволами для сайту</translation>

@@ -127,6 +127,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1513858653616922153">I-delete ang password</translation>
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
 <translation id="153446405401665083">May available na bagong bersyon ng Chrome</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark ang naka-save lang sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}one{# bookmark ang naka-save lang sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}other{# na bookmark ang naka-save lang sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
 Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para pamahalaan ang iyong Google account, i-tap ang button na "Pamahalaan ang account"</translation>
@@ -142,6 +143,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1598163867407640634">Gamitin ang <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Kapag naka-on, gagamitin at ise-save ang data sa Google Account mo. Kapag naka-off, ise-save lang ang data sa device na ito.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alisin ang 1 piniling item}one{Alisin ang # piniling item}other{Alisin ang # na piniling item}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{Naka-save lang ang 1 bookmark at iba pang item sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}one{Naka-save lang ang # bookmark at iba pang item sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}other{Naka-save lang ang # na bookmark at iba pang item sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Ligtas na Pagba-browse</translation>
 <translation id="164269334534774161">Tinitingnan mo ang offline na kopya ng page na ito mula sa <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>

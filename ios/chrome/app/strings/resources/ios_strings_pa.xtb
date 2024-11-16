@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">ਤੁਹਾਡੇ ਮਾਤਾ ਜਾਂ ਪਿਤਾ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। <ph name="USER_EMAIL" />. Google ਖਾਤੇ ਸੰਬੰਧੀ ਗੜਬੜ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 ਮਿੰਟ ਬਾਅਦ ਲੁਕਾਓ}one{{count} ਮਿੰਟ ਬਾਅਦ ਲੁਕਾਓ}other{{count} ਮਿੰਟਾਂ ਬਾਅਦ ਲੁਕਾਓ}}</translation>
 <translation id="4652817563047461855">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਸੁਰੱਖਿਅਤ ਹੋਣ, ਦੇਖੋ ਕਿ ਉਨ੍ਹਾਂ ਨਾਲ ਕਿਸੇ ਕਿਸਮ ਦੀ ਛੇੜਛਾੜ ਤਾਂ ਨਹੀਂ ਕੀਤੀ ਗਈ ਅਤੇ ਆਪਣੇ ਆਪ ਨੂੰ ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਵਿੱਚ ਮਦਦ ਲਈ ਸਲਾਹ ਲਓ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="4668929960204016307">,</translation>

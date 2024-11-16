@@ -127,6 +127,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1513858653616922153">Slett passordet</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="153446405401665083">En ny versjon av Chrome er tilgjengelig</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bokmerke er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din (<ph name="ACCOUNT_EMAIL" />).}other{# bokmerker er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">For å administrere Google-kontoen din, trykk på «Administrer kontoen»-knappen</translation>
@@ -142,6 +143,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1598163867407640634">Bruk <ph name="SITE_ETLD_PLUS_ONE" /> hos <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Når dette er på, kan du bruke og lagre data i Google-kontoen din. Når dette er slått av, lagres data bare på denne enheten.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}other{Fjern # valgte elementer}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bokmerke og andre elementer er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din (<ph name="ACCOUNT_EMAIL" />).}other{# bokmerker og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Du ser en lokal kopi av denne siden fra <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Logg</translation>

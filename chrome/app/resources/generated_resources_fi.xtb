@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">Kiinnitä valittu välilehti</translation>
 <translation id="1297175357211070620">Kohde</translation>
 <translation id="129770436432446029">Lähetä palautetta kokeilusta (<ph name="EXPERIMENT_NAME" />)</translation>
+<translation id="129808599775632797">&amp;Muokkaukset</translation>
 <translation id="130097046531636712">Tämä pidentää akunkestoa rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esimerkiksi sujuvaa vieritystä</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> saa muokata seuraavia tiedostoja</translation>
 <translation id="130174306655812048">Kokeile sanoa "Hey Google, what song is this?"</translation>
@@ -465,6 +466,7 @@
 <translation id="131112695174432497">Mainosten personointiin vaikuttava data poistetaan</translation>
 <translation id="1311294419381837540">Striimaat välilehteä. Voit keskeyttää tai lopettaa striimauksen milloin tahansa.</translation>
 <translation id="131188242279372879">Tutustu parannettuun suojaukseen, jolla saat Chromen korkeimman suojaustason latauksille</translation>
+<translation id="1312721752506309252">Parannettu suojaus on päällä</translation>
 <translation id="1312811472299082263">Luo Ansible-ohjekirjasta tai Crostini-varmuuskopiotiedostosta</translation>
 <translation id="13130607084115184">Tallennetut salasanat näkyvät täällä. Jos haluat siirtää salasanoja tänne: <ph name="BRAND" /> tällä laitteella, <ph name="BEGIN_LINK" />valitse CSV-tiedosto<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="PERMISSION_3" /> poistettu</translation>
@@ -1779,6 +1781,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2214018885812055163">Jaetut kansiot</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 riviä ei näytetä&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> riviä ei näytetä&gt;}}</translation>
 <translation id="2215070081105889450">Jos haluat jakaa audiota, jaa välilehti tai näyttö</translation>
+<translation id="2217208085547223783">Luottamuksen tila</translation>
 <translation id="2218019600945559112">Hiiri ja kosketuslevy</translation>
 <translation id="2218515861914035131">Liitä pelkkänä tekstinä</translation>
 <translation id="221872881068107022">Käänteinen vieritys</translation>
@@ -2513,6 +2516,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2722547199758472013">Tunnus: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Avaa vierasprofiili</translation>
 <translation id="2723819893410108315">Sitruuna</translation>
+<translation id="2724822892847436256">Rajoitukset</translation>
 <translation id="2724841811573117416">WebRTC-lokit</translation>
 <translation id="272488616838512378">Yksikkömuunnos</translation>
 <translation id="2725200716980197196">Verkkoyhteys palautettu</translation>
@@ -3473,6 +3477,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3421835120203732951">Lisää uusi profiili</translation>
 <translation id="3423111258700187173">Tuloksia löytyi täältä: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Lue lisää tästä tekoälyominaisuudesta</translation>
+<translation id="3423275441470187644">Luota</translation>
 <translation id="3423463006624419153"><ph name="PHONE_NAME_1" /> ja <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Käynnistä <ph name="PRODUCT_NAME" /> uudelleen</translation>
 <translation id="3424969259347320884">Kerro, mitä olit tekemässä juuri ennen kaatumista</translation>
@@ -4599,6 +4604,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4195814663415092787">Jatka siitä, mihin jäit</translation>
 <translation id="4198268995694216131">Lisää sivustoja</translation>
+<translation id="4198420883535766848">Poista välilehti listasta</translation>
 <translation id="4200609364258658652">Kopio&amp;i videokehys</translation>
 <translation id="4200689466366162458">Muokatut sanat</translation>
 <translation id="4200983522494130825">Uusi &amp;välilehti</translation>
@@ -5163,6 +5169,7 @@ sema</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Poistetaanko välilehtiryhmä?}other{Poistetaanko välilehtiryhmät?}}</translation>
 <translation id="4608500690299898628">&amp;Haku...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> on havainnut virheen.</translation>
+<translation id="4610493438923139095">Ei luotettu</translation>
 <translation id="4610637590575890427">Halusitko siirtyä osoitteeseen <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Datayhteys käytettävissä</translation>
 <translation id="4611759022973144129">Voit kirjautua laitteelle (<ph name="DEVICE_TYPE" />) tällä salasanalla.</translation>
@@ -5188,6 +5195,7 @@ sema</translation>
 <translation id="4627442949885028695">Jatka siitä, mihin jäit toisella laitteella</translation>
 <translation id="4628762811416793313">Linux-säilön määritys ei onnistunut. Yritä uudelleen.</translation>
 <translation id="4629521233550547305">Avaa profiili: <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Luotettu</translation>
 <translation id="4631955550884380853">Keskittynyt ääni</translation>
 <translation id="4632655012900268062">Yksilöi kortteja</translation>
 <translation id="4633003931260532286">Laajennus edellyttää sovellusliittymän <ph name="IMPORT_NAME" /> vähimmäisversiota <ph name="IMPORT_VERSION" />, mutta asennettuna on vain versio <ph name="INSTALLED_VERSION" />.</translation>
@@ -6844,6 +6852,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5842497610951477805">Bluetoothin käyttöönotto</translation>
 <translation id="5844284118433003733">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
 <translation id="5844574845205796324">Ehdota uutta sisältöä tutkittavaksi</translation>
+<translation id="5844685625984052392">Vihje</translation>
 <translation id="5846200638699387931">Suhteen syntaksivirhe: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Ei varjoa</translation>
 <translation id="5846504156837627898">Muuta sivustolupia</translation>

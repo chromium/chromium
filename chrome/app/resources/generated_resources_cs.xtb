@@ -450,6 +450,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1296911687402551044">Připnout vybranou kartu</translation>
 <translation id="1297175357211070620">Cíl</translation>
 <translation id="129770436432446029">Poslat zpětnou vazbu k funkci <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modifikace</translation>
 <translation id="130097046531636712">Tato možnost prodlužuje výdrž baterie tím, že omezuje aktivitu na pozadí a vizuální efekty, jako je plynulé posouvání</translation>
 <translation id="1301135395320604080">Web <ph name="ORIGIN" /> může upravovat následující soubory</translation>
 <translation id="130174306655812048">Zkuste „Ok Google, co je tohle za skladbu?“</translation>
@@ -467,6 +468,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="131112695174432497">Budou smazána data ovlivňující personalizaci reklam</translation>
 <translation id="1311294419381837540">Jednu z karet odesíláte. Odesílání můžete kdykoli pozastavit nebo ukončit.</translation>
 <translation id="131188242279372879">Objevte vylepšenou ochranu a získejte nejvyšší úroveň zabezpečení Chromu pro stažené soubory</translation>
+<translation id="1312721752506309252">Je zapnutá vylepšená ochrana</translation>
 <translation id="1312811472299082263">Vytvořit z Ansible Playbook nebo záložního souboru Crostini</translation>
 <translation id="13130607084115184">Zde se zobrazí uložená hesla. Pokud chcete importovat hesla do <ph name="BRAND" /> na tomto zařízení, <ph name="BEGIN_LINK" />vyberte soubor CSV<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Byla odebrána oprávnění <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -1772,6 +1774,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2214018885812055163">Sdílené složky</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 řádek není zobrazen&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> řádky nejsou zobrazeny&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> řádku není zobrazeno&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> řádků není zobrazeno&gt;}}</translation>
 <translation id="2215070081105889450">Pokud chcete sdílet zvuk, sdílejte místo toho kartu nebo obrazovku</translation>
+<translation id="2217208085547223783">Stav důvěryhodnosti</translation>
 <translation id="2218019600945559112">Myš a touchpad</translation>
 <translation id="2218515861914035131">Vložit jako prostý text</translation>
 <translation id="221872881068107022">Opačné posouvání</translation>
@@ -2503,6 +2506,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Otevřít profil hosta</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Omezení</translation>
 <translation id="2724841811573117416">Protokoly WebRTC</translation>
 <translation id="272488616838512378">Převod jednotek</translation>
 <translation id="2725200716980197196">Připojení k síti bylo obnoveno</translation>
@@ -3461,6 +3465,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3421835120203732951">Přidat nový profil</translation>
 <translation id="3423111258700187173">Výsledky nalezeny ve složce <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Další informace o této AI funkci</translation>
+<translation id="3423275441470187644">Důvěryhodnost</translation>
 <translation id="3423463006624419153">V telefonu <ph name="PHONE_NAME_1" /> a <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Restartujte prosím <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Popište, co jste dělali, když karta selhala</translation>
@@ -4589,6 +4594,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4195814663415092787">Pokračovat tam, kde jste přestali</translation>
 <translation id="4198268995694216131">Další weby</translation>
+<translation id="4198420883535766848">Odstranit kartu ze seznamu</translation>
 <translation id="4200609364258658652">&amp;Kopírovat snímek videa</translation>
 <translation id="4200689466366162458">Vlastní slova</translation>
 <translation id="4200983522494130825">Nová karta</translation>
@@ -5152,6 +5158,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Smazat skupinu karet?}few{Smazat skupiny karet?}many{Smazat skupiny karet?}other{Smazat skupiny karet?}}</translation>
 <translation id="4608500690299898628">&amp;Najít...</translation>
 <translation id="4610162781778310380">Plugin <ph name="PLUGIN_NAME" /> narazil na chybu</translation>
+<translation id="4610493438923139095">Nedůvěryhodný</translation>
 <translation id="4610637590575890427">Chtěli jste přejít na <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Je k dispozici datové připojení</translation>
 <translation id="4611759022973144129">Toto heslo můžete použít k přihlášení do svého zařízení <ph name="DEVICE_TYPE" />.</translation>
@@ -5177,6 +5184,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4627442949885028695">Pokračovat z jiného zařízení</translation>
 <translation id="4628762811416793313">Nastavení kontejneru systému Linux nebylo dokončeno. Zkuste to znovu.</translation>
 <translation id="4629521233550547305">Otevřít profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Důvěryhodný</translation>
 <translation id="4631955550884380853">Soustředěný hlas</translation>
 <translation id="4632655012900268062">Přizpůsobení karet</translation>
 <translation id="4633003931260532286">Rozšíření vyžaduje rozhraní <ph name="IMPORT_NAME" /> s minimální verzí <ph name="IMPORT_VERSION" />, máte však nainstalovanou pouze verzi <ph name="INSTALLED_VERSION" /></translation>
@@ -6829,6 +6837,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5842497610951477805">Aktivace Bluetooth</translation>
 <translation id="5844284118433003733">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
 <translation id="5844574845205796324">Navrhovat nový obsah k objevování</translation>
+<translation id="5844685625984052392">Náznak</translation>
 <translation id="5846200638699387931">Chyba syntaxe vztahu: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Žádný stín</translation>
 <translation id="5846504156837627898">Správa oprávnění webu</translation>

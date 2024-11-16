@@ -449,6 +449,7 @@
 <translation id="1296911687402551044">પસંદ કરેલી ટૅબને પિન કરો</translation>
 <translation id="1297175357211070620">લક્ષ્યસ્થાન</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> માટે પ્રતિસાદ મોકલો</translation>
+<translation id="129808599775632797">ફેરફારો</translation>
 <translation id="130097046531636712">આ બૅકગ્રાઉન્ડની પ્રવૃત્તિ અને સ્મૂધ સ્ક્રોલિંગ જેવી વિઝ્યુઅલ ઇફેક્ટને મર્યાદિત કરીને બૅટરી પાવર વધારે છે</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> નીચે આપેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
 <translation id="130174306655812048">“Ok Google, આ કયું ગીત છે?” એવું પૂછી જુઓ</translation>
@@ -466,6 +467,7 @@
 <translation id="131112695174432497">રુચિ મુજબ જાહેરાતની સુવિધાને અસર કરે એવા ડેટાને ડિલીટ કરવામાં આવે છે</translation>
 <translation id="1311294419381837540">તમે ટૅબને કાસ્ટ કરી રહ્યા છો. તમે કોઈપણ સમયે કાસ્ટ કરવાનું થોભાવી કે રોકી શકો છો.</translation>
 <translation id="131188242279372879">ડાઉનલોડ કરેલી વસ્તુઓ માટે Chromeની સુરક્ષાનું સૌથી ઉચ્ચ લેવલ મેળવવા, વધારેલું સંરક્ષણ શોધો</translation>
+<translation id="1312721752506309252">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="1312811472299082263">કોઈ Ansible પ્લેબુક કે Crostini બૅકઅપ ફાઇલમાંથી બનાવો</translation>
 <translation id="13130607084115184">સાચવેલા પાસવર્ડ અહીં દેખાશે. આ ડિવાઇસ પર <ph name="BRAND" />માં પાસવર્ડ આયાત કરવા માટે, <ph name="BEGIN_LINK" /> CSV ફાઇલ પસંદ કરો.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને <ph name="PERMISSION_3" />ની પરવાનગીઓ કાઢી નાખી</translation>
@@ -1767,6 +1769,7 @@
 <translation id="2214018885812055163">શેર કરેલા ફોલ્ડરો</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 પંક્તિ બતાવેલ નથી&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> પંક્તિ બતાવેલ નથી&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> પંક્તિ બતાવેલ નથી&gt;}}</translation>
 <translation id="2215070081105889450">ઑડિયો શેર કરવા માટે, વિન્ડોના બદલે ટૅબ અથવા સ્ક્રીન શેર કરો</translation>
+<translation id="2217208085547223783">વિશ્વાસનું સ્ટેટસ</translation>
 <translation id="2218019600945559112">માઉસ અને ટચપેડ</translation>
 <translation id="2218515861914035131">સાદી ટેક્સ્ટ તરીકે પેસ્ટ કરો</translation>
 <translation id="221872881068107022">રિવર્સ સ્ક્રોલિંગ</translation>
@@ -2499,6 +2502,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">અતિથિની પ્રોફાઇલ ખોલો</translation>
 <translation id="2723819893410108315">સિટ્રન</translation>
+<translation id="2724822892847436256">મર્યાદાઓ</translation>
 <translation id="2724841811573117416">WebRTC લૉગ્સ</translation>
 <translation id="272488616838512378">એકમ રૂપાંતરણ</translation>
 <translation id="2725200716980197196">નેટવર્ક કનેક્ટિવિટી પુનઃસ્થાપિત કરી</translation>
@@ -3459,6 +3463,7 @@
 <translation id="3421835120203732951">નવી પ્રોફાઇલ ઉમેરો</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />માં પરિણામો મળ્યા</translation>
 <translation id="3423226218833787854">આ AI સુવિધા વિશે વધુ જાણો</translation>
+<translation id="3423275441470187644">વિશ્વાસ</translation>
 <translation id="3423463006624419153">તમારા '<ph name="PHONE_NAME_1" />' અને '<ph name="PHONE_NAME_2" />' પર:</translation>
 <translation id="3423858849633684918">કૃપા કરીને <ph name="PRODUCT_NAME" /> ને ફરીથી લોંચ કરો</translation>
 <translation id="3424969259347320884">ટૅબ ક્રેશ થઈ ત્યારે તમે શું કરતા હતા તેનું વર્ણન કરો</translation>
@@ -4588,6 +4593,7 @@
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4195814663415092787">તમે જ્યાંથી છોડેલું ત્યાંથી ચાલુ કરો</translation>
 <translation id="4198268995694216131">વધારાની સાઇટ</translation>
+<translation id="4198420883535766848">ટૅબને સૂચિમાંથી કાઢી નાખો</translation>
 <translation id="4200609364258658652">વીડિયો ફ્રેમ કૉપિ કરો</translation>
 <translation id="4200689466366162458">કસ્ટમ શબ્દો</translation>
 <translation id="4200983522494130825">નવું &amp;ટૅબ</translation>
@@ -5151,6 +5157,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{શું ટૅબનું ગ્રૂપ ડિલીટ કરીએ?}one{શું ટૅબનું ગ્રૂપ ડિલીટ કરીએ?}other{શું ટૅબના ગ્રૂપ ડિલીટ કરીએ?}}</translation>
 <translation id="4608500690299898628">&amp;શોધો...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />માં એક ભૂલ આવી છે</translation>
+<translation id="4610493438923139095">અવિશ્વસનીય</translation>
 <translation id="4610637590575890427">શું તમારી ઈચ્છા <ph name="SITE" /> પર જવાની હતી?</translation>
 <translation id="4611114513649582138">ડેટા કનેક્શન ઉપલબ્ધ</translation>
 <translation id="4611759022973144129">તમે તમારા <ph name="DEVICE_TYPE" />માં સાઇન ઇન કરવા માટે આ પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
@@ -5176,6 +5183,7 @@
 <translation id="4627442949885028695">બીજા ઉપકરણમાંથી ચાલુ કરો</translation>
 <translation id="4628762811416793313">Linux કન્ટેનર સેટઅપ પૂર્ણ થયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> પ્રોફાઇલ ખોલો</translation>
+<translation id="4629803160911640220">વિશ્વસનીય</translation>
 <translation id="4631955550884380853">ફોકસમાંનો વૉઇસ</translation>
 <translation id="4632655012900268062">કાર્ડ કસ્ટમાઇઝ કરો</translation>
 <translation id="4633003931260532286">એક્સટેંશનને ન્યૂનતમ વર્ઝન "<ph name="IMPORT_VERSION" />" સાથે "<ph name="IMPORT_NAME" />"ની જરૂર પડે છે, પણ ફક્ત વર્ઝન "<ph name="INSTALLED_VERSION" />" જ ઇન્સ્ટૉલ કરેલું છે</translation>
@@ -6833,6 +6841,7 @@
 <translation id="5842497610951477805">બ્લૂટૂથ ચાલુ</translation>
 <translation id="5844284118433003733">તમે સાઇન ઇન હો ત્યારે, સમગ્ર Googleની સેવાઓમાં તમને સંરક્ષિત કરવા માટે આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, ઉદાહરણ તરીકે કોઈ સુરક્ષા સંબંધી બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
 <translation id="5844574845205796324">શોધખોળ કરવા માટે નવું કન્ટેન્ટ સૂચવો</translation>
+<translation id="5844685625984052392">સંકેત</translation>
 <translation id="5846200638699387931">રિલેશન સિન્ટેક્સ ભૂલ: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">કોઈ શૅડો નથી</translation>
 <translation id="5846504156837627898">સાઇટની પરવાનગીઓ મેનેજ કરો</translation>

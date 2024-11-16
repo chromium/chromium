@@ -450,6 +450,7 @@
 <translation id="1296911687402551044">Ամրացնել այս ներդիրը</translation>
 <translation id="1297175357211070620">Նպատակակետ</translation>
 <translation id="129770436432446029">Կարծիք հայտնել «<ph name="EXPERIMENT_NAME" />» գործառույթի մասին</translation>
+<translation id="129808599775632797">&amp;Փոփոխություններ</translation>
 <translation id="130097046531636712">Սա երկարացնում է մարտկոցի աշխատաժամանակը՝ սահմանափակելով աշխատանքը ֆոնային ռեժիմում և վիզուալ էֆեկտները, օրինակ՝ սահուն ոլորումը</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> կայքը կարող է փոփոխել հետևյալ ֆայլերը</translation>
 <translation id="130174306655812048">Ասեք «Hey Google, what song is this?» (ո՞ր երգն է սա)</translation>
@@ -467,6 +468,7 @@
 <translation id="131112695174432497">Տվյալները, որոնք ազդում են գովազդի անհատականացման վրա, ջնջվել են</translation>
 <translation id="1311294419381837540">Դուք ներդիր եք հեռարձակում։ Ցանկացած պահի կարող եք դադարեցնել կամ ավարտել հեռարձակումը։</translation>
 <translation id="131188242279372879">Բացահայտեք բարելավված պաշտպանությունը՝ Chrome-ի լավագույն պաշտպանության համակարգերը ներբեռնումներ կատարելիս օգտագործելու համար</translation>
+<translation id="1312721752506309252">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="1312811472299082263">Ավելացրեք Ansible ձեռնարկ կամ Crostini կրկնօրինակ ֆայլ</translation>
 <translation id="13130607084115184">Պահված գաղտնաբառերը կցուցադրվեն այստեղ։ Գաղտնաբառերը <ph name="BRAND" /> ներմուծելու համար <ph name="BEGIN_LINK" />ընտրեք CSV ֆայլ<ph name="END_LINK" />։</translation>
 <translation id="1313264149528821971">«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />», «<ph name="PERMISSION_3" />» թույլտվությունները հեռացվել են</translation>
@@ -1772,6 +1774,7 @@
 <translation id="2214018885812055163">Ընդհանուր պանակներ</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 տող ցուցադրված չէ&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> տող ցուցադրված չէ&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> տող ցուցադրված չէ&gt;}}</translation>
 <translation id="2215070081105889450">Աուդիո բովանդակությամբ կիսվելու համար հասանելի դարձրեք ներդիրը կամ էկրանը</translation>
+<translation id="2217208085547223783">Հավաստագրի կարգավիճակը</translation>
 <translation id="2218019600945559112">Մկնիկ և հպահարթակ</translation>
 <translation id="2218515861914035131">Տեղադրել որպես պարզ տեքստ</translation>
 <translation id="221872881068107022">Հետադարձ ոլորում</translation>
@@ -2501,6 +2504,7 @@
 <translation id="2722547199758472013">ID՝ <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Բացել հյուրի պրոֆիլը</translation>
 <translation id="2723819893410108315">Կիտրոն</translation>
+<translation id="2724822892847436256">Սահմանափակումներ</translation>
 <translation id="2724841811573117416">WebRTC մատյաններ</translation>
 <translation id="272488616838512378">Չափման միավորների փոխարկում</translation>
 <translation id="2725200716980197196">Ցանցի կապակցումը վերականգնվել է</translation>
@@ -3459,6 +3463,7 @@
 <translation id="3421835120203732951">Ավելացնել նոր պրոֆիլ</translation>
 <translation id="3423111258700187173">Արդյունքներ են գտնվել «<ph name="FOLDER_TITLE" />» պանակում</translation>
 <translation id="3423226218833787854">Իմանալ ավելին այս AI գործառույթի մասին</translation>
+<translation id="3423275441470187644">Հավաստագիր</translation>
 <translation id="3423463006624419153">Ձեր «<ph name="PHONE_NAME_1" />» և «<ph name="PHONE_NAME_2" />» հեռախոսներում՝</translation>
 <translation id="3423858849633684918">Վերագործարկեք <ph name="PRODUCT_NAME" />-ը</translation>
 <translation id="3424969259347320884">Նկարագրեք ձեր գործողությունները նախքան ներդիրի աշխատանքի խափանվելը</translation>
@@ -4588,6 +4593,7 @@
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4195814663415092787">Շարունակել աշխատանքը նույն տեղից</translation>
 <translation id="4198268995694216131">Լրացուցիչ կայքեր</translation>
+<translation id="4198420883535766848">Հեռացնել ներդիրը ցանկից</translation>
 <translation id="4200609364258658652">Պատճենել տեսանյութի կադրը</translation>
 <translation id="4200689466366162458">Հատուկ բառեր</translation>
 <translation id="4200983522494130825">Նոր &amp;ներդիր</translation>
@@ -5151,6 +5157,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ջնջե՞լ ներդիրների խումբը}one{Ջնջե՞լ ներդիրների խումբը}other{Ջնջե՞լ ներդիրների խմբերը}}</translation>
 <translation id="4608500690299898628">&amp;Գտնել…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> փլագինում սխալ է առաջացել</translation>
+<translation id="4610493438923139095">Ոչ վստահելի</translation>
 <translation id="4610637590575890427">Արդյո՞ք ուզում էիք այցելել <ph name="SITE" /> կայքը:</translation>
 <translation id="4611114513649582138">Հասանելի է բջջային ինտերնետ</translation>
 <translation id="4611759022973144129">Այս գաղտնաբառը կարող եք օգտագործել ձեր <ph name="DEVICE_TYPE" /> սարքում մուտք գործելու համար։</translation>
@@ -5176,6 +5183,7 @@
 <translation id="4627442949885028695">Շարունակեք այլ սարքից</translation>
 <translation id="4628762811416793313">Չհաջողվեց ավարտել Linux-ի կոնտեյների կարգավորումը: Նորից փորձեք:</translation>
 <translation id="4629521233550547305">Բացել <ph name="PROFILE_NAME" /> պրոֆիլը</translation>
+<translation id="4629803160911640220">Վստահելի</translation>
 <translation id="4631955550884380853">Կենտրոնացված ձայն</translation>
 <translation id="4632655012900268062">Անհատականացնել քարտերը</translation>
 <translation id="4633003931260532286">Ընդլայնումը պահանջում է «<ph name="IMPORT_NAME" />»՝ «<ph name="IMPORT_VERSION" />» նվազագույն տարբերակով, սակայն տեղադրված է «<ph name="INSTALLED_VERSION" />» տարբերակը</translation>
@@ -6829,6 +6837,7 @@
 <translation id="5842497610951477805">Միացնել/անջատել Bluetooth-ը</translation>
 <translation id="5844284118433003733">Երբ մուտք գործեք, այս տվյալները կկապվեն ձեր Google հաշվի հետ՝ ձեզ Google-ի ծառայություններում պաշտպանելու համար, օրինակ՝ անվտանգության հետ կապված միջադեպից հետո բարձրացնելու անվտանգության մակարդակը Gmail-ում։</translation>
 <translation id="5844574845205796324">Առաջարկել նոր բովանդակություն ուսումնասիրման համար</translation>
+<translation id="5844685625984052392">Հուշում</translation>
 <translation id="5846200638699387931">Հարաբերությունների շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Առանց շողքի</translation>
 <translation id="5846504156837627898">Կառավարել կայքի թույլտվությունները</translation>

@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">Управувано од вашиот родител</translation>
 <translation id="4647758699119474035">Најавени сте како <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Грешка на сметката на Google. Отворете го менито на сметката.</translation>
 <translation id="4650125387981512669">Продолжете како <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Скриј по 1 минута}one{Скриј по {count} минута}other{Скриј по {count} минути}}</translation>
 <translation id="4652817563047461855">Погрижете се лозинките да ви бидат безбедни, дознајте дали се компромитирани и добијте совет како да се заштитите себеси онлајн. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Зачувај</translation>
 <translation id="4668929960204016307">,</translation>

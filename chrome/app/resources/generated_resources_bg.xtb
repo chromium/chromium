@@ -448,6 +448,7 @@
 <translation id="1296911687402551044">Фиксиране на избрания раздел</translation>
 <translation id="1297175357211070620">Принтер</translation>
 <translation id="129770436432446029">Изпращане на отзиви за <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Промени</translation>
 <translation id="130097046531636712">Това удължава живота на батерията, като ограничава активността на заден план и визуалните ефекти, като например гладкото превъртане</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> може да редактира следните файлове</translation>
 <translation id="130174306655812048">Опитайте „Ok Google, коя е тази песен?“</translation>
@@ -465,6 +466,7 @@
 <translation id="131112695174432497">Данните, които засягат персонализирането на рекламите, се изтриват</translation>
 <translation id="1311294419381837540">Предавате раздел. Можете да поставите предаването на пауза или да го спрете по всяко време.</translation>
 <translation id="131188242279372879">Изпробвайте подобрената защита, за да получите най-високото ниво на сигурност на Chrome за изтеглянията</translation>
+<translation id="1312721752506309252">Режимът за подобрена защита е включен</translation>
 <translation id="1312811472299082263">Създаване от наръчник за Ansible или файл с резервно копие в Crostini</translation>
 <translation id="13130607084115184">Запазените пароли ще се показват тук. За да импортирате пароли в <ph name="BRAND" /> на това устройство, <ph name="BEGIN_LINK" />изберете CSV файл<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“ бяха премахнати</translation>
@@ -1776,6 +1778,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2214018885812055163">Споделени папки</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ред не е показан&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> реда не са показани&gt;}}</translation>
 <translation id="2215070081105889450">За да споделите звук, трябва да споделите раздел или екран</translation>
+<translation id="2217208085547223783">Състояние на надеждност</translation>
 <translation id="2218019600945559112">Мишка и сензорен панел</translation>
 <translation id="2218515861914035131">Поставяне като неформатиран текст</translation>
 <translation id="221872881068107022">Обръщане на посоката на превъртане</translation>
@@ -2510,6 +2513,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Отваряне на потребителския профил на гост</translation>
 <translation id="2723819893410108315">лимоненожълто</translation>
+<translation id="2724822892847436256">Ограничения</translation>
 <translation id="2724841811573117416">Регистрационни файлове за WebRTC</translation>
 <translation id="272488616838512378">Преобразуване на мерни единици</translation>
 <translation id="2725200716980197196">Връзката с мрежата е възстановена</translation>
@@ -3470,6 +3474,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3421835120203732951">Добавяне на нов потребителски профил</translation>
 <translation id="3423111258700187173">Намерени резултати в(ъв) „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="3423226218833787854">Научете повече за тази функция на AI</translation>
+<translation id="3423275441470187644">Надеждност</translation>
 <translation id="3423463006624419153">На устройствата си <ph name="PHONE_NAME_1" /> и <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Моля, стартирайте отново <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Опишете какво правехте, когато разделът претърпя срив</translation>
@@ -4600,6 +4605,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4195814663415092787">Продължаване оттам, откъдето сте прекъснали</translation>
 <translation id="4198268995694216131">Допълнителни сайтове</translation>
+<translation id="4198420883535766848">Премахване на раздела от списъка</translation>
 <translation id="4200609364258658652">Копиран&amp;е на кадъра от видеоклипа</translation>
 <translation id="4200689466366162458">Персонализирани думи</translation>
 <translation id="4200983522494130825">Нов &amp;раздел</translation>
@@ -5163,6 +5169,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Искате ли да изтриете групата раздели?}other{Искате ли да изтриете групите раздели?}}</translation>
 <translation id="4608500690299898628">&amp;Търсене...</translation>
 <translation id="4610162781778310380">Възникна грешка в приставката <ph name="PLUGIN_NAME" /></translation>
+<translation id="4610493438923139095">Ненадеждно</translation>
 <translation id="4610637590575890427">Може би искахте да отворите <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Налице е връзка за пренос на данни</translation>
 <translation id="4611759022973144129">Можете да използвате тази парола, за да влизате в своя <ph name="DEVICE_TYPE" />.</translation>
@@ -5188,6 +5195,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4627442949885028695">Продължаване от друго устройство</translation>
 <translation id="4628762811416793313">Настройването на контейнера за Linux не завърши. Моля, опитайте отново.</translation>
 <translation id="4629521233550547305">Отваряне на потребителския профил <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Надеждно</translation>
 <translation id="4631955550884380853">Фокусиран глас</translation>
 <translation id="4632655012900268062">Персонализиране на картите</translation>
 <translation id="4633003931260532286">Разширението изисква <ph name="IMPORT_VERSION" /> или по-нова версия на <ph name="IMPORT_NAME" />, но само <ph name="INSTALLED_VERSION" /> е инсталирана</translation>
@@ -6845,6 +6853,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5842497610951477805">Активиране на Bluetooth</translation>
 <translation id="5844284118433003733">Тези данни се свързват с профила ви в Google, когато сте влезли в него, с цел защита в услугите ни (например повишаване на нивото на защита в Gmail след инцидент, свързан със сигурността).</translation>
 <translation id="5844574845205796324">Предлагане на ново съдържание за разглеждане</translation>
+<translation id="5844685625984052392">Условно</translation>
 <translation id="5846200638699387931">Синтактична грешка в релацията: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Без сянка</translation>
 <translation id="5846504156837627898">Управление на разрешенията за сайтовете</translation>

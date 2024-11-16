@@ -448,6 +448,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1296911687402551044">Tanlangan varaqni mahkamlash</translation>
 <translation id="1297175357211070620">Printer</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> ilovasi haqida fikr-mulohaza yuborish</translation>
+<translation id="129808599775632797">&amp;Tahrirlar</translation>
 <translation id="130097046531636712">Bunda fondagi amallar hamda ravon varaqlash kabi vizual effektlarni cheklash orqali batareya quvvati tejaladi</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> quyidagi fayllarni tahrirlay oladi</translation>
 <translation id="130174306655812048">"Ok Google, bu qaysi tarona?" deb soʻrang</translation>
@@ -465,6 +466,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="131112695174432497">Reklamani moslashtirishga aloqador axborot oʻchirildi</translation>
 <translation id="1311294419381837540">Varaq translatsiya qilinmoqda. Translatsiyani istalgan vaqt pauza qilish yoki tugatish mumkin.</translation>
 <translation id="131188242279372879">Chromeda yuklanmalardan yuqori darajali himoyalanish uchun kengaytirilgan himoya bilan tanishing</translation>
+<translation id="1312721752506309252">Kengaytirilgan himoya yoniq</translation>
 <translation id="1312811472299082263">Ansible Pleybuk yoki Crostini zaxiraviy faylidan yaratish</translation>
 <translation id="13130607084115184">Saqlangan parollar shu yerda chiqadi. Parollarni bu qurilmadagi <ph name="BRAND" /> ga import qilish uchun <ph name="BEGIN_LINK" />CSV faylni tanlang.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">Olib tashlandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -1769,6 +1771,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2214018885812055163">Umumiy jildlar</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 qator kod berkitilgan&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> qator kod berkitilgan&gt;}}</translation>
 <translation id="2215070081105889450">Ovozni ulashish uchun varaq yoki ekranni ulashing</translation>
+<translation id="2217208085547223783">Sertifikat holati</translation>
 <translation id="2218019600945559112">Sichqoncha va sensorli panel</translation>
 <translation id="2218515861914035131">Oddiy matn sifatida joylash</translation>
 <translation id="221872881068107022">Teskari aylantirish</translation>
@@ -2503,6 +2506,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Mehmon profilini ochish</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Cheklovlar</translation>
 <translation id="2724841811573117416">WebRTC jurnallari</translation>
 <translation id="272488616838512378">Birliklar konvertori</translation>
 <translation id="2725200716980197196">Tarmoq aloqasi tiklandi</translation>
@@ -3461,6 +3465,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3421835120203732951">Yangi profil kiritish</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> jildi natijalari</translation>
 <translation id="3423226218833787854">Mazkur AI funksiyasi haqida batafsil</translation>
+<translation id="3423275441470187644">Ishonch</translation>
 <translation id="3423463006624419153">“<ph name="PHONE_NAME_1" />” va “<ph name="PHONE_NAME_2" />” telefonlarida:</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" />’ni qayta ishga tushiring</translation>
 <translation id="3424969259347320884">Varaqda nosozlik ro‘y bergan vaqtda nima qilayotganligingizni tasvirlab bering.</translation>
@@ -4590,6 +4595,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4195814663415092787">Avval ochilgan ichki oynalar</translation>
 <translation id="4198268995694216131">Qoʻshimcha saytlar</translation>
+<translation id="4198420883535766848">Varaqni roʻyxatdan olib tashlash</translation>
 <translation id="4200609364258658652">Video kadridan nusxa olish</translation>
 <translation id="4200689466366162458">Boshqa so‘zlar</translation>
 <translation id="4200983522494130825">Yangi &amp;ichki oyna</translation>
@@ -5153,6 +5159,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Varaqlar guruhi oʻchirilsinmi?}other{Varaqlar guruhi oʻchirilsinmi?}}</translation>
 <translation id="4608500690299898628">&amp;Qidirish...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> jarayonida xatolik yuz berdi</translation>
+<translation id="4610493438923139095">Ishonchsiz</translation>
 <translation id="4610637590575890427">Balki <ph name="SITE" /> saytiga o‘tmoqchi bo‘lgandirsiz?</translation>
 <translation id="4611114513649582138">Mobil internet mavjud</translation>
 <translation id="4611759022973144129"><ph name="DEVICE_TYPE" /> qurilmangizga kirish uchun bu paroldan foydalanishingiz mumkin.</translation>
@@ -5178,6 +5185,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4627442949885028695">Ishni boshqa qurilmada davom ettirish</translation>
 <translation id="4628762811416793313">Linux konteyneri toʻliq sozlanmagan. Qaytadan urining.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> profilini ochish</translation>
+<translation id="4629803160911640220">Ishonchli</translation>
 <translation id="4631955550884380853">Fokusdagi ovoz</translation>
 <translation id="4632655012900268062">Bildirgilarni sozlash</translation>
 <translation id="4633003931260532286">Kengaytmaga kamida “<ph name="IMPORT_VERSION" />” versiyadagi “<ph name="IMPORT_NAME" />” kerak, lekin hozir “<ph name="INSTALLED_VERSION" />” versiyasi o‘rnatilgan</translation>
@@ -6833,6 +6841,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5842497610951477805">Bluetooth yoniq</translation>
 <translation id="5844284118433003733">Hisobingizga kirsangiz, maʼlumotlar Google hisobingizga ulanadi. Bu sizni Google xizmatlarida himoya qilishda (masalan, xavfsizlik hodisasidan keyin Gmailda himoyani kuchaytirishda) yordam beradi.</translation>
 <translation id="5844574845205796324">Tanishuv uchun yangi kontent takliflari</translation>
+<translation id="5844685625984052392">Maslahat</translation>
 <translation id="5846200638699387931">Konfiguratsiya bilan bogʻliq imloviy xato: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Soyasiz</translation>
 <translation id="5846504156837627898">Sayt ruxsatlarini boshqarish</translation>
