@@ -39,6 +39,7 @@ import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
+import org.chromium.components.data_sharing.configs.DataSharingStringConfig;
 import org.chromium.components.data_sharing.configs.DataSharingUiConfig;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -277,11 +278,27 @@ public class DataSharingTabManager {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
             // TODO(ssid): Fill in tab group name.
+            DataSharingStringConfig stringConfig =
+                    new DataSharingStringConfig.Builder()
+                            .setResourceId(
+                                    DataSharingStringConfig.StringKey.JOIN_TITLE,
+                                    R.plurals.collaboration_preview_dialog_title)
+                            .setResourceId(
+                                    DataSharingStringConfig.StringKey.JOIN_DESCRIPTION,
+                                    R.string.collaboration_preview_dialog_body)
+                            .setResourceId(
+                                    DataSharingStringConfig.StringKey.JOIN_DETAILS_TITLE,
+                                    R.string.collaboration_preview_dialog_details_title)
+                            .setResourceId(
+                                    DataSharingStringConfig.StringKey.JOIN_DETAILS_HEADER,
+                                    R.string.collaboration_preview_dialog_details_tabs_in_group)
+                            .build();
             DataSharingUiConfig commonConfig =
                     new DataSharingUiConfig.Builder()
                             .setActivity(activity)
                             .setIsTablet(false)
                             .setLearnMoreHyperLink(getTabGroupHelpUrl())
+                            .setDataSharingStringConfig(stringConfig)
                             .build();
             DataSharingJoinUiConfig.JoinCallback joinCallback =
                     new DataSharingJoinUiConfig.JoinCallback() {
@@ -440,12 +457,22 @@ public class DataSharingTabManager {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
             DataSharingUIDelegate uiDelegate = dataSharingService.getUiDelegate();
+            DataSharingStringConfig stringConfig =
+                    new DataSharingStringConfig.Builder()
+                            .setResourceId(
+                                    DataSharingStringConfig.StringKey.CREATE_TITLE,
+                                    R.string.collaboration_share_group_title)
+                            .setResourceId(
+                                    DataSharingStringConfig.StringKey.CREATE_DESCRIPTION,
+                                    R.string.collaboration_share_group_body)
+                            .build();
             DataSharingUiConfig commonConfig =
                     new DataSharingUiConfig.Builder()
                             .setActivity(activity)
                             .setTabGroupName(tabGroupDisplayName)
                             .setLearnMoreHyperLink(getTabGroupHelpUrl())
                             .setIsTablet(false)
+                            .setDataSharingStringConfig(stringConfig)
                             .build();
 
             DataSharingCreateUiConfig.CreateCallback createCallback =
@@ -578,11 +605,21 @@ public class DataSharingTabManager {
         DataSharingUIDelegate uiDelegate = dataSharingService.getUiDelegate();
         assert uiDelegate != null;
 
+        DataSharingStringConfig stringConfig =
+                new DataSharingStringConfig.Builder()
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.MANAGE_DESCRIPTION,
+                                R.string.collaboration_manage_group_description)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LET_ANYONE_JOIN_DESCRIPTION,
+                                R.string.collaboration_manage_share_wisely)
+                        .build();
         DataSharingUiConfig commonConfig =
                 new DataSharingUiConfig.Builder()
                         .setActivity(activity)
                         .setIsTablet(false)
                         .setLearnMoreHyperLink(getTabGroupHelpUrl())
+                        .setDataSharingStringConfig(stringConfig)
                         .build();
 
         DataSharingManageUiConfig.ManageCallback manageCallback =

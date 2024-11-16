@@ -28,6 +28,10 @@ public class DataSharingStringConfig {
         return mResourceIds.get(key);
     }
 
+    public Map<Integer, Integer> getResourceIds() {
+        return mResourceIds;
+    }
+
     // Builder class
     public static class Builder {
         private Map<Integer, Integer> mResourceIds = new HashMap<>();
@@ -59,10 +63,20 @@ public class DataSharingStringConfig {
             JOIN_DESCRIPTION,
             JOIN_DETAILS_TITLE,
             JOIN_DETAILS_HEADER,
+            MANAGE_TITLE,
+            MANAGE_HEADER,
             MANAGE_DESCRIPTION,
             LET_ANYONE_JOIN_DESCRIPTION,
+            BLOCK_TITLE,
+            BLOCK_MESSAGE,
+            REMOVE_TITLE,
             REMOVE_MESSAGE,
-            BLOCK_MESSAGE
+            DELETE_GROUP_TITLE,
+            DELETE_GROUP_MESSAGE,
+            LEAVE_GROUP_TITLE,
+            LEAVE_GROUP_MESSAGE,
+            STOP_SHARING_TITLE,
+            STOP_SHARING_MESSAGE,
         })
         public @interface Key {}
 
@@ -72,9 +86,19 @@ public class DataSharingStringConfig {
         public static final int JOIN_DESCRIPTION = 3;
         public static final int JOIN_DETAILS_TITLE = 4;
         public static final int JOIN_DETAILS_HEADER = 5;
-        public static final int MANAGE_DESCRIPTION = 6;
-        public static final int LET_ANYONE_JOIN_DESCRIPTION = 7;
-        public static final int REMOVE_MESSAGE = 8;
-        public static final int BLOCK_MESSAGE = 9;
+        public static final int MANAGE_TITLE = 6;
+        public static final int MANAGE_HEADER = 7;
+        public static final int MANAGE_DESCRIPTION = 8;
+        public static final int LET_ANYONE_JOIN_DESCRIPTION = 9;
+        public static final int BLOCK_TITLE = 10;
+        public static final int BLOCK_MESSAGE = 11;
+        public static final int REMOVE_TITLE = 12;
+        public static final int REMOVE_MESSAGE = 13;
+        public static final int DELETE_GROUP_TITLE = 14;
+        public static final int DELETE_GROUP_MESSAGE = 15;
+        public static final int LEAVE_GROUP_TITLE = 16;
+        public static final int LEAVE_GROUP_MESSAGE = 17;
+        public static final int STOP_SHARING_TITLE = 18;
+        public static final int STOP_SHARING_MESSAGE = 19;
     }
 }
