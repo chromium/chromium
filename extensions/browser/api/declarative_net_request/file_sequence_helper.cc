@@ -380,9 +380,11 @@ void RulesetInfo::CreateVerifiedMatcher() {
 }
 
 LoadRequestData::LoadRequestData(ExtensionId extension_id,
-                                 base::Version extension_version)
+                                 base::Version extension_version,
+                                 LoadRulesetRequestSource request_source)
     : extension_id(std::move(extension_id)),
-      extension_version(std::move(extension_version)) {}
+      extension_version(std::move(extension_version)),
+      request_source(request_source) {}
 LoadRequestData::~LoadRequestData() = default;
 LoadRequestData::LoadRequestData(LoadRequestData&&) = default;
 LoadRequestData& LoadRequestData::operator=(LoadRequestData&&) = default;

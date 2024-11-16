@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_value_list.h"
 #include "base/files/file_util.h"
@@ -127,6 +128,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "ipc/ipc_message.h"
 #include "net/base/net_errors.h"
@@ -147,8 +149,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 namespace dnr_api = api::declarative_net_request;
@@ -191,6 +192,59 @@ class RulesetLoadObserver : public RulesMonitorService::TestObserver {
   const raw_ptr<RulesMonitorService> service_;
   const ExtensionId extension_id_;
   base::RunLoop run_loop_;
+};
+
+// Helper to block ruleset loads from completing on the UI thread.
+class RulesetLoaderThrottle {
+ public:
+  RulesetLoaderThrottle() {
+    throttle_callback_ = base::BindRepeating(
+        &RulesetLoaderThrottle::AddPendingRequest, base::Unretained(this));
+    ruleset_throttle_override_ =
+        RulesMonitorService::SetLoadRulesetThrottleCallbackForTesting(
+            &throttle_callback_);
+  }
+  ~RulesetLoaderThrottle() {}
+
+  // Waits until a ruleset load request is enqueued. Once the caller is
+  // unblocked, it can do whatever it pleases before letting all the pending
+  // load ruleset requests finish on the UI thread by calling Resume().
+  void WaitForLoaderRequest() {
+    if (pending_requests_.empty()) {
+      base::RunLoop run_loop;
+      quit_closure_ = run_loop.QuitWhenIdleClosure();
+      run_loop.Run();
+    }
+    ASSERT_TRUE(!pending_requests_.empty());
+  }
+
+  // Resumes all pending requests by letting them finish on the UI thread and
+  // resets the throttle.
+  void Resume() {
+    ruleset_throttle_override_.reset();
+    for (auto& request : pending_requests_) {
+      std::move(request).Run();
+    }
+  }
+
+ private:
+  // Queues a ruleset load request in `pending_requests_` and unblocks the
+  // caller of WaitForLoaderRequest() if needed.
+  void AddPendingRequest(base::OnceClosure request) {
+    pending_requests_.push_back(std::move(request));
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  // A list of ruleset load requests that are pending completion on the UI
+  // thread.
+  std::vector<base::OnceClosure> pending_requests_;
+
+  LoadRulesetThrottleCallback throttle_callback_;
+  std::optional<base::AutoReset<LoadRulesetThrottleCallback*>>
+      ruleset_throttle_override_;
+  base::OnceClosure quit_closure_;
 };
 
 class DeclarativeNetRequestBrowserTest
@@ -997,7 +1051,9 @@ class DeclarativeNetRequestBrowserTest
     const std::string script =
         content::JsReplace(kScript, base::ToValueList(ruleset_ids_to_remove),
                            base::ToValueList(ruleset_ids_to_add));
-    return ExecuteScriptInBackgroundPageAndReturnString(extension_id, script);
+    return ExecuteScriptInBackgroundPageAndReturnString(
+        extension_id, script,
+        browsertest_util::ScriptUserActivation::kDontActivate);
   }
 
   void InitializeHttpsServer() {
@@ -8328,6 +8384,122 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
   }
 }
 
+// A derivative of DeclarativeNetRequestBrowserTest which allows the test to
+// wait for ruleset loads to start, and throttle/resume them as needed.
+class DeclarativeNetRequestThrottledRulesetLoadBrowserTest
+    : public DeclarativeNetRequestBrowserTest {
+ public:
+  DeclarativeNetRequestThrottledRulesetLoadBrowserTest() = default;
+  ~DeclarativeNetRequestThrottledRulesetLoadBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DeclarativeNetRequestBrowserTest::SetUpCommandLine(command_line);
+
+    // After all PRE tests have finished setting up:
+    // - increment the ruleset version to simulate a chrome update and force
+    //   re-indexing,
+    // - Add a throttle for ruleset loads.
+    if (GetTestPreCount() == 0) {
+      increment_ruleset_version_ =
+          CreateScopedIncrementRulesetVersionForTesting();
+      ruleset_loader_throttle_.emplace();
+    }
+  }
+
+ protected:
+  static constexpr char kUpdateFlowExtensionId[] =
+      "amkjakpejnhgnfdohinadnicifljgdgm";
+
+  RulesetLoaderThrottle& ruleset_loader_throttle() {
+    return *ruleset_loader_throttle_;
+  }
+
+  base::FilePath update_flow_extension_path() {
+    return test_data_dir_.AppendASCII("declarative_net_request/rule_updates");
+  }
+
+ private:
+  std::optional<ScopedIncrementRulesetVersion> increment_ruleset_version_;
+  std::optional<RulesetLoaderThrottle> ruleset_loader_throttle_;
+};
+
+// Setup: Installs v1 of `kUpdateFlowExtensionId` and waits for its ruleset to
+// load.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
+                       PRE_RulesetLoadFromOldExtensionVersion) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir scoped_temp_dir;
+  EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  base::FilePath pem_path = update_flow_extension_path().AppendASCII("pem.pem");
+  base::FilePath crx_path = scoped_temp_dir.GetPath().AppendASCII("v1.crx");
+  base::FilePath result_path =
+      PackExtensionWithOptions(update_flow_extension_path().AppendASCII("v1"),
+                               crx_path, pem_path, base::FilePath());
+  EXPECT_EQ(crx_path, result_path);
+
+  const Extension* extension =
+      InstallExtensionWithPermissionsGranted(crx_path, /*expected_change=*/1);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->id(), kUpdateFlowExtensionId);
+  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(
+      kUpdateFlowExtensionId));
+  WaitForExtensionsWithRulesetsCount(1u);
+}
+
+// Test that if a ruleset load initiated from an older extension version
+// completes, then it should be a no-op and the newer extension attempting to
+// load a ruleset with the same ID should succeed.
+// Regression for crbug.com/367440970.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
+                       RulesetLoadFromOldExtensionVersion) {
+  scoped_refptr<const Extension> extension =
+      extension_registry()->enabled_extensions().GetByID(
+          kUpdateFlowExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ("1", extension->version().GetString());
+
+  // Wait for `extension` to start loading its rulesets.
+  ruleset_loader_throttle().WaitForLoaderRequest();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir scoped_temp_dir;
+  EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  // Update `extension` to v2 with a packed update.
+  base::FilePath pem_path = update_flow_extension_path().AppendASCII("pem.pem");
+  base::FilePath crx_path = scoped_temp_dir.GetPath().AppendASCII("v2.crx");
+  base::FilePath result_path =
+      PackExtensionWithOptions(update_flow_extension_path().AppendASCII("v2"),
+                               crx_path, pem_path, base::FilePath());
+  EXPECT_EQ(crx_path, result_path);
+  UpdateExtension(kUpdateFlowExtensionId, crx_path, /*expected_change=*/0);
+
+  extension = extension_registry()->enabled_extensions().GetByID(
+      kUpdateFlowExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ("2", extension->version().GetString());
+
+  // Wait for the extension to "start" by waiting for its background service
+  // worker.
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundInitialized();
+
+  RulesetLoadObserver ruleset_load_observer(rules_monitor_service(),
+                                            kUpdateFlowExtensionId);
+
+  // `extension` v1's ruleset should still be loading after being re-indexed as
+  // a result of the simulated Chrome update. Note that v2 does not load any
+  // rulesets since it does not enable any by default from its manifest.
+  ruleset_loader_throttle().Resume();
+
+  // Let the ruleset loads finish.
+  ruleset_load_observer.Wait();
+
+  // Attempt to enable the ruleset from `extension` v2. It should still succeed.
+  UpdateEnabledRulesets(kUpdateFlowExtensionId, {}, {"ruleset"});
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeclarativeNetRequestBrowserTest,
@@ -8414,6 +8586,11 @@ INSTANTIATE_TEST_SUITE_P(
                                          ExtensionLoadType::UNPACKED),
                        ::testing::Bool()));
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
+    ::testing::Combine(::testing::Values(ExtensionLoadType::PACKED),
+                       ::testing::Values(false)));
+
 }  // namespace
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

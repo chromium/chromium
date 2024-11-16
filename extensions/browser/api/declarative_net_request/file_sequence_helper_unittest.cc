@@ -98,7 +98,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
         &run_loop, expected_did_load_successfully, expected_error);
 
     ExtensionId extension_id = crx_file::id_util::GenerateId("dummy_extension");
-    LoadRequestData data(extension_id, base::Version("1.0"));
+    LoadRequestData data(extension_id, base::Version("1.0"),
+                         LoadRulesetRequestSource::kUpdateDynamicRules);
     data.rulesets.emplace_back(std::move(source));
 
     // Unretained is safe because |helper_| outlives the |add_rules_task|.
@@ -121,7 +122,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
   }
 
   void TestLoadRulesets(const std::vector<TestCase>& test_cases) {
-    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"));
+    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"),
+                         LoadRulesetRequestSource::kOnExtensionLoad);
     for (const auto& test_case : test_cases) {
       data.rulesets.emplace_back(test_case.source.Clone());
       data.rulesets.back().set_expected_checksum(test_case.checksum);
@@ -164,7 +166,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
   }
 
   void TestNoRulesetsToLoad() {
-    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"));
+    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"),
+                         LoadRulesetRequestSource::kOnExtensionLoad);
 
     base::RunLoop run_loop;
     auto load_ruleset_callback = base::BindOnce(
