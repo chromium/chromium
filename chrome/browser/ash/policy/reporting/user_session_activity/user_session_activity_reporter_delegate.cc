@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -95,7 +96,8 @@ void UserSessionActivityReporterDelegate::ReportSessionActivity() {
 
 void UserSessionActivityReporterDelegate::SetSessionStartEvent(
     reporting::SessionStartEvent::Reason reason,
-    const user_manager::User* user) {
+    const user_manager::User* user,
+    const std::string& session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user);
 
@@ -104,30 +106,32 @@ void UserSessionActivityReporterDelegate::SetSessionStartEvent(
   Reset();
 
   session_activity_.mutable_session_start()->set_reason(reason);
-
   session_activity_.mutable_session_start()->set_timestamp_micro(
       GetUtcTimeMicrosecondsSinceEpoch());
+  session_activity_.set_session_id(session_id);
 
   SetUser(&session_activity_, user);
 }
 
 void UserSessionActivityReporterDelegate::SetSessionEndEvent(
     reporting::SessionEndEvent::Reason reason,
-    const user_manager::User* user) {
+    const user_manager::User* user,
+    const std::string& session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user);
 
   session_activity_.mutable_session_end()->set_reason(reason);
-
   session_activity_.mutable_session_end()->set_timestamp_micro(
       GetUtcTimeMicrosecondsSinceEpoch());
+  session_activity_.set_session_id(session_id);
 
   SetUser(&session_activity_, user);
 }
 
 void UserSessionActivityReporterDelegate::AddActiveIdleState(
     bool user_is_active,
-    const user_manager::User* user) {
+    const user_manager::User* user,
+    const std::string& session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user);
 
@@ -141,6 +145,7 @@ void UserSessionActivityReporterDelegate::AddActiveIdleState(
   }
 
   session_activity_.mutable_active_idle_states()->Add(std::move(state));
+  session_activity_.set_session_id(session_id);
 
   SetUser(&session_activity_, user);
 }

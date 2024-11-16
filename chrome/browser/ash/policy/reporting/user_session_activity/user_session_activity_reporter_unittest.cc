@@ -134,15 +134,19 @@ class MockUserSessionActivityReporterDelegate
   MOCK_METHOD(void, ReportSessionActivity, (), (override));
   MOCK_METHOD(void,
               AddActiveIdleState,
-              (bool, const user_manager::User*),
+              (bool, const user_manager::User*, const std::string& session_id),
               (override));
   MOCK_METHOD(void,
               SetSessionStartEvent,
-              (reporting::SessionStartEvent::Reason, const user_manager::User*),
+              (reporting::SessionStartEvent::Reason,
+               const user_manager::User*,
+               const std::string& session_id),
               (override));
   MOCK_METHOD(void,
               SetSessionEndEvent,
-              (reporting::SessionEndEvent::Reason, const user_manager::User*),
+              (reporting::SessionEndEvent::Reason,
+               const user_manager::User*,
+               const std::string& session_id),
               (override));
 };
 
@@ -164,19 +168,19 @@ TEST_F(UserSessionActivityReporterTest, StartAndEndSession) {
 
     // Expect session start on login.
     EXPECT_CALL(*delegate,
-                SetSessionStartEvent(SessionStartEvent_Reason_LOGIN, user));
+                SetSessionStartEvent(SessionStartEvent_Reason_LOGIN, user, _));
 
     // Expect session end on lock.
     EXPECT_CALL(*delegate,
-                SetSessionEndEvent(SessionEndEvent_Reason_LOCK, user));
+                SetSessionEndEvent(SessionEndEvent_Reason_LOCK, user, _));
 
     // Expect session start on unlock.
     EXPECT_CALL(*delegate,
-                SetSessionStartEvent(SessionStartEvent_Reason_UNLOCK, user));
+                SetSessionStartEvent(SessionStartEvent_Reason_UNLOCK, user, _));
 
     // Expect session end on logout.
     EXPECT_CALL(*delegate,
-                SetSessionEndEvent(SessionEndEvent_Reason_LOGOUT, user));
+                SetSessionEndEvent(SessionEndEvent_Reason_LOGOUT, user, _));
   }
 
   std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
@@ -211,13 +215,13 @@ TEST_F(UserSessionActivityReporterTest, ActiveUserChanged_MultiUserSession) {
     testing::InSequence sequence;
 
     EXPECT_CALL(*delegate, SetSessionStartEvent(SessionStartEvent_Reason_LOGIN,
-                                                current_user));
+                                                current_user, _));
     EXPECT_CALL(*delegate,
                 SetSessionEndEvent(SessionEndEvent_Reason_MULTI_USER_SWITCH,
-                                   current_user));
+                                   current_user, _));
     EXPECT_CALL(*delegate,
                 SetSessionStartEvent(SessionStartEvent_Reason_MULTI_USER_SWITCH,
-                                     next_user));
+                                     next_user, _));
   }
 
   std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
@@ -291,7 +295,7 @@ TEST_F(UserSessionActivityReporterTest, PeriodicallyCollectDeviceIdleState) {
 
   // Expect AddActiveIdleState to be called twice with `user` after the
   // collection timer triggers twice.
-  EXPECT_CALL(*delegate, AddActiveIdleState(/*user_is_active=*/_, user))
+  EXPECT_CALL(*delegate, AddActiveIdleState(/*user_is_active=*/_, user, _))
       .Times(2);
 
   std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
@@ -320,7 +324,8 @@ TEST_F(UserSessionActivityReporterTest, AllowRegularUsersAndManagedGuestUsers) {
     auto delegate =
         std::make_unique<NiceMock<MockUserSessionActivityReporterDelegate>>();
 
-    EXPECT_CALL(*delegate, SetSessionStartEvent(_, _));
+    EXPECT_CALL(*delegate,
+                SetSessionStartEvent(SessionStartEvent_Reason_LOGIN, user, _));
 
     std::unique_ptr<UserSessionActivityReporter> reporter =
         CreateReporter(&managed_session_service, fake_user_manager_.Get(),
@@ -350,7 +355,7 @@ TEST_F(UserSessionActivityReporterTest,
     auto delegate =
         std::make_unique<NiceMock<MockUserSessionActivityReporterDelegate>>();
 
-    EXPECT_CALL(*delegate, SetSessionStartEvent(_, _)).Times(0);
+    EXPECT_CALL(*delegate, SetSessionStartEvent(_, _, _)).Times(0);
 
     std::unique_ptr<UserSessionActivityReporter> reporter =
         CreateReporter(&managed_session_service, fake_user_manager_.Get(),

@@ -17,7 +17,10 @@ namespace reporting {
 
 // Delegate class for `reporting::UserSessionActivityReporter`.
 // This class holds the internal session activity state, reports the state, and
-// queries the active/idle status of the device.
+// queries the active/idle status of the device. This class is not responsible
+// for maintaining or verifying invariants (e.g. ensuring that session id or
+// user is not changed during the session).
+// `reporting::UserSessionActivityReporter` should do that.
 //
 // This class is not thread safe - all functions should be called from the same
 // sequenced task runner.
@@ -52,20 +55,26 @@ class UserSessionActivityReporterDelegate
 
   // Adds an active or idle state to the current session activity state.
   void AddActiveIdleState(bool is_user_active,
-                          const user_manager::User* user) override;
+                          const user_manager::User* user,
+                          const std::string& session_id) override;
 
   // Sets the session start field in the session activity state.
   void SetSessionStartEvent(reporting::SessionStartEvent::Reason reason,
-                            const user_manager::User* user) override;
+                            const user_manager::User* user,
+                            const std::string& session_id) override;
 
   // Sets the session end field in the session activity state.
   void SetSessionEndEvent(reporting::SessionEndEvent::Reason reason,
-                          const user_manager::User* user) override;
+                          const user_manager::User* user,
+                          const std::string& session_id) override;
 
   // Sets the user in a UserSessionActivityRecord. Does nothing if `record`
   // already has a user.
   void SetUser(UserSessionActivityRecord* record,
                const user_manager::User* user);
+
+  void SetSessionId(UserSessionActivityRecord* record,
+                    const std::string& session_id);
 
  private:
   // Clears the session activity state and resets the internal state of the idle

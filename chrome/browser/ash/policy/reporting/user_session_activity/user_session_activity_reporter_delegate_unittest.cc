@@ -12,6 +12,7 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
@@ -44,6 +45,8 @@ namespace {
 constexpr std::string_view kUserEmail = "user@example.com";
 
 const AccountId kAccountId = AccountId::FromUserEmail(kUserEmail);
+
+constexpr char kSessionId[] = "session_id";
 
 std::unique_ptr<ash::power::ml::IdleEventNotifier> GetIdleEventNotifier() {
   mojo::PendingRemote<viz::mojom::VideoDetectorObserver> observer;
@@ -146,7 +149,8 @@ TEST_F(UserSessionActivityReporterDelegateTest,
       fake_user_manager_->AddUserWithAffiliation(kAccountId,
                                                  /*is_affiliated=*/true);
 
-  delegate_->AddActiveIdleState(/*user_is_active=*/true, affiliated_user);
+  delegate_->AddActiveIdleState(/*user_is_active=*/true, affiliated_user,
+                                kSessionId);
 
   delegate_->ReportSessionActivity();
 
@@ -165,7 +169,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, AddActiveIdleState_UserIsIdle) {
                                                  /*is_affiliated=*/true);
 
   delegate_->AddActiveIdleState(/*user_is_active=*/false,
-                                /*user=*/affiliated_user);
+                                /*user=*/affiliated_user, kSessionId);
 
   delegate_->ReportSessionActivity();
 
@@ -176,6 +180,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, AddActiveIdleState_UserIsIdle) {
   EXPECT_THAT(record.active_idle_states(0).timestamp_micro(), Gt(0));
   EXPECT_TRUE(record.has_affiliated_user());
   EXPECT_THAT(record.affiliated_user().user_email(), Eq(kUserEmail));
+  EXPECT_THAT(record.session_id(), Eq(kSessionId));
 }
 
 TEST_F(UserSessionActivityReporterDelegateTest, SetSessionStartEvent_Unlock) {
@@ -185,7 +190,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetSessionStartEvent_Unlock) {
 
   delegate_->SetSessionStartEvent(
       SessionStartEvent::Reason::SessionStartEvent_Reason_UNLOCK,
-      affiliated_user);
+      affiliated_user, kSessionId);
   delegate_->ReportSessionActivity();
 
   ASSERT_TRUE(RecordWasReported());
@@ -196,6 +201,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetSessionStartEvent_Unlock) {
   EXPECT_THAT(record.session_start().timestamp_micro(), Gt(0));
   EXPECT_TRUE(record.has_affiliated_user());
   EXPECT_THAT(record.affiliated_user().user_email(), Eq(kUserEmail));
+  EXPECT_THAT(record.session_id(), Eq(kSessionId));
 }
 
 TEST_F(UserSessionActivityReporterDelegateTest, SetSessionStartEvent_Login) {
@@ -205,7 +211,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetSessionStartEvent_Login) {
 
   delegate_->SetSessionStartEvent(
       SessionStartEvent::Reason::SessionStartEvent_Reason_LOGIN,
-      affiliated_user);
+      affiliated_user, kSessionId);
   delegate_->ReportSessionActivity();
 
   ASSERT_TRUE(RecordWasReported());
@@ -216,6 +222,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetSessionStartEvent_Login) {
   EXPECT_THAT(record.session_start().timestamp_micro(), Gt(0));
   EXPECT_TRUE(record.has_affiliated_user());
   EXPECT_THAT(record.affiliated_user().user_email(), Eq(kUserEmail));
+  EXPECT_THAT(record.session_id(), Eq(kSessionId));
 }
 
 TEST_F(UserSessionActivityReporterDelegateTest, SetSessionEndEvent_Logout) {
@@ -224,7 +231,8 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetSessionEndEvent_Logout) {
                                                  /*is_affiliated=*/true);
 
   delegate_->SetSessionEndEvent(
-      SessionEndEvent::Reason::SessionEndEvent_Reason_LOGOUT, affiliated_user);
+      SessionEndEvent::Reason::SessionEndEvent_Reason_LOGOUT, affiliated_user,
+      kSessionId);
   delegate_->ReportSessionActivity();
 
   ASSERT_TRUE(RecordWasReported());
@@ -234,6 +242,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetSessionEndEvent_Logout) {
   EXPECT_THAT(record.session_end().timestamp_micro(), Gt(0));
   EXPECT_TRUE(record.has_affiliated_user());
   EXPECT_THAT(record.affiliated_user().user_email(), Eq(kUserEmail));
+  EXPECT_THAT(record.session_id(), Eq(kSessionId));
 }
 
 TEST_F(UserSessionActivityReporterDelegateTest, SetSessionEndEvent_Lock) {
@@ -242,7 +251,8 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetSessionEndEvent_Lock) {
                                                  /*is_affiliated=*/true);
 
   delegate_->SetSessionEndEvent(
-      SessionEndEvent::Reason::SessionEndEvent_Reason_LOCK, affiliated_user);
+      SessionEndEvent::Reason::SessionEndEvent_Reason_LOCK, affiliated_user,
+      kSessionId);
 
   delegate_->ReportSessionActivity();
 
@@ -253,6 +263,7 @@ TEST_F(UserSessionActivityReporterDelegateTest, SetSessionEndEvent_Lock) {
   EXPECT_THAT(record.session_end().timestamp_micro(), Gt(0));
   EXPECT_TRUE(record.has_affiliated_user());
   EXPECT_THAT(record.affiliated_user().user_email(), Eq(kUserEmail));
+  EXPECT_THAT(record.session_id(), Eq(kSessionId));
 }
 
 TEST_F(UserSessionActivityReporterDelegateTest, SetUser_Affiliated) {

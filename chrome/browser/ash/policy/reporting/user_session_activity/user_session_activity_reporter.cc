@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/location.h"
@@ -15,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/reporting/user_session_activity/user_session_activity_reporter_delegate.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
@@ -156,12 +158,14 @@ void UserSessionActivityReporter::OnSessionStart(
     return;
   }
 
+  // Set member fields to indicate session is active.
   is_device_locked_ = false;
   session_user_ = user;
+  session_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   StartTimers();
 
-  delegate_->SetSessionStartEvent(reason, session_user_);
+  delegate_->SetSessionStartEvent(reason, session_user_, session_id_.value());
 }
 
 void UserSessionActivityReporter::OnSessionEnd(SessionEndEvent::Reason reason,
@@ -200,12 +204,14 @@ void UserSessionActivityReporter::OnSessionEnd(SessionEndEvent::Reason reason,
 
   StopTimers();
 
-  delegate_->SetSessionEndEvent(reason, user);
+  delegate_->SetSessionEndEvent(reason, user, session_id_.value());
 
   // Session activity should be reported at the end of each session.
   delegate_->ReportSessionActivity();
 
+  // Reset fields to indicate session is no longer active.
   session_user_ = nullptr;
+  session_id_ = std::nullopt;
 }
 
 void UserSessionActivityReporter::OnReportingTimerExpired() {
@@ -234,8 +240,10 @@ void UserSessionActivityReporter::UpdateActiveIdleState() {
       delegate_->QueryIdleStatus();
 
   bool is_user_active = delegate_->IsUserActive(activity_data);
+
   CHECK(session_user_);
-  delegate_->AddActiveIdleState(is_user_active, session_user_);
+  delegate_->AddActiveIdleState(is_user_active, session_user_,
+                                session_id_.value());
 }
 
 void UserSessionActivityReporter::StartTimers() {
@@ -265,7 +273,11 @@ void UserSessionActivityReporter::StopTimers() {
 bool UserSessionActivityReporter::IsSessionActive() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return session_user_ != nullptr;
+
+  const bool is_session_active = session_user_ != nullptr;
+  CHECK(is_session_active == session_id_.has_value());
+
+  return is_session_active;
 }
 
 }  // namespace reporting

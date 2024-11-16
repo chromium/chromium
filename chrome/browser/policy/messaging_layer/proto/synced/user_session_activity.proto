@@ -88,4 +88,7 @@ message UserSessionActivityRecord {
     .reporting.SessionAffiliatedUser affiliated_user = 4;
     .reporting.SessionUnaffiliatedUser unaffiliated_user = 5;
   }
+
+  // Globally unique id used to associate the record with a session.
+  optional string session_id = 7;
 }
