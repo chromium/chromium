@@ -1762,6 +1762,7 @@ void MediaSessionImpl::UpdateVideoPictureInPictureWindowController(
   pip_controller->MediaSessionImagesChanged(images_);
   pip_controller->MediaSessionPositionChanged(position_);
   pip_controller->MediaSessionInfoChanged(session_info_);
+  pip_controller->MediaSessionMetadataChanged(metadata_);
 }
 
 base::WeakPtr<MediaSessionImpl> MediaSessionImpl::GetWeakPtr() {
@@ -1873,6 +1874,11 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
     if (images_changed) {
       observer->MediaSessionImagesChanged(this->images_);
     }
+  }
+  if (auto* pip_window_controller =
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller->MediaSessionMetadataChanged(metadata_);
   }
 }
 

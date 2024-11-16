@@ -876,6 +876,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   // These controls may be different (or even nonexistent) depending on whether
   // the 2024 updated UI is enabled.
   std::unique_ptr<views::ImageView> favicon_view;
+  std::unique_ptr<views::Label> origin;
   std::unique_ptr<OverlayWindowMinimizeButton> minimize_button;
   std::unique_ptr<OverlayWindowBackToTabButton> back_to_tab_button;
   std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button;
@@ -897,6 +898,13 @@ void VideoOverlayWindowViews::SetUpViews() {
         {kPlaybackButtonSize, kPlaybackButtonSize});
     favicon_view = std::make_unique<views::ImageView>();
     favicon_view->SetSize(kFaviconSize);
+    origin = std::make_unique<views::Label>(std::u16string(),
+                                            views::style::CONTEXT_LABEL,
+                                            views::style::STYLE_BODY_4_MEDIUM);
+    origin->SetEnabledColorId(ui::kColorSysOnSurface);
+    origin->SetBackgroundColor(SK_ColorTRANSPARENT);
+    origin->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    origin->SetElideBehavior(gfx::ELIDE_HEAD);
     minimize_button = std::make_unique<
         OverlayWindowMinimizeButton>(base::BindRepeating(
         [](VideoOverlayWindowViews* overlay) {
@@ -1100,6 +1108,11 @@ void VideoOverlayWindowViews::SetUpViews() {
     favicon_view->layer()->SetFillsBoundsOpaquely(false);
     favicon_view->layer()->SetName("FaviconView");
 
+    // Displays the source title (website's origin or extension/PWA name). ----
+    origin->SetPaintToLayer(ui::LAYER_TEXTURED);
+    origin->layer()->SetFillsBoundsOpaquely(false);
+    origin->layer()->SetName("Origin");
+
     // views::View that closes the window without pausing. --------------------
     minimize_button->SetPaintToLayer(ui::LAYER_TEXTURED);
     minimize_button->layer()->SetFillsBoundsOpaquely(false);
@@ -1201,6 +1214,7 @@ void VideoOverlayWindowViews::SetUpViews() {
         controls_container_view->AddChildView(std::move(favicon_view));
     UpdateFavicon(gfx::ImageSkia());
 
+    origin_ = controls_container_view->AddChildView(std::move(origin));
     minimize_button_ =
         controls_container_view->AddChildView(std::move(minimize_button));
     back_to_tab_button_ =
@@ -1346,7 +1360,11 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     constexpr int kTopControlsHeight = 34;
     constexpr int kBottomControlsHeight = 64;
     constexpr int kFaviconLeftMargin = 8;
-    constexpr int kFaviconTopMargin = 8;
+    constexpr int kFaviconTopMargin = 5;
+    constexpr int kFaviconRightMargin = 4;
+    constexpr int kOriginTopMargin = 5;
+    constexpr int kOriginHeight = 24;
+    constexpr int kOriginRightMargin = 80;
     constexpr int kProgressBarHeight = 26;
     constexpr int kPlayPauseButtonMargin = 16;
     constexpr int kControlHorizontalMargin = 8;
@@ -1374,8 +1392,18 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     gfx::Rect middle_controls_bounds = gfx::BoundingRect(
         top_controls_bounds.bottom_left(), bottom_controls_bounds.top_right());
 
-    favicon_view_->SetPosition({top_controls_bounds.x() + kFaviconLeftMargin,
-                                top_controls_bounds.y() + kFaviconTopMargin});
+    gfx::Rect favicon_view_bounds({top_controls_bounds.x() + kFaviconLeftMargin,
+                                   top_controls_bounds.y() + kFaviconTopMargin},
+                                  kFaviconSize);
+    favicon_view_->SetPosition(favicon_view_bounds.origin());
+
+    gfx::Point origin_position(
+        favicon_view_bounds.right() + kFaviconRightMargin, kOriginTopMargin);
+    origin_->SetPosition(origin_position);
+    origin_->SetSize(
+        {top_controls_bounds.width() - origin_position.x() - kOriginRightMargin,
+         kOriginHeight});
+
     minimize_button_->SetPosition(GetBounds().size(), quadrant);
     back_to_tab_button_->SetPosition(GetBounds().size(), quadrant);
 
@@ -1776,6 +1804,13 @@ void VideoOverlayWindowViews::SetMediaPosition(
   UpdateTimestampLabel(position_.GetPosition(), position_.duration());
 }
 
+void VideoOverlayWindowViews::SetSourceTitle(
+    const std::u16string& source_title) {
+  if (Use2024UI()) {
+    origin_->SetText(source_title);
+  }
+}
+
 void VideoOverlayWindowViews::SetFaviconImages(
     const std::vector<media_session::MediaImage>& images) {
   if (!Use2024UI()) {
@@ -2084,6 +2119,10 @@ views::Label* VideoOverlayWindowViews::timestamp_for_testing() const {
 
 views::ImageView* VideoOverlayWindowViews::favicon_view_for_testing() const {
   return favicon_view_;
+}
+
+views::Label* VideoOverlayWindowViews::origin_for_testing() const {
+  return origin_;
 }
 
 CloseImageButton* VideoOverlayWindowViews::close_button_for_testing() const {

@@ -106,6 +106,7 @@ void VideoPictureInPictureWindowControllerImpl::Show() {
   window_->SetPreviousSlideButtonVisibility(
       media_session_action_previous_slide_handled_);
   window_->SetFaviconImages(favicon_images_);
+  window_->SetSourceTitle(source_title_);
   window_->ShowInactive();
   GetWebContentsImpl()->SetHasPictureInPictureVideo(true);
 }
@@ -497,6 +498,19 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionImagesChanged(
 
   if (window_) {
     window_->SetFaviconImages(favicon_images_);
+  }
+}
+
+void VideoPictureInPictureWindowControllerImpl::MediaSessionMetadataChanged(
+    const std::optional<media_session::MediaMetadata>& metadata) {
+  if (metadata) {
+    source_title_ = metadata->source_title;
+  } else {
+    source_title_.clear();
+  }
+
+  if (window_) {
+    window_->SetSourceTitle(source_title_);
   }
 }
 

@@ -86,6 +86,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void SetPreviousSlideButtonVisibility(bool is_visible) override;
   void SetNextSlideButtonVisibility(bool is_visible) override;
   void SetMediaPosition(const media_session::MediaPosition& position) override;
+  void SetSourceTitle(const std::u16string& source_title) override;
   void SetFaviconImages(
       const std::vector<media_session::MediaImage>& images) override;
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
@@ -184,6 +185,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   global_media_controls::MediaProgressView* progress_view_for_testing() const;
   views::Label* timestamp_for_testing() const;
   views::ImageView* favicon_view_for_testing() const;
+  views::Label* origin_for_testing() const;
   CloseImageButton* close_button_for_testing() const;
   OverlayWindowMinimizeButton* minimize_button_for_testing() const;
   OverlayWindowBackToTabButton* back_to_tab_button_for_testing() const;
@@ -364,6 +366,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<views::View> controls_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_container_view_ = nullptr;
   raw_ptr<views::ImageView> favicon_view_ = nullptr;
+  raw_ptr<views::Label> origin_ = nullptr;
   raw_ptr<CloseImageButton> close_controls_view_ = nullptr;
   raw_ptr<OverlayWindowMinimizeButton> minimize_button_ = nullptr;
   raw_ptr<OverlayWindowBackToTabButton> back_to_tab_button_ = nullptr;

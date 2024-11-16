@@ -71,6 +71,7 @@ class VideoOverlayWindow {
   virtual void SetPreviousSlideButtonVisibility(bool is_visible) = 0;
   virtual void SetMediaPosition(
       const media_session::MediaPosition& position) = 0;
+  virtual void SetSourceTitle(const std::u16string& source_title) = 0;
   virtual void SetFaviconImages(
       const std::vector<media_session::MediaImage>& images) = 0;
 

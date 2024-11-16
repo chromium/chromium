@@ -780,6 +780,12 @@ TEST_F(VideoOverlayWindowViewsTest, FaviconNotDrawnWhen2024UIIsDisabled) {
   ASSERT_EQ(nullptr, favicon);
 }
 
+TEST_F(VideoOverlayWindowViewsTest, OriginNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::Label* origin = overlay_window().origin_for_testing();
+  ASSERT_EQ(nullptr, origin);
+}
+
 class VideoOverlayWindowViewsWith2024UITest
     : public VideoOverlayWindowViewsTest {
  public:
@@ -960,4 +966,14 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysFavicon) {
     EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
               &vector_icons::kGlobeIcon);
   }
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysOrigin) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::Label* origin = overlay_window().origin_for_testing();
+  ASSERT_NE(nullptr, origin);
+  EXPECT_TRUE(origin->IsDrawn());
+
+  overlay_window().SetSourceTitle(u"google.com");
+  EXPECT_EQ(origin->GetText(), u"google.com");
 }
