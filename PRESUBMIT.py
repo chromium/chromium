@@ -2095,6 +2095,15 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
         treat_as_error=False,
     ),
+    BanRule(
+        pattern=(r'/IS_CHROMEOS_ASH|'
+                 r'IS_CHROMEOS_LACROS'),
+        explanation=
+        ('Lacros is deprecated. Please do not use IS_CHROMEOS_ASH and '
+         'IS_CHROMEOS_LACROS anymore. Prefer IS_CHROMEOS instead.',
+        ),
+        treat_as_error=False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
