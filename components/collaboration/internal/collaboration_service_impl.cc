@@ -56,24 +56,26 @@ void CollaborationServiceImpl::StartJoinFlow(
   const data_sharing::DataSharingService::ParseUrlResult parse_result =
       data_sharing_service_->ParseDataSharingUrl(url);
 
-  if (!parse_result.has_value() || !parse_result.value().IsValid()) {
-    // TODO(crbug.com/345856704): Handle url parsing errors.
-    return;
+  GroupToken token;
+  if (parse_result.has_value() && parse_result.value().IsValid()) {
+    token = parse_result.value();
   }
 
-  const GroupToken& token = parse_result.value();
   if (join_controllers_.find(token) != join_controllers_.end()) {
     // TODO(crbug.com/345856704): Find the controller, and tell the controller
     // to promote the current screen.
     return;
   }
 
+  // Invalid url parsing will start a new join flow with empty GroupToken. This
+  // is needed in order to show the url parsing error message to the user.
   join_controllers_.insert(
-      {token,
-       std::make_unique<CollaborationController>(
-           CollaborationController::Flow::kJoin, this, std::move(delegate),
-           base::BindOnce(&CollaborationServiceImpl::FinishFlow,
-                          weak_ptr_factory_.GetWeakPtr(), token))});
+      {token, std::make_unique<CollaborationController>(
+                  CollaborationController::Flow::kJoin, token, this,
+                  data_sharing_service_.get(), tab_group_sync_service_.get(),
+                  std::move(delegate),
+                  base::BindOnce(&CollaborationServiceImpl::FinishFlow,
+                                 weak_ptr_factory_.GetWeakPtr(), token))});
 }
 
 void CollaborationServiceImpl::StartShareFlow(

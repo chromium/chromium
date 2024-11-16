@@ -65,6 +65,9 @@ class CollaborationControllerDelegate {
 
   // Request to show the share dialog.
   virtual void ShowShareDialog(ResultCallback result) = 0;
+
+  // Open the local tab group in UI.
+  virtual void PromoteTabGroup(ResultCallback result) = 0;
 };
 
 }  // namespace collaboration

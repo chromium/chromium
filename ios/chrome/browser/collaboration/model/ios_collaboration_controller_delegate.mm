@@ -122,4 +122,9 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
   share_flow.share_kit_service()->ShareGroup(config);
 }
 
+void IOSCollaborationControllerDelegate::PromoteTabGroup(
+    ResultCallback result) {
+  // TODO(crbug.com/377306986): Implement this.
+}
+
 }  // namespace collaboration

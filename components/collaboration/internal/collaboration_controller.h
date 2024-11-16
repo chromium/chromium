@@ -11,6 +11,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
+#include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/group_data.h"
+
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
 
 namespace collaboration {
 
@@ -43,7 +49,7 @@ class CollaborationController {
     // Delegate is promoting the local tab group.
     kOpeningLocalTabGroup,
 
-    // The flow is cancelled. The controller can safely clean itself up.
+    // The flow is cancelled.
     kCancel,
 
     // An error occurred and need to be shown to the user.
@@ -59,7 +65,10 @@ class CollaborationController {
 
   explicit CollaborationController(
       const Flow& flow,
+      const data_sharing::GroupToken& token,
       CollaborationService* collaboration_service,
+      data_sharing::DataSharingService* data_sharing_service,
+      tab_groups::TabGroupSyncService* tab_group_sync_service,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       FinishCallback finish_and_delete);
   ~CollaborationController();
@@ -70,12 +79,24 @@ class CollaborationController {
 
   // Getters.
   CollaborationControllerDelegate* delegate() { return delegate_.get(); }
-  base::WeakPtr<CollaborationController> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
+  data_sharing::DataSharingService* data_sharing_service() {
+    return data_sharing_service_.get();
   }
+  tab_groups::TabGroupSyncService* tab_group_sync_service() {
+    return tab_group_sync_service_.get();
+  }
+  const data_sharing::GroupToken& token() { return token_; }
+  CollaborationService* collaboration_service() {
+    return collaboration_service_.get();
+  }
+  const Flow& flow() { return flow_; }
 
   // Called to transition to another state.
-  void TransitionTo(std::unique_ptr<ControllerState> state);
+  void TransitionTo(
+      StateId state,
+      const CollaborationControllerDelegate::ErrorInfo& error =
+          CollaborationControllerDelegate::ErrorInfo(
+              CollaborationControllerDelegate::ErrorInfo::Type::kUnknown));
 
   // Called when the flow is finished to exit and clean itself up in the
   // service.
@@ -147,10 +168,15 @@ class CollaborationController {
       }};
 
   bool IsValidStateTransition(StateId from, StateId to);
+  std::unique_ptr<ControllerState> CreateStateObject(StateId state);
 
   std::unique_ptr<ControllerState> current_state_;
+
   const Flow flow_;
+  const data_sharing::GroupToken token_;
   const raw_ptr<CollaborationService> collaboration_service_;
+  const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
+  const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
   std::unique_ptr<CollaborationControllerDelegate> delegate_;
   FinishCallback finish_and_delete_;
   base::WeakPtrFactory<CollaborationController> weak_ptr_factory_{this};
