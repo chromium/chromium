@@ -11,6 +11,7 @@ import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -40,12 +41,12 @@ suite('<facegaze-actions-card>', () => {
 
   function assertActionSettingsRow(commandPair: FaceGazeCommandPair):
       HTMLDivElement {
-    const domRepeat =
-        faceGazeActionsCard.shadowRoot!.querySelector('dom-repeat');
+    const domRepeat = faceGazeActionsCard.shadowRoot!.querySelector<DomRepeat>(
+        '#faceGazeActionsCommandPairs');
     assertTrue(!!domRepeat);
     const settingsRows =
         faceGazeActionsCard.shadowRoot!.querySelectorAll<HTMLDivElement>(
-            '.settings-box');
+            '.command-pair');
     const row =
         Array.from(settingsRows.values())
             .find(

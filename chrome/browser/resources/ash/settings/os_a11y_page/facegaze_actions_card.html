@@ -47,7 +47,8 @@
       pref="{{prefs.settings.a11y.face_gaze.actions_enabled}}"
       disabled="[[disabled]]">
   </settings-toggle-button>
-  <dom-repeat items="[[commandPairs_]]">
+  <dom-repeat id="faceGazeActionsCommandPairs"
+      items="[[commandPairs_]]">
     <template>
       <div class="command-pair settings-box">
         <div class="start settings-box-text two-line single-column action-row">

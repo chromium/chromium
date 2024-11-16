@@ -49,6 +49,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private showAddActionDialog_: boolean;
   private leftClickGestures_: FacialGesture[] = [];
   private dialogPageToShow_: AddDialogPage;
+  private rowIdToUpdate_: number;
   private commandPairToConfigure_: FaceGazeCommandPair|null = null;
   private faceGazeActionsAlert_ = '';
 
@@ -173,6 +174,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.commandPairToConfigure_ = e.model.item;
     this.showAddActionDialog_ = true;
     this.faceGazeActionsAlert_ = '';
+    this.rowIdToUpdate_ = e.model.index;
   }
 
   private getActionDisplayText_(action: MacroName): string {
@@ -218,15 +220,14 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   // the UI accordingly.
   private onRemoveCommandPairButtonClick_(
       e: DomRepeatEvent<FaceGazeCommandPair>): void {
+    this.rowIdToUpdate_ = e.model.index;
     this.faceGazeActionsAlert_ = '';
     const removedCommandPair: FaceGazeCommandPair = e.model.item;
     this.removeCommandPairFromPref_(removedCommandPair);
 
-    const removeCommandPairIndex = this.commandPairs_.findIndex(
-        (item: FaceGazeCommandPair) => item.equals(removedCommandPair));
     this.splice(
         FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
-        removeCommandPairIndex, 1);
+        this.rowIdToUpdate_, 1);
 
     this.faceGazeActionsAlert_ = this.i18n(
         'faceGazeActionsRemovedActionAlert',
@@ -235,11 +236,11 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
     // If there is one, set focus to the remove button of the next command pair.
     // Otherwise, set focus to the action button.
-    if (this.commandPairs_[removeCommandPairIndex]) {
+    if (this.commandPairs_[this.rowIdToUpdate_]) {
       const commandPairElements =
           this.shadowRoot!.querySelectorAll<HTMLElement>('.command-pair');
       const nextRemoveButton =
-          commandPairElements[removeCommandPairIndex]
+          commandPairElements[this.rowIdToUpdate_]
               .querySelector<CrButtonElement>('.icon-clear');
       nextRemoveButton!.focus();
     } else {
@@ -287,36 +288,17 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     });
 
     if (unassignIndex >= 0) {
-      const unassignGesture = this.commandPairs_[unassignIndex].gesture;
       this.updateCommandPairGesture_(unassignIndex, null);
-
-      // Unassign key combo after gesture is unassigned so FaceGaze does not
-      // attempt to execute macro for gesture.
-      if (this.commandPairs_[unassignIndex].action ===
-              MacroName.CUSTOM_KEY_COMBINATION &&
-          unassignGesture) {
-        this.removeKeyComboFromPref_(
-            unassignGesture,
-            this.commandPairs_[unassignIndex].assignedKeyCombo);
-      }
     }
 
     if (this.dialogPageToShow_ === AddDialogPage.SELECT_GESTURE) {
       // Update an existing row for the action if coming from the Assign a
       // Gesture page.
-      const updateIndex = this.commandPairs_.findIndex(
-          (item: FaceGazeCommandPair) =>
-              item.actionsEqual(newCommandPair) && item.gesture === null);
-      if (updateIndex > -1) {
-        this.updateCommandPairGesture_(updateIndex, newCommandPair.gesture);
-      }
+      this.updateCommandPairGesture_(
+          this.rowIdToUpdate_, newCommandPair.gesture);
     } else {
-      const updateIndex = this.commandPairs_.findIndex(
-          (item: FaceGazeCommandPair) => item.equals(newCommandPair));
-      if (updateIndex < 0) {
-        // Add new gesture/action pairing if it does not already exist.
-        this.addNewCommandPair_(newCommandPair);
-      }
+      // Add new gesture/action pairing if it does not already exist.
+      this.addNewCommandPair_(newCommandPair);
     }
 
     this.faceGazeActionsAlert_ = this.getAlertText_(newCommandPair);
