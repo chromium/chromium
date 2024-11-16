@@ -22,7 +22,7 @@ BASE_FEATURE(kSkipEmptyDisplayHotplugEvent,
 // Enables the rounded corners for the internal display.
 BASE_FEATURE(kRoundedDisplay,
              "RoundedDisplay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsRoundedDisplayEnabled() {
   return base::FeatureList::IsEnabled(kRoundedDisplay);
