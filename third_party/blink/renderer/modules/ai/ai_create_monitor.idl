@@ -5,7 +5,8 @@
 // https://github.com/explainers-by-googlers/prompt-api
 
 [
-  Exposed=(Window,Worker)
+  Exposed=(Window,Worker),
+  SecureContext
 ]
 interface AICreateMonitor : EventTarget {
   attribute EventHandler ondownloadprogress;

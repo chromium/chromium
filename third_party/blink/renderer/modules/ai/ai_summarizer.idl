@@ -11,7 +11,8 @@ dictionary AISummarizerSummarizeOptions {
 
 [
   Exposed=(Window,Worker),
-  RuntimeEnabled=AISummarizationAPI
+  RuntimeEnabled=AISummarizationAPI,
+  SecureContext
 ]
 interface AISummarizer {
   [

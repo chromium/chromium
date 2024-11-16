@@ -12,7 +12,8 @@ dictionary AIRewriterRewriteOptions {
 
 [
   Exposed=(Window,Worker),
-  RuntimeEnabled=AIRewriterAPI
+  RuntimeEnabled=AIRewriterAPI,
+  SecureContext
 ]
 interface AIRewriter {
   [

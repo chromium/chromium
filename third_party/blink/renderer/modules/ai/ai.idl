@@ -12,6 +12,7 @@ enum AICapabilityAvailability {
 
 [
   Exposed=(Window,Worker),
+  SecureContext,
   RuntimeEnabled=BuiltInAIAPI
 ]
 interface AI {
