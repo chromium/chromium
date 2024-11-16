@@ -33,6 +33,9 @@ class ShareKitService : public KeyedService {
   // execution of the application.
   virtual bool IsSupported() const = 0;
 
+  // Ensures that the service is using the current primary account.
+  virtual void PrimaryAccountChanged();
+
   // Initiates the share group flow for the given `config`.
   virtual void ShareGroup(ShareKitShareGroupConfiguration* config) = 0;
 

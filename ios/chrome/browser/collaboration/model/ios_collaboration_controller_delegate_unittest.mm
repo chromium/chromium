@@ -132,4 +132,11 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiJoinFlow) {
   delegate_->ShowAuthenticationUi(completion_callback.Get());
 }
 
+// Tests `NotifySignInAndSyncStatusChange`.
+TEST_F(IOSCollaborationControllerDelegateTest,
+       NotifySignInAndSyncStatusChange) {
+  InitJoinFlowDelegate();
+  delegate_->NotifySignInAndSyncStatusChange();
+}
+
 }  // namespace collaboration

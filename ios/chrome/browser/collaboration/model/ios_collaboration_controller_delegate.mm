@@ -69,9 +69,8 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
               baseViewController:base_view_controller];
 }
 
-void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange(
-    ResultCallback result) {
-  // TODO(crbug.com/377306986): Implement this.
+void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange() {
+  collaboration_flow_->share_kit_service()->PrimaryAccountChanged();
 }
 
 void IOSCollaborationControllerDelegate::ShowJoinDialog(ResultCallback result) {

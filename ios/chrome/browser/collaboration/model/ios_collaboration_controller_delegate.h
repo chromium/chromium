@@ -29,7 +29,7 @@ class IOSCollaborationControllerDelegate
   void ShowError(ResultCallback result, const ErrorInfo& error) override;
   void Cancel(ResultCallback result) override;
   void ShowAuthenticationUi(ResultCallback result) override;
-  void NotifySignInAndSyncStatusChange(ResultCallback result) override;
+  void NotifySignInAndSyncStatusChange() override;
   void ShowJoinDialog(ResultCallback result) override;
   void ShowShareDialog(ResultCallback result) override;
 

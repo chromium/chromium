@@ -58,7 +58,7 @@ class CollaborationControllerDelegate {
 
   // Notification for when sign-in or sync status has been updated to ensure
   // that the update propagated to all relevant components.
-  virtual void NotifySignInAndSyncStatusChange(ResultCallback result) = 0;
+  virtual void NotifySignInAndSyncStatusChange() = 0;
 
   // Request to show the invitation dialog.
   virtual void ShowJoinDialog(ResultCallback result) = 0;

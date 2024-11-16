@@ -17,6 +17,10 @@ bool TestShareKitService::IsSupported() const {
   return true;
 }
 
+void TestShareKitService::PrimaryAccountChanged() {
+  // No-op for testing.
+}
+
 void TestShareKitService::ShareGroup(ShareKitShareGroupConfiguration* config) {
   UIViewController* viewController = [[FakeShareFlowViewController alloc] init];
   UINavigationController* navController = [[UINavigationController alloc]

@@ -17,6 +17,7 @@ class TestShareKitService : public ShareKitService {
 
   // ShareKitService.
   bool IsSupported() const override;
+  void PrimaryAccountChanged() override;
   void ShareGroup(ShareKitShareGroupConfiguration* config) override;
   void ManageGroup(ShareKitManageConfiguration* config) override;
   void JoinGroup(ShareKitJoinConfiguration* config) override;

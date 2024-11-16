@@ -8,6 +8,8 @@ ShareKitService::ShareKitService() = default;
 
 ShareKitService::~ShareKitService() = default;
 
+void ShareKitService::PrimaryAccountChanged() {}
+
 void ShareKitService::ReadGroups(ShareKitReadConfiguration* config) {}
 
 id<ShareKitAvatarPrimitive> ShareKitService::AvatarImage(
