@@ -122,16 +122,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // descriptors that the compiled operator needs and supply it via
   // `descriptor_heap`.
   //
-  // If the input and output resources are supplied by the caller via
-  // `input_bindings` and `output_bindings`, the input and output resources will
-  // be bound to the operator's binding table in this method.
-  // If the input and output resources are not supplied, you must bind them
-  // later outside this method before submitting the command list for execution.
-  // This is only valid if the `DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE`
-  // flag was set during operator compilation to allow late bindings.
-  // The number of bindings should exactly match the number of input and output
-  // tensors of this operator. All bound resources need to be in the
-  // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state before calling this method.
+  // The operator must be compiled with
+  // `DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE` flag which allows late bindings.
+  // Caller is expected to bind the input and output resources after calling
+  // this method and before submitting the command list for execution.
   //
   // If the compiled operator also requires any persistent resources, they
   // should be initialized by `InitializeOperator()` and be supplied via
@@ -145,14 +139,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   HRESULT ExecuteOperator(
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
       Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
-      const std::optional<base::span<const DML_BINDING_DESC>>& input_bindings,
-      const std::optional<base::span<const DML_BINDING_DESC>>& output_bindings,
       const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
       const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
-  // Helper function to bind input resources.
+  // Helper functions to bind input and output resources. These functions do not
+  // hold references to the input or output resources; it is the caller's
+  // responsibility to keep them alive until the operator execution has
+  // completed on the GPU.
   HRESULT BindInputs(base::span<const DML_BINDING_DESC> input_bindings);
-  // Helper function to bind output resources.
   HRESULT BindOutputs(base::span<const DML_BINDING_DESC> output_bindings);
 
   CommandQueue* command_queue() const { return command_queue_.get(); }

@@ -318,8 +318,6 @@ HRESULT CommandRecorder::InitializeOperator(
 HRESULT CommandRecorder::ExecuteOperator(
     Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
-    const std::optional<base::span<const DML_BINDING_DESC>>& input_bindings,
-    const std::optional<base::span<const DML_BINDING_DESC>>& output_bindings,
     const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
     const std::optional<DML_BINDING_DESC>& temporary_resource_binding) {
   TRACE_EVENT0("gpu", "dml::CommandRecorder::ExecuteOperator");
@@ -384,14 +382,6 @@ HRESULT CommandRecorder::ExecuteOperator(
     command_resources_.push_back(persistent_resource);
   }
 
-  if (input_bindings) {
-    RETURN_IF_FAILED(BindInputs(input_bindings.value()));
-  }
-
-  if (output_bindings) {
-    RETURN_IF_FAILED(BindOutputs(output_bindings.value()));
-  }
-
   RecordDispatch(compiled_operator.Get());
 
   // The operator owns GPU resources, and so it should be kept alive until the
@@ -417,20 +407,6 @@ HRESULT CommandRecorder::BindInputs(
         input_bindings.data());
     // DirectML may remove the device if invalid bindings are provided.
     RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
-
-    // The input resources should be kept alive until the operator has been
-    // executed on the GPU.
-    for (size_t i = 0; i < input_bindings.size(); ++i) {
-      // Skip binding type `DML_BINDING_TYPE_NONE` for graph constant which is
-      // already bound during operator initialization.
-      if (input_bindings[i].Type == DML_BINDING_TYPE_BUFFER) {
-        ID3D12Resource* input_resource =
-            static_cast<const DML_BUFFER_BINDING*>(input_bindings[i].Desc)
-                ->Buffer;
-        CHECK_NE(input_resource, nullptr);
-        command_resources_.push_back(input_resource);
-      }
-    }
   }
 
   return S_OK;
@@ -446,16 +422,6 @@ HRESULT CommandRecorder::BindOutputs(
       output_bindings.data());
   // DirectML may remove the device if invalid bindings are provided.
   RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
-
-  // The output resources should be kept alive until the operator has been
-  // executed on the GPU.
-  for (size_t i = 0; i < output_bindings.size(); ++i) {
-    CHECK_EQ(output_bindings[i].Type, DML_BINDING_TYPE_BUFFER);
-    ID3D12Resource* output_resource =
-        static_cast<const DML_BUFFER_BINDING*>(output_bindings[i].Desc)->Buffer;
-    CHECK_NE(output_resource, nullptr);
-    command_resources_.push_back(output_resource);
-  }
 
   return S_OK;
 }

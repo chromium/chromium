@@ -5854,7 +5854,6 @@ void GraphImplDml::CreateWebNNGraphImpl(
   // outputs will be late bound.
   hr = command_recorder_for_dispatch->ExecuteOperator(
       compiled_operator, graph_resources->descriptor_heap,
-      /*input_bindings*/ std::nullopt, /*output_bindings*/ std::nullopt,
       persistent_buffer_binding_desc,
       graph_resources->temporary_buffer_binding_desc);
   if (FAILED(hr)) {
@@ -6495,7 +6494,6 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
         &graph_input_buffer_bindings[graph_input_index]};
     previous_input_tensors_[std::string(name)] =
         input_tensor_impl->GetWeakPtr();
-    command_recorder_->OnTensorAccessed(input_tensor_impl);
   }
   return IoBindings(std::move(graph_input_buffer_bindings),
                     std::move(input_buffer_binding_desc));
@@ -6538,8 +6536,6 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
         &graph_output_buffer_bindings[graph_output_index]};
     previous_output_tensors_[std::string(name)] =
         output_tensor_impl->GetWeakPtr();
-    // Only output buffers could get modified upon execution.
-    command_recorder_->OnTensorAccessed(output_tensor_impl);
   }
   return IoBindings(std::move(graph_output_buffer_bindings),
                     std::move(output_buffer_binding_desc));
@@ -6582,6 +6578,11 @@ void GraphImplDml::DispatchImpl(
 
   HRESULT hr = S_OK;
 
+  // Indicate whether we need to bind the inputs/outputs. If the inputs/outputs
+  // were not bound in the previous `DispatchImpl()` or if the commands need to
+  // be recorded again, we need to bind them.
+  bool is_inputs_binding_needed = false;
+  bool is_outputs_binding_needed = false;
   if (is_command_recording_needed) {
     hr = command_recorder_->Open();
     if (FAILED(hr)) {
@@ -6595,12 +6596,10 @@ void GraphImplDml::DispatchImpl(
           persistent_resource_->persistent_buffer_binding_desc();
     }
 
-    // Execute the graph with input, output, temporary, and persistent bindings.
-    IoBindings input_bindings = CreateAndCacheInputBindings(named_inputs);
-    IoBindings output_bindings = CreateAndCacheOutputBindings(named_outputs);
+    // Execute the graph with temporary and persistent bindings, as inputs and
+    // outputs will be late bound.
     hr = command_recorder_->ExecuteOperator(
         compiled_operator_.Get(), graph_resources->descriptor_heap,
-        input_bindings.buffer_binding_desc, output_bindings.buffer_binding_desc,
         persistent_buffer_binding_desc,
         graph_resources->temporary_buffer_binding_desc);
     if (FAILED(hr)) {
@@ -6613,24 +6612,33 @@ void GraphImplDml::DispatchImpl(
       HandleDispatchFailure("Failed to close the command recorder.", hr);
       return;
     }
-  } else {
-    // We need bind the input/output tensors if they are not bound yet.
-    if (!IsDispatchBindingValid(named_inputs, previous_input_tensors_)) {
-      IoBindings input_bindings = CreateAndCacheInputBindings(named_inputs);
-      hr = command_recorder_->BindInputs(input_bindings.buffer_binding_desc);
-      if (FAILED(hr)) {
-        HandleDispatchFailure("Failed to bind inputs.", hr);
-        return;
-      }
-    }
 
+    is_inputs_binding_needed = true;
+    is_outputs_binding_needed = true;
+  } else {
+    if (!IsDispatchBindingValid(named_inputs, previous_input_tensors_)) {
+      is_inputs_binding_needed = true;
+    }
     if (!IsDispatchBindingValid(named_outputs, previous_output_tensors_)) {
-      IoBindings output_bindings = CreateAndCacheOutputBindings(named_outputs);
-      hr = command_recorder_->BindOutputs(output_bindings.buffer_binding_desc);
-      if (FAILED(hr)) {
-        HandleDispatchFailure("Failed to bind outputs.", hr);
-        return;
-      }
+      is_outputs_binding_needed = true;
+    }
+  }
+
+  if (is_inputs_binding_needed) {
+    IoBindings input_bindings = CreateAndCacheInputBindings(named_inputs);
+    hr = command_recorder_->BindInputs(input_bindings.buffer_binding_desc);
+    if (FAILED(hr)) {
+      HandleDispatchFailure("Failed to bind inputs.", hr);
+      return;
+    }
+  }
+
+  if (is_outputs_binding_needed) {
+    IoBindings output_bindings = CreateAndCacheOutputBindings(named_outputs);
+    hr = command_recorder_->BindOutputs(output_bindings.buffer_binding_desc);
+    if (FAILED(hr)) {
+      HandleDispatchFailure("Failed to bind outputs.", hr);
+      return;
     }
   }
 
@@ -6641,10 +6649,29 @@ void GraphImplDml::DispatchImpl(
     return;
   }
 
+  // Reference the named inputs and outputs resources for late binding into
+  // `CommandQueue` to keep them alive until the graph has been executed on the
+  // GPU, also set the last submission fence value of the resources to track the
+  // GPU progress.
+  CommandQueue* command_queue = command_recorder_->command_queue();
+  uint64_t last_submitted_fence_value = command_queue->GetLastFenceValue();
+  for (auto& [name, input_tensor] : named_inputs) {
+    TensorImplDml* input_tensor_impl =
+        static_cast<TensorImplDml*>(input_tensor);
+    input_tensor_impl->SetLastSubmissionFenceValue(last_submitted_fence_value);
+    command_queue->ReferenceUntilCompleted(input_tensor_impl->buffer());
+  }
+  for (auto& [name, output_tensor] : named_outputs) {
+    TensorImplDml* output_tensor_impl =
+        static_cast<TensorImplDml*>(output_tensor);
+    output_tensor_impl->SetLastSubmissionFenceValue(last_submitted_fence_value);
+    command_queue->ReferenceUntilCompleted(output_tensor_impl->buffer());
+  }
+
   // Prepare for the next dispatch.
-  command_recorder_->command_queue()->WaitAsync(
-      base::BindOnce(&GraphImplDml::OnDispatchComplete,
-                     weak_factory_.GetWeakPtr(), std::move(graph_resources)));
+  command_queue->WaitAsync(base::BindOnce(&GraphImplDml::OnDispatchComplete,
+                                          weak_factory_.GetWeakPtr(),
+                                          std::move(graph_resources)));
 }
 
 void GraphImplDml::OnDispatchComplete(
