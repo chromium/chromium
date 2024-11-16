@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
@@ -130,6 +131,13 @@ DEFINE_TEXT_PROTO_FUZZER(
       // Give other tasks a chance to run (e.g. calling our output callback).
       base::RunLoop().RunUntilIdle();
     }
+
+    // Let's wait for VideoEncoder to finish its job and give it a
+    // opportunity to crash, otherwise we might quit too quickly and miss
+    // something bad happening in a background thread.
+    auto promise = video_encoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
   }
 }
 
