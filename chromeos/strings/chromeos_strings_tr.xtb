@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS web sitelerinde yüksek gecikme süresi</translation>
 <translation id="361575905210396100">Geri bildiriminiz için teşekkürler</translation>
 <translation id="3621072146987826699">filler</translation>
+<translation id="3628462041319107639">Metne dönüştürme modeli indiriliyor…</translation>
 <translation id="3632040286124154621">İyi öneri</translation>
 <translation id="3632579075709132555">Gizlilik ekranını aç/kapat</translation>
 <translation id="3639873154908477486">Ad (A'dan Z'ye)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">Geçersiz PIN.</translation>
 <translation id="382043424867370667">Gün batımı duvar kağıdı</translation>
 <translation id="3824259034819781947">Dosya ekle</translation>
+<translation id="383586991013681190">Metne dönüştürme dilini seçin ve Ayarlar'dan indirin</translation>
 <translation id="3836587210832263413">Yalnızca güvendiğiniz uzantıları etkinleştirin.</translation>
 <translation id="3838338534323494292">Yeni şifre</translation>
 <translation id="3845880861638660475">İletişim kutusunu kapatmak için <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> tuşlarına basın.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Eşleşen sonuç yok</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Varsayılan olmayan ağ geçidi pinglenemedi</translation>
+<translation id="4483498983731992167">Transkript oluşturulamadı</translation>
 <translation id="4486524074141928967"><ph name="TIME" /> itibarıyla oturumunuz kapatılacak</translation>
 <translation id="4500722292849917410">Kısayol kullanılamıyor. Değiştirici tuş (ctrl, alt, üst karakter veya <ph name="META_KEY" />) kullanarak yeni bir kısayola basın.</translation>
 <translation id="4500966230243561393">Arayüz rengi</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">yukarı</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> tuşu olmayan kısayol bazı uygulamaların kısayoluyla çakışabilir. Kullanmaya devam etmek için bu kısayola tekrar basın veya <ph name="KEY" /> tuşunu kullanarak yeni bir kısayola basın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Benzer:</translation>
+<translation id="5121677070210013200">Metne dönüştürme modeli indirilemedi. Tekrar deneyin veya Chromebook'unuzu yeniden başlatın.</translation>
 <translation id="5130848777448318809">midilliler</translation>
 <translation id="5137451382116112100">Tam</translation>
 <translation id="5140788690559353412">Okul hesabınıza erişimi kaybettiğinizde artık ilgili e-posta ve Google Drive dosyalarına (ör. Gmail, Dokümanlar, Slaytlar vb.) erişemezsiniz.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Konuşmacı tanımlamaya izin ver</translation>
 <translation id="7041549558901442110">Cihaz bağlı değil.</translation>
 <translation id="7046522406494308071">Tüm kısayollar varsayılanlara sıfırlansın mı?</translation>
+<translation id="7049916119678019302">Metne dönüştürme modelini Ayarlar'dan indirin</translation>
 <translation id="7058278511608979688">Bitir ve kaydet</translation>
 <translation id="7059230779847288458">Şarj oluyor. Tamamen dolmasına <ph name="TIME_VALUE" /> var</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> anahtarı</translation>

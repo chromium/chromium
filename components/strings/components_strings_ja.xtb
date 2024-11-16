@@ -36,7 +36,6 @@
 <translation id="10614374240317010">常に保存しない</translation>
 <translation id="1062407476771304334">置換</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">パソコンのブックマーク</translation>
 <translation id="1067029985695494416">検索エンジンの詳細</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" />のページを翻訳しない</translation>
 <translation id="1070333806075222467">金属（光沢）</translation>
@@ -3801,6 +3800,7 @@
 <translation id="7842611866969435396">始める</translation>
 <translation id="784404208867107517">グループに分類した履歴</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
+<translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="785476343534277563">大学スポーツ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">新しい有効期限と <ph name="SIDE_OF_CARD" /> に記載されている CVC を入力してください</translation>
@@ -4126,6 +4126,7 @@
 <translation id="8438786541497918448">カメラとマイクを使用しますか？</translation>
 <translation id="8438923942245957911">このサイトは、組織によってフラグが付けられています</translation>
 <translation id="8446275044635689572">舞台芸術</translation>
+<translation id="8446884382197647889">詳細</translation>
 <translation id="8449155699563577224">17x24 インチ</translation>
 <translation id="8449836157089738489">すべてを新しいタブグループで開く</translation>
 <translation id="84561192812921051">管理者は、ユーザーのプロフィールやブラウザをリモートで変更したり、レポートを通じてブラウザに関する情報を分析したり、その他の必要なタスクを行ったりすることができます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>

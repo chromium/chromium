@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Висока латенција кон веб-сајтовите со HTTPS</translation>
 <translation id="361575905210396100">Фала за повратните информации</translation>
 <translation id="3621072146987826699">слонови</translation>
+<translation id="3628462041319107639">Се презема моделот за транскрипции…</translation>
 <translation id="3632040286124154621">Добар предлог</translation>
 <translation id="3632579075709132555">Вклучи/исклучи заштита на приватноста</translation>
 <translation id="3639873154908477486">Име (А – Ш)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">Неважечки PIN.</translation>
 <translation id="382043424867370667">Тапет Sunset</translation>
 <translation id="3824259034819781947">Приложете датотеки</translation>
+<translation id="383586991013681190">Изберете јазик на транскрипција и преземете во „Поставки“</translation>
 <translation id="3836587210832263413">Вклучете ги само екстензиите во коишто имате доверба</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
 <translation id="3845880861638660475">Притиснете <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> за да го затворите дијалогот.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Нема резултати што се совпаѓаат</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
+<translation id="4483498983731992167">Не може да се создаде транскрипција</translation>
 <translation id="4486524074141928967">Ќе се одјавите во <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Кратенката не е достапна. Притиснете нова кратенка со копче модификатор (Ctrl, Alt, Shift или <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Боја на интерфејсот</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Можно е да дојде до поклопување меѓу кратенка без копче за <ph name="META_KEY" /> и кратенката на некоја апликација. Притиснете ја кратенкава повторно за да продолжите да ја користите или притиснете нова кратенка со копчето за <ph name="KEY" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Слични:</translation>
+<translation id="5121677070210013200">Не може да се преземе моделот за транскрипции. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
 <translation id="5130848777448318809">понија</translation>
 <translation id="5137451382116112100">Цел екран</translation>
 <translation id="5140788690559353412">Кога ќе го изгубите пристапот до вашата училишна сметка, веќе нема да имате пристап до поврзаната е-пошта и датотеките во Google Drive, како Gmail, „Документи“, „Слајдови“ и друго.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Дозволи идентификација на говорници</translation>
 <translation id="7041549558901442110">Уредот не е поврзан.</translation>
 <translation id="7046522406494308071">Да се ресетираат сите кратенки на стандардните вредности?</translation>
+<translation id="7049916119678019302">Преземете го моделот за транскрипции во „Поставки“</translation>
 <translation id="7058278511608979688">Заврши и зачувај</translation>
 <translation id="7059230779847288458">Се полни, <ph name="TIME_VALUE" /> до полна</translation>
 <translation id="7066538517128343186">копче <ph name="KEY" /></translation>

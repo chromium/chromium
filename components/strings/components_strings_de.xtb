@@ -36,7 +36,6 @@
 <translation id="10614374240317010">Nie speichern für…</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">Desktop-Lesezeichen</translation>
 <translation id="1067029985695494416">Einzelheiten zur Suchmaschine</translation>
 <translation id="1068672505746868501">Seiten auf <ph name="SOURCE_LANGUAGE" /> nie übersetzen</translation>
 <translation id="1070333806075222467">Metall (glänzend)</translation>
@@ -3397,6 +3396,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7156870133441232244">Der Server sollte auf TLS 1.2 oder höher aktualisiert werden.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Wenn du diese Datei über <ph name="FEATURE_NAME" /> senden möchtest, musst du Speicherplatz (<ph name="DISK_SPACE_SIZE" />) auf deinem Gerät freigeben}other{Wenn du diese Dateien mit <ph name="FEATURE_NAME" /> senden möchtest, musst du Speicherplatz (<ph name="DISK_SPACE_SIZE" />) auf deinem Gerät freigeben}}</translation>
 <translation id="7160999678034985039">Bitte speichere deine Arbeit und starte das Update, wenn du bereit bist.</translation>
+<translation id="7162277662076933695">Intelligentes Kartenlesegerät</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vertrauliche Datei kopieren?}other{Vertrauliche Dateien kopieren?}}</translation>
 <translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ ist keine unterstützte Einschränkung auf dieser Plattform</translation>
 <translation id="717330890047184534">GAIA-ID: </translation>
@@ -3797,6 +3797,7 @@ Weitere Details:
 <translation id="7842611866969435396">Los gehts</translation>
 <translation id="784404208867107517">Gruppierter Verlauf</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="785476343534277563">Hochschulsport</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Gib das neue Ablaufdatum und den CVC auf der <ph name="SIDE_OF_CARD" /> ein</translation>
@@ -4122,6 +4123,7 @@ Weitere Details:
 <translation id="8438786541497918448">Kamera und Mikrofon verwenden?</translation>
 <translation id="8438923942245957911">Diese Website wurde von deiner Organisation gemeldet</translation>
 <translation id="8446275044635689572">Darstellende Künste</translation>
+<translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8449155699563577224">17 × 24 Zoll</translation>
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
 <translation id="84561192812921051">Dein Administrator kann Änderungen an deinem Profil und Browser per Fernzugriff vornehmen, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>

@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="361575905210396100">તમારા પ્રતિસાદ બદલ આભાર</translation>
 <translation id="3621072146987826699">હાથીઓ</translation>
+<translation id="3628462041319107639">ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરી રહ્યાં છીએ…</translation>
 <translation id="3632040286124154621">સારું સૂચન</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
 <translation id="3639873154908477486">નામ (Aથી Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="382043424867370667">સનસેટ વૉલપેપર</translation>
 <translation id="3824259034819781947">ફાઇલ જોડો</translation>
+<translation id="383586991013681190">સેટિંગમાં જઈને ટ્રાન્સક્રિપ્શનની ભાષા પસંદ કરો અને તેને ડાઉનલોડ કરો</translation>
 <translation id="3836587210832263413">તમે વિશ્વાસ કરતા હો ફક્ત તેવા જ એક્સ્ટેન્શન ચાલુ કરો</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
 <translation id="3845880861638660475">સંવાદ બંધ કરવા માટે <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> દબાવો.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">કોઈ મેળ ખાતું પરિણામ નથી</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
+<translation id="4483498983731992167">ટ્રાન્સક્રિપ્ટ બનાવી શકાતી નથી</translation>
 <translation id="4486524074141928967">તમને <ph name="TIME" /> વાગ્યે સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="4500722292849917410">શૉર્ટકટ ઉપલબ્ધ નથી. મૉડિફાયર કી (ctrl, alt, shift અથવા <ph name="META_KEY" />)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="4500966230243561393">ઇન્ટરફેસ રંગ</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ઉપર</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> કી વિનાનો શૉર્ટકટ કોઈ ઍપના શૉર્ટકટ સાથે વિસંગત હોઈ શકે છે. આ શૉર્ટકટનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે તેને ફરીથી દબાવો અથવા <ph name="KEY" /> કીનો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">સમાન:</translation>
+<translation id="5121677070210013200">ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરી શકાતું નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="5130848777448318809">ટટ્ટુઓ</translation>
 <translation id="5137451382116112100">સંપૂર્ણ</translation>
 <translation id="5140788690559353412">જ્યારે તમે તમારા સ્કૂલના એકાઉન્ટનો ઍક્સેસ ગુમાવો, ત્યારે તમારી પાસે તેની સાથે સંકળાયેલા ઇમેઇલ અને Google Driveની ફાઇલો, જેમ કે Gmail, Docs, Slides અને બીજા બધાનો ઍક્સેસ રહેશે નહીં.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">સ્પીકરને ઓળખવાની મંજૂરી આપો</translation>
 <translation id="7041549558901442110">ડિવાઇસ કનેક્ટ થયું નથી.</translation>
 <translation id="7046522406494308071">બધા શોર્ટકર્ટને ડિફૉલ્ટ તરીકે રીસેટ કરીએ?</translation>
+<translation id="7049916119678019302">સેટિંગમાં જઈને ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરો</translation>
 <translation id="7058278511608979688">બંધ કરો અને સાચવો</translation>
 <translation id="7059230779847288458">ચાર્જ થઈ રહી છે, પૂર્ણ ચાર્જ થવામાં <ph name="TIME_VALUE" /> બાકી</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> કી</translation>

@@ -139,6 +139,7 @@
 <translation id="1604959087182679653">Ezkutatu transkripzioa</translation>
 <translation id="160633243685262989">Aurrebista-irudia</translation>
 <translation id="1611649489706141841">aurrera</translation>
+<translation id="1615144046047995187">Ezin da deskargatu. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datu-erabilera</translation>
 <translation id="1618566998877964907">Erabili gai bat</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
@@ -540,6 +541,7 @@
 <translation id="3606583719724308068">Latentzia handia HTTPS darabilten webguneak kargatzeko</translation>
 <translation id="361575905210396100">Mila esker oharrak bidaltzeagatik</translation>
 <translation id="3621072146987826699">elefanteak</translation>
+<translation id="3628462041319107639">Transkripzio-eredua deskargatzen…</translation>
 <translation id="3632040286124154621">Iradokizun egokia</translation>
 <translation id="3632579075709132555">Pribatutasun-pantaila aldatzeko etengailua</translation>
 <translation id="3639873154908477486">Izena (A-Z)</translation>
@@ -572,6 +574,7 @@
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
 <translation id="382043424867370667">Ilunabarra erakusten duen horma-papera</translation>
 <translation id="3824259034819781947">Erantsi fitxategiak</translation>
+<translation id="383586991013681190">Hautatu transkripzio-hizkuntza eta deskargatu Ezarpenak atalean</translation>
 <translation id="3836587210832263413">Aktibatu luzapen fidagarriak soilik</translation>
 <translation id="3838338534323494292">Pasahitz berria</translation>
 <translation id="3845880861638660475">Leihoa ixteko, sakatu <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Ihes<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -591,6 +594,7 @@
 <translation id="3885327323343477505">Aldatu pantaila-babeslea</translation>
 <translation id="3889914174935857450">Berrezartzeko data</translation>
 <translation id="3897092660631435901">Menua</translation>
+<translation id="3902271751020176019">Transkripzioaren hizkuntza</translation>
 <translation id="391412459402535266">Ezin da probatu gailua. Probak egiteko, aldatu ordenagailu eramangarriaren modura.</translation>
 <translation id="3916998944874125962">atera pantaila-argazkia</translation>
 <translation id="3923184630988645767">Datu-erabilera</translation>
@@ -714,6 +718,7 @@
 <translation id="4474142134969976028">Ez dago emaitzarik</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ezin izan da egin ping lehenetsia ez den sarerako atebidean</translation>
+<translation id="4483498983731992167">Ezin da sortu transkripzioa</translation>
 <translation id="4486524074141928967">Amaitu egin da saioa (<ph name="TIME" />)</translation>
 <translation id="4500722292849917410">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat tekla aldatzaile bat erabilita (Ktrl, Alt, Maius edo <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interfazearen kolorea</translation>
@@ -845,6 +850,7 @@
 <translation id="5099354524039520280">gora</translation>
 <translation id="5107243100836678918">Baliteke <ph name="META_KEY" /> teklarik gabeko lasterbideak gatazkan egotea aplikazioren baten lasterbidearekin. Lasterbide hau erabiltzen jarraitzeko, saka ezazu berriro; bestela, sakatu beste lasterbide bat <ph name="KEY" /> tekla erabilita. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Antzekoak:</translation>
+<translation id="5121677070210013200">Ezin da deskargatu transkripzio-eredua. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
 <translation id="5130848777448318809">poneyak</translation>
 <translation id="5137451382116112100">Osoa</translation>
 <translation id="5140788690559353412">Ikastetxeko kontua erabiltzeko baimena galdu ondoren, ezin izango dituzu erabili harekin lotutako helbide elektronikoa eta Google Drive-ko fitxategiak, hala nola Gmail, Dokumentuak, Aurkezpenak eta beste zerbitzu batzuetakoak.</translation>
@@ -947,6 +953,7 @@
 <translation id="5606865426897221650">Fitxa</translation>
 <translation id="5613201299517339763">Amaitu egin da saioa</translation>
 <translation id="5620281292257375798">Barnekoa soilik</translation>
+<translation id="5628106863521633649">Erabilgarri dauden hizkuntzak</translation>
 <translation id="5630438231335788050">bauhaus-a</translation>
 <translation id="5631759159893697722">laburpena</translation>
 <translation id="5655283760733841251">Teklatuaren distira igotzeko tekla</translation>
@@ -1259,6 +1266,7 @@
 <translation id="7040729769968826896">Eman hizlaria identifikatzeko baimena</translation>
 <translation id="7041549558901442110">Gailua ez dago konektatuta.</translation>
 <translation id="7046522406494308071">Lasterbide guztien balio lehenetsiak berrezarri nahi dituzu?</translation>
+<translation id="7049916119678019302">Deskargatu transkripzio-eredua Ezarpenak atalean</translation>
 <translation id="7058278511608979688">Amaitu eta gorde</translation>
 <translation id="7059230779847288458">Kargatzen; <ph name="TIME_VALUE" /> geratzen dira guztiz kargatu arte</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> gakoa</translation>
@@ -1272,6 +1280,7 @@
 <translation id="710028965487274708">Baimena emateko prozesuak huts egin du</translation>
 <translation id="7101959270679078188">Eguneratzen jarraitzeko, desblokeatu <ph name="DEVICE_NAME" /></translation>
 <translation id="7103252855940681301"><ph name="INDEX" />/<ph name="COUNT" /> gailua (<ph name="NAME" />).</translation>
+<translation id="7103793063702494489">Hautatutako hizkuntza</translation>
 <translation id="7107255225945990211">Aukeratu <ph name="PRODUCT_NAME" /> produktuko artelan esklusiboak</translation>
 <translation id="7108668606237948702">"sartu" tekla</translation>
 <translation id="7117228822971127758">Saiatu berriro geroago</translation>

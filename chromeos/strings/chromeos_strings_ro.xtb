@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
 <translation id="361575905210396100">Îți mulțumim pentru feedback</translation>
 <translation id="3621072146987826699">elefanți</translation>
+<translation id="3628462041319107639">Se descarcă modelul de transcriere…</translation>
 <translation id="3632040286124154621">Sugestie bună</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
 <translation id="3639873154908477486">Nume (de la A la Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">PIN nevalid.</translation>
 <translation id="382043424867370667">Imagine de fundal cu apus</translation>
 <translation id="3824259034819781947">Atașează fișiere</translation>
+<translation id="383586991013681190">Selectează limba pentru transcriere și descarcă în Setări</translation>
 <translation id="3836587210832263413">Activează doar extensiile în care ai încredere</translation>
 <translation id="3838338534323494292">Parolă nouă</translation>
 <translation id="3845880861638660475">Apasă pe <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> și pe <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> pentru a închide caseta de dialog.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Niciun rezultat</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
+<translation id="4483498983731992167">Nu se poate crea transcrierea</translation>
 <translation id="4486524074141928967">Te vei deconecta la <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind o tastă de modificare (Ctrl, Alt, Shift sau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Culoarea interfeței</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">sus</translation>
 <translation id="5107243100836678918">Comanda rapidă fără <ph name="META_KEY" /> poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta <ph name="KEY" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Sinonime:</translation>
+<translation id="5121677070210013200">Nu se poate descărca modelul de transcriere. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="5130848777448318809">ponei</translation>
 <translation id="5137451382116112100">Complet</translation>
 <translation id="5140788690559353412">Când pierzi accesul la contul școlar, nu vei mai avea acces la e-mailul asociat și la fișierele Google Drive, cum ar fi Gmail, Documente, Prezentări și altele.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Permite identificarea vorbitorilor</translation>
 <translation id="7041549558901442110">Dispozitivul nu este conectat.</translation>
 <translation id="7046522406494308071">Resetezi toate comenzile rapide la valorile prestabilite?</translation>
+<translation id="7049916119678019302">Descarcă modelul de transcriere în Setări</translation>
 <translation id="7058278511608979688">Finalizează și salvează</translation>
 <translation id="7059230779847288458">Se încarcă, <ph name="TIME_VALUE" /> până la încărcarea completă</translation>
 <translation id="7066538517128343186">cheia <ph name="KEY" /></translation>

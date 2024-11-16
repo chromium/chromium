@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS වෙබ් අඩවිවලට ඉහළ පමාව</translation>
 <translation id="361575905210396100">ඔබගේ ප්‍රතිපෝෂණයට ස්තුතියි</translation>
 <translation id="3621072146987826699">අලි</translation>
+<translation id="3628462041319107639">අනුපත් කිරීමේ ආකෘතිය බාගනිමින්…</translation>
 <translation id="3632040286124154621">හොඳ යෝජනාවක්</translation>
 <translation id="3632579075709132555">පෞද්ගලිකත්ව තිරය ටොගල කිරීම</translation>
 <translation id="3639873154908477486">නම (A සිට Z දක්වා)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">වලංගු නොවන PIN.</translation>
 <translation id="382043424867370667">හිරු බැස යන වෝල්පේපරය</translation>
 <translation id="3824259034819781947">ගොනු අමුණන්න</translation>
+<translation id="383586991013681190">අනුපත් කිරීමේ භාෂාව තෝරන්න සහ සැකසීම් තුළ බාගන්න</translation>
 <translation id="3836587210832263413">ඔබ විශ්වාස කරන දිගු පමණක් ක්‍රියාත්මක කරන්න</translation>
 <translation id="3838338534323494292">නව මුරපදය</translation>
 <translation id="3845880861638660475">සංවාදය වැසීමට <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ඔබන්න.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">ගැළපෙන ප්‍රතිඵල නැත</translation>
 <translation id="4479639480957787382">ඊදර්නෙට්</translation>
 <translation id="4483049906298469269">පෙරනිමි නොවන ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
+<translation id="4483498983731992167">අනුපත තැනීමට නොහැක</translation>
 <translation id="4486524074141928967">ඔබ <ph name="TIME" />ට වරනය වනු ඇත</translation>
 <translation id="4500722292849917410">කෙටිමඟ නොලැබේ. සංස්කාරක යතුරක් භාවිතයෙන් නව කෙටිමඟක් ඔබන්න (ctrl, alt, shift, හෝ <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">අතුරු මුහුණත් වර්ණය</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ඉහළ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> යතුර නොමැති කෙටිමඟ සමහර යෙදුම් කෙටිමඟ සමග ගැටිය හැක. එය දිගටම භාවිතා කිරීමට මෙම කෙටිමඟ නැවත ඔබන්න, නැතහොත් <ph name="KEY" /> යතුර භාවිතයෙන් නව කෙටිමඟක් ඔබන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">සමාන:</translation>
+<translation id="5121677070210013200">අනුපත් කිරීමේ ආකෘතිය බාගත කළ නොහැක. නැවත උත්සාහ කරන්න හෝ ඔබේ Chromebook යළි අරඹන්න.</translation>
 <translation id="5130848777448318809">පෝනියෝ</translation>
 <translation id="5137451382116112100">පූර්ණ</translation>
 <translation id="5140788690559353412">ඔබට ඔබේ පාසල් ගිණුමට ප්‍රවේශය අහිමි වූ විට, ඔබට තවදුරටත් සම්බන්ධිත ඉ-තැපෑල සහ Gmail, Docs, Slides වැනි Google Drive ගොනු සහ තවත් බොහෝ දේ වෙත ප්‍රවේශය නොලැබෙනු ඇත.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">කථිකයා හඳුනා ගැනීමට ඉඩ දෙන්න</translation>
 <translation id="7041549558901442110">උපාංගය සම්බන්ධ කර නැත.</translation>
 <translation id="7046522406494308071">කෙටිමං සියල්ල පෙරනිමිවලට යළි සකසන්නද?</translation>
+<translation id="7049916119678019302">සැකසීම් තුළ අනුපත් කිරීමේ ආකෘතිය බාගන්න</translation>
 <translation id="7058278511608979688">අවසන් කර සුරකින්න</translation>
 <translation id="7059230779847288458">ආරෝපණය වෙමින්, සම්පූර්ණ වන තෙක් <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> යතුර</translation>

@@ -36,7 +36,6 @@
 <translation id="10614374240317010">Ніколи не зберігалося</translation>
 <translation id="1062407476771304334">Замінити</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">Закладки на комп’ютері</translation>
 <translation id="1067029985695494416">Відомості про пошукову систему</translation>
 <translation id="1068672505746868501">Ніколи не перекладати сторінки такою мовою: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Метал (глянцевий)</translation>
@@ -3399,6 +3398,7 @@
 <translation id="7156870133441232244">На сервері має бути встановлено протокол TLS 1.2 або новішої версії.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Щоб надіслати цей файл за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}one{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}few{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}many{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}other{Щоб надіслати ці файли за допомогою функції "<ph name="FEATURE_NAME" />", звільніть місце на пристрої (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">Збережіть дані й почніть оновлення, коли будете готові.</translation>
+<translation id="7162277662076933695">Сканер розумних карток</translation>
 <translation id="7163295244162773898">{0,plural, =1{Скопіювати конфіденційний файл?}one{Скопіювати конфіденційні файли?}few{Скопіювати конфіденційні файли?}many{Скопіювати конфіденційні файли?}other{Скопіювати конфіденційні файли?}}</translation>
 <translation id="7168625890036931112">Обмеження <ph name="DATA_CONTROLS_RESTRICTION" /> не підтримується на цій платформі</translation>
 <translation id="717330890047184534">Ідентифікатор GAIA:</translation>
@@ -3799,6 +3799,7 @@
 <translation id="7842611866969435396">Почати</translation>
 <translation id="784404208867107517">Історія, упорядкована за групами</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">Сталася помилка. Повторіть спробу.</translation>
 <translation id="785476343534277563">Спорт у коледжі</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Введіть нову дату закінчення строку дії і код CVC, указаний на <ph name="SIDE_OF_CARD" /></translation>
@@ -4124,6 +4125,7 @@
 <translation id="8438786541497918448">Використовувати камеру та мікрофон?</translation>
 <translation id="8438923942245957911">Ваша організація поскаржилася на цей сайт</translation>
 <translation id="8446275044635689572">Виконавське мистецтво</translation>
+<translation id="8446884382197647889">Докладніше</translation>
 <translation id="8449155699563577224">17 x 24 дюйм.</translation>
 <translation id="8449836157089738489">Відкрити всі в новій групі вкладок</translation>
 <translation id="84561192812921051">Адміністратор може віддалено вносити зміни у ваш профіль і вебпереглядач, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії. Діями на цьому пристрої можна керувати за межами Chrome.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>

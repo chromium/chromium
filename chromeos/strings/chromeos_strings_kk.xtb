@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS веб-сайттарына кідіріс жоғары.</translation>
 <translation id="361575905210396100">Пікіріңіз үшін рақмет!</translation>
 <translation id="3621072146987826699">пілдер</translation>
+<translation id="3628462041319107639">Транскрипция үлгісі жүктеп алынып жатыр…</translation>
 <translation id="3632040286124154621">Жақсы ұсыныс</translation>
 <translation id="3632579075709132555">Құпиялық экранын қосу/өшіру</translation>
 <translation id="3639873154908477486">Атауы (A–Я)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">PIN коды жарамсыз.</translation>
 <translation id="382043424867370667">Күннің батуы бейнеленген тұсқағаз</translation>
 <translation id="3824259034819781947">Файлдарды тіркеу</translation>
+<translation id="383586991013681190">Транскрипция тілін параметрлерден таңдаңыз және жүктеп алыңыз.</translation>
 <translation id="3836587210832263413">Тек сенімді кеңейтімдерді қосыңыз</translation>
 <translation id="3838338534323494292">Жаңа құпия сөз</translation>
 <translation id="3845880861638660475">Диалогтік терезе жабу үшін <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> тіркесімін басыңыз.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Сәйкес нәтижелер табылмады</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
+<translation id="4483498983731992167">Транскрипция жасалмады</translation>
 <translation id="4486524074141928967">Мына уақытта аккаунттан шығарыласыз: <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Пернелер тіркесімі қолжетімді емес. Өзгерткіш пернені (ctrl, alt, shift немесе <ph name="META_KEY" />) пайдаланып, жаңа тіркесімді басыңыз.</translation>
 <translation id="4500966230243561393">Интерфейс түсі</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">жоғары</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> пернесі жоқ пернелер тіркесімі кейбір қолданбаның пернелер тіркесіміне қайшы келуі мүмкін. Осы пернелер тіркесімін пайдалануды жалғастыру үшін қайта басыңыз немесе <ph name="KEY" /> пернесін пайдаланып, жаңа пернелер тіркесімін басыңыз. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Ұқсас:</translation>
+<translation id="5121677070210013200">Транскрипция үлгісі жүктеп алынбады. Әрекетті қайталаңыз немесе Chromebook-ты өшіріп қосыңыз.</translation>
 <translation id="5130848777448318809">понилер</translation>
 <translation id="5137451382116112100">Толық</translation>
 <translation id="5140788690559353412">Оқу аккаунтына кіру мүмкіндігінен айырылып қалсаңыз, Gmail, Docs, Slides және т.б. сияқты байланысты электрондық пошта мен Google Drive файлдарына енді кіре алмайсыз.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Сөйлеушіні анықтауға рұқсат беру</translation>
 <translation id="7041549558901442110">Құрылғы жалғанбаған.</translation>
 <translation id="7046522406494308071">Барлық пернелер тіркесімін әдепкі мәндерге қайта орнату керек пе?</translation>
+<translation id="7049916119678019302">Транскрипция үлгісін параметрлерден жүктеп алыңыз.</translation>
 <translation id="7058278511608979688">Аяқтау және сақтау</translation>
 <translation id="7059230779847288458">Зарядталуда, толғанға дейінгі уақыт: <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> кілті</translation>

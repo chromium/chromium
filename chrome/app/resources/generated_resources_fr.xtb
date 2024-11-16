@@ -446,6 +446,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1296911687402551044">Épingler l'onglet sélectionné</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Envoyer des commentaires sur <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modifications</translation>
 <translation id="130097046531636712">Cela prolonge l'autonomie de la batterie en limitant l'activité en arrière-plan et les effets visuels, comme le défilement fluide</translation>
 <translation id="1301135395320604080">Le site <ph name="ORIGIN" /> peut modifier les fichiers suivants</translation>
 <translation id="130174306655812048">Dis "Hey Google, quelle est cette chanson ?"</translation>
@@ -687,7 +688,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1476347941828409626">&amp;Gérer les profils Chrome</translation>
 <translation id="1476607407192946488">&amp;Paramètres linguistiques</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
-<translation id="1477645000789043442">Crée automatiquement des groupes d'onglets en fonction de vos onglets ouverts. Pour utiliser cette fonctionnalité, effectuez un clic droit sur un onglet, puis cliquez sur "Organiser les onglets similaires".</translation>
 <translation id="1477654881618305065">Votre organisation ne vous permet pas de partager ce contenu. Pour toute question, contactez votre administrateur.</translation>
 <translation id="1478340334823509079">Détails : <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">L'installation n'a pas été activée</translation>
@@ -1074,7 +1074,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1734212868489994726">Bleu clair</translation>
 <translation id="1734230530703461088">Échec du chargement des extensions dans le délai imparti. Veuillez contacter votre administrateur.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> risque de ne pas rester à jour</translation>
-<translation id="1735957571918073979">Cligner des yeux</translation>
 <translation id="1735983780784385591">Importés depuis Linux</translation>
 <translation id="173628468822554835">OK. Par défaut, les nouveaux sites que vous consultez ne vous enverront pas de notifications.</translation>
 <translation id="1737968601308870607">Signaler un problème</translation>
@@ -1766,6 +1765,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2214018885812055163">Dossiers partagés</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ligne non affichée&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ligne non affichée&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lignes non affichées&gt;}}</translation>
 <translation id="2215070081105889450">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
+<translation id="2217208085547223783">État d'approbation</translation>
 <translation id="2218019600945559112">Souris et pavé tactile</translation>
 <translation id="2218515861914035131">Coller en texte brut</translation>
 <translation id="221872881068107022">Inverser le défilement</translation>
@@ -2098,7 +2098,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2438853563451647815">Non connecté à l'imprimante</translation>
 <translation id="2439152382014731627">Réinitialiser le mot de passe du <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> : chargement…</translation>
-<translation id="2440036226025529014">Utiliser les mouvements du visage et du regard pour contrôler le curseur et le clavier</translation>
 <translation id="2440604414813129000">Afficher la s&amp;ource</translation>
 <translation id="244071666433939959">Les applis s'ouvrent dans une fenêtre</translation>
 <translation id="2440823041667407902">Accès à la position</translation>
@@ -2495,6 +2494,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2722547199758472013">ID : <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Ouvrir le profil invité</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Contraintes</translation>
 <translation id="2724841811573117416">Journaux WebRTC</translation>
 <translation id="272488616838512378">Conversion d'unités</translation>
 <translation id="2725200716980197196">La connectivité du réseau a été rétablie</translation>
@@ -3067,7 +3067,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3119948370277171654">Quel contenu ou quelle URL diffusiez-vous ?</translation>
 <translation id="3122464029669770682">UC</translation>
 <translation id="3122496702278727796">Échec de la création du répertoire des données</translation>
-<translation id="3122810280993140148">Crée des thèmes personnalisés en fonction du sujet, de l'humeur, du style visuel et de la couleur de votre choix. Pour utiliser cette fonctionnalité, ouvrez un nouvel onglet et cliquez sur "Personnaliser Chrome".</translation>
 <translation id="3122883569442693641">Plus d'informations</translation>
 <translation id="3124111068741548686">Handles UTILISATEUR</translation>
 <translation id="3124332159330678621">Personnalisez Chrome pour donner un nouveau look à votre navigateur</translation>
@@ -3454,6 +3453,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3421835120203732951">Ajouter un profil</translation>
 <translation id="3423111258700187173">Résultats trouvés dans <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">En savoir plus sur cette fonctionnalité d'IA</translation>
+<translation id="3423275441470187644">Approbation</translation>
 <translation id="3423463006624419153">Sur votre <ph name="PHONE_NAME_1" /> et votre <ph name="PHONE_NAME_2" /> :</translation>
 <translation id="3423858849633684918">Veuillez relancer <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3424969259347320884">Décrivez ce que vous faisiez lorsque l'onglet a planté</translation>
@@ -4579,6 +4579,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4195814663415092787">Reprendre où vous avez arrêté</translation>
 <translation id="4198268995694216131">Autres sites</translation>
+<translation id="4198420883535766848">Supprimer l'onglet de la liste</translation>
 <translation id="4200609364258658652">Cop&amp;ier l'image vidéo</translation>
 <translation id="4200689466366162458">Mots personnalisés</translation>
 <translation id="4200983522494130825">Nouvel ongle&amp;t</translation>
@@ -4752,7 +4753,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="432160826079505197">Afficher <ph name="FILE_NAME" /> dans le Finder</translation>
 <translation id="4322394346347055525">Fermer les autres onglets</translation>
 <translation id="4324577459193912240">Fichier incomplet</translation>
-<translation id="432464946901605871">Pour te protéger en ligne avec les choix de ton parent, connecte-toi en tant que <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">Désinstallation de <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Stockage et alimentation</translation>
 <translation id="4326146840124313313">La fonctionnalité de sécurité la plus forte de Chrome vous protège davantage contre les téléchargements, les extensions et les sites Web malveillants</translation>
@@ -5141,6 +5141,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Supprimer le groupe d'onglets ?}one{Supprimer le groupe d'onglets ?}other{Supprimer les groupes d'onglets ?}}</translation>
 <translation id="4608500690299898628">&amp;Rechercher...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> a rencontré une erreur</translation>
+<translation id="4610493438923139095">Non approuvé</translation>
 <translation id="4610637590575890427">Vouliez-vous accéder à <ph name="SITE" /> ?</translation>
 <translation id="4611114513649582138">Connexion de données disponible</translation>
 <translation id="4611759022973144129">Vous pouvez utiliser ce mot de passe pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
@@ -5166,6 +5167,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4627442949885028695">Continuer sur un autre appareil</translation>
 <translation id="4628762811416793313">Impossible de configurer le conteneur Linux. Veuillez réessayer.</translation>
 <translation id="4629521233550547305">Ouvrir le profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Approuvé</translation>
 <translation id="4631955550884380853">Voix concentrée</translation>
 <translation id="4632655012900268062">Personnaliser les fiches</translation>
 <translation id="4633003931260532286">L'extension nécessite au minimum la version <ph name="IMPORT_VERSION" /> de <ph name="IMPORT_NAME" />, mais la version installée est la <ph name="INSTALLED_VERSION" /></translation>
@@ -6819,6 +6821,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5842497610951477805">Activation du Bluetooth</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
 <translation id="5844574845205796324">Suggérer un nouveau contenu à explorer</translation>
+<translation id="5844685625984052392">Indice</translation>
 <translation id="5846200638699387931">Erreur de syntaxe dans la relation : <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Sans ombre</translation>
 <translation id="5846504156837627898">Gérer les autorisations des sites</translation>
@@ -9175,7 +9178,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7550885994112799211">Stockage, alimentation, langue</translation>
 <translation id="7551059576287086432">Échec du téléchargement de "<ph name="FILE_NAME" />".</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
-<translation id="755198739067769724">Bienvenue <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">Pour rejoindre des groupes d'onglets ou en partager, vous devez vous connecter et activer la synchronisation</translation>
 <translation id="7552846755917812628">Essayez les astuces suivantes :</translation>
 <translation id="7553012839257224005">Vérification du conteneur Linux…</translation>
@@ -10426,7 +10428,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Bac à papier manquant</translation>
 <translation id="8424250197845498070">Bloqué par la Protection Avancée</translation>
-<translation id="842501938276307467">Essayez des fonctionnalités d'IA expérimentale</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8425492902634685834">Épingler sur la barre des tâches</translation>
 <translation id="8425768983279799676">Vous pouvez utiliser votre code pour déverrouiller votre appareil.</translation>
@@ -10666,7 +10667,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8601206103050338563">Authentification du client WWW TLS</translation>
 <translation id="8602674530529411098">Applis (bêta)</translation>
 <translation id="8602851771975208551">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.</translation>
-<translation id="8604513817270995005">Vous aide à rédiger des contenus courts pour le Web, comme des avis. Le contenu suggéré dépend de vos requêtes et du contenu de la page Web. Pour utiliser cette fonctionnalité, effectuez un clic droit sur une zone de texte.</translation>
 <translation id="8605428685123651449">Mémoire SQLite</translation>
 <translation id="8607171490667464784">Lorsque l'appareil est inactif et sur batterie</translation>
 <translation id="8607828412110648570">Assurez-vous que votre appareil Bluetooth est en mode association et à proximité. Associez uniquement des appareils de confiance. Les appareils associés sont visibles dans tous les comptes sur ce Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11439,7 +11439,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9116366756388192417">Choisir un thème</translation>
 <translation id="9116799625073598554">Application de prise de notes</translation>
 <translation id="9117030152748022724">Gérer vos applications</translation>
-<translation id="9119587891086680311">Ces fonctionnalités utilisent l'IA, sont au début de leur développement et ne sont pas infaillibles.</translation>
 <translation id="9120362425083889527">Impossible de terminer l'installation. Veuillez réessayer ou fermer cette fenêtre.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Pour une expérience optimale, installez <ph name="DEVICE_OS" /> sur votre disque interne. Vous pouvez aussi le faire plus tard depuis l'écran de connexion.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si vous ne voulez pas l'installer maintenant, vous pouvez l'exécuter depuis une clé USB pour l'essayer. Vous conserverez ainsi votre OS et vos données, mais vous serez peut-être limité en termes de stockage et de performances.<ph name="END_PARAGRAPH2" /></translation>

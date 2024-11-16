@@ -782,6 +782,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4645575059429386691">Pārvalda viens no jūsu vecākiem</translation>
 <translation id="4647758699119474035">Esat pierakstījies kā <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google konta kļūda. Atvērt konta izvēlni.</translation>
 <translation id="4650125387981512669">Turpināt kā: <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Paslēpt pēc vienas minūtes}zero{Paslēpt pēc {count} minūtēm}one{Paslēpt pēc {count} minūtes}other{Paslēpt pēc {count} minūtēm}}</translation>
 <translation id="4652817563047461855">Aizsargājiet savas paroles, uzziniet, vai tās nav uzlauztas, un saņemiet padomus par drošību tiešsaistē. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4658335131052370646">Saglabāt</translation>
 <translation id="4668929960204016307">,</translation>

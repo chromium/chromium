@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Բարձր հապաղում HTTPS կայքերի համար</translation>
 <translation id="361575905210396100">Շնորհակալություն կարծիք հայտնելու համար</translation>
 <translation id="3621072146987826699">փղեր</translation>
+<translation id="3628462041319107639">Գրադարձման մոդելի ներբեռնում…</translation>
 <translation id="3632040286124154621">Լավ հուշում</translation>
 <translation id="3632579075709132555">Գաղտնիության էկրանի փոխանջատիչ</translation>
 <translation id="3639873154908477486">Այբբենական կարգով (Ա – Ֆ)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="382043424867370667">«Մայրամուտ» պաստառ</translation>
 <translation id="3824259034819781947">Կցել ֆայլեր</translation>
+<translation id="383586991013681190">Ընտրեք գրադարձման լեզուն և ներբեռնեք Կարգավորումներում</translation>
 <translation id="3836587210832263413">Միայն միացրեք ընդլայնումները, որոնց վստահում եք</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
 <translation id="3845880861638660475">Սեղմեք <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />՝ երկխոսության պատուհանը փակելու համար։</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Արդյունքներ չեն գտնվել</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
+<translation id="4483498983731992167">Հնարավոր չէ գրադարձում ստեղծել</translation>
 <translation id="4486524074141928967">Դուք դուրս կգրվեք հաշվից <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում՝ օգտագործելով կերպափոխիչ ստեղնը (Ctrl, Alt, Shift կամ <ph name="META_KEY" />)։</translation>
 <translation id="4500966230243561393">Միջերեսի գույն</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">վերև</translation>
 <translation id="5107243100836678918">Առանց «<ph name="META_KEY" />» ստեղնի դյուրանցումը կարող է հակասել որոշ հավելվածների դյուրանցումներին։ Կրկին սեղմեք այս դյուրանցումը՝ դրա օգտագործումը շարունակելու համար, կամ սեղմեք նոր դյուրանցում՝ օգտագործելով «<ph name="KEY" />» ստեղնը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Հոմանիշներ՝</translation>
+<translation id="5121677070210013200">Հնարավոր չէ ներբեռնել գրադարձման մոդելը։ Նորից փորձեք կամ վերագործարկեք ձեր Chromebook-ը։</translation>
 <translation id="5130848777448318809">պոնիներ</translation>
 <translation id="5137451382116112100">Լիաէկրան</translation>
 <translation id="5140788690559353412">Երբ կորցնեք ձեր ուսումնական հաշվի հասանելիությունը, կապված էլ․ հասցեն ու Google Drive-ի ֆայլերը (օր․՝ Gmail-ում, Փաստաթղթերում, Սլայդներում և այլն) ձեզ այլևս հասանելի չեն լինի։</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Թույլատրել բարձրախոսների ճանաչումը</translation>
 <translation id="7041549558901442110">Սարքը միացված չէ։</translation>
 <translation id="7046522406494308071">Վերականգնե՞լ բոլոր դյուրանցումների կանխադրված արժեքները</translation>
+<translation id="7049916119678019302">Ներբեռնեք գրադարձման մոդելը Կարգավորումներում</translation>
 <translation id="7058278511608979688">Ավարտել և պահել</translation>
 <translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> ստեղնը</translation>

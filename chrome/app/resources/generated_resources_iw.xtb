@@ -689,7 +689,6 @@
 <translation id="1476347941828409626">‏&amp;ניהול הפרופילים ב-Chrome</translation>
 <translation id="1476607407192946488">הגד&amp;רות שפה</translation>
 <translation id="1477446329585670721">כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.</translation>
-<translation id="1477645000789043442">יצירת קבוצות של כרטיסיות באופן אוטומטי על סמך הכרטיסיות הפתוחות. כדי להשתמש בתכונה הזו, צריך ללחוץ לחיצה ימנית על כרטיסייה ואז ללחוץ על 'ארגון כרטיסיות דומות'.</translation>
 <translation id="1477654881618305065">בהתאם למדיניות הארגון שלך, אין לך אפשרות לשתף את התוכן הזה. לקבלת עזרה, צריך ליצור קשר עם מנהל המערכת.</translation>
 <translation id="1478340334823509079">פרטים: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ההתקנה אינה מופעלת</translation>
@@ -1081,7 +1080,6 @@
 <translation id="1734212868489994726">תכלת</translation>
 <translation id="1734230530703461088">טעינת התוספים במסגרת הזמן שהוקצב נכשלה. יש לפנות למנהל המערכת.</translation>
 <translation id="1734824808160898225">ייתכן ש-<ph name="PRODUCT_NAME" /> לא יוכל להתעדכן</translation>
-<translation id="1735957571918073979">מצמצמים את שתי העיניים</translation>
 <translation id="1735983780784385591">‏יובאו מ-Linux</translation>
 <translation id="173628468822554835">הבנתי. כברירת מחדל, אתרים חדשים שאליהם נכנסת לא ישלחו לך התראות.</translation>
 <translation id="1737968601308870607">דיווח על באג</translation>
@@ -2109,7 +2107,6 @@
 <translation id="2438853563451647815">אין מדפסת מחוברת</translation>
 <translation id="2439152382014731627">איפוס הסיסמה ל-<ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> בטעינה</translation>
-<translation id="2440036226025529014">שימוש בתנועת הפנים והמבט לשליטה בסמן ובמקלדת</translation>
 <translation id="2440604414813129000">צפייה &amp;במקור</translation>
 <translation id="244071666433939959">האפליקציות נפתחות בחלון</translation>
 <translation id="2440823041667407902">גישה למיקום</translation>
@@ -3078,7 +3075,6 @@
 <translation id="3119948370277171654">‏איזה תוכן או כתובת URL העברת?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">יצירת ספריית נתונים נכשלה</translation>
-<translation id="3122810280993140148">‏יצירת עיצובים בהתאמה אישית על סמך הנושא, מצב הרוח, הסגנון החזותי והצבע שבוחרים. כדי להשתמש בתכונה הזו, צריך לפתוח כרטיסייה חדשה וללחוץ על 'התאמה אישית של Chrome'.</translation>
 <translation id="3122883569442693641">פרטים נוספים</translation>
 <translation id="3124111068741548686">מזהים ייחודיים של משתמש</translation>
 <translation id="3124332159330678621">‏מתאימים אישית את Chrome כדי לשנות את מראה הדפדפן</translation>
@@ -4765,7 +4761,6 @@
 <translation id="432160826079505197">‏הצגה של <ph name="FILE_NAME" /> ב-Finder</translation>
 <translation id="4322394346347055525">סגירת כרטיסיות אחרות</translation>
 <translation id="4324577459193912240">הקובץ לא הושלם</translation>
-<translation id="432464946901605871">כדי לשמור על הבטיחות אונליין בהתאם לאפשרויות שנבחרו על ידי ההורה שלך, עליך להיכנס עם האימייל <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">הסרת ההתקנה של <ph name="LINUX_APP_NAME" /> מתבצעת…</translation>
 <translation id="4325433082696797523">אחסון וחשמל</translation>
 <translation id="4326146840124313313">‏האבטחה הכי יעילה של Chrome מגינה עליך טוב יותר מפני תוספים, הורדות ואתרים מסוכנים</translation>
@@ -9192,7 +9187,6 @@
 <translation id="7550885994112799211">אחסון, הפעלה, שפה</translation>
 <translation id="7551059576287086432">ההורדה של <ph name="FILE_NAME" /> הצליחה</translation>
 <translation id="7551643184018910560">הצמדה למדף</translation>
-<translation id="755198739067769724">שלום, <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">כדי לשתף קבוצות של כרטיסיות או להצטרף אליהן, צריך להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="7552846755917812628">אולי הטיפים האלו יעזרו לך:</translation>
 <translation id="7553012839257224005">‏המערכת בודקת את הקונטיינר של Linux</translation>
@@ -10444,7 +10438,6 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">המגש חסר</translation>
 <translation id="8424250197845498070">נחסם על ידי ההגנה המתקדמת</translation>
-<translation id="842501938276307467">‏רוצה לנסות תכונות ניסיוניות מבוססות-AI?</translation>
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8425492902634685834">הצמדה לשורת המשימות</translation>
 <translation id="8425768983279799676">קוד האימות מאפשר לבטל את נעילת המכשיר.</translation>
@@ -10684,7 +10677,6 @@
 <translation id="8601206103050338563">‏אימות לקוח TLS WWW</translation>
 <translation id="8602674530529411098">אפליקציות (בטא)</translation>
 <translation id="8602851771975208551">‏תוכנית אחרת במחשב שלך הוסיפה אפליקציה שעשויה לשנות את אופן הפעולה של Chrome.</translation>
-<translation id="8604513817270995005">התכונה הזו עוזרת לכתוב תוכן קצר לאינטרנט, למשל ביקורות. ההצעות לתוכן מבוססות על ההנחיות שמזינים ועל התוכן של דף האינטרנט. כדי להשתמש בתכונה הזו, צריך ללחוץ לחיצה ימנית על תיבת טקסט.</translation>
 <translation id="8605428685123651449">‏זיכרון SQLite</translation>
 <translation id="8607171490667464784">בזמן שימוש בסוללה ובמצב לא פעיל</translation>
 <translation id="8607828412110648570">‏צריך לוודא שמכשיר ה-Bluetooth נמצא במצב התאמה ובקרבת מקום. חשוב לבצע התאמה רק עם מכשירים מהימנים. המכשירים המותאמים גלויים לכל החשבונות ב-Chromebook הזה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11458,7 +11450,6 @@
 <translation id="9116366756388192417">בחירת נושא</translation>
 <translation id="9116799625073598554">אפליקציה לרישום הערות</translation>
 <translation id="9117030152748022724">ניהול האפליקציות שלך</translation>
-<translation id="9119587891086680311">‏התכונות האלה מבוססות על AI, הן בשלבי פיתוח מוקדמים ולא תמיד יתנו תוצאות נכונות.</translation>
 <translation id="9120362425083889527">לא ניתן להשלים את ההתקנה. אפשר לנסות שוב או לסגור את החלון הזה</translation>
 <translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />כדי ליהנות מהחוויה הכי טובה, צריך להתקין את <ph name="DEVICE_OS" /> בדיסק הפנימי. יש לך גם אפשרות להתקין בשלב מאוחר יותר ממסך ההתחברות.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />אם עדיין לא מתאים לך להתקין, אפשר להריץ את המערכת מ-USB ולנסות אותה. מערכת ההפעלה והנתונים הנוכחיים שלך ימשיכו לפעול, אבל ייתכן שיהיו מגבלות על נפח אחסון וביצועים.<ph name="END_PARAGRAPH2" /></translation>

@@ -36,7 +36,6 @@
 <translation id="10614374240317010">Незапазвани никога</translation>
 <translation id="1062407476771304334">Замяна</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
-<translation id="106701514854093668">Настолни отметки</translation>
 <translation id="1067029985695494416">Подробности за търсещата машина</translation>
 <translation id="1068672505746868501">Страниците на <ph name="SOURCE_LANGUAGE" /> да не се превеждат</translation>
 <translation id="1070333806075222467">Метал (гланциран)</translation>
@@ -3399,6 +3398,7 @@
 <translation id="7156870133441232244">Сървърът трябва да се надстрои до TLS 1.2 или по-нова версия.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{За да изпратите този файл чрез „<ph name="FEATURE_NAME" />“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „<ph name="FEATURE_NAME" />“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
 <translation id="7160999678034985039">Моля, запазете работата си и стартирайте актуализацията, когато сте готови.</translation>
+<translation id="7162277662076933695">Четец на смарткарти</translation>
 <translation id="7163295244162773898">{0,plural, =1{Да се копира ли поверителният файл?}other{Да се копират ли поверителните файлове?}}</translation>
 <translation id="7168625890036931112"><ph name="DATA_CONTROLS_RESTRICTION" /> не е поддържано ограничение в тази платформа</translation>
 <translation id="717330890047184534">Идентификатор в GAIA:</translation>
@@ -3799,6 +3799,7 @@
 <translation id="7842611866969435396">Да започваме</translation>
 <translation id="784404208867107517">Групирана история</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
 <translation id="785476343534277563">Колежански спортове</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Въведете новата дата на валидност и кода за проверка, който се намира на <ph name="SIDE_OF_CARD" /></translation>
@@ -4124,6 +4125,7 @@
 <translation id="8438786541497918448">Да се използват ли камерата и микрофонът?</translation>
 <translation id="8438923942245957911">Организацията ви е подала сигнал за този сайт</translation>
 <translation id="8446275044635689572">Сценични изкуства</translation>
+<translation id="8446884382197647889">Научете повече</translation>
 <translation id="8449155699563577224">17 x 24 инча</translation>
 <translation id="8449836157089738489">Отваряне на всички в нова група раздели</translation>
 <translation id="84561192812921051">Администраторът ви може да извършва промени в потребителския профил и браузъра ви отдалечено, да анализира информацията за браузъра чрез отчитане и да изпълнява други необходими задачи. Възможно е активността на това устройство да се управлява и извън Chrome.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>

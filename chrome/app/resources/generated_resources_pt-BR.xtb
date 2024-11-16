@@ -689,7 +689,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1476347941828409626">&amp;Gerenciar perfis do Chrome</translation>
 <translation id="1476607407192946488">&amp;Configurações de idioma</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requer que você mantenha o cartão inteligente inserido.</translation>
-<translation id="1477645000789043442">Cria grupos automaticamente com base nas guias abertas. Para usar este recurso, clique com o botão direito do mouse em uma guia e clique em "Organizar guias semelhantes".</translation>
 <translation id="1477654881618305065">Sua organização não permite o compartilhamento desse conteúdo. Se precisar de ajuda, entre em contato com o administrador.</translation>
 <translation id="1478340334823509079">Detalhes: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">A instalação não está ativada</translation>
@@ -1084,7 +1083,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1734212868489994726">Azul-claro</translation>
 <translation id="1734230530703461088">Falha ao carregar extensões dentro do limite de tempo. Entre em contato com o administrador.</translation>
 <translation id="1734824808160898225">Talvez o <ph name="PRODUCT_NAME" /> não consiga se manter atualizado</translation>
-<translation id="1735957571918073979">Piscar os dois olhos</translation>
 <translation id="1735983780784385591">Importado do Linux</translation>
 <translation id="173628468822554835">Ok. Por padrão, os novos sites que você visitar não enviarão notificações.</translation>
 <translation id="1737968601308870607">Cadastre um bug</translation>
@@ -2113,7 +2111,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2438853563451647815">Impressora não conectada</translation>
 <translation id="2439152382014731627">Redefinir senha do <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Carregando <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Usar movimentos do rosto e do olhar para controlar o cursor e o teclado</translation>
 <translation id="2440604414813129000">Exibir &amp;código fonte</translation>
 <translation id="244071666433939959">Apps abertos em uma janela</translation>
 <translation id="2440823041667407902">Acesso ao local</translation>
@@ -3082,7 +3079,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3119948370277171654">Qual era o conteúdo/URL em transmissão?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Falha ao criar o diretório de dados</translation>
-<translation id="3122810280993140148">Cria temas personalizados com base no assunto, clima, estilo visual e cor escolhidos. Para usar o recurso, abra uma nova guia e clique em "Personalizar o Chrome".</translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
 <translation id="3124111068741548686">Processamentos do USUÁRIO</translation>
 <translation id="3124332159330678621">Personalize o Chrome para mudar o visual do navegador</translation>
@@ -4772,7 +4768,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="432160826079505197">Mostrar <ph name="FILE_NAME" /> no Finder</translation>
 <translation id="4322394346347055525">Fechar outras guias</translation>
 <translation id="4324577459193912240">Arquivo incompleto</translation>
-<translation id="432464946901605871">Para usar as configurações escolhidas pelos seus familiares responsáveis e ter mais segurança on-line, faça login com a conta <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">Desinstalando <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Armazenamento e energia</translation>
 <translation id="4326146840124313313">A melhor segurança do Chrome protege você ainda mais contra sites, extensões e downloads perigosos</translation>
@@ -9200,7 +9195,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7550885994112799211">Armazenamento, energia e idioma</translation>
 <translation id="7551059576287086432">Falha no dowload de <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fixar na estante</translation>
-<translation id="755198739067769724">Olá, <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">Para compartilhar ou participar de grupos de guias, você precisa fazer login e ativar a sincronização</translation>
 <translation id="7552846755917812628">Tente seguir estas dicas:</translation>
 <translation id="7553012839257224005">Verificando o contêiner Linux</translation>
@@ -10451,7 +10445,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Bandeja ausente</translation>
 <translation id="8424250197845498070">Bloqueado pelo recurso Proteção Avançada</translation>
-<translation id="842501938276307467">Teste recursos experimentais de IA</translation>
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8425492902634685834">Fixar na barra de tarefas</translation>
 <translation id="8425768983279799676">Você pode usar o PIN para desbloquear seu dispositivo.</translation>
@@ -10691,7 +10684,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8601206103050338563">Autenticação do cliente TLS WWW</translation>
 <translation id="8602674530529411098">Apps (Beta)</translation>
 <translation id="8602851771975208551">Outro programa em seu computador adicionou um aplicativo que pode mudar a forma como o Google Chrome funciona.</translation>
-<translation id="8604513817270995005">Ajuda você a escrever conteúdo em formato curto para itens na Web, como avaliações. As sugestões são baseadas nos seus comandos e no conteúdo da página da Web. Para usar esse recurso, clique com o botão direito do mouse em uma caixa de texto.</translation>
 <translation id="8605428685123651449">Memória SQLite</translation>
 <translation id="8607171490667464784">Enquanto o dispositivo estiver inativo e usando a bateria</translation>
 <translation id="8607828412110648570">Confira se o dispositivo Bluetooth está por perto e no modo de pareamento. Faça o pareamento apenas com dispositivos confiáveis. Os dispositivos pareados ficam visíveis para todas as contas neste Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11464,7 +11456,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9116366756388192417">Escolha um tema</translation>
 <translation id="9116799625073598554">App de anotações</translation>
 <translation id="9117030152748022724">Gerenciar seus apps</translation>
-<translation id="9119587891086680311">Esses recursos nem sempre acertam, porque usam IA e ainda estão em desenvolvimento.</translation>
 <translation id="9120362425083889527">Não foi possível concluir a instalação. Tente de novo ou feche esta janela</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para ter a melhor experiência possível, instale o <ph name="DEVICE_OS" /> no seu disco interno. Você também pode o instalar mais tarde na tela de login.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se ainda não quiser fazer a instalação, é possível o executar no dispositivo USB para conhecer o sistema. Essa opção garantirá que o SO e seus dados sejam mantidos, mas talvez haja limitações de armazenamento e desempenho.<ph name="END_PARAGRAPH2" /></translation>

@@ -688,7 +688,6 @@
 <translation id="1476347941828409626">管理 Chrome 設定檔(&amp;M)</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> 需要您繼續插入智能卡。</translation>
-<translation id="1477645000789043442">自動根據開啟的分頁建立分頁群組。如要使用此功能，請在分頁上按一下右鍵，然後按一下 [整理類似分頁]。</translation>
 <translation id="1477654881618305065">您的機構不允許分享此內容。如果您需要協助，請與管理員聯絡。</translation>
 <translation id="1478340334823509079">詳情：<ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">未啟用安裝功能</translation>
@@ -1082,7 +1081,6 @@
 <translation id="1734212868489994726">淺藍色</translation>
 <translation id="1734230530703461088">無法在時限內載入擴充程式，請聯絡您的管理員。</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> 可能無法自動更新</translation>
-<translation id="1735957571918073979">眨眼</translation>
 <translation id="1735983780784385591">從 Linux 匯入</translation>
 <translation id="173628468822554835">知道了。根據預設，您首次瀏覽的網站將不會傳送通知。</translation>
 <translation id="1737968601308870607">報告錯誤</translation>
@@ -2112,7 +2110,6 @@
 <translation id="2438853563451647815">未連線至打印機</translation>
 <translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="2439626940657133600">載入緊 <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">透過面部和視線移動來控制游標和鍵盤</translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244071666433939959">應用程式會在視窗中開啟</translation>
 <translation id="2440823041667407902">位置資料存取權</translation>
@@ -3081,7 +3078,6 @@
 <translation id="3119948370277171654">您投放的內容/網址是什麼？</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">無法建立數據目錄</translation>
-<translation id="3122810280993140148">根據你選擇的主題、心情、視覺風格和顏色建立自訂主題。如要使用此功能，請開啟新分頁，然後按一下 [自訂 Chrome]。</translation>
 <translation id="3122883569442693641">更多詳情</translation>
 <translation id="3124111068741548686">USER 控制代碼</translation>
 <translation id="3124332159330678621">自訂 Chrome 以便為瀏覽器套用新風格</translation>
@@ -4761,7 +4757,6 @@
 <translation id="432160826079505197">喺 Finder 入面顯示 <ph name="FILE_NAME" /></translation>
 <translation id="4322394346347055525">關閉其他分頁</translation>
 <translation id="4324577459193912240">檔案未完成下載</translation>
-<translation id="432464946901605871">如要按家長所選設定加強網上安全，請以 <ph name="USER_EMAIL" /> 登入</translation>
 <translation id="4325237902968425115">正在解除安裝 <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">儲存空間和電源</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全功能可進一步保護您免受危險網站、下載檔案和擴充程式威脅</translation>
@@ -9180,7 +9175,6 @@
 <translation id="7550885994112799211">儲存空間、電源、語言</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> 下載失敗</translation>
 <translation id="7551643184018910560">固定至捷徑列</translation>
-<translation id="755198739067769724"><ph name="CHILD_NAME" />，歡迎使用</translation>
 <translation id="7552191410769096467">你需要登入並開啟同步功能，才能分享或加入分頁群組</translation>
 <translation id="7552846755917812628">請嘗試按照以下提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
@@ -10431,7 +10425,6 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">沒有紙匣</translation>
 <translation id="8424250197845498070">已由進階保護功能封鎖</translation>
-<translation id="842501938276307467">試用實驗版 AI 功能</translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8425492902634685834">固定至工作列</translation>
 <translation id="8425768983279799676">您可以使用 PIN 解鎖裝置。</translation>
@@ -10671,7 +10664,6 @@
 <translation id="8601206103050338563">TLS WWW 用戶端驗證</translation>
 <translation id="8602674530529411098">應用程式 (Beta 版本)</translation>
 <translation id="8602851771975208551">電腦中其他程式所新增的應用程式可能會變更 Chrome 的工作方式。</translation>
-<translation id="8604513817270995005">協助在網絡上撰寫評論等短篇內容。系統會根據你的提示和網頁內容提供建議。如要使用此功能，請在文字框上按一下右鍵。</translation>
 <translation id="8605428685123651449">SQLite 記憶體使用量</translation>
 <translation id="8607171490667464784">處於閒置狀態且使用電池時</translation>
 <translation id="8607828412110648570">請確保藍牙裝置在附近，且已處於配對模式。請只與你信任的裝置配對。在此 Chromebook 上，所有帳戶都能看到已配對的裝置。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11441,7 +11433,6 @@
 <translation id="9116366756388192417">選擇主題</translation>
 <translation id="9116799625073598554">筆記應用程式</translation>
 <translation id="9117030152748022724">管理應用程式</translation>
-<translation id="9119587891086680311">這些採用 AI 技術的功能仍處於初期開發階段，因此提供的建議不一定符合需求。</translation>
 <translation id="9120362425083889527">無法完成安裝。請再試一次或關閉此視窗</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 <ph name="DEVICE_OS" /> 安裝至內置磁碟。您亦可稍後從登入畫面進行安裝。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果現在還不想安裝，可透過 USB 執行並試用 CloudReady 2.0。此操作會保留您現有的作業系統和資料，但系統的儲存空間和效能可能受限。<ph name="END_PARAGRAPH2" /></translation>

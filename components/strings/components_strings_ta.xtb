@@ -36,7 +36,6 @@
 <translation id="10614374240317010">எப்போதும் சேமிக்காதவை</translation>
 <translation id="1062407476771304334">மாற்றியமை</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">டெஸ்க்டாப் புக்மார்க்குகள்</translation>
 <translation id="1067029985695494416">தேடல் இன்ஜின் விவரங்கள்</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> மொழியில் உள்ள பக்கங்களை ஒருபோதும் மொழிபெயர்க்காதே</translation>
 <translation id="1070333806075222467">க்ளாஸ்ஸி மெட்டல்</translation>
@@ -3394,6 +3393,7 @@
 <translation id="7156870133441232244">சேவையகத்தை TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பிற்கு மேம்படுத்த வேண்டும்.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> அம்சத்தின் மூலம் இந்த ஃபைலை அனுப்ப உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}other{<ph name="FEATURE_NAME" /> அம்சத்தின் மூலம் இந்த ஃபைல்களை அனுப்ப உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}}</translation>
 <translation id="7160999678034985039">உங்கள் பணியைச் சேமித்து, தயாரானதும் புதுப்பிப்பைத் தொடங்குங்கள்.</translation>
+<translation id="7162277662076933695">ஸ்மார்ட் கார்டு ரீடர்</translation>
 <translation id="7163295244162773898">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் நகலெடுக்க வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் நகலெடுக்க வேண்டுமா?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" கட்டுப்பாட்டை இந்தப் பிளாட்ஃபார்மில் பயன்படுத்த முடியாது</translation>
 <translation id="717330890047184534">Gaia ஐடி:</translation>
@@ -3794,6 +3794,7 @@
 <translation id="7842611866969435396">தொடங்குங்கள்</translation>
 <translation id="784404208867107517">குழுவாக்கப்பட்ட பதிவு</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{எதுவுமில்லை}=1{1 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />)}=2{2 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">பிழை ஏற்பட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="785476343534277563">கல்லூரி விளையாட்டுகள்</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> உள்ள உங்கள் புதிய காலாவதித் தேதியையும் CVCயையும் டைப் செய்யுங்கள்</translation>
@@ -4119,6 +4120,7 @@
 <translation id="8438786541497918448">கேமராவையும் மைக்ரோஃபோனையும் பயன்படுத்தவா?</translation>
 <translation id="8438923942245957911">இந்தத் தளத்தை உங்கள் நிறுவனம் கொடியிட்டுள்ளது</translation>
 <translation id="8446275044635689572">கலை நிகழ்ச்சிகள்</translation>
+<translation id="8446884382197647889">மேலும் அறிக</translation>
 <translation id="8449155699563577224">17 x 24 இன்ச்</translation>
 <translation id="8449836157089738489">அனைத்தையும் புதிய பிரிவுக் குழுவில் திற</translation>
 <translation id="84561192812921051">உங்கள் நிர்வாகி உங்கள் சுயவிவரத்திலும் உலாவியிலும் தொலைநிலையில் இருந்தே மாற்றங்களைச் செய்யலாம், அறிக்கை மூலம் உலாவியைப் பற்றிய தகவல்களைப் பகுப்பாய்வு செய்யலாம், அவசியமான பிற பணிகளைச் செய்யலாம். இந்தச் சாதனத்தில் மேற்கொள்ளப்படும் செயல்பாடுகளை Chrome அல்லாத பிற உலாவிகளிலும் நிர்வகிக்கலாம்.  <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>

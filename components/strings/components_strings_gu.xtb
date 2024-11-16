@@ -36,7 +36,6 @@
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1062407476771304334">બદલો</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">ડેસ્કટૉપ બુકમાર્ક</translation>
 <translation id="1067029985695494416">શોધ એન્જિનની વિગતો</translation>
 <translation id="1068672505746868501">પેજનો ક્યારેય પણ <ph name="SOURCE_LANGUAGE" />માં અનુવાદ કરશો નહીં</translation>
 <translation id="1070333806075222467">ધાતુ (ગ્લોસી)</translation>
@@ -3399,6 +3398,7 @@
 <translation id="7156870133441232244">સર્વરને TLS 1.2 અથવા તે પછીના વર્ઝન પર અપગ્રેડ કરવું જોઈએ.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> વડે આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર (<ph name="DISK_SPACE_SIZE" />) સ્પેસ ખાલી કરો}one{<ph name="FEATURE_NAME" /> વડે આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર (<ph name="DISK_SPACE_SIZE" />) સ્પેસ ખાલી કરો}other{<ph name="FEATURE_NAME" /> વડે આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર (<ph name="DISK_SPACE_SIZE" />) સ્પેસ ખાલી કરો}}</translation>
 <translation id="7160999678034985039">કૃપા કરીને તમારું કાર્ય સાચવો અને જ્યારે તમે તૈયાર હો, ત્યારે અપડેટ શરૂ કરો.</translation>
+<translation id="7162277662076933695">સ્માર્ટ કાર્ડ રીડર</translation>
 <translation id="7163295244162773898">{0,plural, =1{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}one{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}other{શું ગોપનીય ફાઇલો કૉપિ કરીએ?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" એ આ પ્લૅટફૉર્મ પર સપોર્ટેડ પ્રતિબંધ નથી</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
@@ -3799,6 +3799,7 @@
 <translation id="7842611866969435396">ચાલો, આગળ વધીએ</translation>
 <translation id="784404208867107517">ગ્રૂપ કરેલો ઇતિહાસ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{કોઈ નહીં}=1{1 ઍપ (<ph name="EXAMPLE_APP_1" />)}=2{2 ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">કોઈ ભૂલ આવી હતી. ફરી પ્રયાસ કરો.</translation>
 <translation id="785476343534277563">કૉલેજની રમતો</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> પર તમારી નવી સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>
@@ -4124,6 +4125,7 @@
 <translation id="8438786541497918448">કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરીએ?</translation>
 <translation id="8438923942245957911">તમારી સંસ્થા દ્વારા આ સાઇટને ચિહ્નિત કરવામાં આવી છે</translation>
 <translation id="8446275044635689572">અભિનય કળાઓ</translation>
+<translation id="8446884382197647889">વધુ જાણો</translation>
 <translation id="8449155699563577224">17 x 24 ઇંચ</translation>
 <translation id="8449836157089738489">બધા નવી ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="84561192812921051">તમારા ઍડમિનિસ્ટ્રેટર તમારી પ્રોફાઇલ અને બ્રાઉઝરમાં રિમોટલી ફેરફાર કરી શકે, રિપોર્ટિંગ મારફતે બ્રાઉઝર વિશેની માહિતીનું વિશ્લેષણ કરી શકે અને અન્ય જરૂરી કાર્યો કરી શકે. આ ડિવાઇસ પરની ઍક્ટિવિટી Chromeની બહારથી પણ મેનેજ કરી શકાય છે.  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

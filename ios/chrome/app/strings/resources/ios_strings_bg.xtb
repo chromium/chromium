@@ -782,6 +782,7 @@
 <translation id="4645575059429386691">Управлява се от ваш родител</translation>
 <translation id="4647758699119474035">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Грешка в профила в Google. Отваряне на менюто на профила.</translation>
 <translation id="4650125387981512669">Продължаване като <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Скриване след 1 минута}other{Скриване след {count} минути}}</translation>
 <translation id="4652817563047461855">Уверете се, че паролите ви са защитени, разберете дали са били компрометирани и получете съвет за това как да се предпазите онлайн. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Запазване</translation>
 <translation id="4668929960204016307">,</translation>

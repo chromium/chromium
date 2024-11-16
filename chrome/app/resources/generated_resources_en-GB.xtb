@@ -445,6 +445,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1296911687402551044">Pin Selected Tab</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Send feedback for <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modifications</translation>
 <translation id="130097046531636712">This extends battery power by limiting background activity and visual effects like smooth scrolling</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> can edit the following files</translation>
 <translation id="130174306655812048">Try “Hey Google, what song is this?”</translation>
@@ -687,7 +688,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1476347941828409626">&amp;Manage Chrome profiles</translation>
 <translation id="1476607407192946488">&amp;Language Settings</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requires you to keep your smart card inserted.</translation>
-<translation id="1477645000789043442">Automatically creates tab groups based on your open tabs. To use this feature, right-click on a tab and click Organise similar tabs.</translation>
 <translation id="1477654881618305065">Your organisation doesn't allow you to share this content. If you need help, contact your administrator.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Installation is not enabled</translation>
@@ -1082,7 +1082,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1734212868489994726">Light blue</translation>
 <translation id="1734230530703461088">Failed to load extensions within the time limit. Please contact your administrator.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> may not be able to keep itself updated</translation>
-<translation id="1735957571918073979">Blink both eyes</translation>
 <translation id="1735983780784385591">Imported from Linux</translation>
 <translation id="173628468822554835">Got it. By default, new sites that you visit won't send you notifications.</translation>
 <translation id="1737968601308870607">File bug</translation>
@@ -1775,6 +1774,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2214018885812055163">Shared folders</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 line not shown&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lines not shown&gt;}}</translation>
 <translation id="2215070081105889450">To share audio, share a tab or screen instead</translation>
+<translation id="2217208085547223783">Trust state</translation>
 <translation id="2218019600945559112">Mouse and touchpad</translation>
 <translation id="2218515861914035131">Paste as plain text</translation>
 <translation id="221872881068107022">Reverse scrolling</translation>
@@ -2110,7 +2110,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2438853563451647815">Not connected to printer</translation>
 <translation id="2439152382014731627">Reset <ph name="DEVICE_TYPE" /> password</translation>
 <translation id="2439626940657133600">Loading <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Use face and gaze movement to control cursor and keyboard</translation>
 <translation id="2440604414813129000">View s&amp;ource</translation>
 <translation id="244071666433939959">Apps open in a window</translation>
 <translation id="2440823041667407902">Location access</translation>
@@ -2507,6 +2506,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Open guest profile</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Constraints</translation>
 <translation id="2724841811573117416">WebRTC logs</translation>
 <translation id="272488616838512378">Unit conversion</translation>
 <translation id="2725200716980197196">Network connectivity restored</translation>
@@ -3079,7 +3079,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3119948370277171654">What content/URL were you casting?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Failed to create data directory</translation>
-<translation id="3122810280993140148">Creates custom themes based on the subject, mood, visual style and colour that you choose. To use this feature, open a new tab and click Customise Chrome.</translation>
 <translation id="3122883569442693641">More details</translation>
 <translation id="3124111068741548686">USER handles</translation>
 <translation id="3124332159330678621">Customise Chrome to give your browser a new look</translation>
@@ -3468,6 +3467,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3421835120203732951">Add new profile</translation>
 <translation id="3423111258700187173">Results found in <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Learn more about this AI feature</translation>
+<translation id="3423275441470187644">Trust</translation>
 <translation id="3423463006624419153">On your '<ph name="PHONE_NAME_1" />' and '<ph name="PHONE_NAME_2" />':</translation>
 <translation id="3423858849633684918">Please Relaunch <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Describe What you Were Doing When the Tab Crashed</translation>
@@ -4593,6 +4593,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4195814663415092787">Continue where you left off</translation>
 <translation id="4198268995694216131">Additional sites</translation>
+<translation id="4198420883535766848">Remove tab from list</translation>
 <translation id="4200609364258658652">Copy video frame</translation>
 <translation id="4200689466366162458">Customised words</translation>
 <translation id="4200983522494130825">New &amp;tab</translation>
@@ -4766,7 +4767,6 @@ This can include information about installed software, files, your browser and t
 <translation id="432160826079505197">Show <ph name="FILE_NAME" /> in finder</translation>
 <translation id="4322394346347055525">Close Other Tabs</translation>
 <translation id="4324577459193912240">File incomplete</translation>
-<translation id="432464946901605871">To stay safer online with your parent's choices, sign in as <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">Uninstalling <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Storage and power</translation>
 <translation id="4326146840124313313">Chrome’s strongest security does more to protect you against dangerous websites, downloads and extensions</translation>
@@ -5155,6 +5155,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Delete tab group?}other{Delete tab groups?}}</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> has encountered an error</translation>
+<translation id="4610493438923139095">Distrusted</translation>
 <translation id="4610637590575890427">Did you mean to go to <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Data connection available</translation>
 <translation id="4611759022973144129">You can use this password to sign in to your <ph name="DEVICE_TYPE" />.</translation>
@@ -5180,6 +5181,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4627442949885028695">Continue from another device</translation>
 <translation id="4628762811416793313">The Linux container setup did not complete. Please try again.</translation>
 <translation id="4629521233550547305">Open <ph name="PROFILE_NAME" /> profile</translation>
+<translation id="4629803160911640220">Trusted</translation>
 <translation id="4631955550884380853">Focused voice</translation>
 <translation id="4632655012900268062">Customise cards</translation>
 <translation id="4633003931260532286">Extension requires '<ph name="IMPORT_NAME" />' with a minimum version '<ph name="IMPORT_VERSION" />', but only version '<ph name="INSTALLED_VERSION" />' is installed</translation>
@@ -6834,6 +6836,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
 <translation id="5844574845205796324">Suggest new content to explore</translation>
+<translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">No shadow</translation>
 <translation id="5846504156837627898">Manage site permissions</translation>
@@ -9188,7 +9191,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7550885994112799211">Storage, power, language</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> download unsuccessful</translation>
 <translation id="7551643184018910560">Pin to shelf</translation>
-<translation id="755198739067769724">Welcome, <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">To share or join tab groups, you need to sign in and turn on sync</translation>
 <translation id="7552846755917812628">Try the following tips:</translation>
 <translation id="7553012839257224005">Checking the Linux container</translation>
@@ -10439,7 +10441,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Tray is missing</translation>
 <translation id="8424250197845498070">Blocked by Advanced Protection</translation>
-<translation id="842501938276307467">Try out experimental AI features</translation>
 <translation id="8425213833346101688">Change</translation>
 <translation id="8425492902634685834">Pin to task bar</translation>
 <translation id="8425768983279799676">You can use your PIN to unlock your device.</translation>
@@ -10679,7 +10680,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8601206103050338563">TLS WWW Client Authentication</translation>
 <translation id="8602674530529411098">Apps (Beta)</translation>
 <translation id="8602851771975208551">Another program on your computer added an app that may change the way Chrome works.</translation>
-<translation id="8604513817270995005">Helps you write short-form content for things on the web, like reviews. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.</translation>
 <translation id="8605428685123651449">SQLite memory</translation>
 <translation id="8607171490667464784">While inactive and on battery</translation>
 <translation id="8607828412110648570">Make sure that your Bluetooth device is in pairing mode and nearby. Only pair with devices that you trust. Paired devices are visible to all accounts on this Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11451,7 +11451,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9116366756388192417">Choose a subject</translation>
 <translation id="9116799625073598554">Note-taking app</translation>
 <translation id="9117030152748022724">Manage your apps</translation>
-<translation id="9119587891086680311">These features use AI, are in early development, and won’t always get it right.</translation>
 <translation id="9120362425083889527">The installation could not be completed. Please try again or close this window</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />For the best experience, install <ph name="DEVICE_OS" /> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2" /></translation>

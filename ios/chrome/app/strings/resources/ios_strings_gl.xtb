@@ -782,6 +782,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4645575059429386691">Xestionado por teus pais</translation>
 <translation id="4647758699119474035">Sesión iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erro na Conta de Google. Abrir menú da conta.</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Ocultar despois de 1 minuto}other{Ocultar despois de {count} minutos}}</translation>
 <translation id="4652817563047461855">Confirma se os teus contrasinais son seguros, descubre se foron vulnerados e recibe consellos para protexerte en liña. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Gardar</translation>
 <translation id="4668929960204016307">,</translation>

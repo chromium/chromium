@@ -782,6 +782,7 @@
 <translation id="4645575059429386691">உங்கள் பெற்றோரால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="4647758699119474035">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google கணக்குப் பிழை. கணக்கு மெனுவைத் திறக்கும்.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> கணக்கில் தொடர்க</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 நிமிடத்திற்குப் பிறகு மறை}other{{count} நிமிடங்களுக்குப் பிறகு மறை}}</translation>
 <translation id="4652817563047461855">கடவுச்சொற்களின் பாதுகாப்பை உறுதிசெய்துகொள்ளலாம். அவை களவாடப்பட்டுள்ளனவா என்பதைக் கண்டறியலாம். ஆன்லைனில் பாதுகாப்பாக இருக்க ஆலோசனை பெறலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">சேமி</translation>
 <translation id="4668929960204016307">,</translation>

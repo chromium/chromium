@@ -36,7 +36,6 @@
 <translation id="10614374240317010">ဘယ်တော့မှ မသိမ်းဆည်းရန်</translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">ဒက်စတော့ စာညှပ်</translation>
 <translation id="1067029985695494416">ရှာဖွေရေး အင်ဂျင် အသေးစိတ်</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ဘာသာ စာမျက်နှာများကို ဘယ်သောအခါမျှ ဘာသာမပြန်ရန်</translation>
 <translation id="1070333806075222467">သတ္တု (တောက်ပြောင်)</translation>
@@ -3398,6 +3397,7 @@
 <translation id="7156870133441232244">ဆာဗာကို TLS 1.2 နှင့်နောက်ပိုင်းသို့ အဆင့်မြှင့်တင်ရမည်။</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင့်စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{<ph name="FEATURE_NAME" /> သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင့်စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
 <translation id="7160999678034985039">သင့်အလုပ်ကို သိမ်းပြီး အသင့်ဖြစ်ပါက စတင်အပ်ဒိတ်လုပ်ပါ။</translation>
+<translation id="7162277662076933695">စမတ်ကတ်ဖတ်စက်</translation>
 <translation id="7163295244162773898">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို မိတ္တူကူးမလား။}other{လျှို့ဝှက်ဖိုင်များကို မိတ္တူကူးမလား။}}</translation>
 <translation id="7168625890036931112">“<ph name="DATA_CONTROLS_RESTRICTION" />” သည် ဤစနစ်တွင် ပံ့ပိုးထားသော ကန့်သတ်ချက်မဟုတ်ပါ</translation>
 <translation id="717330890047184534">Gaia ID−</translation>
@@ -3799,6 +3799,7 @@
 <translation id="7842611866969435396">စလိုက်ရအောင်</translation>
 <translation id="784404208867107517">ဖွဲ့ထားသောမှတ်တမ်း</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{မရှိ}=1{အက်ပ် ၁ ခု (<ph name="EXAMPLE_APP_1" />)}=2{အက်ပ် ၂ ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />)}other{အက်ပ် # ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />၊ <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">အမှားတစ်ခု ဖြစ်သွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="785476343534277563">ကောလိပ်အားကစား</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">သက်တမ်းကုန်ဆုံးရက်သစ်နှင့် <ph name="SIDE_OF_CARD" /> ရှိ CVC နံပါတ်တို့ကို ထည့်ပါ</translation>
@@ -4125,6 +4126,7 @@
 <translation id="8438786541497918448">ကင်မရာနှင့် မိုက်ခရိုဖုန်း အသုံးပြုမလား။</translation>
 <translation id="8438923942245957911">ဤဝဘ်ဆိုက်ကို သင့်အဖွဲ့အစည်းက အလံပြထားသည်</translation>
 <translation id="8446275044635689572">တင်ဆက်ခြင်း အနုပညာ</translation>
+<translation id="8446884382197647889">ပိုမို လေ့လာရန်</translation>
 <translation id="8449155699563577224">၁၇ x ၂၄ လက်မ</translation>
 <translation id="8449836157089738489">အားလုံးကို တဘ်အုပ်စုအသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="84561192812921051">သင်၏စီမံခန့်ခွဲသူသည် သင့်ပရိုဖိုင်နှင့် ဘရောင်ဇာကို အဝေးမှပြောင်းခြင်း၊ သတင်းပေးပို့ခြင်းမှတစ်ဆင့် ဘရောင်ဇာနှင့်ဆိုင်သော အချက်အလက်ကို ပိုင်းခြားစိတ်ဖြာခြင်း၊ လိုအပ်သော အခြားလုပ်ဆောင်စရာများကို ဆောင်ရွက်ခြင်းတို့ ပြုလုပ်နိုင်သည်။ ဤစက်ရှိ လုပ်ဆောင်ချက်ကို Chrome ပြင်ပတွင်လည်း စီမံနိုင်သည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>

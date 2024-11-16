@@ -445,6 +445,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1296911687402551044">Fijar la pestaña seleccionada</translation>
 <translation id="1297175357211070620">Destino</translation>
 <translation id="129770436432446029">Enviar comentarios acerca de <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Modificaciones</translation>
 <translation id="130097046531636712">Esta función limita la actividad en segundo plano y los efectos visuales, como el desplazamiento suave, para extender la duración de la batería.</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> puede editar los siguientes archivos</translation>
 <translation id="130174306655812048">Prueba decir "Hey Google, ¿qué canción es esta?".</translation>
@@ -686,7 +687,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1476347941828409626">&amp;Administrar perfiles de Chrome</translation>
 <translation id="1476607407192946488">&amp;Configuración de idiomas</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.</translation>
-<translation id="1477645000789043442">Crea grupos de pestañas automáticamente en función de las pestañas abiertas. Para utilizar esta función, haz clic con el botón derecho en una pestaña y selecciona Organizar pestañas similares.</translation>
 <translation id="1477654881618305065">Tu organización no te permite compartir este contenido. Si necesitas ayuda, comunícate con tu administrador.</translation>
 <translation id="1478340334823509079">Detalles: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">La instalación no está habilitada</translation>
@@ -1070,7 +1070,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1734212868489994726">Celeste</translation>
 <translation id="1734230530703461088">No se pudieron cargar las extensiones antes del límite de tiempo establecido. Comunícate con tu administrador.</translation>
 <translation id="1734824808160898225">Es posible que <ph name="PRODUCT_NAME" /> no se mantenga actualizado</translation>
-<translation id="1735957571918073979">Parpadear con ambos ojos</translation>
 <translation id="1735983780784385591">Importados de Linux</translation>
 <translation id="173628468822554835">Entendido. De forma predeterminada, los nuevos sitios que visites no te enviarán notificaciones.</translation>
 <translation id="1737968601308870607">Incluir error</translation>
@@ -1762,6 +1761,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2214018885812055163">Carpetas compartidas</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;No se muestra una línea&gt;}other{&lt;No se muestran <ph name="NUMBER_OF_LINES" /> líneas&gt;}}</translation>
 <translation id="2215070081105889450">Para compartir audio, comparte una pestaña o pantalla</translation>
+<translation id="2217208085547223783">Estado de confianza</translation>
 <translation id="2218019600945559112">Mouse y panel táctil</translation>
 <translation id="2218515861914035131">Pegar como texto simple</translation>
 <translation id="221872881068107022">Invertir desplazamiento</translation>
@@ -2094,7 +2094,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2438853563451647815">No se conectó a la impresora</translation>
 <translation id="2439152382014731627">Restablecer la contraseña de <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Usar gestos faciales y movimientos de la mirada para controlar el cursor y el teclado</translation>
 <translation id="2440604414813129000">Ver códig&amp;o fuente</translation>
 <translation id="244071666433939959">Apps abiertas en una ventana</translation>
 <translation id="2440823041667407902">Acceso a la ubicación</translation>
@@ -2491,6 +2490,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Abrir el perfil de invitado</translation>
 <translation id="2723819893410108315">Mostaza</translation>
+<translation id="2724822892847436256">Restricciones</translation>
 <translation id="2724841811573117416">Registros de WebRTC</translation>
 <translation id="272488616838512378">Conversión de unidades</translation>
 <translation id="2725200716980197196">Conexión de red restaurada</translation>
@@ -3063,7 +3063,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3119948370277171654">¿Qué contenido o URL estabas transmitiendo?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Se ha producido un error al crear el directorio de datos.</translation>
-<translation id="3122810280993140148">Crea temas personalizados según la temática, el estado de ánimo, el estilo visual y el color que elijas. Para usar esta función, abre una nueva pestaña y haz clic en Personalizar Chrome.</translation>
 <translation id="3122883569442693641">Más detalles</translation>
 <translation id="3124111068741548686">A cargo del USUARIO</translation>
 <translation id="3124332159330678621">Personaliza Chrome para darle un nuevo aspecto a tu navegador</translation>
@@ -3452,6 +3451,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3421835120203732951">Agregar nuevo perfil</translation>
 <translation id="3423111258700187173">Resultados encontrados en <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Más información sobre esta función basada en IA</translation>
+<translation id="3423275441470187644">Confianza</translation>
 <translation id="3423463006624419153">En tu "<ph name="PHONE_NAME_1" />" y "<ph name="PHONE_NAME_2" />"</translation>
 <translation id="3423858849633684918">Se debe reiniciar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Describir lo que estabas haciendo cuando se bloqueó la pestaña</translation>
@@ -4577,6 +4577,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4195814663415092787">Continuar la sesión desde donde la dejaste</translation>
 <translation id="4198268995694216131">Sitios adicionales</translation>
+<translation id="4198420883535766848">Quitar la pestaña de la lista</translation>
 <translation id="4200609364258658652">Copia&amp;r fotograma</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
 <translation id="4200983522494130825">Nueva pes&amp;taña</translation>
@@ -4750,7 +4751,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="432160826079505197">Mostrar <ph name="FILE_NAME" /> en el buscador</translation>
 <translation id="4322394346347055525">Cerrar las demás pestañas</translation>
 <translation id="4324577459193912240">El archivo está incompleto</translation>
-<translation id="432464946901605871">Para protegerte en línea con las elecciones de tu madre o padre, accede como <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">Desinstalando <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Almacenamiento y energía</translation>
 <translation id="4326146840124313313">La seguridad más sólida de Chrome realiza más acciones para protegerte contra sitios web, descargas y extensiones peligrosos.</translation>
@@ -5139,6 +5139,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{¿Quieres borrar el grupo de pestañas?}other{¿Quieres borrar los grupos de pestañas?}}</translation>
 <translation id="4608500690299898628">&amp;Buscar</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> detectó un error</translation>
+<translation id="4610493438923139095">No confiable</translation>
 <translation id="4610637590575890427">¿Tal vez quieres ir a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Conexión de datos disponible</translation>
 <translation id="4611759022973144129">Puedes usar esta contraseña para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
@@ -5164,6 +5165,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4627442949885028695">Cómo continuar desde otro dispositivo</translation>
 <translation id="4628762811416793313">No se completó la configuración del contenedor de Linux. Vuelve a intentarlo.</translation>
 <translation id="4629521233550547305">Abrir el perfil de <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Confiable</translation>
 <translation id="4631955550884380853">Voz enfocada</translation>
 <translation id="4632655012900268062">Personalizar tarjetas</translation>
 <translation id="4633003931260532286">La extensión requiere "<ph name="IMPORT_NAME" />" con la versión "<ph name="IMPORT_VERSION" />" como mínimo, pero solo está instalada la versión "<ph name="INSTALLED_VERSION" />"</translation>
@@ -6818,6 +6820,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5842497610951477805">Activación de Bluetooth</translation>
 <translation id="5844284118433003733">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>
 <translation id="5844574845205796324">Sugerir nuevo contenido para explorar</translation>
+<translation id="5844685625984052392">Sugerencia</translation>
 <translation id="5846200638699387931">Error de sintaxis relacional: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Sin sombra</translation>
 <translation id="5846504156837627898">Administrar los permisos de sitios</translation>
@@ -9172,7 +9175,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7550885994112799211">Almacenamiento, energía, lenguaje</translation>
 <translation id="7551059576287086432">Se descargó <ph name="FILE_NAME" /> correctamente.</translation>
 <translation id="7551643184018910560">Fijar en la barra</translation>
-<translation id="755198739067769724">Te damos la bienvenida, <ph name="CHILD_NAME" />.</translation>
 <translation id="7552191410769096467">Para compartir grupos de pestañas o unirte a ellos, debes acceder y activar la sincronización</translation>
 <translation id="7552846755917812628">Intenta las siguientes sugerencias:</translation>
 <translation id="7553012839257224005">Revisando el contenedor de Linux</translation>
@@ -10423,7 +10425,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Falta la bandeja</translation>
 <translation id="8424250197845498070">La Protección avanzada lo bloqueó.</translation>
-<translation id="842501938276307467">Probar las funciones experimentales de IA</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8425492902634685834">Anclar a la barra de tareas</translation>
 <translation id="8425768983279799676">Puedes usar el PIN para desbloquear tu dispositivo.</translation>
@@ -10663,7 +10664,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8601206103050338563">Autenticación de cliente TLS WWW</translation>
 <translation id="8602674530529411098">Apps (beta)</translation>
 <translation id="8602851771975208551">Otro programa en tu computadora agregó una app que puede cambiar el funcionamiento de Chrome.</translation>
-<translation id="8604513817270995005">Te ayuda a escribir contenido breve para elementos de la Web, como opiniones. El contenido sugerido se basa en tus indicaciones y en el contenido de la página web. Para usar esta función, haz clic con el botón derecho en un cuadro de texto.</translation>
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8607171490667464784">Mientras esté inactivo y usando la batería</translation>
 <translation id="8607828412110648570">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11435,7 +11435,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9116366756388192417">Elegir un asunto</translation>
 <translation id="9116799625073598554">App para tomar notas</translation>
 <translation id="9117030152748022724">Administra tus apps</translation>
-<translation id="9119587891086680311">Estas funciones usan IA, están en desarrollo temprano y pueden cometer errores.</translation>
 <translation id="9120362425083889527">No se pudo completar la instalación. Vuelve a intentarlo o cierra esta ventana.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para obtener la mejor experiencia, instala <ph name="DEVICE_OS" /> en el disco interno. También puedes instalarlo más tarde desde la pantalla de acceso.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si aún no tienes todo listo para instalarlo y quieres probarlo, puedes ejecutarlo desde una unidad USB. De esta manera, conservarás tus datos y el SO existente, aunque posiblemente tengas limitaciones de almacenamiento y rendimiento.<ph name="END_PARAGRAPH2" /></translation>

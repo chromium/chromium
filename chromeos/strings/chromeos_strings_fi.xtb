@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
 <translation id="361575905210396100">Kiitos palautteestasi</translation>
 <translation id="3621072146987826699">norsut</translation>
+<translation id="3628462041319107639">Ladataan transkriptiomallia…</translation>
 <translation id="3632040286124154621">Hyvä ehdotus</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
 <translation id="3639873154908477486">Nimi (A–Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">Virheellinen PIN-koodi</translation>
 <translation id="382043424867370667">Auringonlasku-taustakuva</translation>
 <translation id="3824259034819781947">Liitä tiedostoja</translation>
+<translation id="383586991013681190">Valitse transkriptiokieli ja lataa se asetuksista</translation>
 <translation id="3836587210832263413">Laita päälle vain luotettavia laajennuksia</translation>
 <translation id="3838338534323494292">Uusi salasana</translation>
 <translation id="3845880861638660475">Sulje valintaikkuna painamalla <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Ei tuloksia</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
+<translation id="4483498983731992167">Transkriptiota ei voi luoda</translation>
 <translation id="4486524074141928967">Sinut kirjataan ulos klo <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä muokkausnäppäimen avulla (ctrl, alt, vaihto, tai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Käyttöliittymän väri</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ylös</translation>
 <translation id="5107243100836678918">Pikakomento ilman <ph name="META_KEY" />näppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa <ph name="KEY" />näppäimellä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Samantyyppisiä:</translation>
+<translation id="5121677070210013200">Transkriptiomallia ei voi ladata. Yritä uudelleen tai käynnistä Chromebook uudelleen.</translation>
 <translation id="5130848777448318809">ponit</translation>
 <translation id="5137451382116112100">Koko näyttö</translation>
 <translation id="5140788690559353412">Kun menetät pääsyn koulutiliisi, et enää voi käyttää siihen liittyviä sähköposti‑ ja Google Drive ‑tiedostoja, kuten Gmailia, Docsia ja Slidesia.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Salli puhujan tunnistus</translation>
 <translation id="7041549558901442110">Laitetta ei ole yhdistetty.</translation>
 <translation id="7046522406494308071">Palautetaanko kaikki pikanäppäimet oletuksiksi?</translation>
+<translation id="7049916119678019302">Lataa transkriptiomalli asetuksista</translation>
 <translation id="7058278511608979688">Lopeta ja tallenna</translation>
 <translation id="7059230779847288458">Ladataan, täynnä <ph name="TIME_VALUE" /> päästä</translation>
 <translation id="7066538517128343186"><ph name="KEY" />-näppäin</translation>

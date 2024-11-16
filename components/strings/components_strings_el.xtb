@@ -36,7 +36,6 @@
 <translation id="10614374240317010">Δεν έχει αποθηκευθεί ποτέ</translation>
 <translation id="1062407476771304334">Αντικατάσταση</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">Σελιδοδείκτες επιτραπέζιου υπολογιστή</translation>
 <translation id="1067029985695494416">Λεπτομέρειες μηχανής αναζήτησης</translation>
 <translation id="1068672505746868501">Να μην γίνεται μετάφραση σελίδων στα <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Μέταλλο (Γυαλιστερό)</translation>
@@ -3401,6 +3400,7 @@
 <translation id="7156870133441232244">Ο διακομιστής θα πρέπει να αναβαθμιστεί σε έκδοση TLS 1.2 ή μεταγενέστερη.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
 <translation id="7160999678034985039">Αποθηκεύστε την εργασία σας και ξεκινήστε την ενημέρωση όταν είστε έτοιμοι.</translation>
+<translation id="7162277662076933695">Συσκευή ανάγνωσης έξυπνων καρτών</translation>
 <translation id="7163295244162773898">{0,plural, =1{Αντιγραφή εμπιστευτικού αρχείου;}other{Αντιγραφή εμπιστευτικών αρχείων;}}</translation>
 <translation id="7168625890036931112">Το στοιχείο <ph name="DATA_CONTROLS_RESTRICTION" /> δεν είναι υποστηριζόμενος περιορισμός σε αυτή την πλατφόρμα</translation>
 <translation id="717330890047184534">Αναγνωριστικό Gaia:</translation>
@@ -3801,6 +3801,7 @@
 <translation id="7842611866969435396">Ας ξεκινήσουμε</translation>
 <translation id="784404208867107517">Ομαδοποιημένο ιστορικό</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Κανένα}=1{1 εφαρμογή (<ph name="EXAMPLE_APP_1" />)}=2{2 εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">Παρουσιάστηκε σφάλμα. Δοκιμάστε ξανά.</translation>
 <translation id="785476343534277563">Κολεγιακά αθλήματα</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Εισαγάγετε τη νέα ημερομηνία λήξης και το CVC που εμφανίζεται στην <ph name="SIDE_OF_CARD" /></translation>
@@ -4126,6 +4127,7 @@
 <translation id="8438786541497918448">Χρήση της κάμερας και του μικροφώνου;</translation>
 <translation id="8438923942245957911">Αυτός ο ιστότοπος έχει επισημανθεί από τον οργανισμό σας</translation>
 <translation id="8446275044635689572">Τέχνες του θεάματος</translation>
+<translation id="8446884382197647889">Μάθετε περισσότερα</translation>
 <translation id="8449155699563577224">17 x 24 ίντσες</translation>
 <translation id="8449836157089738489">Άνοιγμα όλων σε νέα ομάδα καρτελών</translation>
 <translation id="84561192812921051">Ο διαχειριστής μπορεί να κάνει αλλαγές στο προφίλ σας και στο πρόγραμμα περιήγησης από απόσταση, να αναλύει πληροφορίες σχετικά με το πρόγραμμα περιήγησης μέσω αναφορών και να εκτελεί άλλες απαραίτητες εργασίες. Η διαχείριση της δραστηριότητας σε αυτή τη συσκευή μπορεί επίσης να πραγματοποιηθεί εκτός Chrome.  <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>

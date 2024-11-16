@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Alta latencia de los sitios web HTTPS</translation>
 <translation id="361575905210396100">Gracias por tus comentarios</translation>
 <translation id="3621072146987826699">elefantes</translation>
+<translation id="3628462041319107639">Descargando modelo de transcripción…</translation>
 <translation id="3632040286124154621">Buena sugerencia</translation>
 <translation id="3632579075709132555">Activar o desactivar la Pantalla de privacidad</translation>
 <translation id="3639873154908477486">Nombre (A-Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">PIN no válido</translation>
 <translation id="382043424867370667">Fondo de pantalla Puesta del sol</translation>
 <translation id="3824259034819781947">Adjuntar archivos</translation>
+<translation id="383586991013681190">Selecciona el idioma de transcripción y descárgalo en Configuración</translation>
 <translation id="3836587210832263413">Activa solo las extensiones de confianza</translation>
 <translation id="3838338534323494292">Nueva contraseña</translation>
 <translation id="3845880861638660475">Presiona <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> para cerrar el diálogo.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">No hay resultados que coincidan</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">no se pudo hacer ping en la puerta de enlace de la red no predeterminada</translation>
+<translation id="4483498983731992167">No se puede crear la transcripción</translation>
 <translation id="4486524074141928967">Saldrás de tu cuenta a las <ph name="TIME" /></translation>
 <translation id="4500722292849917410">La combinación de teclas no está disponible. Usa una nueva combinación de teclas que incluya una tecla modificadora (Ctrl, Alt, Mayúsculas o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfaz</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">arriba</translation>
 <translation id="5107243100836678918">La combinación de teclas sin la tecla <ph name="META_KEY" /> puede interferir con la combinación de teclas de alguna app. Vuelve a presionar esta combinación de teclas para seguir usándola o presiona una nueva con la tecla <ph name="KEY" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Similares:</translation>
+<translation id="5121677070210013200">No se puede descargar el modelo de transcripción. Vuelve a intentarlo o reinicia la Chromebook.</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Completa</translation>
 <translation id="5140788690559353412">Cuando pierdas el acceso a tu cuenta de institución educativa, ya no tendrás acceso al correo electrónico asociado ni a los archivos de Google Drive, como Gmail, Documentos, Presentaciones y mucho más.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Permitir la identificación de las bocinas</translation>
 <translation id="7041549558901442110">El dispositivo no está conectado.</translation>
 <translation id="7046522406494308071">¿Quieres restablecer todas las combinaciones de teclas a los valores predeterminados?</translation>
+<translation id="7049916119678019302">Descarga el modelo de transcripción en Configuración</translation>
 <translation id="7058278511608979688">Finalizar y guardar</translation>
 <translation id="7059230779847288458">Cargando, <ph name="TIME_VALUE" /> para completar la carga</translation>
 <translation id="7066538517128343186">la tecla <ph name="KEY" /></translation>

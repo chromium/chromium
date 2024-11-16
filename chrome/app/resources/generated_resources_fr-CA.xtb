@@ -688,7 +688,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1476347941828409626">&amp;Gérer les profils Chrome</translation>
 <translation id="1476607407192946488">Paramètres &amp;linguistiques</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
-<translation id="1477645000789043442">Crée automatiquement des groupes d'onglets en fonction de vos onglets ouverts. Pour utiliser cette fonctionnalité, faites un clic droit sur un onglet et cliquez sur Organiser les onglets similaires.</translation>
 <translation id="1477654881618305065">Votre organisation ne vous autorise pas à partager ce contenu. Si vous avez besoin d'aide, communiquez avec votre administrateur.</translation>
 <translation id="1478340334823509079">Détails : <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">L'installation n'est pas activée</translation>
@@ -1075,7 +1074,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1734212868489994726">Bleu clair</translation>
 <translation id="1734230530703461088">Échec du chargement des extensions dans le délai prévu. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> pourrait ne pas faire de mises à jour automatiques</translation>
-<translation id="1735957571918073979">Clignez les deux yeux</translation>
 <translation id="1735983780784385591">Importés de Linux</translation>
 <translation id="173628468822554835">D'accord. Par défaut, les nouveaux sites que vous visitez ne vous enverront pas de notifications.</translation>
 <translation id="1737968601308870607">Rapporter un bogue</translation>
@@ -2100,7 +2098,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2438853563451647815">Aucune imprimante connectée</translation>
 <translation id="2439152382014731627">Réinitialiser le mot de passe de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> en cours de chargement…</translation>
-<translation id="2440036226025529014">Utilisez les mouvements du visage et des yeux pour contrôler le curseur et le clavier</translation>
 <translation id="2440604414813129000">Afficher le code s&amp;ource</translation>
 <translation id="244071666433939959">Les applications s'ouvrent dans une fenêtre</translation>
 <translation id="2440823041667407902">Accès à la localisation</translation>
@@ -3072,7 +3069,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3119948370277171654">Quel contenu ou quelle URL diffusiez-vous?</translation>
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3122496702278727796">Échec de la création du répertoire des données</translation>
-<translation id="3122810280993140148">Crée des thèmes personnalisés en fonction du sujet, de l'humeur, du style visuel et de la couleur que vous choisissez. Pour utiliser cette fonctionnalité, ouvrez un nouvel onglet et cliquez sur Personnaliser Chrome.</translation>
 <translation id="3122883569442693641">Plus de détails</translation>
 <translation id="3124111068741548686">Descripteurs de l'UTILISATEUR</translation>
 <translation id="3124332159330678621">Personnaliser Chrome pour donner un nouveau style à votre navigateur</translation>
@@ -4761,7 +4757,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="432160826079505197">Afficher <ph name="FILE_NAME" /> dans le Finder</translation>
 <translation id="4322394346347055525">Fermer les autres onglets</translation>
 <translation id="4324577459193912240">Fichier incomplet</translation>
-<translation id="432464946901605871">Pour rester en sécurité en ligne avec les choix de tes parents, connecte-toi avec l'adresse <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">Désinstallation de l'application <ph name="LINUX_APP_NAME" /> en cours…</translation>
 <translation id="4325433082696797523">Stockage et alimentation</translation>
 <translation id="4326146840124313313">La sécurité la plus puissante de Chrome en fait plus pour vous protéger contre les sites Web, les téléchargements et les extensions dangereux</translation>
@@ -9185,7 +9180,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7550885994112799211">Espace de stockage, puissance, langue</translation>
 <translation id="7551059576287086432">Échec du téléchargement de <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
-<translation id="755198739067769724">Bienvenue, <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">Pour partager ou rejoindre des groupes d'onglets, vous devez vous connecter et activer la synchronisation</translation>
 <translation id="7552846755917812628">Essayez les conseils suivants :</translation>
 <translation id="7553012839257224005">Vérification du conteneur Linux en cours…</translation>
@@ -10435,7 +10429,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8422748173858722634">IIEM</translation>
 <translation id="8422787418163030046">Le bac est manquant</translation>
 <translation id="8424250197845498070">Bloqué par la protection avancée</translation>
-<translation id="842501938276307467">Essayez les fonctionnalités IA expérimentales</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8425492902634685834">Épingler à la barre des tâches.</translation>
 <translation id="8425768983279799676">Vous pouvez utiliser votre NIP pour déverrouiller votre appareil.</translation>
@@ -10675,7 +10668,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8601206103050338563">Authentification du client WWW TLS</translation>
 <translation id="8602674530529411098">Applications (bêta)</translation>
 <translation id="8602851771975208551">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.</translation>
-<translation id="8604513817270995005">Vous aide à rédiger du contenu abrégé pour des éléments sur le Web, comme des avis. Le contenu suggéré est basé sur vos invites et le contenu de la page Web. Pour utiliser cette fonctionnalité, faites un clic droit sur une zone de texte.</translation>
 <translation id="8605428685123651449">Mémoire utilisée par SQLite</translation>
 <translation id="8607171490667464784">En mode inactif et lorsque l'appareil utilise la pile</translation>
 <translation id="8607828412110648570">Assurez-vous que votre appareil Bluetooth est en mode d'association et à proximité. Associez votre appareil uniquement à des appareils de confiance. Les appareils associés sont visibles par tous les comptes sur ce Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11447,7 +11439,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9116366756388192417">Choisir un sujet</translation>
 <translation id="9116799625073598554">Application de prise de notes</translation>
 <translation id="9117030152748022724">Gérer vos applications</translation>
-<translation id="9119587891086680311">Ces fonctionnalités utilisent l'IA, en sont aux premiers stades de développement et ne fonctionnent pas toujours correctement.</translation>
 <translation id="9120362425083889527">L'installation n'a pas pu être effectuée. Veuillez réessayer ou fermez cette fenêtre</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Pour profiter d'une expérience optimale, installez <ph name="DEVICE_OS" /> sur votre disque interne. Vous pouvez également l'installer plus tard à partir de l'écran d'ouverture de session.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si vous n'êtes pas prêt à faire l'installation, vous pouvez l'exécuter à partir d'une clé USB pour l'essayer. Vous conserverez ainsi votre SE et vos données, mais vous remarquerez peut-être des limites de l'espace de stockage et des performances.<ph name="END_PARAGRAPH2" /></translation>

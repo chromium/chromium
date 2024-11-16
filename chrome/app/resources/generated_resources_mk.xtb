@@ -446,6 +446,7 @@
 <translation id="1296911687402551044">Прикачи ја избраната картичка</translation>
 <translation id="1297175357211070620">Дестинација</translation>
 <translation id="129770436432446029">Испратете повратни информации за <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">&amp;Промени</translation>
 <translation id="130097046531636712">Ова го продолжува траењето на батеријата со ограничување на активностите во заднина и визуелните ефекти, како што е непреченото лизгање</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> може да ги изменува следниве датотеки</translation>
 <translation id="130174306655812048">Обидете се со „Ok Google, what song is this?“ (Ok Google, која песна е ова?)</translation>
@@ -688,7 +689,6 @@
 <translation id="1476347941828409626">Управувајте со профилите на Chrome</translation>
 <translation id="1476607407192946488">&amp;Поставки за јазик</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.</translation>
-<translation id="1477645000789043442">Автоматски создава групи картички според вашите отворени картички. За да ја користите функцијава, кликнете со десното копче на дадена картичка, па кликнете „Организирај ги сличните картички“.</translation>
 <translation id="1477654881618305065">Вашата организација не ви дозволува да ги споделувате овие содржини. Ако ви треба помош, контактирајте со администраторот.</translation>
 <translation id="1478340334823509079">Детали: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Не е овозможена инсталација</translation>
@@ -1083,7 +1083,6 @@
 <translation id="1734212868489994726">Светлосина</translation>
 <translation id="1734230530703461088">Екстензиите не успеаја да се вчитаат во рамките на временското ограничување. Контактирајте со администраторот.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> не може самостојно да се ажурира</translation>
-<translation id="1735957571918073979">Трепнете со двете очи</translation>
 <translation id="1735983780784385591">Увезено од Linux</translation>
 <translation id="173628468822554835">Сфатив. Стандардно, новите сајтови што ќе ги посетите нема да ви испраќаат известувања.</translation>
 <translation id="1737968601308870607">Грешка во датотеката</translation>
@@ -1776,6 +1775,7 @@
 <translation id="2214018885812055163">Споделени папки</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ред не е прикажан&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ред не е прикажан&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> реда не се прикажани&gt;}}</translation>
 <translation id="2215070081105889450">За да се сподели аудио, споделете картичка или екран</translation>
+<translation id="2217208085547223783">Состојба на доверба</translation>
 <translation id="2218019600945559112">Глувче и подлога за допир</translation>
 <translation id="2218515861914035131">Залепи како обичен текст</translation>
 <translation id="221872881068107022">Обратно лизгање</translation>
@@ -2111,7 +2111,6 @@
 <translation id="2438853563451647815">Не е поврзано на печатач</translation>
 <translation id="2439152382014731627">Ресетирајте ја лозинката за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Се вчитува <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Користете движење на лицето и погледот за да ги контролирате курсорот и тастатурата</translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
 <translation id="244071666433939959">Апликациите се отвораат во прозорец</translation>
 <translation id="2440823041667407902">Пристап до локација</translation>
@@ -2508,6 +2507,7 @@
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">Отворен гостински профил</translation>
 <translation id="2723819893410108315">Citron</translation>
+<translation id="2724822892847436256">Ограничувања</translation>
 <translation id="2724841811573117416">WebRTC-дневници</translation>
 <translation id="272488616838512378">Конверзија на валути</translation>
 <translation id="2725200716980197196">Обновена мрежна поврзливост</translation>
@@ -3080,7 +3080,6 @@
 <translation id="3119948370277171654">Какви содржини/URL-адреса емитувавте?</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3122496702278727796">Не успеа да се создаде Директориум со податоци</translation>
-<translation id="3122810280993140148">Создава приспособени теми според темата, расположението, визуелниот стил и бојата што ќе ги изберете. За да ја користите функцијава, отворете нова картичка и кликнете „Приспособете го Chrome“.</translation>
 <translation id="3122883569442693641">Повеќе детали</translation>
 <translation id="3124111068741548686">Рачки на КОРИСНИК</translation>
 <translation id="3124332159330678621">Приспособете го Chrome за да му дадете нов изглед на вашиот прелистувач</translation>
@@ -3469,6 +3468,7 @@
 <translation id="3421835120203732951">Додајте нов профил</translation>
 <translation id="3423111258700187173">Најдени се резултати во <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Дознајте повеќе за оваа AI-функција</translation>
+<translation id="3423275441470187644">Доверба</translation>
 <translation id="3423463006624419153">На <ph name="PHONE_NAME_1" /> и <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Повторно стартувајте <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Опишете што правевте кога падна картичката</translation>
@@ -4594,6 +4594,7 @@
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4195814663415092787">Продолжете каде што сте застанале</translation>
 <translation id="4198268995694216131">Дополнителни сајтови</translation>
+<translation id="4198420883535766848">Отстрани ја картичката од списокот</translation>
 <translation id="4200609364258658652">Копирај видеокадар</translation>
 <translation id="4200689466366162458">Приспособени зборови</translation>
 <translation id="4200983522494130825">Нова &amp;картичка</translation>
@@ -4767,7 +4768,6 @@
 <translation id="432160826079505197">Прикажи ја <ph name="FILE_NAME" /> во наоѓачот</translation>
 <translation id="4322394346347055525">Затвори други картички</translation>
 <translation id="4324577459193912240">Датотеката не е целосна</translation>
-<translation id="432464946901605871">За поголема безбедност онлајн со изборите на твојот родител, најави се како <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">Се деинсталира <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Простор и напојување</translation>
 <translation id="4326146840124313313">Најсилната безбедност на Chrome нуди поголема заштита од опасни веб-сајтови, преземања и екстензии</translation>
@@ -5156,6 +5156,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Да се избрише групата картички?}one{Да се избришат групите картички?}other{Да се избришат групите картички?}}</translation>
 <translation id="4608500690299898628">&amp;Најди...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> наиде на грешка</translation>
+<translation id="4610493438923139095">Недоверливо</translation>
 <translation id="4610637590575890427">Дали мислевте да одите на <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Достапна е интернет-врска</translation>
 <translation id="4611759022973144129">Може да ја користите лозинкава за најавување на вашиот <ph name="DEVICE_TYPE" />.</translation>
@@ -5181,6 +5182,7 @@
 <translation id="4627442949885028695">Продолжете од друг уред</translation>
 <translation id="4628762811416793313">Поставувањето на контејнерот на Linux не заврши. Обидете се повторно.</translation>
 <translation id="4629521233550547305">Отвори го профилот <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">Доверливо</translation>
 <translation id="4631955550884380853">Фокусиран глас</translation>
 <translation id="4632655012900268062">Приспособете ги картичките</translation>
 <translation id="4633003931260532286">Екстензијата бара „<ph name="IMPORT_NAME" />" со минимална верзија „<ph name="IMPORT_VERSION" />", но инсталирана е само верзијата „<ph name="INSTALLED_VERSION" />"</translation>
@@ -6835,6 +6837,7 @@
 <translation id="5842497610951477805">Овозможете Bluetooth</translation>
 <translation id="5844284118433003733">Кога сте најавени, податоциве се поврзуваат со вашата сметка на Google за да ве штитат на услугите на Google, на пример, зголемување на заштитата во Gmail по безбедносен инцидент.</translation>
 <translation id="5844574845205796324">Предложете нови содржини за истражување</translation>
+<translation id="5844685625984052392">Невестување</translation>
 <translation id="5846200638699387931">Синтаксичка грешка во односот: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Без сенка</translation>
 <translation id="5846504156837627898">Управувајте со дозволите за сајтот</translation>
@@ -9190,7 +9193,6 @@
 <translation id="7550885994112799211">Простор, напојување, јазик</translation>
 <translation id="7551059576287086432">Преземањето на <ph name="FILE_NAME" /> е неуспешно</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
-<translation id="755198739067769724">Добре дојде <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">За да споделувате или да се придружувате во групи картички, треба да се најавите и да вклучите синхронизација</translation>
 <translation id="7552846755917812628">Испробајте ги следните совети:</translation>
 <translation id="7553012839257224005">Се проверува контејнерот за Linux</translation>
@@ -10443,7 +10445,6 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Недостасува фиока</translation>
 <translation id="8424250197845498070">Блокирана од „Напредна заштита“</translation>
-<translation id="842501938276307467">Испробајте ги функциите на експерименталната AI</translation>
 <translation id="8425213833346101688">Промени</translation>
 <translation id="8425492902634685834">Прикачи на лентата со задачи</translation>
 <translation id="8425768983279799676">PIN-кодот може да го користите за отклучување на уредот.</translation>
@@ -10683,7 +10684,6 @@
 <translation id="8601206103050338563">Автентикација на клиент за TLS WWW</translation>
 <translation id="8602674530529411098">Апликации (Бета)</translation>
 <translation id="8602851771975208551">Друга програма на компјутерот додаде апликација која може да промени како работи Chrome.</translation>
-<translation id="8604513817270995005">Ви помага да напишете кратки содржини за работи на интернет, како рецензии. Предложените содржини се засноваат на вашите барања и содржините на веб-страницата. За да ја користите функцијава, кликнете со десното копче во поле за текст.</translation>
 <translation id="8605428685123651449">Меморија на SQLite</translation>
 <translation id="8607171490667464784">Додека е неактивен и работи на батерија</translation>
 <translation id="8607828412110648570">Проверете дали уредот со Bluetooth е во режим на спарување и во близина. Спарувајте само доверливи уреди. Спарените уреди се видливи за сите сметки на овој Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11456,7 +11456,6 @@
 <translation id="9116366756388192417">Изберете тема</translation>
 <translation id="9116799625073598554">Апликација за белешки</translation>
 <translation id="9117030152748022724">Управувајте со вашите апликации</translation>
-<translation id="9119587891086680311">Функцииве користат AI, во фаза се на ран развој и нема секогаш да обезбедуваат точни информации.</translation>
 <translation id="9120362425083889527">Инсталацијата не можеше да се заврши. Обидете се повторно или затворете го прозорецов</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />За најдобро доживување, инсталирајте <ph name="DEVICE_OS" /> на вашиот внатрешен диск. Може да го инсталирате и подоцна од екранот за најавување.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако не сте подготвени за инсталирање, може да го извршите од USB за да го испробате. Така ќе се задржи постојниот OS и податоците, но можеби ќе забележите ограничувања во капацитетот и изведбата.<ph name="END_PARAGRAPH2" /></translation>

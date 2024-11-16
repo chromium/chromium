@@ -446,6 +446,7 @@
 <translation id="1296911687402551044">चुने गए टैब को पिन करें</translation>
 <translation id="1297175357211070620">गंतव्य</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> के लिए सुझाव, शिकायत या राय भेजें</translation>
+<translation id="129808599775632797">&amp;मॉडिफ़िकेशन</translation>
 <translation id="130097046531636712">इससे बैकग्राउंड में होने वाली गतिविधि और विज़ुअल इफ़ेक्ट, जैसे कि स्मूद स्क्रोलिंग को सीमित किया जाता है, ताकि बैटरी ज़्यादा देर तक काम करे</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों में बदलाव कर सकती है</translation>
 <translation id="130174306655812048">“Ok Google, यह कौनसा गाना है?” पूछें</translation>
@@ -688,7 +689,6 @@
 <translation id="1476347941828409626">Chrome की प्रोफ़ाइलें मैनेज करें</translation>
 <translation id="1476607407192946488">&amp;भाषा सेटिंग</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.</translation>
-<translation id="1477645000789043442">यह सुविधा स्क्रीन पर खुले हुए टैब के आधार पर, अपने-आप टैब ग्रुप बनाती है. इस सुविधा का इस्तेमाल करने के लिए, किसी टैब पर राइट क्लिक करें और 'मिलते-जुलते टैब व्यवस्थित करें' पर क्लिक करें.</translation>
 <translation id="1477654881618305065">आपका संगठन आपको यह कॉन्टेंट शेयर करने की अनुमति नहीं देता है. अगर आपको मदद चाहिए, तो अपने एडमिन से संपर्क करें.</translation>
 <translation id="1478340334823509079">विवरण: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">इंस्टॉलेशन चालू नहीं है</translation>
@@ -1083,7 +1083,6 @@
 <translation id="1734212868489994726">हल्का नीला</translation>
 <translation id="1734230530703461088">समयसीमा के अंदर एक्सटेंशन लोड नहीं किए जा सके. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="1734824808160898225">हो सकता है कि <ph name="PRODUCT_NAME" /> खुद को अपडेट नहीं रख पाए</translation>
-<translation id="1735957571918073979">दोनों आंखें झपकाएं</translation>
 <translation id="1735983780784385591">Linux से इंपोर्ट किए गए सर्टिफ़िकेट</translation>
 <translation id="173628468822554835">ठीक है. डिफ़ॉल्ट रूप से, आप जिन नई साइटों पर जाएंगे वे आपको सूचनाएं नहीं दिखाएंगी.</translation>
 <translation id="1737968601308870607">गड़बड़ी की सूचना दें</translation>
@@ -1776,6 +1775,7 @@
 <translation id="2214018885812055163">शेयर किया गया फ़ोल्डर</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 पंक्ति नहीं दिखाई गई है&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> पंक्तियां नहीं दिखाई गई हैं&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> पंक्तियां नहीं दिखाई गई हैं&gt;}}</translation>
 <translation id="2215070081105889450">ऑडियो शेयर करने के लिए, टैब या स्क्रीन शेयर करें</translation>
+<translation id="2217208085547223783">ट्रस्ट स्टेट</translation>
 <translation id="2218019600945559112">माउस और टचपैड</translation>
 <translation id="2218515861914035131">सादे टेक्स्ट के रूप में चिपकाएं</translation>
 <translation id="221872881068107022">उलट स्क्रोलिंग</translation>
@@ -2111,7 +2111,6 @@
 <translation id="2438853563451647815">प्रिंटर से कनेक्ट नहीं है</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> का पासवर्ड रीसेट करें</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड हो रहा है</translation>
-<translation id="2440036226025529014">चेहरे और आंखों के मूवमेंट से कर्सर और कीबोर्ड को कंट्रोल करें</translation>
 <translation id="2440604414813129000">स्रोत देखें</translation>
 <translation id="244071666433939959">ऐप्लिकेशन विंडो में खुलते हैं</translation>
 <translation id="2440823041667407902">जगह की जानकारी का एक्‍सेस दें</translation>
@@ -2508,6 +2507,7 @@
 <translation id="2722547199758472013">आईडी: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">मेहमान प्रोफ़ाइल खोलें</translation>
 <translation id="2723819893410108315">सिट्रन</translation>
+<translation id="2724822892847436256">कंस्ट्रेंट</translation>
 <translation id="2724841811573117416">WebRTC लॉग</translation>
 <translation id="272488616838512378">यूनिट कन्वर्ज़न</translation>
 <translation id="2725200716980197196">नेटवर्क कनेक्टिविटी पुनर्स्थापित हो गई</translation>
@@ -3080,7 +3080,6 @@
 <translation id="3119948370277171654">आप किस कॉन्टेंट/यूआरएल को कास्ट कर रहे थे?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">डेटा निर्देशिका बनाने में विफल</translation>
-<translation id="3122810280993140148">इस सुविधा की मदद से, अपने चुने गए विषय, मूड, विज़ुअल स्टाइल, और रंग के हिसाब से पसंद के मुताबिक अलग-अलग थीम बनाई जा सकती हैं. इस सुविधा का इस्तेमाल करने के लिए, नया टैब खोलें और “Chrome को पसंद के मुताबिक बनाएं” पर क्लिक करें.</translation>
 <translation id="3122883569442693641">ज़्यादा जानकारी</translation>
 <translation id="3124111068741548686">उपयोगकर्ता हैंडल</translation>
 <translation id="3124332159330678621">अपने ब्राउज़र को एक नया रूप देने के लिए, Chrome को कस्टमाइज़ करें</translation>
@@ -3469,6 +3468,7 @@
 <translation id="3421835120203732951">नई प्रोफ़ाइल जोड़ें</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> में नतीजे मिले</translation>
 <translation id="3423226218833787854">एआई की इस सुविधा के बारे में ज़्यादा जानें</translation>
+<translation id="3423275441470187644">ट्रस्ट</translation>
 <translation id="3423463006624419153">आपके '<ph name="PHONE_NAME_1" />' और '<ph name="PHONE_NAME_2" />' पर:</translation>
 <translation id="3423858849633684918">कृपया <ph name="PRODUCT_NAME" /> को फिर से लॉन्‍च करें</translation>
 <translation id="3424969259347320884">बताएं कि जब टैब क्रैश हुआ तब आप क्या कर रहे थे</translation>
@@ -4593,6 +4593,7 @@
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4195814663415092787">वहीं से जारी रखें जहां मैंने छोड़ा था</translation>
 <translation id="4198268995694216131">अन्य साइटें</translation>
+<translation id="4198420883535766848">सूची से टैब हटाएं</translation>
 <translation id="4200609364258658652">वीडियो फ़्रेम कॉपी करें</translation>
 <translation id="4200689466366162458">पसंद के मुताबिक चुने गए शब्द</translation>
 <translation id="4200983522494130825">नया &amp;टैब</translation>
@@ -4766,7 +4767,6 @@
 <translation id="432160826079505197"><ph name="FILE_NAME" /> को Finder में दिखाएं</translation>
 <translation id="4322394346347055525">अन्य टैब बंद करें</translation>
 <translation id="4324577459193912240">फ़ाइल अधूरी है</translation>
-<translation id="432464946901605871">अपने माता-पिता के चुने गए विकल्पों के साथ, ऑनलाइन सुरक्षित रहने के लिए, <ph name="USER_EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> अनइंस्टॉल हो रहा है...</translation>
 <translation id="4325433082696797523">स्टोरेज और पावर</translation>
 <translation id="4326146840124313313">Chrome की सबसे मज़बूत सुरक्षा की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचाती है</translation>
@@ -5155,6 +5155,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{क्या आपको टैब ग्रुप मिटाना है?}one{क्या आपको टैब ग्रुप मिटाना है?}other{क्या आपको टैब ग्रुप मिटाने हैं?}}</translation>
 <translation id="4608500690299898628">&amp;ढूंढें...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> में कोई गड़बड़ी आई</translation>
+<translation id="4610493438923139095">डिस्ट्रस्टेड</translation>
 <translation id="4610637590575890427">क्या आपका मतलब <ph name="SITE" /> पर जाने से है ?</translation>
 <translation id="4611114513649582138">डेटा कनेक्शन उपलब्ध है</translation>
 <translation id="4611759022973144129">अपने <ph name="DEVICE_TYPE" /> में साइन इन करने के लिए, इस पासवर्ड का इस्तेमाल किया जा सकता है.</translation>
@@ -5180,6 +5181,7 @@
 <translation id="4627442949885028695">किसी अन्य डिवाइस से जारी रखें</translation>
 <translation id="4628762811416793313">Linux कंटेनर का सेटअप पूरा नहीं हुआ. कृपया फिर से कोशिश करें.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> प्रोफ़ाइल खोलें</translation>
+<translation id="4629803160911640220">ट्रस्टेड</translation>
 <translation id="4631955550884380853">साफ़ आवाज़ की सुविधा</translation>
 <translation id="4632655012900268062">कार्ड को पसंद के मुताबिक बनाएं</translation>
 <translation id="4633003931260532286">एक्‍सटेंशन के लिए "<ph name="IMPORT_NAME" />" को न्‍यूनतम "<ph name="IMPORT_VERSION" />" वर्शन का होना चाहिए, लेकिन केवल "<ph name="INSTALLED_VERSION" />" वर्शन ही इंस्‍टॉल किया गया है</translation>
@@ -6832,6 +6834,7 @@
 <translation id="5842497610951477805">ब्लूटूथ चालू है</translation>
 <translation id="5844284118433003733">Google खाते में साइन इन करने पर, आपका ब्राउज़िंग डेटा आपके Google खाते से लिंक हो जाता है. इससे Google की सभी सेवाओं पर आपका डेटा सुरक्षित रहता है. उदाहरण: डेटा की सुरक्षा से जुड़े किसी मामले के बाद, Gmail में आपके डेटा की सुरक्षा बढ़ा दी जाती है.</translation>
 <translation id="5844574845205796324">एक्सप्लोर करने के लिए नया कॉन्टेंट सुझाएं</translation>
+<translation id="5844685625984052392">संकेत</translation>
 <translation id="5846200638699387931">रिलेशन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">कोई शैडो नहीं</translation>
 <translation id="5846504156837627898">साइट के लिए अनुमतियां मैनेज करें</translation>
@@ -9187,7 +9190,6 @@
 <translation id="7550885994112799211">स्टोरेज, पावर, और भाषा</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> डाउनलोड असफल</translation>
 <translation id="7551643184018910560">अलमारी से पिन करें</translation>
-<translation id="755198739067769724">आपका स्वागत है, <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">टैब ग्रुप शेयर करने या उनमें शामिल होने के लिए, आपको साइन इन करना होगा और सिंक करने की सुविधा को चालू करना होगा</translation>
 <translation id="7552846755917812628">ये टिप्स आज़माएं:</translation>
 <translation id="7553012839257224005">Linux कंटेनर की जांच हो रही है</translation>
@@ -10437,7 +10439,6 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">प्रिंटर में ट्रे नहीं है</translation>
 <translation id="8424250197845498070">'बेहतर सुरक्षा' सेटिंग ने ब्लॉक किया है</translation>
-<translation id="842501938276307467">एक्सपेरिमेंट के तौर पर शुरू की गई एआई की सुविधाएं आज़माएं</translation>
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8425492902634685834">टास्कबार में पिन करें</translation>
 <translation id="8425768983279799676">आप अपने पिन का इस्तेमाल अपने डिवाइस को अनलॉक करने के लिए कर सकते हैं.</translation>
@@ -10677,7 +10678,6 @@
 <translation id="8601206103050338563">TLS WWW क्लाइंट प्रमाणीकरण</translation>
 <translation id="8602674530529411098">ऐप्लिकेशन (बीटा)</translation>
 <translation id="8602851771975208551">आपके कंप्यूटर पर किसी दूसरे प्रोग्राम ने कोई ऐप्लिकेशन जोड़ा है जो Chrome के काम करने के तरीके को बदल सकता है.</translation>
-<translation id="8604513817270995005">इस सुविधा की मदद से आपको वेब पर कम शब्दों वाला कॉन्टेंट लिखने में मदद मिलती है. जैसे, समीक्षाएं. यह सुविधा, आपके प्रॉम्प्ट और वेब पेज पर मौजूद कॉन्टेंट के आधार पर सुझाव देती है. इस सुविधा का इस्तेमाल करने के लिए, टेक्स्ट बॉक्स पर राइट क्लिक करें.</translation>
 <translation id="8605428685123651449">SQLite मेमोरी</translation>
 <translation id="8607171490667464784">डिवाइस इनऐक्टिव है, लेकिन बैटरी का इस्तेमाल हो रहा है</translation>
 <translation id="8607828412110648570">पक्का करें कि आपका ब्लूटूथ डिवाइस, दूसरे डिवाइस से जोड़ने वाले मोड में है और आस-पास है. सिर्फ़ भरोसेमंद डिवाइसों के साथ ही जोड़ें. जोड़े गए डिवाइस, इस Chromebook पर मौजूद सभी खातों पर दिखते हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11450,7 +11450,6 @@
 <translation id="9116366756388192417">कोई विषय चुनें</translation>
 <translation id="9116799625073598554">नोट लेने वाला ऐप्लिकेशन</translation>
 <translation id="9117030152748022724">अपने ऐप्लिकेशन मैनेज करना</translation>
-<translation id="9119587891086680311">ये सुविधाएं एआई का इस्तेमाल करती हैं. इन पर अभी काम चल रहा है. इसलिए, यह ज़रूरी नहीं है कि ये हमेशा सही तरीके से काम करें.</translation>
 <translation id="9120362425083889527">इंस्टॉल करने की प्रोसेस पूरी नहीं हो सकी. कृपया फिर से कोशिश करें या यह विंडो बंद करें</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />बेहतर अनुभव के लिए, <ph name="DEVICE_OS" /> को अपनी इंटर्नल डिस्क में इंस्टॉल करें. आप इसे बाद में लॉगिन स्क्रीन से भी इंस्टॉल कर सकते हैं.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />अगर आप इसे इंस्टॉल करने के लिए तैयार नहीं हैं, तो आप इसे यूएसबी से चलाकर आज़मा सकते हैं. इससे आपका मौजूदा ओएस और डेटा सुरक्षित रहेगा, लेकिन आपको स्टोरेज और परफ़ॉर्मेंस की सीमाएं दिख सकती हैं.<ph name="END_PARAGRAPH2" /></translation>

@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
 <translation id="361575905210396100">ଆପଣଙ୍କ ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ</translation>
 <translation id="3621072146987826699">ହାତୀ</translation>
+<translation id="3628462041319107639">ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲ ଡାଉନଲୋଡ ହେଉଛି…</translation>
 <translation id="3632040286124154621">ଭଲ ପରାମର୍ଶ</translation>
 <translation id="3632579075709132555">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ</translation>
 <translation id="3639873154908477486">ନାମ (Aରୁ Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
 <translation id="382043424867370667">ସୂର୍ଯ୍ୟାସ୍ତ ୱାଲପେପର</translation>
 <translation id="3824259034819781947">ଫାଇଲଗୁଡ଼ିକୁ ଆଟାଚ କରନ୍ତୁ</translation>
+<translation id="383586991013681190">ସେଟିଂସରେ ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା ଚୟନ କରି ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="3836587210832263413">ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ କେବଳ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3838338534323494292">ନୂଆ ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="3845880861638660475">ଡାଏଲଗ ବନ୍ଦ କରିବା ପାଇଁ <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> କୀ ଦବାନ୍ତୁ।</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">ମେଳ ହେଉଥିବା କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
+<translation id="4483498983731992167">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4486524074141928967">ଆପଣଙ୍କୁ <ph name="TIME" />ରେ ସାଇନ ଆଉଟ କରାଯିବ</translation>
 <translation id="4500722292849917410">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଏକ ମୋଡିଫାୟର କୀ (ctrl, alt, shift କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="4500966230243561393">ଇଣ୍ଟରଫେସ ରଙ୍ଗ</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ଉପର</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> କୀ ବିନା ସର୍ଟକଟ କିଛି ଆପର ସର୍ଟକଟ ସହ ବିବାଦ ସୃଷ୍ଟି କରିପାରେ। ଏହି ସର୍ଟକଟକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିବା ପାଇଁ ପୁଣି ଏହାକୁ ଦବାନ୍ତୁ କିମ୍ବା <ph name="KEY" /> କୀ ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ସମାନ:</translation>
+<translation id="5121677070210013200">ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ Chromebookକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="5130848777448318809">ପୋନି</translation>
 <translation id="5137451382116112100">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
 <translation id="5140788690559353412">ଆପଣଙ୍କର ସ୍କୁଲ ଆକାଉଣ୍ଟକୁ ଆପଣ ଆକ୍ସେସ ହରାଇଲେ, ଆପଣଙ୍କ ପାଖରେ ଆଉ ସମ୍ବନ୍ଧିତ ଇମେଲ ଏବଂ Gmail, Docs, Slides ଓ ଆହୁରି ଅନେକ କିଛି ପରି Google Drive ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ ରହିବ ନାହିଁ।</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">ସ୍ପିକର ଚିହ୍ନଟକରଣକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="7041549558901442110">ଡିଭାଇସଟି ସଂଯୋଗ ହୋଇନାହିଁ।</translation>
 <translation id="7046522406494308071">ସମସ୍ତ ସର୍ଟକଟକୁ ଡିଫଲ୍ଟରେ ରିସେଟ କରିବେ?</translation>
+<translation id="7049916119678019302">ସେଟିଂସରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="7058278511608979688">ସମ୍ପୂର୍ଣ୍ଣ କରି ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="7059230779847288458">ଚାର୍ଜ କରାଯାଉଛି, ପୂର୍ଣ୍ଣ ହେବାକୁ <ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> କୀ</translation>

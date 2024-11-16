@@ -782,6 +782,7 @@
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. <ph name="USER_EMAIL" />. Google એકાઉન્ટમાં ભૂલ. એકાઉન્ટ મેનૂ ખોલો.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> તરીકે આગળ વધો</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 મિનિટ પછી છુપાવો}one{{count} મિનિટ પછી છુપાવો}other{{count} મિનિટ પછી છુપાવો}}</translation>
 <translation id="4652817563047461855">ખાતરી કરો કે તમારા પાસવર્ડ સલામત છે, જાણો કે તેની સાથે ચેડાં થયા છે કે નહીં અને તમારી જાતને ઑનલાઇન સુરક્ષિત રાખવામાં સહાય માટે સલાહ મેળવો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">સાચવો</translation>
 <translation id="4668929960204016307">,</translation>

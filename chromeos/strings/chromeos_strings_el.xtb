@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Υψηλός λανθάνων χρόνος σε ιστοτόπους HTTPS</translation>
 <translation id="361575905210396100">Σας ευχαριστούμε για τα σχόλιά σας</translation>
 <translation id="3621072146987826699">ελέφαντες</translation>
+<translation id="3628462041319107639">Λήψη μοντέλου μεταγραφής…</translation>
 <translation id="3632040286124154621">Καλή πρόταση</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
 <translation id="3639873154908477486">Όνομα (από Α έως Ω)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">Μη έγκυρο PIN.</translation>
 <translation id="382043424867370667">Ταπετσαρία Δύση ηλίου</translation>
 <translation id="3824259034819781947">Επισύναψη αρχείων</translation>
+<translation id="383586991013681190">Επιλέξτε γλώσσα μεταγραφής και κάντε λήψη στις Ρυθμίσεις</translation>
 <translation id="3836587210832263413">Ενεργοποιήστε μόνο τις επεκτάσεις που εμπιστεύεστε</translation>
 <translation id="3838338534323494292">Νέος κωδικός πρόσβασης</translation>
 <translation id="3845880861638660475">Πατήστε <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> και <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> για να κλείσετε το παράθυρο διαλόγου.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Δεν υπάρχουν αποτελέσματα</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
+<translation id="4483498983731992167">Δεν είναι δυνατή η δημιουργία της μεταγραφής</translation>
 <translation id="4486524074141928967">Θα αποσυνδεθείτε στις <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας ένα πλήκτρο τροποποίησης (ctrl, alt, shift ή <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Χρώμα διεπαφής</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">επάνω</translation>
 <translation id="5107243100836678918">Η συντόμευση χωρίς πλήκτρο <ph name="META_KEY" /> ενδέχεται να δημιουργήσει διένεξη με τη συντόμευση κάποιας εφαρμογής. Πατήστε ξανά αυτή τη συντόμευση για να συνεχίσετε να τη χρησιμοποιείτε ή πατήστε μια νέα συντόμευση χρησιμοποιώντας το πλήκτρο <ph name="KEY" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Συνώνυμα:</translation>
+<translation id="5121677070210013200">Δεν είναι δυνατή η λήψη του μοντέλου μεταγραφής. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="5130848777448318809">πόνυ</translation>
 <translation id="5137451382116112100">Πλήρης</translation>
 <translation id="5140788690559353412">Όταν χάσετε την πρόσβαση στον λογαριασμό σχολείου σας, δεν θα έχετε πλέον πρόσβαση στα συσχετισμένα μηνύματα ηλεκτρονικού ταχυδρομείου και στα αρχεία Google Drive, όπως του Gmail, των Εγγράφων, των Παρουσιάσεων κ.ά.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Να επιτρέπεται η αναγνώριση ομιλητή</translation>
 <translation id="7041549558901442110">Η συσκευή δεν είναι συνδεδεμένη.</translation>
 <translation id="7046522406494308071">Επαναφορά όλων των συντομεύσεων στις προεπιλογές;</translation>
+<translation id="7049916119678019302">Κατεβάστε το μοντέλο μεταγραφής στις Ρυθμίσεις</translation>
 <translation id="7058278511608979688">Λήξη και αποθήκευση</translation>
 <translation id="7059230779847288458">Φόρτιση, απομένουν <ph name="TIME_VALUE" /> μέχρι την ολοκλήρωση</translation>
 <translation id="7066538517128343186">το κλειδί <ph name="KEY" /></translation>

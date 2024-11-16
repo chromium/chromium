@@ -782,6 +782,7 @@
 <translation id="4645575059429386691">आपके अभिभावक द्वारा प्रबंधित</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. <ph name="USER_EMAIL" />. Google खाते में गड़बड़ी. खाता मेन्यू खोलें.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> के तौर पर जारी रखें</translation>
+<translation id="4651927776207937667">{count,plural, =1{1 मिनट बाद छिपाएं}one{{count} मिनट बाद छिपाएं}other{{count} मिनट बाद छिपाएं}}</translation>
 <translation id="4652817563047461855">पक्का करें कि आपके पासवर्ड सुरक्षित हों और उनके साथ छेड़छाड़ न की गई हो. साथ ही, इंटरनेट पर अपनी सुरक्षा के लिए सलाह भी पाएं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">सेव करें</translation>
 <translation id="4668929960204016307">,</translation>

@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">ለኤችቲቲፒኤስ ድር ጣቢያዎች ከፍተኛ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="361575905210396100">ለግብረመልስዎ እናመሰግናለን</translation>
 <translation id="3621072146987826699">ዝሆኖች</translation>
+<translation id="3628462041319107639">ወደ ጽሑፍ ግልባጭ ሞዴል በማውረድ ላይ…</translation>
 <translation id="3632040286124154621">ጥሩ የአስተያየት ጥቆማ</translation>
 <translation id="3632579075709132555">የግላዊነት ማያ ገፅ መቀየሪያ</translation>
 <translation id="3639873154908477486">ስም (ሀ ወደ ፐ)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="382043424867370667">የፀሐይ መግባት ልጣፍ</translation>
 <translation id="3824259034819781947">ፋይሎችን ያያይዙ</translation>
+<translation id="383586991013681190">ወደ ጽሑፍ ግልባጭ ቋንቋ ይምረጡ እና ቅንብሮች ውስጥ ያውርዱ</translation>
 <translation id="3836587210832263413">የሚያምኗቸውን ቅጥያዎች ብቻ ያብሩ</translation>
 <translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
 <translation id="3845880861638660475">መገናኛውን ለመዝጋት <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> እና <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />ን ይጫኑ።</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">ምንም የሚዛመዱ ውጤቶች የሉም</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
+<translation id="4483498983731992167">ጽሑፍ ግልባጭ መፍጠር አልተቻለም</translation>
 <translation id="4486524074141928967"><ph name="TIME" /> ላይ ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="4500722292849917410">አቋራጭ አይገኝም። የአሻሻይ ቁልፍ (ctrl, alt, shift, ወይም <ph name="META_KEY" />) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4500966230243561393">የበይነገጽ ቀለም</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ላይ</translation>
 <translation id="5107243100836678918">የ<ph name="META_KEY" /> ቁልፍ የሌለው አቋራጭ ከተወሰነ የመተግበሪያ አቋራጭ ጋር ሊጋጭ ይችላል። ይህን አቋራጭ መጠቀም መቀጠል ከፈለጉ በድጋሚ ይጫኑት፣ ወይም ደግሞ የ<ph name="KEY" /> ቁልፉን በመጠቀም አዲስ አቋራጭ ይጫኑ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ተመሳሳይ፦</translation>
+<translation id="5121677070210013200">ወደ ጽሑፍ ግልባጭ ሞዴልን ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን Chromebook እንደገና ይጀምሩ።</translation>
 <translation id="5130848777448318809">ትናንሽ ፈረሶች</translation>
 <translation id="5137451382116112100">ሙሉ</translation>
 <translation id="5140788690559353412">የትምህርት ቤት መለያዎን መዳረሻ ሲያጡ፣ ከእንግዲህ እንደ Gmail፣ ሰነዶች፣ ስላይዶች እና ሌሎች ያሉ ተጓዳኝ ኢሜይል እና Google Drive ፋይሎች መዳረሻ አይኖርዎትም።</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">የተናጋሪ መለየትን ይፍቀዱ</translation>
 <translation id="7041549558901442110">መሣሪያ አልተገናኘም።</translation>
 <translation id="7046522406494308071">ሁሉም አቋራጮች ወደ ነባሪዎች በድጋሚ ይቀናበሩ?</translation>
+<translation id="7049916119678019302">ቅንብሮች ውስጥ ወደ ጽሑፍ ግልባጭን ያውርዱ</translation>
 <translation id="7058278511608979688">ጨርስ እና አስቀምጥ</translation>
 <translation id="7059230779847288458">በመሙላት ላይ፣ ሙሉ እስኪሆን ድረስ <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186">የ<ph name="KEY" /> ቁልፍ</translation>

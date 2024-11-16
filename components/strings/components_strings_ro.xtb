@@ -36,7 +36,6 @@
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
 <translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">Marcaje desktop</translation>
 <translation id="1067029985695494416">Detalii privind motorul de căutare</translation>
 <translation id="1068672505746868501">Nu traduce niciodată paginile în <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (lucios)</translation>
@@ -3399,6 +3398,7 @@
 <translation id="7156870133441232244">Serverul ar trebui să facă upgrade la TLS 1.2 sau o versiune ulterioară.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Pentru a trimite fișierul prin <ph name="FEATURE_NAME" />, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}few{Pentru a trimite fișierele prin <ph name="FEATURE_NAME" />, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}other{Pentru a trimite fișierele prin <ph name="FEATURE_NAME" />, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}}</translation>
 <translation id="7160999678034985039">Salvează lucrul și începe actualizarea când ești gata.</translation>
+<translation id="7162277662076933695">Cititor de carduri inteligente</translation>
 <translation id="7163295244162773898">{0,plural, =1{Copiezi fișierul confidențial?}few{Copiezi fișierele confidențiale?}other{Copiezi fișierele confidențiale?}}</translation>
 <translation id="7168625890036931112"><ph name="DATA_CONTROLS_RESTRICTION" /> nu este o restricție acceptată pe această platformă</translation>
 <translation id="717330890047184534">Cod Gaia:</translation>
@@ -3799,6 +3799,7 @@ Detalii suplimentare:
 <translation id="7842611866969435396">Să începem</translation>
 <translation id="784404208867107517">Istoric grupat</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Niciuna}=1{O aplicație (<ph name="EXAMPLE_APP_1" />)}=2{Două aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# de aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="785476343534277563">Sporturi universitare</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Introdu noua dată de expirare și codul CVC pe <ph name="SIDE_OF_CARD" /></translation>
@@ -4124,6 +4125,7 @@ Detalii suplimentare:
 <translation id="8438786541497918448">Folosești camera foto și microfonul?</translation>
 <translation id="8438923942245957911">Site-ul este semnalat de organizația ta</translation>
 <translation id="8446275044635689572">Arta spectacolului</translation>
+<translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8449155699563577224">17 x 24 in</translation>
 <translation id="8449836157089738489">Deschideți-le pe toate într-un nou grup de file</translation>
 <translation id="84561192812921051">Administratorul poate să modifice profilul și browserul de la distanță, să analizeze informațiile despre browser cu ajutorul rapoartelor și să finalizeze alte activități necesare. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

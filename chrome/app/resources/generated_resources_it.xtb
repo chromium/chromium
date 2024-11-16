@@ -687,7 +687,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1476347941828409626">&amp;Gestisci i profili Chrome</translation>
 <translation id="1476607407192946488">&amp;Impostazioni lingua</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> richiede di lasciare la smart card inserita.</translation>
-<translation id="1477645000789043442">Crea automaticamente gruppi di schede in base alle schede aperte. Per utilizzare questa funzionalità, fai clic con il tasto destro del mouse su una scheda, quindi fai clic su Organizza schede simili.</translation>
 <translation id="1477654881618305065">La tua organizzazione non ti consente di condividere questo contenuto. Se hai bisogno di assistenza, contatta l'amministratore.</translation>
 <translation id="1478340334823509079">Dettagli: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">L'installazione non è attiva</translation>
@@ -1074,7 +1073,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1734212868489994726">Azzurro</translation>
 <translation id="1734230530703461088">Impossibile caricare le estensioni entro il limite di tempo. Contatta l'amministratore.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> potrebbe non essere in grado di aggiornarsi automaticamente</translation>
-<translation id="1735957571918073979">Batti le palpebre</translation>
 <translation id="1735983780784385591">Importato da Linux</translation>
 <translation id="173628468822554835">Ok. Per impostazione predefinita, i nuovi siti che visiti non ti invieranno notifiche.</translation>
 <translation id="1737968601308870607">Segnala bug</translation>
@@ -2099,7 +2097,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2438853563451647815">Nessun collegamento alla stampante</translation>
 <translation id="2439152382014731627">Reimposta la password di <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Caricamento di <ph name="WINDOW_TITLE" /> in corso…</translation>
-<translation id="2440036226025529014">Usa l'espressione facciale e il movimento dello sguardo per controllare il cursore e la tastiera</translation>
 <translation id="2440604414813129000">Visualizza &amp;sorgente</translation>
 <translation id="244071666433939959">Le app si aprono in una finestra</translation>
 <translation id="2440823041667407902">Accesso alla posizione</translation>
@@ -3069,7 +3066,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3119948370277171654">Quali contenuti/URL stavi trasmettendo?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Creazione directory dati non riuscita</translation>
-<translation id="3122810280993140148">Crea temi personalizzati in base al soggetto, allo stato d'animo, allo stile visivo e al colore che scegli. Per utilizzare questa funzionalità, apri una nuova scheda e fai clic su Personalizza Chrome.</translation>
 <translation id="3122883569442693641">Altri dettagli</translation>
 <translation id="3124111068741548686">Handle UTENTE</translation>
 <translation id="3124332159330678621">Personalizza Chrome per dare un nuovo look al tuo browser</translation>
@@ -4758,7 +4754,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="432160826079505197">Mostra <ph name="FILE_NAME" /> nel Finder</translation>
 <translation id="4322394346347055525">Chiudi le altre schede</translation>
 <translation id="4324577459193912240">File incompleto</translation>
-<translation id="432464946901605871">Per navigare online in modo più sicuro con le scelte del tuo genitore, accedi come <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">Disinstallazione di <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">Archiviazione e alimentazione</translation>
 <translation id="4326146840124313313">La più efficace misura di sicurezza di Chrome ti protegge da siti web, download ed estensioni pericolosi</translation>
@@ -9179,7 +9174,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7550885994112799211">Spazio di archiviazione, alimentazione, lingua</translation>
 <translation id="7551059576287086432">Download di <ph name="FILE_NAME" /> non riuscito</translation>
 <translation id="7551643184018910560">Blocca sulla barra delle app</translation>
-<translation id="755198739067769724">Ti diamo il benvenuto, <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">Per partecipare a gruppi di schede o condividerli, devi accedere e attivare la sincronizzazione</translation>
 <translation id="7552846755917812628">Prova i seguenti suggerimenti:</translation>
 <translation id="7553012839257224005">Controllo del container Linux</translation>
@@ -10430,7 +10424,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Vassoio mancante</translation>
 <translation id="8424250197845498070">Bloccato dalla protezione avanzata</translation>
-<translation id="842501938276307467">Prova le funzionalità di AI sperimentale</translation>
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8425492902634685834">Aggiungi alla barra delle applicazioni</translation>
 <translation id="8425768983279799676">Puoi usare il PIN per sbloccare il dispositivo.</translation>
@@ -10670,7 +10663,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8601206103050338563">Autenticazione TLS client WWW</translation>
 <translation id="8602674530529411098">App (beta)</translation>
 <translation id="8602851771975208551">Un altro programma sul computer ha aggiunto un'applicazione che potrebbe modificare il funzionamento di Chrome.</translation>
-<translation id="8604513817270995005">Ti aiuta a scrivere brevi contenuti per il web, come le recensioni. I contenuti suggeriti si basano sui tuoi prompt e sui contenuti della pagina web. Per utilizzare questa funzione, fai clic con il tasto destro del mouse su una casella di testo.</translation>
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8607171490667464784">In stato di inattività e durante l'utilizzo della batteria</translation>
 <translation id="8607828412110648570">Assicurati che il dispositivo Bluetooth sia in modalità di accoppiamento e nelle vicinanze. Esegui l'accoppiamento solo con i dispositivi che ritieni attendibili. I dispositivi accoppiati sono visibili a tutti gli account su questo Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11442,7 +11434,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9116366756388192417">Scegli un argomento</translation>
 <translation id="9116799625073598554">App per creare note</translation>
 <translation id="9117030152748022724">Gestisci le tue applicazioni</translation>
-<translation id="9119587891086680311">Queste funzionalità utilizzano l'IA, si trovano in una fase di sviluppo iniziale e non sempre danno risposte corrette.</translation>
 <translation id="9120362425083889527">Impossibile completare l'installazione. Riprova o chiudi questa finestra.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Per un'esperienza ottimale, installa <ph name="DEVICE_OS" /> sul disco interno. Puoi anche installarlo in un secondo momento dalla schermata di accesso.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se non vuoi installarlo ora, puoi eseguirlo da un'unità USB per provarlo. In questo modo manterrai il tuo attuale sistema operativo e i tuoi dati, ma potresti riscontrare limiti relativi allo spazio di archiviazione e alle prestazioni.<ph name="END_PARAGRAPH2" /></translation>

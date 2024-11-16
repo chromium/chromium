@@ -139,6 +139,7 @@
 <translation id="1604959087182679653">Fshih transkriptin</translation>
 <translation id="160633243685262989">Shiko paraprakisht imazhin</translation>
 <translation id="1611649489706141841">përpara</translation>
+<translation id="1615144046047995187">Nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook.</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Përdor një temë</translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">Menyja e modifikimit dhe fshirjes</translation>
 <translation id="2597774443162333062">Skedarët do të dërgohen te Google për korrigjimin e gabimeve</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanimi përfundoi. U skanua 1 faqe}other{Skanimi përfundoi. U skanuan {NUMBER_OF_PAGES} faqe}}</translation>
+<translation id="261322795497077164">Identifikimi i folësit</translation>
 <translation id="2617397783536231890">pambuk</translation>
 <translation id="2618015542787108131">dunë rëre</translation>
 <translation id="2619761439309613843">Rifreskimi i përditshëm</translation>
@@ -442,6 +444,7 @@
 <translation id="3140130301071865159">borë</translation>
 <translation id="3146655726035122603">Ekskluzive për <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
+<translation id="3153094818810437149">Mund ta ndryshosh këtë më vonë te cilësimet e "Regjistruesit"</translation>
 <translation id="3156511682997763015">Shko përpara 10 sekonda</translation>
 <translation id="3156846309055100599">Po skanon faqen <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">U zbulua portal izolues</translation>
@@ -565,6 +568,7 @@
 <translation id="3785643128701396311">të artit me pikselë</translation>
 <translation id="3799381533888781854">JOAKTIV - Ky cilësim menaxhohet nga administratori yt.</translation>
 <translation id="380097101658023925">kontrollet me rbg</translation>
+<translation id="380493988330050229">Nuk mund të krijohet përmbledhja për gjuhë të transkriptit</translation>
 <translation id="38114475217616659">Fshi të gjithë historikun</translation>
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
 <translation id="382043424867370667">Imazhi i sfondit për perëndimin e diellit</translation>
@@ -588,6 +592,7 @@
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
 <translation id="3889914174935857450">Rivendos datën</translation>
 <translation id="3897092660631435901">Menyja</translation>
+<translation id="3902271751020176019">Gjuha e transkriptimit</translation>
 <translation id="391412459402535266">Pajisja nuk mund të testohet. Kalo te modaliteti i laptopit për të kryer testin.</translation>
 <translation id="3916998944874125962">nxirr një pamje të ekranit</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
@@ -736,6 +741,7 @@
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4594021849294327751">Krijo transkriptin</translation>
+<translation id="4594541568452132351">Zgjidh gjuhën e transkriptit dhe shkarko modelin</translation>
 <translation id="4607282946861182308">Nuk mund të krijohen imazhe të kësaj. Provo një kërkesë tjetër.</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
 <translation id="4623061655523261501">Emrat e regjistrimeve u gjeneruan me sukses</translation>
@@ -943,6 +949,7 @@
 <translation id="5606865426897221650">Skeda</translation>
 <translation id="5613201299517339763">Ke dalë nga llogaria</translation>
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
+<translation id="5628106863521633649">Gjuhët e disponueshme</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
 <translation id="5655283760733841251">Ngritja e ndriçimit të tastierës</translation>
@@ -1103,6 +1110,7 @@
 <translation id="6359919876285606596">Ky veprim është i përhershëm dhe nuk mund të zhbëhet</translation>
 <translation id="6368342879959028556">Kur zgjedh "Krijo me IA-në", shkruaj një kërkesë të personalizuar. Ndryshe, mund të zgjedhësh "Imazhet e sfondit nga IA-ja", të zgjedhësh një temë dhe më pas të zgjedhësh fjalët e nënvizuara për të personalizuar imazhin e sfondit nga IA-ja.</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
+<translation id="6369221585240879141">Nuk mund të krijohen emrat e regjistrimeve për këtë gjuhë të transkriptit</translation>
 <translation id="6373461326814131011">pellg</translation>
 <translation id="6379086450106841622">Ekrani me prekje</translation>
 <translation id="6381741036071372448">Testo tastierën tënde</translation>
@@ -1267,6 +1275,7 @@
 <translation id="710028965487274708">Dështoi - Autorizimi dështoi</translation>
 <translation id="7101959270679078188">Shkyç pajisjen "<ph name="DEVICE_NAME" />" për të vazhduar procesin e përditësimit</translation>
 <translation id="7103252855940681301">Pajisja <ph name="INDEX" /> nga <ph name="COUNT" /> me emrin <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Gjuha e zgjedhur</translation>
 <translation id="7107255225945990211">Zgjidh ilustrime ekskluzive për <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">hyr</translation>
 <translation id="7117228822971127758">Provo përsëri më vonë</translation>
@@ -1276,6 +1285,7 @@
 <translation id="7130438335435247835">Emri i pikës së qasjes (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveri i emrave}other{Serverët e emrave}}</translation>
 <translation id="7135814714616751706">Shkurtoret e kërkimit</translation>
+<translation id="7138614237884624401">Teksti i thjeshtuar</translation>
 <translation id="7141470099673912333">Transferimi i përmbajtjes</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
@@ -1697,6 +1707,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="9100765901046053179">Cilësimet e përparuara</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">"Regjistruesi" mund të krijojë transkriptime për regjistrimet me ligjërim. Në hapin e radhës, duhet të zgjedhësh gjuhën e transkriptimit dhe të shkarkosh modelin (deri në 100 MB).</translation>
 <translation id="9111102763498581341">Shkyç</translation>
 <translation id="9122492456897874028">Përmblidh përmbajtjen, merr përkufizime etj.</translation>
 <translation id="9122602430962285795">Për t'u rilidhur, shko te "Cilësimet"</translation>

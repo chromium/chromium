@@ -36,7 +36,6 @@
 <translation id="10614374240317010">ഒരിക്കലും സംരക്ഷിച്ചില്ല</translation>
 <translation id="1062407476771304334">മാറ്റിസ്ഥാപിക്കുക</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">ഡെസ്‌ക്‌ടോപ്പ് ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="1067029985695494416">തിരയൽ എഞ്ചിന്റെ വിശദാംശങ്ങൾ</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="1070333806075222467">മെറ്റൽ (ഗ്ലോസി)</translation>
@@ -3797,6 +3796,7 @@
 <translation id="7842611866969435396">നമുക്ക് ആരംഭിക്കാം</translation>
 <translation id="784404208867107517">ഗ്രൂപ്പ് ചെയ്ത ചരിത്രം</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="785476343534277563">കോളേജ് സ്പോർട്‌സ്</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> കാലഹരണപ്പെടുന്ന പുതിയ തീയതിയും CVC-യും നൽകുക</translation>
@@ -4122,6 +4122,7 @@
 <translation id="8438786541497918448">ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കണോ?</translation>
 <translation id="8438923942245957911">നിങ്ങളുടെ ഓർഗനൈസേഷൻ ഈ സൈറ്റ് ഫ്ലാഗ് ചെയ്തു</translation>
 <translation id="8446275044635689572">പ്രകടന കലകൾ</translation>
+<translation id="8446884382197647889">കൂടുതലറിയുക</translation>
 <translation id="8449155699563577224">17 x 24 ഇഞ്ച്</translation>
 <translation id="8449836157089738489">എല്ലാം പുതിയ ടാബ് ഗ്രൂപ്പിൽ തുറക്കുക</translation>
 <translation id="84561192812921051">നിങ്ങളുടെ അഡ്‌മിന് പ്രൊഫൈലിലും ബ്രൗസറിലും വിദൂരമായി മാറ്റങ്ങൾ വരുത്താനും റിപ്പോർട്ടിംഗിലൂടെ ബ്രൗസറിനെക്കുറിച്ചുള്ള വിവരങ്ങൾ വിശകലനം ചെയ്യാനും ആവശ്യമായ മറ്റ് ടാസ്‌ക്കുകൾ ചെയ്യാനും കഴിയും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chrome-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം.  <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>

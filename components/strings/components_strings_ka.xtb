@@ -36,7 +36,6 @@
 <translation id="10614374240317010">არასოდეს შენახული</translation>
 <translation id="1062407476771304334">შეცვლა</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="106701514854093668">სამუშაო დაფის სანიშნები</translation>
 <translation id="1067029985695494416">საძიებო სისტემის დეტალები</translation>
 <translation id="1068672505746868501">არასოდეს ითარგმნოს <ph name="SOURCE_LANGUAGE" /> გვერდები</translation>
 <translation id="1070333806075222467">ლითონი (პრიალა)</translation>
@@ -3799,6 +3798,7 @@
 <translation id="7842611866969435396">დავიწყოთ</translation>
 <translation id="784404208867107517">დაჯგუფებული ისტორია</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{არცერთი}=1{1 აპი (<ph name="EXAMPLE_APP_1" />)}=2{2 აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
+<translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
 <translation id="785476343534277563">სპორტული ცხოვრება კოლეჯებში</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">თავიდან შეიყვანეთ მოქმედების ვადის გასვლის თარიღი და CVC, რომლებიც მოცემულია <ph name="SIDE_OF_CARD" /></translation>
@@ -4124,6 +4124,7 @@
 <translation id="8438786541497918448">გსურთ კამერისა და მიკროფონის გამოყენება?</translation>
 <translation id="8438923942245957911">ეს საიტი თქვენი ორგანიზაციის მიერ მონიშნულია დროშით</translation>
 <translation id="8446275044635689572">საშემსრულებლო ხელოვნება</translation>
+<translation id="8446884382197647889">შეიტყვეთ მეტი</translation>
 <translation id="8449155699563577224">17 x 24 დუიმი</translation>
 <translation id="8449836157089738489">ყველას გახსნა ჩანართების ახალ ჯგუფში</translation>
 <translation id="84561192812921051">თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის და ბრაუზერის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს სხვა აუცილებელი ამოცანები. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chrome-ს მიღმაც.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>

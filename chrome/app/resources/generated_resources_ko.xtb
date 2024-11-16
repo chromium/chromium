@@ -688,7 +688,6 @@
 <translation id="1476347941828409626">Chrome 프로필 관리(&amp;M)</translation>
 <translation id="1476607407192946488">언어 설정(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" />에서 스마트 카드를 삽입해 둘 것을 요청합니다.</translation>
-<translation id="1477645000789043442">열려 있는 탭을 기반으로 탭 그룹을 자동 생성합니다. 이 기능을 사용하려면 탭을 마우스 오른쪽 버튼으로 클릭하고 '비슷한 탭 정리'를 클릭하세요.</translation>
 <translation id="1477654881618305065">조직에서 이 콘텐츠를 공유하도록 허용하지 않습니다. 도움이 필요하면 관리자에게 문의하세요.</translation>
 <translation id="1478340334823509079">세부정보: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">설치하도록 설정되어 있지 않습니다</translation>
@@ -1084,7 +1083,6 @@
 <translation id="1734212868489994726">연한 파란색</translation>
 <translation id="1734230530703461088">제한 시간 내에 확장 프로그램을 로드할 수 없습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" />에서 자동 업데이트를 수행하지 못할 수 있습니다</translation>
-<translation id="1735957571918073979">양쪽 눈 깜빡이기</translation>
 <translation id="1735983780784385591">Linux에서 가져옴</translation>
 <translation id="173628468822554835">알겠습니다. 앞으로 새로 방문하는 사이트에서는 기본적으로 알림을 표시하지 않습니다.</translation>
 <translation id="1737968601308870607">버그 신고</translation>
@@ -2115,7 +2113,6 @@
 <translation id="2438853563451647815">프린터에 연결되어 있지 않음</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> 비밀번호 재설정</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> 로드 중</translation>
-<translation id="2440036226025529014">얼굴 및 시선 움직임으로 커서와 키보드 제어</translation>
 <translation id="2440604414813129000">소스 보기(&amp;O)</translation>
 <translation id="244071666433939959">앱이 창에서 열립니다</translation>
 <translation id="2440823041667407902">위치 액세스</translation>
@@ -3085,7 +3082,6 @@
 <translation id="3119948370277171654">어떤 콘텐츠/URL을 전송하고 계셨나요?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">데이터 디렉터리 만들기 실패</translation>
-<translation id="3122810280993140148">선택한 주제, 분위기, 시각적 스타일, 색상을 기반으로 맞춤 테마를 만듭니다. 이 기능을 사용하려면 새 탭을 열고 'Chrome 맞춤설정'을 클릭하세요.</translation>
 <translation id="3122883569442693641">세부정보 더보기</translation>
 <translation id="3124111068741548686">사용자 핸들</translation>
 <translation id="3124332159330678621">Chrome 브라우저를 새로운 디자인으로 맞춤설정합니다.</translation>
@@ -4775,7 +4771,6 @@
 <translation id="432160826079505197">Finder에서 <ph name="FILE_NAME" /> 보기</translation>
 <translation id="4322394346347055525">다른 탭 닫기</translation>
 <translation id="4324577459193912240">파일 다운로드가 완료되지 않음</translation>
-<translation id="432464946901605871">부모님의 선택으로 온라인에서 더 안전하게 보호받으려면 <ph name="USER_EMAIL" /> 계정으로 로그인하세요.</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> 제거 중...</translation>
 <translation id="4325433082696797523">저장용량 및 전원</translation>
 <translation id="4326146840124313313">Chrome의 가장 강력한 보안 기능은 위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다.</translation>
@@ -9203,7 +9198,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7550885994112799211">스토리지, 전원, 언어</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />을(를) 다운로드하지 못함</translation>
 <translation id="7551643184018910560">앱 표시줄에 고정</translation>
-<translation id="755198739067769724"><ph name="CHILD_NAME" />님, 반가워요!</translation>
 <translation id="7552191410769096467">탭 그룹을 공유하거나 탭 그룹에 참여하려면 로그인한 다음 동기화를 사용 설정해야 합니다.</translation>
 <translation id="7552846755917812628">다음 도움말을 확인해 보세요.</translation>
 <translation id="7553012839257224005">Linux 컨테이너 확인 중</translation>
@@ -10456,7 +10450,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">트레이 없음</translation>
 <translation id="8424250197845498070">고급 보호 기능으로 차단됨</translation>
-<translation id="842501938276307467">실험용 AI 기능 사용해 보기</translation>
 <translation id="8425213833346101688">변경</translation>
 <translation id="8425492902634685834">작업 표시줄에 고정</translation>
 <translation id="8425768983279799676">PIN을 사용하여 기기를 잠금 해제할 수 있습니다.</translation>
@@ -10697,7 +10690,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8601206103050338563">TLS WWW 클라이언트 인증</translation>
 <translation id="8602674530529411098">앱(베타)</translation>
 <translation id="8602851771975208551">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 앱을 추가했습니다.</translation>
-<translation id="8604513817270995005">리뷰와 같이 웹상의 짧은 형식 콘텐츠를 작성하는 데 도움이 됩니다. 추천 콘텐츠는 사용자의 프롬프트와 웹페이지의 콘텐츠를 기반으로 합니다. 이 기능을 사용하려면 텍스트 상자를 마우스 오른쪽 버튼으로 클릭합니다.</translation>
 <translation id="8605428685123651449">SQLite 메모리</translation>
 <translation id="8607171490667464784">비활성 상태이며 배터리를 사용하는 동안</translation>
 <translation id="8607828412110648570">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요. 페어링된 기기는 이 Chromebook의 모든 계정에 표시됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11470,7 +11462,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9116366756388192417">주제 선택</translation>
 <translation id="9116799625073598554">메모 앱</translation>
 <translation id="9117030152748022724">앱 관리</translation>
-<translation id="9119587891086680311">이러한 기능은 AI를 사용하고 있으며 초기 개발 단계이며 항상 정확하지는 않습니다.</translation>
 <translation id="9120362425083889527">설치를 완료할 수 없습니다. 다시 시도하거나 이 창을 닫으세요.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />최적의 환경에서 이용하려면 <ph name="DEVICE_OS" />을 내부 디스크에 설치하세요. 나중에 로그인 화면에서 설치할 수도 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />아직 설치할 준비가 되지 않았다면 USB에서 실행하여 사용해 볼 수도 있습니다. 기존 OS와 데이터는 그대로 유지되지만 저장용량과 성능이 제한될 수 있습니다<ph name="END_PARAGRAPH2" /></translation>

@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
 <translation id="361575905210396100">आपके सुझाव, शिकायत या राय के लिए धन्यवाद</translation>
 <translation id="3621072146987826699">हाथी</translation>
+<translation id="3628462041319107639">बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड किया जा रहा है…</translation>
 <translation id="3632040286124154621">सुझाव अच्छा है</translation>
 <translation id="3632579075709132555">निजता स्क्रीन टॉगल करने वाला बटन</translation>
 <translation id="3639873154908477486">नाम (A से Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">गलत पिन</translation>
 <translation id="382043424867370667">सनसेट वॉलपेपर</translation>
 <translation id="3824259034819781947">फ़ाइलें अटैच करें</translation>
+<translation id="383586991013681190">सेटिंग में जाकर, बोले जा रहे शब्दों को टेक्स्ट में बदलने के लिए भाषा चुनें और उसे डाउनलोड करें</translation>
 <translation id="3836587210832263413">सिर्फ़ वे एक्सटेंशन चालू करें जिन पर आपको भरोसा है</translation>
 <translation id="3838338534323494292">नया पासवर्ड</translation>
 <translation id="3845880861638660475">डायलॉग बॉक्स बंद करने के लिए, <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> के साथ <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> दबाएं.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">कोई मिलता-जुलता नतीजा नहीं मिला</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
+<translation id="4483498983731992167">ट्रांसक्रिप्ट नहीं बनाई जा सकी</translation>
 <translation id="4486524074141928967">आपको <ph name="TIME" /> पर साइन आउट कर दिया जाएगा</translation>
 <translation id="4500722292849917410">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली कुंजी (ctrl, alt, shift बटन या <ph name="META_KEY" />) के साथ नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="4500966230243561393">इंटरफ़ेस का रंग</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">ऊपर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> बटन के बिना किसी शॉर्टकट का इस्तेमाल करने पर, कुछ ऐप्लिकेशन के शॉर्टकट में गड़बड़ी हो सकती है. इस शॉर्टकट का इस्तेमाल जारी रखने के लिए कुंजियों को फिर से दबाएं या <ph name="KEY" /> बटन के साथ किसी नए शॉर्टकट का इस्तेमाल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">इसी अर्थ वाले दूसरे शब्द:</translation>
+<translation id="5121677070210013200">बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड नहीं किया जा सका. फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="5130848777448318809">खच्चर</translation>
 <translation id="5137451382116112100">फ़ुलस्क्रीन मोड</translation>
 <translation id="5140788690559353412">स्कूल वाले खाते का ऐक्सेस हट जाने पर, आपके पास उससे जुड़े ईमेल और Google Drive में सेव की गई फ़ाइलों का ऐक्सेस नहीं रहेगा. जैसे, Gmail, Docs, Slides वगैरह पर बनाई गई फ़ाइलें.</translation>
@@ -1263,6 +1267,7 @@
 <translation id="7040729769968826896">स्पीकर की पहचान करने की अनुमति दें</translation>
 <translation id="7041549558901442110">डिवाइस कनेक्ट नहीं है.</translation>
 <translation id="7046522406494308071">क्या आपको सभी शॉर्टकट डिफ़ॉल्ट पर रीसेट करने हैं?</translation>
+<translation id="7049916119678019302">सेटिंग में जाकर, बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड करें</translation>
 <translation id="7058278511608979688">बंद करें और सेव करें</translation>
 <translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> कुंजी</translation>

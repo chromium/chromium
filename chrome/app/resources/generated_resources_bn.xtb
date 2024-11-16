@@ -446,6 +446,7 @@
 <translation id="1296911687402551044">বেছে নেওয়া ট্যাব পিন করুন</translation>
 <translation id="1297175357211070620">গন্তব্য</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />-এর জন্য মতামত জানান</translation>
+<translation id="129808599775632797">&amp;সংশোধন</translation>
 <translation id="130097046531636712">এটি ব্যাকগ্রাউন্ড অ্যাক্টিভিটি এবং স্মুথ স্ক্রলিংয়ের মতো কিছু ভিজ্যুয়াল এফেক্টের ব্যবহার সীমিত করে ব্যাটারি সাশ্রয় করে</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" />-এর কাছে নিচে উল্লেখ করা ফাইলগুলি এডিট করার অনুমতি আছে</translation>
 <translation id="130174306655812048">“Ok Google, এটি কোন গান?” বলে দেখুন</translation>
@@ -688,7 +689,6 @@
 <translation id="1476347941828409626">&amp;Chrome প্রোফাইল ম্যানেজ করুন</translation>
 <translation id="1476607407192946488">&amp;ভাষা সেটিংস</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" />-এর জন্য আপনার স্মার্ট কার্ড প্রবেশ করিয়ে রাখতে হবে।</translation>
-<translation id="1477645000789043442">আপনার খোলা ট্যাবের ভিত্তিতে অটোমেটিক ট্যাব গ্রুপ তৈরি করে। এই ফিচার ব্যবহার করতে, ট্যাবে ডানদিকের বোতামে ক্লিক করুন এবং 'একই ধরনের ট্যাব সাজান' বিকল্পে ক্লিক করুন।</translation>
 <translation id="1477654881618305065">আপনার প্রতিষ্ঠান আপনাকে এই কন্টেন্ট শেয়ার করার অনুমতি দেয় না। আপনার সহায়তা প্রয়োজন হলে, অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1478340334823509079">বিবরণ: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ইনস্টলেশন চালু করা হয়নি</translation>
@@ -1083,7 +1083,6 @@
 <translation id="1734212868489994726">হালকা নীল</translation>
 <translation id="1734230530703461088">নির্দিষ্ট সময়সীমার মধ্যে এক্সটেনশন লোড করা যায়নি। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> নিজেকে আপডেট রাখতে হয়ত সক্ষম নয়</translation>
-<translation id="1735957571918073979">দুটি চোখ পিটপিট করুন</translation>
 <translation id="1735983780784385591">Linux থেকে ইমপোর্ট করা হয়েছে</translation>
 <translation id="173628468822554835">বুঝেছি৷ ডিফল্ট হিসেবে আপনি যেসব নতুন সাইটে যাবেন সেগুলি বিজ্ঞপ্তি পাঠাবে না।</translation>
 <translation id="1737968601308870607">ফাইল বাগ</translation>
@@ -1776,6 +1775,7 @@
 <translation id="2214018885812055163">শেয়ার করা ফোল্ডার</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;১টি লাইন দেখানো হয়নি&gt;}one{&lt;<ph name="NUMBER_OF_LINES" />টি লাইন দেখানো হয়নি&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />টি লাইন দেখানো হয়নি&gt;}}</translation>
 <translation id="2215070081105889450">অডিও শেয়ার করতে, পরিবর্তে ট্যাব বা স্ক্রিন শেয়ার করুন</translation>
+<translation id="2217208085547223783">ট্রাস্ট স্টেট</translation>
 <translation id="2218019600945559112">মাউস ও টাচপ্যাড</translation>
 <translation id="2218515861914035131">সাধারণ টেক্সট হিসেবে আটকে দিন</translation>
 <translation id="221872881068107022">উল্টো দিকে স্ক্রোল</translation>
@@ -2111,7 +2111,6 @@
 <translation id="2438853563451647815">প্রিন্টারের সাথে কানেক্ট করা নেই</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-এর পাসওয়ার্ড রিসেট করুন</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> লোড করা হচ্ছে</translation>
-<translation id="2440036226025529014">কার্সর ও কীবোর্ড কন্ট্রোল করতে, মুখ ও চোখের মুভমেন্ট ব্যবহার করুন</translation>
 <translation id="2440604414813129000">উ&amp;ত্স দেখুন</translation>
 <translation id="244071666433939959">অ্যাপ উইন্ডোতে খোলে</translation>
 <translation id="2440823041667407902">লোকেশন অ্যাক্সেস</translation>
@@ -2508,6 +2507,7 @@
 <translation id="2722547199758472013">আইডি: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">অতিথি প্রোফাইল খুলুন</translation>
 <translation id="2723819893410108315">সিট্রন</translation>
+<translation id="2724822892847436256">সীমাবদ্ধতা</translation>
 <translation id="2724841811573117416">WebRTC লগগুলি</translation>
 <translation id="272488616838512378">ইউনিট কনর্ভাসন</translation>
 <translation id="2725200716980197196">নেটওয়ার্ক সংযোগ পুনঃস্থাপিত হয়েছে</translation>
@@ -3080,7 +3080,6 @@
 <translation id="3119948370277171654">আপনি কোন ইউআরএল/কন্টেন্ট কাস্ট করছিলেন?</translation>
 <translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3122496702278727796">ডেটা ডিরেক্টরি তৈরি করা যায়নি</translation>
-<translation id="3122810280993140148">বিযয়, মুড, ভিজ্যুয়াল স্টাইল ও আপনার বেছে নেওয়া রঙের উপর নির্ভর করে কাস্টম থিম তৈরি করে। এই ফিচার ব্যবহার করতে, নতুন ট্যাব খুলুন এবং 'Chrome কাস্টমাইজ করুন' বিকল্পে ক্লিক করুন।</translation>
 <translation id="3122883569442693641">আরও বিবরণ</translation>
 <translation id="3124111068741548686">ব্যবহারকারীর হ্যান্ডলগুলি</translation>
 <translation id="3124332159330678621">আপনার ব্রাউজারকে একটি নতুন চেহারা দিতে Chrome কাস্টমাইজ করুন</translation>
@@ -3469,6 +3468,7 @@
 <translation id="3421835120203732951">নতুন প্রোফাইল যোগ করুন</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />-এ ফলাফল খুঁজে পাওয়া গেছে</translation>
 <translation id="3423226218833787854">এই AI ফিচার সম্পর্কে আরও জানুন</translation>
+<translation id="3423275441470187644">ট্রাস্ট</translation>
 <translation id="3423463006624419153">আপনার '<ph name="PHONE_NAME_1" />' এবং '<ph name="PHONE_NAME_2" />' এ:</translation>
 <translation id="3423858849633684918">দয়া করে <ph name="PRODUCT_NAME" />-কে পুনঃলঞ্চ করুন</translation>
 <translation id="3424969259347320884">ট্যাবটি ক্র্যাশ হওয়ার সময় আপনি কি করছিলেন তা বর্ণনা করুন</translation>
@@ -4594,6 +4594,7 @@
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4195814663415092787">আপনি যেখানে ছেডেছেন সেখান থেকে চালিয়ে যান</translation>
 <translation id="4198268995694216131">অতিরিক্ত সাইট</translation>
+<translation id="4198420883535766848">তালিকা থেকে ট্যাব সরান</translation>
 <translation id="4200609364258658652">ভিডিও ফ্রেম কপি করুন</translation>
 <translation id="4200689466366162458">কাস্টম শব্দগুলি</translation>
 <translation id="4200983522494130825">নতুন &amp;ট্যাব</translation>
@@ -4767,7 +4768,6 @@
 <translation id="432160826079505197">Finder-এ <ph name="FILE_NAME" /> দেখান</translation>
 <translation id="4322394346347055525">অন্যান্য ট্যাব বন্ধ করুন</translation>
 <translation id="4324577459193912240">ফাইলটি অসম্পূর্ণ</translation>
-<translation id="432464946901605871">তোমার অভিভাবকের পছন্দ মেনে অনলাইনে আরও নিরাপদ থাকতে, <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করো</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> আনইনস্টল করা হচ্ছে…</translation>
 <translation id="4325433082696797523">স্টোরেজ ও পাওয়ার</translation>
 <translation id="4326146840124313313">ক্ষতিকর ওয়েবসাইট, ডাউনলোড ও এক্সটেনশন থেকে আপনাকে সুরক্ষিত রাখতে, Chrome-এর সবচেয়ে শক্তিশালী নিরাপত্তা আরও অনেক কিছু করে</translation>
@@ -5156,6 +5156,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ট্যাব গ্রুপ মুছবেন?}one{ট্যাব গ্রুপ মুছবেন?}other{ট্যাব গ্রুপ মুছবেন?}}</translation>
 <translation id="4608500690299898628">&amp;সন্ধান করুন...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> এ সমস্যা হয়েছে</translation>
+<translation id="4610493438923139095">অবিশ্বস্ত</translation>
 <translation id="4610637590575890427">আপনি <ph name="SITE" />-এ যাওয়ার কথা বলছেন কি?</translation>
 <translation id="4611114513649582138">ডেটা সংযোগ উপলভ্য নেই৷</translation>
 <translation id="4611759022973144129">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করার জন্য এই পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
@@ -5181,6 +5182,7 @@
 <translation id="4627442949885028695">অন্য ডিভাইস থেকে চালিয়ে যান</translation>
 <translation id="4628762811416793313">Linux কন্টেনার সেট-আপ সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> প্রোফাইল খুলুন</translation>
+<translation id="4629803160911640220">ট্রাস্ট করা হয়েছে</translation>
 <translation id="4631955550884380853">স্পষ্ট ভয়েস</translation>
 <translation id="4632655012900268062">কার্ড কাস্টমাইজ করুন</translation>
 <translation id="4633003931260532286">এক্সটেনশানের ন্যূনতম <ph name="IMPORT_VERSION" /> ভার্সনের <ph name="IMPORT_NAME" /> প্রয়োজন, কিন্তু শুধুমাত্র <ph name="INSTALLED_VERSION" /> ভার্সন ইনস্টল করা আছে</translation>
@@ -6836,6 +6838,7 @@
 <translation id="5842497610951477805">ব্লুটুথ সক্ষম</translation>
 <translation id="5844284118433003733">আপনি সাইন-ইন করলে, এই ডেটা আপনাকে Google পরিষেবা জু়ড়ে সুরক্ষিত রাখতে Google অ্যাকাউন্টে লিঙ্ক করা হয়, যেমন কোনও সুরক্ষা সম্পর্কিত ঘটনার পর Gmail-এ নিরাপত্তা বাড়ানো।</translation>
 <translation id="5844574845205796324">নতুন কন্টেন্ট চেক করে দেখতে সাজেস্ট করুন</translation>
+<translation id="5844685625984052392">ইঙ্গিত</translation>
 <translation id="5846200638699387931">রিলেশন সিন্ট্যাক্সে সমস্যা হয়েছে: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">কোনও শ্যাডো নেই</translation>
 <translation id="5846504156837627898">সাইট সংক্রান্ত অনুমতি ম্যানেজ করুন</translation>
@@ -9192,7 +9195,6 @@
 <translation id="7550885994112799211">স্টোরেজ, পাওয়ার, ভাষা</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ডাউনলোড করা যায়নি</translation>
 <translation id="7551643184018910560">শেল্ফে পিন করুন</translation>
-<translation id="755198739067769724"><ph name="CHILD_NAME" />, তোমাকে স্বাগত জানাই</translation>
 <translation id="7552191410769096467">ট্যাব গ্রুপে শেয়ার করতে বা যোগ দিতে হলে, আপনাকে সাইন-ইন করতে এবং সিঙ্ক চালু করতে হবে</translation>
 <translation id="7552846755917812628">নিম্নোল্লিখিত টিপ্স ব্যবহার করে দেখুন:</translation>
 <translation id="7553012839257224005">Linux কন্টেনার চেক করে দেখা হচ্ছে</translation>
@@ -10442,7 +10444,6 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">ট্রে লাগানো নেই</translation>
 <translation id="8424250197845498070">উন্নত সুরক্ষা দ্বারা ব্লক করা হয়েছে</translation>
-<translation id="842501938276307467">পরীক্ষমূলক AI ফিচার ব্যবহার করে দেখুন</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8425492902634685834">টাস্কবারে পিন করুন</translation>
 <translation id="8425768983279799676">আপনি পিন ব্যবহার করে ডিভাইস আনলক করতে পারেন।</translation>
@@ -10682,7 +10683,6 @@
 <translation id="8601206103050338563">TLS WWW ক্লায়েন্ট  যাচাইকরণ</translation>
 <translation id="8602674530529411098">অ্যাপ (বিটা)</translation>
 <translation id="8602851771975208551">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম একটি অ্যাপ্লিকেশন জুড়েছে যা Chrome এর কাজ করার পদ্ধতিকে পাল্টে দিতে পারে৷</translation>
-<translation id="8604513817270995005">আপনাকে ওয়েবের জন্য সংক্ষিপ্ত রূপের কন্টেন্ট লিখতে সাহায্য করে, যেমন রিভিউ। সাজেস্ট করা কন্টেন্ট আপনার প্রম্পট ও ওয়েব পৃষ্ঠার কন্টেন্টের উপর নির্ভর করে। এই ফিচার ব্যবহার করতে, টেক্সট বক্সের ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="8605428685123651449">SQLite মেমোরি</translation>
 <translation id="8607171490667464784">ডিভাইস পাওয়ার সোর্সে প্লাগ-ইন করা না থাকলে ও ব্যাটারির পাওয়ারে চললে</translation>
 <translation id="8607828412110648570">আপনার ব্লুটুথ ডিভাইস কাছাকাছি এবং 'যোগ করার মোড'-এ আছে কিনা ভাল করে দেখে নিন। আপনার বিশ্বাস রয়েছে শুধুমাত্র এমন ডিভাইসেই যোগ করুন। এই Chromebook-এ সব অ্যাকাউন্টে পেয়ার করা ডিভাইস দেখা যাবে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11455,7 +11455,6 @@
 <translation id="9116366756388192417">বিষয় বেছে নিন</translation>
 <translation id="9116799625073598554">টিকা-লেখার অ্যাপ</translation>
 <translation id="9117030152748022724">আপনার অ্যাপ ম্যানেজ করুন</translation>
-<translation id="9119587891086680311">এইসব ফিচার AI ব্যবহার করে, প্রাথমিক ডেভেলপমেন্ট পর্যায়ে রয়েছে এবং সবসময় সঠিক নাও হতে পারে।</translation>
 <translation id="9120362425083889527">ইনস্টলেশনটি সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন বা এই উইন্ডো বন্ধ করুন</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />সেরা অভিজ্ঞতা পেতে, আপনার ইন্টার্নাল ডিস্কে <ph name="DEVICE_OS" /> ইনস্টল করুন। এছাড়াও, পরে এটি লগ-ইন স্ক্রিন থেকে ইনস্টল করতে পারবেন।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করার জন্য প্রস্তুত না থাকলে, এটা করে দেখতে, ইউএসবি ব্যবহার করে চালিয়ে দেখতে পারেন। এটি আপনার বর্তমান OS ও ডেটা রাখবে তবে হয়ত দেখবেন যে, স্টোরেজ ও পারফর্ম্যান্সের সীমা কমে গেছে।<ph name="END_PARAGRAPH2" /></translation>

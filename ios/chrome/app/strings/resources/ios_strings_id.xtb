@@ -782,6 +782,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
 <translation id="4647758699119474035">Login sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Terjadi error pada Akun Google. Buka menu akun.</translation>
 <translation id="4650125387981512669">Lanjutkan sebagai <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Sembunyikan setelah 1 menit}other{Sembunyikan setelah {count} menit}}</translation>
 <translation id="4652817563047461855">Pastikan sandi Anda aman, cari tahu apakah sandi telah dibobol, dan dapatkan saran untuk membantu melindungi diri Anda saat online. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Simpan</translation>
 <translation id="4668929960204016307">,</translation>

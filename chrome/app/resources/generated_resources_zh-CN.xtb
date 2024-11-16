@@ -685,7 +685,6 @@
 <translation id="1476347941828409626">管理 Chrome 个人资料(&amp;M)</translation>
 <translation id="1476607407192946488">语言设置(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> 要求您让智能卡保持插入状态。</translation>
-<translation id="1477645000789043442">根据打开的标签页自动创建标签页分组。如需使用此功能，请右键点击某个标签页，然后点击“整理类似标签页”。</translation>
 <translation id="1477654881618305065">贵组织不允许您分享此内容。如果需要帮助，请与您的管理员联系。</translation>
 <translation id="1478340334823509079">详细信息：<ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">未启用安装功能</translation>
@@ -1069,7 +1068,6 @@
 <translation id="1734212868489994726">浅蓝色</translation>
 <translation id="1734230530703461088">未能在时限内加载扩展程序。请与您的管理员联系。</translation>
 <translation id="1734824808160898225">“<ph name="PRODUCT_NAME" />”可能无法自动更新</translation>
-<translation id="1735957571918073979">眨双眼</translation>
 <translation id="1735983780784385591">从 Linux 导入</translation>
 <translation id="173628468822554835">知道了。默认情况下，您访问的新网站不会向您发送通知。</translation>
 <translation id="1737968601308870607">提交错误</translation>
@@ -2092,7 +2090,6 @@
 <translation id="2438853563451647815">未连接到打印机</translation>
 <translation id="2439152382014731627">重置 <ph name="DEVICE_TYPE" /> 密码</translation>
 <translation id="2439626940657133600">正在加载“<ph name="WINDOW_TITLE" />”</translation>
-<translation id="2440036226025529014">使用面部和视线动作控制光标和键盘</translation>
 <translation id="2440604414813129000">查看源代码(&amp;O)</translation>
 <translation id="244071666433939959">应用会在窗口中打开</translation>
 <translation id="2440823041667407902">位置信息使用权</translation>
@@ -3061,7 +3058,6 @@
 <translation id="3119948370277171654">您当时投放的是什么内容/网址？</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">无法创建数据目录</translation>
-<translation id="3122810280993140148">根据您选择的主题、情境、视觉风格和颜色创建自定义主题。若要使用此功能，请打开一个新标签页，然后点击“自定义 Chrome”。</translation>
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3124111068741548686">USER处理函数</translation>
 <translation id="3124332159330678621">自定义您的 Chrome 浏览器，为它换上全新外观</translation>
@@ -4747,7 +4743,6 @@
 <translation id="432160826079505197">在 Finder 中显示 <ph name="FILE_NAME" /></translation>
 <translation id="4322394346347055525">关闭其他标签页</translation>
 <translation id="4324577459193912240">文件下载未完成</translation>
-<translation id="432464946901605871">若要使用家长选择的设置更安全地上网，请以 <ph name="USER_EMAIL" /> 身份登录</translation>
 <translation id="4325237902968425115">正在卸载 <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">存储和电源</translation>
 <translation id="4326146840124313313">Chrome 强大的安全防护功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
@@ -9167,7 +9162,6 @@
 <translation id="7550885994112799211">存储、电源、语言</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> 下载失败</translation>
 <translation id="7551643184018910560">固定到任务栏</translation>
-<translation id="755198739067769724">欢迎你，<ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">如需分享或加入标签页分组，您需要登录并开启同步功能</translation>
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
 <translation id="7553012839257224005">正在检查 Linux 容器</translation>
@@ -10418,7 +10412,6 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">缺少送纸盘</translation>
 <translation id="8424250197845498070">已被“高级保护”机制屏蔽</translation>
-<translation id="842501938276307467">试用实验性 AI 功能</translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8425492902634685834">固定在任务栏上</translation>
 <translation id="8425768983279799676">您可以使用 PIN 码来解锁您的设备。</translation>
@@ -10658,7 +10651,6 @@
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8602674530529411098">应用（Beta 版）</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
-<translation id="8604513817270995005">可帮助您在网络上撰写评价等简短内容。系统会根据您的提示和网页内容来提供建议的内容。如需使用此功能，请右键点击文本框。</translation>
 <translation id="8605428685123651449">SQLite 使用的内存</translation>
 <translation id="8607171490667464784">处于闲置状态且使用电池时</translation>
 <translation id="8607828412110648570">请确保您的蓝牙设备处于配对模式且就在附近。应仅与您信任的设备配对。此 Chromebook 上的所有账号都可以看到已配对的设备。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11430,7 +11422,6 @@
 <translation id="9116366756388192417">选择主题</translation>
 <translation id="9116799625073598554">记事应用</translation>
 <translation id="9117030152748022724">管理应用</translation>
-<translation id="9119587891086680311">这些功能使用 AI 技术，但处于早期开发阶段，因此提供的信息不一定准确无误。</translation>
 <translation id="9120362425083889527">无法完成安装。请重试或关闭此窗口</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 <ph name="DEVICE_OS" /> 安装到您的内部磁盘。您也可等到需要时再从登录屏幕安装它。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果尚未做好安装前的准备工作，您可从 USB 运行它来试用一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>

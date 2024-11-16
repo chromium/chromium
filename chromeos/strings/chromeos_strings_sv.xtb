@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Hög fördröjning till HTTPS-webbplatser</translation>
 <translation id="361575905210396100">Tack för din feedback</translation>
 <translation id="3621072146987826699">elefanter</translation>
+<translation id="3628462041319107639">Laddar ned transkriptionsmodell …</translation>
 <translation id="3632040286124154621">Bra förslag</translation>
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
 <translation id="3639873154908477486">Namn (A till Ö)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="382043424867370667">Bakgrund med solnedgång</translation>
 <translation id="3824259034819781947">Bifoga filer</translation>
+<translation id="383586991013681190">Välj transkriptionsspråk och ladda ned i inställningarna</translation>
 <translation id="3836587210832263413">Aktivera endast tillägg som du litar på</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
 <translation id="3845880861638660475">Tryck på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> för att stänga dialogrutan.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Det finns inga matchande resultat</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
+<translation id="4483498983731992167">Det gick inte att skapa en transkription</translation>
 <translation id="4486524074141928967">Du loggas ut kl. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando med en specialtangent (Ctrl, Alt, Skift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Gränssnittsfärg</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Ett kortkommando utan <ph name="META_KEY" />tangenten kan hamna i konflikt med ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med <ph name="KEY" />tangenten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Liknande:</translation>
+<translation id="5121677070210013200">Det gick inte att ladda ned transkriptionsmodellen. Försök igen eller starta om Chromebook.</translation>
 <translation id="5130848777448318809">ponnyer</translation>
 <translation id="5137451382116112100">Helskärm</translation>
 <translation id="5140788690559353412">När du förlorar åtkomsten till skolkontot har du inte längre åtkomst till e-post och filer i Google Drive som Gmail, Dokument, Presentationer med mera.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Tillåt högtalaridentifiering</translation>
 <translation id="7041549558901442110">Enheten är inte ansluten.</translation>
 <translation id="7046522406494308071">Vill du återställa alla kortkommandon till standardinställningarna?</translation>
+<translation id="7049916119678019302">Ladda ned transkriptionsmodell i inställningarna</translation>
 <translation id="7058278511608979688">Avsluta och spara</translation>
 <translation id="7059230779847288458">Laddas – fulladdat om <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186">nyckeln <ph name="KEY" /></translation>

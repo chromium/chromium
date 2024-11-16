@@ -687,7 +687,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1476347941828409626">&amp;Gestiona els perfils de Chrome</translation>
 <translation id="1476607407192946488">&amp;Configuració d'idioma</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.</translation>
-<translation id="1477645000789043442">Crea automàticament grups de pestanyes basats en les pestanyes que tens obertes. Per utilitzar aquesta funció, fes clic amb el botó dret en una pestanya i, després, fes clic a Organitza les pestanyes similars.</translation>
 <translation id="1477654881618305065">La teva organització no et permet compartir aquest contingut. Si necessites ajuda, contacta amb l'administrador.</translation>
 <translation id="1478340334823509079">Detalls: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">La instal·lació no està activada</translation>
@@ -1074,7 +1073,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1734212868489994726">Blau clar</translation>
 <translation id="1734230530703461088">No s'han pogut carregar les extensions dins del límit de temps. Contacta amb l'administrador.</translation>
 <translation id="1734824808160898225">És possible que <ph name="PRODUCT_NAME" /> no pugui actualitzar-se tot sol</translation>
-<translation id="1735957571918073979">Parpellejar amb tots dos ulls</translation>
 <translation id="1735983780784385591">Importats de Linux</translation>
 <translation id="173628468822554835">D'acord. De manera predeterminada, els llocs webs nous que visitis no t'enviaran notificacions.</translation>
 <translation id="1737968601308870607">Arxiva l'error</translation>
@@ -2099,7 +2097,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2438853563451647815">Sense connexió amb la impressora</translation>
 <translation id="2439152382014731627">Restableix la contrasenya del dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2439626940657133600">S'està carregant <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Utilitza el moviment de la cara i de la mirada per controlar el cursor i el teclat</translation>
 <translation id="2440604414813129000">Visualitza l'&amp;origen</translation>
 <translation id="244071666433939959">Les aplicacions s'obren en una finestra</translation>
 <translation id="2440823041667407902">Accés a la ubicació</translation>
@@ -3069,7 +3066,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3119948370277171654">Quin contingut o URL estaves emetent?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Error en crear un directori de dades</translation>
-<translation id="3122810280993140148">Crea temes personalitzats en funció de la temàtica, l'estat d'ànim, l'estil visual i el color que triïs. Per utilitzar aquesta funció, obre una pestanya nova i fes clic a Personalitza Chrome.</translation>
 <translation id="3122883569442693641">Més detalls</translation>
 <translation id="3124111068741548686">Controls d'USUARI</translation>
 <translation id="3124332159330678621">Personalitza Chrome per renovar l'aspecte del navegador</translation>
@@ -4755,7 +4751,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="432160826079505197">Mostra <ph name="FILE_NAME" /> a Finder</translation>
 <translation id="4322394346347055525">Tanca les altres pestanyes</translation>
 <translation id="4324577459193912240">Fitxer incomplet</translation>
-<translation id="432464946901605871">Per protegir-te més en línia amb les opcions del teu pare o mare, inicia la sessió com a <ph name="USER_EMAIL" /></translation>
 <translation id="4325237902968425115">S'està desinstal·lant <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">Emmagatzematge i potència</translation>
 <translation id="4326146840124313313">La millor seguretat de Chrome és més eficaç a l'hora de protegir-te de baixades, extensions i llocs web perillosos</translation>
@@ -9177,7 +9172,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7550885994112799211">Emmagatzematge, alimentació, idioma</translation>
 <translation id="7551059576287086432">No s'ha pogut baixar <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fixa al prestatge</translation>
-<translation id="755198739067769724">Et donem la benvinguda, <ph name="CHILD_NAME" /></translation>
 <translation id="7552191410769096467">Per compartir grups de pestanyes o unir-t'hi, has d'iniciar la sessió i activar la sincronització</translation>
 <translation id="7552846755917812628">Prova els consells següents:</translation>
 <translation id="7553012839257224005">S'està comprovant el contenidor de Linux</translation>
@@ -10429,7 +10423,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">No es troba la safata</translation>
 <translation id="8424250197845498070">Bloquejat per la Protecció avançada</translation>
-<translation id="842501938276307467">Prova funcions d'IA experimentals</translation>
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8425492902634685834">Fixa a la barra de tasques</translation>
 <translation id="8425768983279799676">Pots utilitzar el PIN per desbloquejar el dispositiu.</translation>
@@ -10669,7 +10662,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8601206103050338563">Autenticació de client WWW de TLS</translation>
 <translation id="8602674530529411098">Aplicacions (beta)</translation>
 <translation id="8602851771975208551">Un altre programa de l'ordinador ha afegit una aplicació que pot canviar el funcionament de Chrome.</translation>
-<translation id="8604513817270995005">T'ajuda a escriure contingut breu per a coses del web, com ara ressenyes. El contingut suggerit es basa en les teves indicacions i en el contingut de la pàgina web. Per utilitzar aquesta funció, fes clic amb el botó dret en un quadre de text.</translation>
 <translation id="8605428685123651449">Memòria SQLite</translation>
 <translation id="8607171490667464784">Mentre estigui inactiu i utilitzi la bateria</translation>
 <translation id="8607828412110648570">Comprova que el dispositiu Bluetooth es trobi a prop i en mode de vinculació. Vincula'l només amb dispositius en què confiïs. Tots els comptes d'aquest Chromebook poden veure els dispositius vinculats. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11441,7 +11433,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9116366756388192417">Tria un tema</translation>
 <translation id="9116799625073598554">Aplicació per prendre notes</translation>
 <translation id="9117030152748022724">Gestiona les teves aplicacions</translation>
-<translation id="9119587891086680311">Aquestes funcions utilitzen la IA, estan en fase primerenca de desenvolupament i no sempre l'encertaran.</translation>
 <translation id="9120362425083889527">No s'ha pogut completar la instal·lació. Torna-ho a provar o tanca aquesta finestra.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Per gaudir de la millor experiència possible, instal·la <ph name="DEVICE_OS" /> al disc intern. També pots instal·lar-lo més tard des de la pantalla d'inici de sessió.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si no estàs a punt per instal·lar-lo, pots executar-lo des de l'USB per provar-lo. Aquesta acció conservarà el teu sistema operatiu i les teves dades actuals, però és possible que vegis límits d'emmagatzematge i de rendiment.<ph name="END_PARAGRAPH2" /></translation>

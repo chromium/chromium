@@ -687,7 +687,6 @@
 <translation id="1476347941828409626">Chrome プロフィールを管理(&amp;M)</translation>
 <translation id="1476607407192946488">言語設定(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
-<translation id="1477645000789043442">開いているタブに基づいてタブグループを自動的に作成します。この機能を使用するには、タブを右クリックして [類似のタブを整理] をクリックします。</translation>
 <translation id="1477654881618305065">お客様の組織では、このコンテンツの共有は許可されていません。サポートが必要な場合は、管理者にお問い合わせください。</translation>
 <translation id="1478340334823509079">詳細: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">インストールが有効になっていません</translation>
@@ -1074,7 +1073,6 @@
 <translation id="1734212868489994726">明るい青</translation>
 <translation id="1734230530703461088">制限時間内に拡張機能を読み込めませんでした。管理者にお問い合わせください。</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> を最新の状態に維持できない場合があります</translation>
-<translation id="1735957571918073979">両目で瞬きする</translation>
 <translation id="1735983780784385591">Linux からインポート</translation>
 <translation id="173628468822554835">今後、新しくアクセスしたサイトでは、デフォルトで通知が表示されなくなります。</translation>
 <translation id="1737968601308870607">バグを報告</translation>
@@ -2095,7 +2093,6 @@
 <translation id="2438853563451647815">プリンタに接続されていません</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> のパスワードを再設定</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> を読み込んでいます</translation>
-<translation id="2440036226025529014">顔と視線の動きでカーソルとキーボードを操作する</translation>
 <translation id="2440604414813129000">ソースを表示(&amp;O)</translation>
 <translation id="244071666433939959">アプリはウィンドウで開かれます</translation>
 <translation id="2440823041667407902">位置情報へのアクセス</translation>
@@ -3064,7 +3061,6 @@
 <translation id="3119948370277171654">キャストしたコンテンツまたは URL を教えてください。</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">データ ディレクトリの作成に失敗しました</translation>
-<translation id="3122810280993140148">選択したテーマ、ムード、ビジュアル スタイル、色に基づいてカスタムテーマを作成します。この機能を使用するには、新しいタブを開いて [Chrome をカスタマイズ] をクリックします。</translation>
 <translation id="3122883569442693641">詳細</translation>
 <translation id="3124111068741548686">USER ハンドル</translation>
 <translation id="3124332159330678621">Chrome をカスタマイズして、ブラウザのデザインを一新</translation>
@@ -4752,7 +4748,6 @@
 <translation id="432160826079505197">Finder で <ph name="FILE_NAME" /> を表示</translation>
 <translation id="4322394346347055525">他のタブをすべて閉じる</translation>
 <translation id="4324577459193912240">ファイルが不完全です</translation>
-<translation id="432464946901605871">保護者の方が指定した設定でインターネットをより安全に利用するには、<ph name="USER_EMAIL" /> としてログインしてください</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4325433082696797523">ストレージと電源</translation>
 <translation id="4326146840124313313">Chrome の最高水準のセキュリティで、危険なウェブサイト、ダウンロード、拡張機能から保護します</translation>
@@ -9172,7 +9167,6 @@
 <translation id="7550885994112799211">ストレージ、電源、言語</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> をダウンロードできませんでした</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>
-<translation id="755198739067769724">ようこそ、<ph name="CHILD_NAME" /> さん</translation>
 <translation id="7552191410769096467">タブグループを共有するか、タブグループに参加するには、ログインして同期をオンにする必要があります</translation>
 <translation id="7552846755917812628">次のことをお試しください。</translation>
 <translation id="7553012839257224005">Linux コンテナを確認しています</translation>
@@ -10423,7 +10417,6 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">トレイがありません</translation>
 <translation id="8424250197845498070">高度な保護機能でブロックされました</translation>
-<translation id="842501938276307467">試験運用版の AI 機能を試す</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8425492902634685834">タスクバーに固定</translation>
 <translation id="8425768983279799676">PIN を使用してデバイスのロックを解除できます。</translation>
@@ -10664,7 +10657,6 @@
 <translation id="8601206103050338563">TLS WWW クライアント認証</translation>
 <translation id="8602674530529411098">アプリ（ベータ版）</translation>
 <translation id="8602851771975208551">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるアプリが追加されました。</translation>
-<translation id="8604513817270995005">ウェブでクチコミなどの短文を書くのに役立ちます。候補は、プロンプトとウェブページのコンテンツに基づいて表示されます。この機能を使用するには、テキスト ボックスを右クリックします。</translation>
 <translation id="8605428685123651449">SQLite メモリ</translation>
 <translation id="8607171490667464784">非アクティブでバッテリー駆動時</translation>
 <translation id="8607828412110648570">Bluetooth デバイスがペア設定モードになっていて、近くにあることを確認してください。ペア設定は信頼しているデバイスとのみ行ってください。ペア設定したデバイスは、この Chromebook のすべてのアカウントに表示されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11437,7 +11429,6 @@
 <translation id="9116366756388192417">主題を選択</translation>
 <translation id="9116799625073598554">メモ用アプリ</translation>
 <translation id="9117030152748022724">アプリを管理する</translation>
-<translation id="9119587891086680311">これらの機能は AI を使用していますが、開発の初期段階であり、常に正しく機能するとは限りません。</translation>
 <translation id="9120362425083889527">インストールを完了できませんでした。もう一度お試しいただくか、このウィンドウを閉じてください</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />快適にご利用いただくには、<ph name="DEVICE_OS" /> を内部ディスクにインストールしてください。後でログイン画面からインストールすることもできます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />インストールする準備ができていない場合は、USB から実行して試してみることもできます。この場合、既存の OS とデータは残りますが、保存容量やパフォーマンスが制限される可能性があります。<ph name="END_PARAGRAPH2" /></translation>

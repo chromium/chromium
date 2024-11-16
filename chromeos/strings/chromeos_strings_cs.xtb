@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Vysoká latence připojení k webům HTTPS</translation>
 <translation id="361575905210396100">Děkujeme vám za zpětnou vazbu</translation>
 <translation id="3621072146987826699">sloni</translation>
+<translation id="3628462041319107639">Stahování modelu přepisu…</translation>
 <translation id="3632040286124154621">Dobrý návrh</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
 <translation id="3639873154908477486">Název (A až Z)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="382043424867370667">Tapeta se západem slunce</translation>
 <translation id="3824259034819781947">Připojit soubory</translation>
+<translation id="383586991013681190">Vyberte jazyk přepisu a v Nastavení ho stáhněte</translation>
 <translation id="3836587210832263413">Zapněte jen rozšíření, kterým důvěřujete</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3845880861638660475">Dialogové okno zavřete stisknutím kombinace kláves <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Dotazu neodpovídají žádné výsledky</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
+<translation id="4483498983731992167">Nelze vytvořit přepis</translation>
 <translation id="4486524074141928967">V <ph name="TIME" /> budete odhlášeni</translation>
 <translation id="4500722292849917410">Zkratka není k dispozici. Stiskněte novou zkratku s modifikační klávesou (ctrl, alt, shift nebo <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Barva rozhraní</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">nahoru</translation>
 <translation id="5107243100836678918">Zkratka bez klávesy <ph name="META_KEY" /> může být v konfliktu se zkratkou některé aplikace. Pokud tuto zkratku chcete nadále používat, stiskněte ji znovu, nebo stiskněte novou klávesovou zkratku s klávesou <ph name="KEY" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Podobný význam:</translation>
+<translation id="5121677070210013200">Model přepisu nelze stáhnout. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="5130848777448318809">poníci</translation>
 <translation id="5137451382116112100">Maximalizovat</translation>
 <translation id="5140788690559353412">Když ztratíte přístup ke školnímu účtu, nebudete už mít přístup k přidruženým e‑mailům a souborům na Disku Google, jako jsou Gmail, Dokumenty, Prezentace a další.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">Povolit identifikaci mluvčích</translation>
 <translation id="7041549558901442110">Zařízení není připojeno.</translation>
 <translation id="7046522406494308071">Resetovat všechny zkratky do výchozího nastavení?</translation>
+<translation id="7049916119678019302">Stáhněte v Nastavení model přepisu</translation>
 <translation id="7058278511608979688">Ukončit a uložit</translation>
 <translation id="7059230779847288458">Nabíjení, <ph name="TIME_VALUE" /> do úplného nabití</translation>
 <translation id="7066538517128343186">klávesa <ph name="KEY" /></translation>
