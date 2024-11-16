@@ -363,7 +363,8 @@ void OptimizationGuideKeyedService::Initialize() {
     if (!performance_class_fetched &&
         (base::FeatureList::IsEnabled(
              optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
-         optimization_guide::features::IsOnDeviceExecutionEnabled())) {
+         optimization_guide::features::IsOnDeviceExecutionEnabled()) &&
+        on_device_component_manager_->NeedsPerformanceClassUpdate()) {
       performance_class_fetched = true;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,

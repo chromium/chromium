@@ -340,6 +340,29 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
   EXPECT_TRUE(manager()->GetState());
 }
 
+TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdateEveryStartup) {
+  base::test::ScopedFeatureList feature_list(
+      features::kOnDeviceModelFetchPerformanceClassEveryStartup);
+  manager()->OnStartup();
+  WaitForStartup();
+  EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kVeryLow);
+  EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
+}
+
+TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kOnDeviceModelFetchPerformanceClassEveryStartup);
+  manager()->OnStartup();
+  WaitForStartup();
+  EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kVeryLow);
+  EXPECT_FALSE(manager()->NeedsPerformanceClassUpdate());
+}
+
 TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
   // Same test as KeepInstalledWhileNotEligible, but in this case the model
   // should not be used (because performance class is not supported) even though

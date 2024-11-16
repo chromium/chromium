@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 
 namespace optimization_guide {
 namespace {
@@ -193,7 +194,19 @@ void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
     OnDeviceModelPerformanceClass performance_class) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdatePerformanceClassPref(local_state_, performance_class);
+  local_state_->SetString(
+      model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
+      version_info::GetVersionNumber());
   BeginUpdateRegistration();
+}
+
+bool OnDeviceModelComponentStateManager::NeedsPerformanceClassUpdate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::FeatureList::IsEnabled(
+             features::kOnDeviceModelFetchPerformanceClassEveryStartup) ||
+         local_state_->GetString(model_execution::prefs::localstate::
+                                     kOnDevicePerformanceClassVersion) !=
+             version_info::GetVersionNumber();
 }
 
 void OnDeviceModelComponentStateManager::OnStartup() {

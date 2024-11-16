@@ -173,6 +173,12 @@ BASE_FEATURE(kOnDeviceModelValidation,
              "OnDeviceModelValidation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether performance class should be fetched each startup or just after a
+// version update.
+BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
+             "OnDeviceModelFetchPerformanceClassEveryStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Enable the "Synapse" refreshed AI settings page.
 BASE_FEATURE(kAiSettingsPageRefresh,

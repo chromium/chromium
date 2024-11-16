@@ -41,6 +41,10 @@ const char kOnDeviceModelValidationResult[] =
 const char kOnDevicePerformanceClass[] =
     "optimization_guide.on_device.performance_class";
 
+// Stores the last chrome version that the performance class was checked.
+const char kOnDevicePerformanceClassVersion[] =
+    "optimization_guide.on_device.performance_class_version";
+
 // A timestamp for the last time various features were used which could have
 // benefited from the on-device model. These are on-device eligible features,
 // and this will be used to help decide whether to acquire the on device base
@@ -89,6 +93,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDevicePerformanceClass, 0);
+  registry->RegisterStringPref(localstate::kOnDevicePerformanceClassVersion,
+                               std::string());
   registry->RegisterTimePref(localstate::kLastTimeComposeWasUsed,
                              base::Time::Min());
   registry->RegisterTimePref(localstate::kLastTimePromptApiWasUsed,

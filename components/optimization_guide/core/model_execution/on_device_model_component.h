@@ -108,6 +108,9 @@ class OnDeviceModelComponentStateManager
   void DevicePerformanceClassChanged(
       OnDeviceModelPerformanceClass performance_class);
 
+  // Whether the performance class needs to be fetched.
+  bool NeedsPerformanceClassUpdate();
+
   // Returns the current state. Null if the component is not available.
   const OnDeviceModelComponentState* GetState();
 
