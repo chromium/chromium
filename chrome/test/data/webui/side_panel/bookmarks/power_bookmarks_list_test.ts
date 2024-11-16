@@ -729,6 +729,13 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertFalse(!!expandButton);
   });
 
+  test('ShowsCorrectFoldersOnTreeView', async () => {
+    loadTimeData.overrideValues({ bookmarksTreeViewEnabled: true });
+    await initializeUI();
+
+    assertEquals(folders[1]!.children!.length + 1, getBookmarks().length);
+  });
+
   test('ExpandAndCollapseNestedBookmarks', async () => {
     // Enabling the feature flag for expanding/collapsing nested bookmarks test.
     loadTimeData.overrideValues({bookmarksTreeViewEnabled: true});

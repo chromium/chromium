@@ -670,13 +670,7 @@ export class PowerBookmarksListElement extends PolymerElement {
    * Update the lists of bookmarks and folders displayed to the user.
    */
   private updateDisplayLists_() {
-    let activeFolder;
-    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
-      activeFolder = this.bookmarksService_.findBookmarkWithId(
-          loadTimeData.getString('otherBookmarksId'));
-    } else {
-      activeFolder = this.getActiveFolder_();
-    }
+    const activeFolder = this.getActiveFolder_();
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.activeSortIndex_, this.searchQuery_, this.labels_);
     this.displayLists_ = [primaryList];
