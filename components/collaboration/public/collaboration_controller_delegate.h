@@ -13,13 +13,23 @@ namespace collaboration {
 // elements. This delegate is required by the CollborationController.
 class CollaborationControllerDelegate {
  public:
-  enum class Flow {
-    kUnknown,
-    kJoin,
-    kShare,
+  struct ErrorInfo {
+    enum class Type {
+      kUnknown,
+      // Show the generic error dialog.
+      kGenericError,
+    };
+
+    explicit ErrorInfo(Type type) : type(type) {}
+
+    Type type;
   };
 
-  struct ErrorInfo {};
+  enum class Outcome {
+    kSuccess,
+    kFailure,
+    kCancel,
+  };
 
   CollaborationControllerDelegate() = default;
   virtual ~CollaborationControllerDelegate() = default;
@@ -32,7 +42,10 @@ class CollaborationControllerDelegate {
 
   // Callback for informing the service whether a the UI was displayed
   // successfully.
-  using ResultCallback = base::OnceCallback<void(bool)>;
+  using ResultCallback = base::OnceCallback<void(Outcome)>;
+
+  // Request to initialize UI.
+  virtual void PrepareFlowUI(ResultCallback result) = 0;
 
   // Request to show the error page/dialog.
   virtual void ShowError(ResultCallback result, const ErrorInfo& error) = 0;

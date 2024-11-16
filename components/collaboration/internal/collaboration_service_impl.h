@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "components/collaboration/public/collaboration_service.h"
 
 namespace data_sharing {
@@ -53,6 +54,9 @@ class CollaborationServiceImpl : public CollaborationService {
                  std::unique_ptr<CollaborationController>>&
   GetJoinControllersForTesting();
 
+  // Called to clean up a flow given a GroupToken.
+  void FinishFlow(const data_sharing::GroupToken& token);
+
  private:
   ServiceStatus current_status_;
 
@@ -72,6 +76,8 @@ class CollaborationServiceImpl : public CollaborationService {
   // Join controllers: <GroupId, CollaborationController>
   std::map<data_sharing::GroupToken, std::unique_ptr<CollaborationController>>
       join_controllers_;
+
+  base::WeakPtrFactory<CollaborationServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace collaboration

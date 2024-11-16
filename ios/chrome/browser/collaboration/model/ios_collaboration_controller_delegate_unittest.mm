@@ -72,7 +72,8 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
   InitShareFlowDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
-  EXPECT_CALL(completion_callback, Run(true));
+  EXPECT_CALL(completion_callback,
+              Run(CollaborationControllerDelegate::Outcome::kSuccess));
   delegate_->ShowShareDialog(completion_callback.Get());
   EXPECT_TRUE(base_view_controller_.presentedViewController);
 }
@@ -86,7 +87,8 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInValid) {
 
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
-  EXPECT_CALL(completion_callback, Run(false));
+  EXPECT_CALL(completion_callback,
+              Run(CollaborationControllerDelegate::Outcome::kFailure));
   delegate_->ShowShareDialog(completion_callback.Get());
   EXPECT_FALSE(base_view_controller_.presentedViewController);
 }
@@ -96,7 +98,8 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialog) {
   InitJoinFlowDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
-  EXPECT_CALL(completion_callback, Run(true));
+  EXPECT_CALL(completion_callback,
+              Run(CollaborationControllerDelegate::Outcome::kSuccess));
   delegate_->ShowJoinDialog(completion_callback.Get());
   EXPECT_TRUE(base_view_controller_.presentedViewController);
 }

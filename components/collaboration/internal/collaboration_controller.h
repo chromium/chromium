@@ -8,23 +8,18 @@
 #include <map>
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 
 namespace collaboration {
 
+class CollaborationService;
+class ControllerState;
+
 // The class for managing a single collaboration group flow.
 class CollaborationController {
  public:
-  explicit CollaborationController(
-      std::unique_ptr<CollaborationControllerDelegate> delegate);
-  ~CollaborationController();
-
-  // Disallow copy/assign.
-  CollaborationController(const CollaborationController&) = delete;
-  CollaborationController& operator=(const CollaborationController&) = delete;
-
- private:
   // States of a collaboration group flow. All new flows starts PENDNG.
   enum class StateId {
     // Initial state. The request has been received, awaiting delegate to be
@@ -55,6 +50,38 @@ class CollaborationController {
     kError,
   };
 
+  enum class Flow {
+    kJoin,
+    kShare,
+  };
+
+  using FinishCallback = base::OnceCallback<void()>;
+
+  explicit CollaborationController(
+      const Flow& flow,
+      CollaborationService* collaboration_service,
+      std::unique_ptr<CollaborationControllerDelegate> delegate,
+      FinishCallback finish_and_delete);
+  ~CollaborationController();
+
+  // Disallow copy/assign.
+  CollaborationController(const CollaborationController&) = delete;
+  CollaborationController& operator=(const CollaborationController&) = delete;
+
+  // Getters.
+  CollaborationControllerDelegate* delegate() { return delegate_.get(); }
+  base::WeakPtr<CollaborationController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  // Called to transition to another state.
+  void TransitionTo(std::unique_ptr<ControllerState> state);
+
+  // Called when the flow is finished to exit and clean itself up in the
+  // service.
+  void Exit();
+
+ private:
   static constexpr std::array<std::pair<StateId, StateId>, 17>
       kValidTransitions = {{
           // kPending transitions to:
@@ -119,8 +146,14 @@ class CollaborationController {
           {StateId::kOpeningLocalTabGroup, StateId::kCancel},
       }};
 
-  // The instance of the delegate to control UI.
+  bool IsValidStateTransition(StateId from, StateId to);
+
+  std::unique_ptr<ControllerState> current_state_;
+  const Flow flow_;
+  const raw_ptr<CollaborationService> collaboration_service_;
   std::unique_ptr<CollaborationControllerDelegate> delegate_;
+  FinishCallback finish_and_delete_;
+  base::WeakPtrFactory<CollaborationController> weak_ptr_factory_{this};
 };
 
 }  // namespace collaboration

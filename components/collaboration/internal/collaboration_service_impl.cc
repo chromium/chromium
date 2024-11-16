@@ -69,7 +69,11 @@ void CollaborationServiceImpl::StartJoinFlow(
   }
 
   join_controllers_.insert(
-      {token, std::make_unique<CollaborationController>(std::move(delegate))});
+      {token,
+       std::make_unique<CollaborationController>(
+           CollaborationController::Flow::kJoin, this, std::move(delegate),
+           base::BindOnce(&CollaborationServiceImpl::FinishFlow,
+                          weak_ptr_factory_.GetWeakPtr(), token))});
 }
 
 void CollaborationServiceImpl::StartShareFlow(
@@ -111,6 +115,11 @@ const std::map<data_sharing::GroupToken,
                std::unique_ptr<CollaborationController>>&
 CollaborationServiceImpl::GetJoinControllersForTesting() {
   return join_controllers_;
+}
+
+void CollaborationServiceImpl::FinishFlow(
+    const data_sharing::GroupToken& token) {
+  join_controllers_.erase(join_controllers_.find(token));
 }
 
 }  // namespace collaboration

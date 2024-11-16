@@ -26,6 +26,10 @@ IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
 IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 
 // CollaborationControllerDelegate.
+void IOSCollaborationControllerDelegate::PrepareFlowUI(ResultCallback result) {
+  // TODO(crbug.com/377306986): Implement this.
+}
+
 void IOSCollaborationControllerDelegate::ShowError(ResultCallback result,
                                                    const ErrorInfo& error) {
   // TODO(crbug.com/377306986): Implement this.
@@ -54,7 +58,11 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
                           SigninCompletionInfo* completion_info) {
                bool completion_result =
                    sign_in_result == SigninCoordinatorResultSuccess;
-               completion_block(completion_result);
+               CollaborationControllerDelegate::Outcome outcome =
+                   completion_result
+                       ? CollaborationControllerDelegate::Outcome::kSuccess
+                       : CollaborationControllerDelegate::Outcome::kFailure;
+               completion_block(outcome);
              }];
 
   [aplication_handler showSignin:command
@@ -77,7 +85,10 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(ResultCallback result) {
   config.baseViewController = join_flow.base_view_controller();
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completionBlock = ^(BOOL completion_result) {
-    completion_block(completion_result);
+    CollaborationControllerDelegate::Outcome outcome =
+        completion_result ? CollaborationControllerDelegate::Outcome::kSuccess
+                          : CollaborationControllerDelegate::Outcome::kFailure;
+    completion_block(outcome);
   };
 
   join_flow.share_kit_service()->JoinGroup(config);
@@ -91,7 +102,7 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
       collaboration_flow_->As<CollaborationFlowConfigurationShare>();
 
   if (!share_flow.tab_group()) {
-    std::move(result).Run(false);
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
     return;
   }
 
@@ -103,7 +114,10 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
       HandlerForProtocol(share_flow.command_dispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completionBlock = ^(BOOL completion_result) {
-    completion_block(completion_result);
+    CollaborationControllerDelegate::Outcome outcome =
+        completion_result ? CollaborationControllerDelegate::Outcome::kSuccess
+                          : CollaborationControllerDelegate::Outcome::kFailure;
+    completion_block(outcome);
   };
 
   share_flow.share_kit_service()->ShareGroup(config);

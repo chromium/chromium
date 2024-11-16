@@ -12,7 +12,8 @@ namespace collaboration {
 class CollaborationFlowConfiguration;
 
 // iOS implementation of CollaborationControllerDelegate.
-class IOSCollaborationControllerDelegate : CollaborationControllerDelegate {
+class IOSCollaborationControllerDelegate
+    : public CollaborationControllerDelegate {
  public:
   IOSCollaborationControllerDelegate(
       std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow);
@@ -24,6 +25,7 @@ class IOSCollaborationControllerDelegate : CollaborationControllerDelegate {
   ~IOSCollaborationControllerDelegate() override;
 
   // CollaborationControllerDelegate.
+  void PrepareFlowUI(ResultCallback result) override;
   void ShowError(ResultCallback result, const ErrorInfo& error) override;
   void Cancel(ResultCallback result) override;
   void ShowAuthenticationUi(ResultCallback result) override;
