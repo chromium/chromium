@@ -65,12 +65,12 @@
 //
 // With span:
 //   Read-Only:
-//     // std::string HexEncode(base::span<const uint8_t> data);
+//     // std::string HexEncode(span<const uint8_t> data);
 //     std::vector<uint8_t> data_buffer = GenerateData();
 //     std::string r = HexEncode(data_buffer);
 //
 //  Mutable:
-//     // ssize_t SafeSNPrintf(base::span<char>, const char* fmt, Args...);
+//     // ssize_t SafeSNPrintf(span<char>, const char* fmt, Args...);
 //     char str_buffer[100];
 //     SafeSNPrintf(str_buffer, "Pi ~= %lf", 3.14);
 //
@@ -106,9 +106,9 @@
 // Const and pointers can get confusing. Here are vectors of pointers and their
 // corresponding spans:
 //
-//   const std::vector<int*>        =>  base::span<int* const>
-//   std::vector<const int*>        =>  base::span<const int*>
-//   const std::vector<const int*>  =>  base::span<const int* const>
+//   const std::vector<int*>        =>  span<int* const>
+//   std::vector<const int*>        =>  span<const int*>
+//   const std::vector<const int*>  =>  span<const int* const>
 //
 // Differences from the C++ standard
 // ---------------------------------
@@ -326,12 +326,12 @@ class GSL_POINTER span {
          // We can not protect here generally against an invalid iterator/count
          // being passed in, since we have no context to determine if the
          // iterator or count are valid.
-        data_(base::to_address(first)) {
+        data_(to_address(first)) {
     // Guarantees that the N in the type signature is correct.
     CHECK(N == count);
 
     // `count != 0` implies non-null `data_`.  Consider using
-    // `base::SpanOrSize<T>` to represent a size that may or may not be
+    // `SpanOrSize<T>` to represent a size that may or may not be
     // accompanied by the actual data.
     DCHECK(count == 0 || !!data_);
   }
@@ -798,7 +798,7 @@ class GSL_POINTER span {
     }
   }
 
-  // Implicit conversion from base::span<T, N> to std::span<T, N>.
+  // Implicit conversion from span<T, N> to std::span<T, N>.
   //
   // We get other conversions for free from std::span's constructors, but it
   // does not deduce N on its range constructor.
@@ -926,9 +926,9 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       // We can not protect here generally against an invalid iterator/count
       // being passed in, since we have no context to determine if the
       // iterator or count are valid.
-      : data_(base::to_address(first)), size_(count) {
+      : data_(to_address(first)), size_(count) {
     // `count != 0` implies non-null `data_`.  Consider using
-    // `base::SpanOrSize<T>` to represent a size that may or may not be
+    // `SpanOrSize<T>` to represent a size that may or may not be
     // accompanied by the actual data.
     DCHECK(count == 0 || !!data_);
   }
@@ -1488,7 +1488,7 @@ constexpr auto as_chars(span<T, X, InternalPtrType> s) noexcept {
 // arrays.
 //
 // If you want to view an arbitrary span type as a string, first explicitly
-// convert it to bytes via `base::as_bytes()`.
+// convert it to bytes via `as_bytes()`.
 //
 // For spans over bytes, this is sugar for:
 // ```
@@ -1546,7 +1546,7 @@ UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, EndOrSize end_or_size) {
 // make_span utility function that deduces both the span's value_type and extent
 // from the passed in argument.
 //
-// Usage: auto span = base::make_span(...);
+// Usage: auto span = make_span(...);
 // Deprecated: Use CTAD (i.e. use `span()` directly without template arguments).
 // TODO(crbug.com/341907909): Remove.
 template <int&... ExplicitArgumentBarrier, typename Container>
@@ -1601,8 +1601,8 @@ constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
 // Converts a string literal (such as `"hello"`) to a span of `CharT` while
 // omitting the terminating NUL character. These two are equivalent:
 // ```
-// base::span<char, 5u> s1 = base::span_from_cstring("hello");
-// base::span<char, 5u> s2 = base::span(std::string_view("hello"));
+// span<char, 5u> s1 = span_from_cstring("hello");
+// span<char, 5u> s2 = span(std::string_view("hello"));
 // ```
 //
 // If you want to include the NUL terminator in the span, then use
@@ -1621,14 +1621,14 @@ constexpr span<const CharT, N - 1> span_from_cstring(
 // Converts a string literal (such as `"hello"`) to a span of `CharT` that
 // includes the terminating NUL character. These two are equivalent:
 // ```
-// base::span<char, 6u> s1 = base::span_with_nul_from_cstring("hello");
+// span<char, 6u> s1 = span_with_nul_from_cstring("hello");
 // auto h = std::cstring_view("hello");
-// base::span<char, 6u> s2 =
-//     UNSAFE_BUFFERS(base::span(h.data(), h.size() + 1u));
+// span<char, 6u> s2 =
+//     UNSAFE_BUFFERS(span(h.data(), h.size() + 1u));
 // ```
 //
 // If you do not want to include the NUL terminator, then use
-// `span_from_cstring()` or use a view type (e.g. `base::cstring_view` or
+// `span_from_cstring()` or use a view type (e.g. `cstring_view` or
 // `std::string_view`) in place of a string literal.
 //
 // Internal NUL characters (ie. that are not at the end of the string) are
@@ -1644,8 +1644,8 @@ constexpr span<const CharT, N> span_with_nul_from_cstring(
 // Converts a string literal (such as `"hello"`) to a span of `uint8_t` while
 // omitting the terminating NUL character. These two are equivalent:
 // ```
-// base::span<uint8_t, 5u> s1 = base::byte_span_from_cstring("hello");
-// base::span<uint8_t, 5u> s2 = base::as_byte_span(std::string_view("hello"));
+// span<uint8_t, 5u> s1 = byte_span_from_cstring("hello");
+// span<uint8_t, 5u> s2 = as_byte_span(std::string_view("hello"));
 // ```
 //
 // If you want to include the NUL terminator in the span, then use
@@ -1663,14 +1663,14 @@ constexpr span<const uint8_t, N - 1> byte_span_from_cstring(
 // Converts a string literal (such as `"hello"`) to a span of `uint8_t` that
 // includes the terminating NUL character. These two are equivalent:
 // ```
-// base::span<uint8_t, 6u> s1 = base::byte_span_with_nul_from_cstring("hello");
-// auto h = base::cstring_view("hello");
-// base::span<uint8_t, 6u> s2 = base::as_bytes(
-//     UNSAFE_BUFFERS(base::span(h.data(), h.size() + 1u)));
+// span<uint8_t, 6u> s1 = byte_span_with_nul_from_cstring("hello");
+// auto h = cstring_view("hello");
+// span<uint8_t, 6u> s2 = as_bytes(
+//     UNSAFE_BUFFERS(span(h.data(), h.size() + 1u)));
 // ```
 //
 // If you do not want to include the NUL terminator, then use
-// `byte_span_from_cstring()` or use a view type (`base::cstring_view` or
+// `byte_span_from_cstring()` or use a view type (`cstring_view` or
 // `std::string_view`) in place of a string literal and `as_byte_span()`.
 //
 // Internal NUL characters (ie. that are not at the end of the string) are
@@ -1752,12 +1752,12 @@ constexpr auto span_cmp(span<T, N> l, span<U, M> r)
 
 template <class T>
 concept SpanConvertsToStringView = requires {
-  { ::base::as_string_view(span<T>()) };
+  { as_string_view(span<T>()) };
 };
 
 template <class T>
 concept StringViewCanStreamToCharStream = requires(std::ostream& s) {
-  { s << ::base::as_string_view(span<T>()) };
+  { s << as_string_view(span<T>()) };
 };
 
 // Template helper for implementing printing.
@@ -1766,10 +1766,10 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
   l << "[";
   if constexpr (!SpanConvertsToStringView<T>) {
     if (!r.empty()) {
-      l << base::ToString(r.front());
+      l << ToString(r.front());
       for (const T& e : r.subspan(1u)) {
         l << ", ";
-        l << base::ToString(e);
+        l << ToString(e);
       }
     }
   } else {
@@ -1799,10 +1799,10 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
 // span can be printed and will print each of its values, including in Gtests.
 //
 // TODO(danakj): This could move to a ToString() member method if gtest printers
-// were hooked up to base::ToString().
+// were hooked up to ToString().
 template <class T, size_t N>
   requires internal::SpanConvertsToStringView<T> || requires(T t) {
-    { base::ToString(t) };
+    { ToString(t) };
   }
 constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
   return internal::span_stream(l, r);

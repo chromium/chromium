@@ -30,7 +30,7 @@ class SpanReader {
 
   // Returns a span over the next `n` objects, if there are enough objects left.
   // Otherwise, it returns nullopt and does nothing.
-  std::optional<span<T>> Read(base::StrictNumeric<size_t> n) {
+  std::optional<span<T>> Read(StrictNumeric<size_t> n) {
     if (n > remaining()) {
       return std::nullopt;
     }
@@ -54,7 +54,7 @@ class SpanReader {
   // Returns true and writes a span over the next `n` objects into `out`, if
   // there are enough objects left. Otherwise, it returns false and does
   // nothing.
-  bool ReadInto(base::StrictNumeric<size_t> n, span<T>& out) {
+  bool ReadInto(StrictNumeric<size_t> n, span<T>& out) {
     if (n > remaining()) {
       return false;
     }
@@ -78,7 +78,7 @@ class SpanReader {
 
   // Returns true and skips over the next `n` objects, if there are enough
   // objects left. Otherwise, it returns false and does nothing.
-  std::optional<base::span<T>> Skip(base::StrictNumeric<size_t> n) {
+  std::optional<span<T>> Skip(StrictNumeric<size_t> n) {
     if (n > remaining()) {
       return std::nullopt;
     }
