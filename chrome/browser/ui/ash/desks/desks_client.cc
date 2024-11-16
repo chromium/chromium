@@ -561,13 +561,6 @@ void DesksClient::LaunchAppsFromTemplate(
   if (restore_data->app_id_to_launch_list().empty())
     return;
 
-  // Since we default the browser to launch as ash chrome, we want to to check
-  // if lacros is enabled. If so, update the app id of the browser app to launch
-  // lacros instead of ash.
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    restore_data->UpdateBrowserAppIdToLacros();
-  }
-
   // Make window IDs of the template unique. This is a requirement for launching
   // templates concurrently since the contained window IDs are used as lookup
   // keys in many places. We must also do this *before* creating the performance
