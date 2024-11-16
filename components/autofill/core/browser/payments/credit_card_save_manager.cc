@@ -178,15 +178,26 @@ bool CreditCardSaveManager::ShouldOfferCvcSave(
 
   // We will only offer CVC-only save if the card is known to Autofill.
   const CreditCard* existing_credit_card = nullptr;
-  if (credit_card_import_type ==
-      FormDataImporter::CreditCardImportType::kLocalCard) {
-    existing_credit_card =
-        payments_data_manager().GetCreditCardByGUID(card.guid());
-  } else if (credit_card_import_type ==
-                 FormDataImporter::CreditCardImportType::kServerCard &&
-             is_credit_card_upstream_enabled) {
-    existing_credit_card = payments_data_manager().GetCreditCardByInstrumentId(
-        card.instrument_id());
+  switch (credit_card_import_type) {
+    case FormDataImporter::CreditCardImportType::kLocalCard:
+      existing_credit_card =
+          payments_data_manager().GetCreditCardByGUID(card.guid());
+      break;
+    case FormDataImporter::CreditCardImportType::kServerCard:
+    case FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard:
+      // Payments autofill shows the server card suggestion in the duplicate
+      // case. Thus, set `exsting_credit_card` in the same way server cards are
+      // set.
+      if (is_credit_card_upstream_enabled) {
+        existing_credit_card =
+            payments_data_manager().GetCreditCardByInstrumentId(
+                card.instrument_id());
+      }
+      break;
+    case FormDataImporter::CreditCardImportType::kVirtualCard:
+    case FormDataImporter::CreditCardImportType::kNoCard:
+    case FormDataImporter::CreditCardImportType::kNewCard:
+      break;
   }
   return existing_credit_card && existing_credit_card->cvc() != card.cvc();
 }

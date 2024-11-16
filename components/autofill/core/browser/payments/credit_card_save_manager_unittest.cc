@@ -5648,17 +5648,16 @@ TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithEmptyCvc) {
 TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithoutExistingCard) {
   personal_data().payments_data_manager().ClearAllServerDataForTesting();
   personal_data().test_payments_data_manager().ClearAllLocalData();
+  CreditCard card =
+      test::WithCvc(CreditCardImportType() ==
+                            FormDataImporter::CreditCardImportType::kLocalCard
+                        ? test::GetCreditCard()
+                        : test::GetMaskedServerCard());
 
   // We should not offer CVC save if we don't have an existing card
   // that matches the card in the form.
   EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
-      test::WithCvc(test::GetCreditCard()),
-      FormDataImporter::CreditCardImportType::kLocalCard,
-      IsCreditCardUpstreamEnabled()));
-  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
-      test::WithCvc(test::GetMaskedServerCard()),
-      FormDataImporter::CreditCardImportType::kServerCard,
-      IsCreditCardUpstreamEnabled()));
+      card, CreditCardImportType(), IsCreditCardUpstreamEnabled()));
 }
 
 // Tests that we should not offer CVC save with same CVC.
@@ -5667,14 +5666,14 @@ TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithSameCvc) {
   personal_data().payments_data_manager().AddCreditCard(local_card);
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard(), u"123");
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  CreditCard card = CreditCardImportType() ==
+                            FormDataImporter::CreditCardImportType::kLocalCard
+                        ? local_card
+                        : server_card;
 
   // We should not offer CVC save with same CVC.
   EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
-      local_card, FormDataImporter::CreditCardImportType::kLocalCard,
-      IsCreditCardUpstreamEnabled()));
-  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
-      server_card, FormDataImporter::CreditCardImportType::kServerCard,
-      IsCreditCardUpstreamEnabled()));
+      card, CreditCardImportType(), IsCreditCardUpstreamEnabled()));
 }
 
 // Tests that we should OfferCvcLocalSave with expected input.
@@ -5707,9 +5706,15 @@ TEST_P(SaveCvcTest, ShouldOfferCvcUploadSave) {
     EXPECT_TRUE(credit_card_save_manager_->ShouldOfferCvcSave(
         card, FormDataImporter::CreditCardImportType::kServerCard,
         IsCreditCardUpstreamEnabled()));
+    EXPECT_TRUE(credit_card_save_manager_->ShouldOfferCvcSave(
+        card, FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard,
+        IsCreditCardUpstreamEnabled()));
   } else {
     EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
         card, FormDataImporter::CreditCardImportType::kServerCard,
+        IsCreditCardUpstreamEnabled()));
+    EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+        card, FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard,
         IsCreditCardUpstreamEnabled()));
   }
 }
@@ -5720,8 +5725,10 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Bool(),
         testing::Bool(),
-        testing::Values(FormDataImporter::CreditCardImportType::kServerCard,
-                        FormDataImporter::CreditCardImportType::kLocalCard),
+        testing::Values(
+            FormDataImporter::CreditCardImportType::kServerCard,
+            FormDataImporter::CreditCardImportType::kLocalCard,
+            FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard),
         testing::Bool()));
 
 class ProceedWithSavingIfApplicableTest
