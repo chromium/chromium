@@ -47,6 +47,12 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
     prefs_ = ExtensionPrefs::Get(profile());
   }
 
+  void TearDownOnMainThread() override {
+    prefs_ = nullptr;
+    registry_ = nullptr;
+    ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
   // We always navigate in a new tab because when we disable the extension, it
   // closes all tabs for that extension. If we only opened in the current tab,
   // this would result in the only open tab being closed, and the test
@@ -60,8 +66,8 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
   scoped_refptr<const Extension> extension_;
   ExtensionId extension_id_;
   GURL extension_resource_url_;
-  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_;
-  raw_ptr<ExtensionPrefs, DanglingUntriaged> prefs_;
+  raw_ptr<ExtensionRegistry> registry_;
+  raw_ptr<ExtensionPrefs> prefs_;
 };
 
 // Test that visiting an url associated with a disabled extension offers to
