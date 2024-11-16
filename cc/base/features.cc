@@ -83,11 +83,7 @@ BASE_FEATURE(kUseDMSAAForTilesAndroidGL,
 
 BASE_FEATURE(kUIEnableSharedImageCacheForGpu,
              "UIEnableSharedImageCacheForGpu",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kReclaimResourcesDelayedFlushInBackground,
              "ReclaimResourcesDelayedFlushInBackground",
