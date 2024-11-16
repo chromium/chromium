@@ -43,9 +43,10 @@ bool CertStoreServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-KeyedService* CertStoreServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CertStoreServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new CertStoreService(context);
+  return std::make_unique<CertStoreService>(context);
 }
 
 }  // namespace arc
