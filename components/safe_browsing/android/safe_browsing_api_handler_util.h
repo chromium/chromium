@@ -111,7 +111,8 @@ enum class VerifyAppsEnabledResult {
   SUCCESS_NOT_ENABLED = 1,
   TIMEOUT = 2,
   FAILED = 3,
-  kMaxValue = FAILED,
+  SUCCESS_ALREADY_ENABLED = 4,
+  kMaxValue = SUCCESS_ALREADY_ENABLED,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SafeBrowsingVerifyAppsEnabledResult)
 

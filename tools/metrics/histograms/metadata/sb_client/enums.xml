@@ -129,6 +129,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Disabled"/>
   <int value="2" label="Request timed out"/>
   <int value="3" label="Request failed"/>
+  <int value="4" label="Already enabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/android/safe_browsing_api_handler_util.h:VerifyAppsEnabledResult) -->
