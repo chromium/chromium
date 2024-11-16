@@ -31,6 +31,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Upgraded"/>
 </enum>
 
+<!-- LINT.IfChange(NearbyBluetoothAdapterAdvertisingSupport) -->
+
 <enum name="NearbyBluetoothAdapterAdvertisingSupport">
   <int value="0" label="Extended Advertising And Scatternet Dual Role"/>
   <int value="1" label="Extended Advertising Only"/>
@@ -39,6 +41,10 @@ chromium-metrics-reviews@google.com.
       label="Neither Extended Advertising or Scatternet Dual Role, only
              Legacy Advertising"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/nearby/bluetooth_adapter_manager.cc:NearbyBluetoothAdapterAdvertisingSupport) -->
+
+<!-- LINT.IfChange(NearbyConnectionsConnectResult) -->
 
 <enum name="NearbyConnectionsConnectResult">
   <int value="0" label="Success"/>
@@ -66,6 +72,10 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Socket Error"/>
 </enum>
 
+<!-- LINT.ThenChange(//device/bluetooth/public/mojom/adapter.mojom:NearbyConnectionsConnectResult) -->
+
+<!-- LINT.IfChange(NearbyConnectionsGattResult) -->
+
 <enum name="NearbyConnectionsGattResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown"/>
@@ -80,6 +90,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Characteristic Not Found"/>
   <int value="11" label="Descriptor Not Found"/>
 </enum>
+
+<!-- LINT.ThenChange(//device/bluetooth/public/mojom/device.mojom:NearbyConnectionsGattResult) -->
 
 <!-- LINT.IfChange(NearbyConnectionsMedium) -->
 
@@ -101,6 +113,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom:NearbyConnectionsMedium) -->
 
+<!-- LINT.IfChange(NearbyConnectionsStartAdvertisingFailureReason) -->
+
 <enum name="NearbyConnectionsStartAdvertisingFailureReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="No extended advertising support"/>
@@ -108,11 +122,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed to register GATT services in GATT server"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/services/sharing/nearby/platform/nearby_platform_metrics.h:NearbyConnectionsStartAdvertisingFailureReason) -->
+
+<!-- LINT.IfChange(NearbyConnectionsStartScanningFailureReason) -->
+
 <enum name="NearbyConnectionsStartScanningFailureReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Adapter observation failed"/>
   <int value="2" label="Start discovery session failed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/services/sharing/nearby/platform/nearby_platform_metrics.h:NearbyConnectionsStartScanningFailureReason) -->
+
+<!-- LINT.IfChange(NearbyConnectionsUtilityProcessMojoDependencyName) -->
 
 <enum name="NearbyConnectionsUtilityProcessMojoDependencyName">
   <int value="0" label="Nearby Connections"/>
@@ -127,7 +149,12 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Nearby Presence"/>
   <int value="10" label="Nearby Share Decoder"/>
   <int value="11" label="Quick Start Decoder"/>
+  <int value="12" label="Nearby Presence Credential Storage"/>
+  <int value="13" label="Wi-Fi Direct Manager"/>
+  <int value="14" label="mDNS Manager"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/services/sharing/sharing_impl.h:NearbyConnectionsUtilityProcessMojoDependencyName) -->
 
 <!-- LINT.IfChange(NearbyConnectionsUtilityProcessShutdownReason) -->
 
@@ -141,6 +168,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h:NearbyConnectionsUtilityProcessShutdownReason) -->
+
+<!-- LINT.IfChange(NearbyConnectionsWifiDirectResult) -->
 
 <enum name="NearbyConnectionsWifiDirectResult">
   <int value="0" label="Success"/>
@@ -160,6 +189,10 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Unknown Failure"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom:NearbyConnectionsWifiDirectResult) -->
+
+<!-- LINT.IfChange(NearbyConnectionsWifiDirectServiceError) -->
+
 <enum name="NearbyConnectionsWifiDirectServiceError">
   <int value="0" label="No Connection"/>
   <int value="1" label="Failed To Create Platform Socket"/>
@@ -170,17 +203,29 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Failed To Listen to Socket"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/services/sharing/nearby/platform/wifi_direct_medium.h:NearbyConnectionsWifiDirectServiceError) -->
+
+<!-- LINT.IfChange(NearbyConnectionsWifiDirectSocketError) -->
+
 <enum name="NearbyConnectionsWifiDirectSocketError">
   <int value="0" label="Socket Closed"/>
   <int value="1" label="Firewall Hole Disconnected"/>
   <int value="2" label="Socket Failure"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h:NearbyConnectionsWifiDirectSocketError) -->
+
+<!-- LINT.IfChange(NearbyConnectionsWifiLanConnectResult) -->
+
 <enum name="NearbyConnectionsWifiLanConnectResult">
   <int value="0" label="Success"/>
   <int value="1" label="Canceled"/>
   <int value="2" label="Error: Failed to create TCP socket"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/services/sharing/nearby/platform/wifi_lan_medium.h:NearbyConnectionsWifiLanConnectResult) -->
+
+<!-- LINT.IfChange(NearbyConnectionsWifiLanListenResult) -->
 
 <enum name="NearbyConnectionsWifiLanListenResult">
   <int value="0" label="Success"/>
@@ -194,6 +239,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Error: Unexpected TCP server socket IP endpoint"/>
   <int value="9" label="Error: Failed to create firewall hole"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/services/sharing/nearby/platform/wifi_lan_medium.h:NearbyConnectionsWifiLanListenResult) -->
 
 <!-- LINT.IfChange(NearbyHttpResult) -->
 
@@ -224,6 +271,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chromeos/ash/components/nearby/presence/metrics/nearby_presence_metrics.h:NearbyPresenceFirstTimeRegistrationResult) -->
 
+<!-- LINT.IfChange(NearbyPresenceScanRequestResult) -->
+
 <enum name="NearbyPresenceScanRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Cancelled"/>
@@ -244,6 +293,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Unauthenticated"/>
   <int value="17" label="Failed to Start Process"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/nearby/presence/enums/nearby_presence_enums.h:NearbyPresenceScanRequestResult) -->
 
 <!-- LINT.IfChange(NearbyShareAttachmentType) -->
 
@@ -290,11 +341,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/nearby_sharing/nearby_share_metrics.h:NearbyShareBackgroundScanningSetupNotificationFlowEvent) -->
 
+<!-- LINT.IfChange(NearbyShareCertificateManagerGetDecryptedPublicCertificateResult) -->
+
 <enum name="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult">
   <int value="0" label="Success"/>
   <int value="1" label="No Match"/>
   <int value="2" label="Storage Failure"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.cc:NearbyShareCertificateManagerGetDecryptedPublicCertificateResult) -->
+
+<!-- LINT.IfChange(NearbyShareCertificateStorageInitializationResult) -->
 
 <enum name="NearbyShareCertificateStorageInitializationResult">
   <int value="0" label="OK"/>
@@ -304,12 +361,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Invalid Operation"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.cc:NearbyShareCertificateStorageInitializationResult) -->
+
+<!-- LINT.IfChange(NearbyShareDeviceType) -->
+
 <enum name="NearbyShareDeviceType">
   <int value="0" label="Unknown device type"/>
   <int value="1" label="Phone"/>
   <int value="2" label="Tablet"/>
   <int value="3" label="Laptop"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom:NearbyShareDeviceType) -->
 
 <!-- LINT.IfChange(NearbyShareDiscoveryProgress) -->
 

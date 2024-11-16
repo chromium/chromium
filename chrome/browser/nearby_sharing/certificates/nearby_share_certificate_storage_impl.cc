@@ -31,7 +31,11 @@ namespace {
 // Compare to leveldb_proto::Enums::InitStatus. Using a separate enum so that
 // the values don't change.
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Keep in sync with the
+// NearbyShareCertificateStorageInitializationResult UMA enum defined in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyShareCertificateStorageInitializationResult)
 enum InitStatusMetric {
   kOK = 0,
   kNotInitialized = 1,
@@ -40,6 +44,7 @@ enum InitStatusMetric {
   kInvalidOperation = 4,
   kMaxValue = kInvalidOperation
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareCertificateStorageInitializationResult)
 
 void RecordInitializationSuccessRateMetric(bool success, size_t num_attempts) {
   base::UmaHistogramBoolean(

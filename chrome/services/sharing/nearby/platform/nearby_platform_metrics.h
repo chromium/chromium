@@ -15,8 +15,10 @@ namespace nearby::chrome::metrics {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
 // be updated. This enum should be kept in sync with the
-// NearbyConnectionsStartAdvertisingFailureReason enum in
+// NearbyConnectionsStartAdvertisingFailureReason UMA enum defined in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyConnectionsStartAdvertisingFailureReason)
 enum class StartAdvertisingFailureReason {
   kUnknown = 0,
   kNoExtendedAdvertisementSupport = 1,
@@ -24,18 +26,22 @@ enum class StartAdvertisingFailureReason {
   kFailedToRegisterGattServices = 3,
   kMaxValue = kFailedToRegisterGattServices,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsStartAdvertisingFailureReason)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
 // be updated. This enum should be kept in sync with the
-// NearbyConnectionsStartScanningFailureReason enum in
+// NearbyConnectionsStartScanningFailureReason UMA enum defined in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyConnectionsStartScanningFailureReason)
 enum class StartScanningFailureReason {
   kUnknown = 0,
   kAdapterObserverationFailed = 1,
   kStartDiscoverySessionFailed = 2,
   kMaxValue = kStartDiscoverySessionFailed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsStartScanningFailureReason)
 
 void RecordGattServerScatternetDualRoleSupported(bool is_dual_role_supported);
 void RecordGattServiceRegistrationResult(bool success);
