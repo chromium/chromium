@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include <string_view>
+#include <tuple>
 
 #include "base/base64.h"
 #include "base/numerics/byte_conversions.h"
@@ -185,8 +186,7 @@ bool MerkleIntegritySourceStream::ConsumeBytes(base::span<const char>* input,
 
   // Return data directly from |input| if possible.
   if (partial_input_.empty() && input->size() >= len) {
-    *result = input->subspan(0, len);
-    *input = input->subspan(len);
+    std::tie(*result, *input) = input->split_at(len);
     return true;
   }
 

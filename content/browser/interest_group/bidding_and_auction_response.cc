@@ -50,12 +50,13 @@ ExtractCompressedBiddingAndAuctionResponse(
   }
   size_t response_length = (decrypted_data[1] << 24) |
                            (decrypted_data[2] << 16) |
-                           (decrypted_data[3] << 8) | (decrypted_data[4] << 0);
-  if (decrypted_data.size() < kFramingHeaderSize + response_length) {
+                           (decrypted_data[3] << 8) | decrypted_data[4];
+  decrypted_data = decrypted_data.subspan<kFramingHeaderSize>();
+  if (decrypted_data.size() < response_length) {
     // Incomplete Data.
     return std::nullopt;
   }
-  return decrypted_data.subspan(kFramingHeaderSize, response_length);
+  return decrypted_data.first(response_length);
 }
 
 BiddingAndAuctionResponse::KAnonJoinCandidate::KAnonJoinCandidate() = default;

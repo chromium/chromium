@@ -4631,7 +4631,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpMismatch) {
   RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess, config);
 
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
-  EXPECT_TRUE(!all_accounts_for_display().empty());
+  EXPECT_FALSE(all_accounts_for_display().empty());
   auto mismatch_idps = displayed_mismatch_idps();
   ASSERT_EQ(mismatch_idps.size(), 1u);
   EXPECT_EQ(mismatch_idps[0], "idp2.example");

@@ -480,11 +480,12 @@ blink::mojom::PRFValuesPtr PRFResultsToValues(
     base::span<const uint8_t> results) {
   auto prf_values = blink::mojom::PRFValues::New();
   DCHECK(results.size() == 32 || results.size() == 64);
-  prf_values->first =
-      device::fido_parsing_utils::Materialize(results.first(32u));
-  if (results.size() == 64) {
-    prf_values->second =
-        device::fido_parsing_utils::Materialize(results.subspan(32, 32));
+  // Using `.split_at<32>()` would cause the subsequent `Materialize()` call to
+  // return a `std::array`, resulting in an extra copy.
+  const auto [first, second] = results.split_at(32u);
+  prf_values->first = device::fido_parsing_utils::Materialize(first);
+  if (!second.empty()) {
+    prf_values->second = device::fido_parsing_utils::Materialize(second);
   }
 
   return prf_values;
