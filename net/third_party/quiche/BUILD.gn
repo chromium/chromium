@@ -275,9 +275,6 @@ static_library("quiche_test_support") {
   cflags = [ "-Wno-deprecated-declarations" ]
   sources = [
               "overrides/quiche_platform_impl/quiche_expect_bug_impl.h",
-              "overrides/quiche_platform_impl/quiche_mock_log_impl.h",
-              "overrides/quiche_platform_impl/quiche_test_helpers_impl.cc",
-              "overrides/quiche_platform_impl/quiche_test_helpers_impl.h",
               "overrides/quiche_platform_impl/quiche_test_impl.cc",
               "overrides/quiche_platform_impl/quiche_test_impl.h",
               "overrides/quiche_platform_impl/quiche_test_output_impl.cc",
