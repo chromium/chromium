@@ -15,6 +15,7 @@ extensions_api_schema_files_ = [
   "offscreen.idl",
   "runtime.json",
   "storage.json",
+  "system_memory.idl",
   "test.json",
   "web_request.json",
 ]
@@ -77,7 +78,6 @@ if (enable_extensions) {
     "sockets_udp.idl",
     "system_cpu.idl",
     "system_display.idl",
-    "system_memory.idl",
     "system_network.idl",
     "system_storage.idl",
     "scripts_internal.idl",
