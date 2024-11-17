@@ -48,14 +48,14 @@ ContactCenterInsightsExtensionManagerFactory::
 ContactCenterInsightsExtensionManagerFactory::
     ~ContactCenterInsightsExtensionManagerFactory() = default;
 
-KeyedService*
-ContactCenterInsightsExtensionManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> ContactCenterInsightsExtensionManagerFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   auto* const profile = Profile::FromBrowserContext(context);
   auto* const component_loader = ::extensions::ExtensionSystem::Get(profile)
                                      ->extension_service()
                                      ->component_loader();
-  return new ContactCenterInsightsExtensionManager(
+  return std::make_unique<ContactCenterInsightsExtensionManager>(
       component_loader, profile,
       std::make_unique<ContactCenterInsightsExtensionManager::Delegate>());
 }
