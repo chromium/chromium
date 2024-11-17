@@ -53,7 +53,7 @@ std::string LoadFlagsToString(int load_flags) {
   flag_names.reserve(expected_size);
   // Skip the first entry in kInfo as including LOAD_NORMAL in the output would
   // be confusing.
-  for (const auto& flag : base::span(kInfo).subspan(1)) {
+  for (const auto& flag : base::span(kInfo).subspan<1>()) {
     if (load_flags & flag.value) {
       flag_names.push_back(flag.name);
     }

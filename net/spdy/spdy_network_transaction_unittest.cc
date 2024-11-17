@@ -412,9 +412,10 @@ class SpdyNetworkTransactionTest
 
   void UseComplexPostRequest() {
     ASSERT_FALSE(upload_data_stream_);
-    const int kFileRangeOffset = 1;
-    const int kFileRangeLength = 3;
-    CHECK_LT(kFileRangeOffset + kFileRangeLength, kUploadDataSize);
+    static constexpr size_t kFileRangeOffset = 1;
+    static constexpr size_t kFileRangeLength = 3;
+    CHECK_LT(static_cast<int>(kFileRangeOffset + kFileRangeLength),
+             kUploadDataSize);
 
     base::FilePath file_path;
     CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
@@ -422,14 +423,13 @@ class SpdyNetworkTransactionTest
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-        base::byte_span_from_cstring(kUploadData)
-            .first(base::checked_cast<size_t>(kFileRangeOffset))));
+        base::byte_span_from_cstring(kUploadData).first<kFileRangeOffset>()));
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
         base::SingleThreadTaskRunner::GetCurrentDefault().get(), file_path,
         kFileRangeOffset, kFileRangeLength, base::Time()));
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
         base::byte_span_from_cstring(kUploadData)
-            .subspan(kFileRangeOffset + kFileRangeLength)));
+            .subspan<kFileRangeOffset + kFileRangeLength>()));
     upload_data_stream_ = std::make_unique<ElementsUploadDataStream>(
         std::move(element_readers), 0);
 

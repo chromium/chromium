@@ -22,12 +22,12 @@ static constexpr size_t kCompressionTypeBrotliSignatureSize =
     sizeof(kCompressionTypeBrotliSignature);
 static constexpr size_t kCompressionTypeZstdSignatureSize =
     sizeof(kCompressionTypeZstdSignature);
-static constexpr int kCompressionDictionaryHashSize = 32;
+static constexpr size_t kCompressionDictionaryHashSize = 32;
 static_assert(sizeof(SHA256HashValue) == kCompressionDictionaryHashSize,
               "kCompressionDictionaryHashSize mismatch");
-static constexpr int kCompressionTypeBrotliHeaderSize =
+static constexpr size_t kCompressionTypeBrotliHeaderSize =
     kCompressionTypeBrotliSignatureSize + kCompressionDictionaryHashSize;
-static constexpr int kCompressionTypeZstdHeaderSize =
+static constexpr size_t kCompressionTypeZstdHeaderSize =
     kCompressionTypeZstdSignatureSize + kCompressionDictionaryHashSize;
 
 size_t GetSignatureSize(SharedDictionaryHeaderCheckerSourceStream::Type type) {
@@ -171,7 +171,7 @@ void SharedDictionaryHeaderCheckerSourceStream::HeaderCheckCompleted(
 
 base::span<const unsigned char>
 SharedDictionaryHeaderCheckerSourceStream::GetSignatureInBuffer() const {
-  return head_read_buffer_->everything().subspan(0, GetSignatureSize(type_));
+  return head_read_buffer_->everything().first(GetSignatureSize(type_));
 }
 
 base::span<const unsigned char>
